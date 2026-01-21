@@ -14,7 +14,7 @@ class AutoIncrementIdStrategy implements EntityIdStrategy<'increment'> {
     encodeId(primaryKey: number) => string;
 }
 ```
-* Implements: <code><a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a><'increment'></code>
+* Implements: <DocsLink href="/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy">`EntityIdStrategy`</DocsLink><'increment'>
 
 
 
@@ -69,7 +69,7 @@ interface EntityIdStrategy<T extends 'increment' | 'uuid'> extends InjectableStr
     decodeId: (id: string) => PrimaryKeyType<T>;
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
 
 
 
@@ -129,7 +129,7 @@ class UuidIdStrategy implements EntityIdStrategy<'uuid'> {
     encodeId(primaryKey: string) => string;
 }
 ```
-* Implements: <code><a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a><'uuid'></code>
+* Implements: <DocsLink href="/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy">`EntityIdStrategy`</DocsLink><'uuid'>
 
 
 

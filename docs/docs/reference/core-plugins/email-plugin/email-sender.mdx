@@ -44,7 +44,7 @@ interface EmailSender extends InjectableStrategy {
     send: (email: EmailDetails, options: EmailTransportOptions) => void | Promise<void>;
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/common/injectable-strategy#injectablestrategy'>InjectableStrategy</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
 
 
 
@@ -67,7 +67,7 @@ class NodemailerEmailSender implements EmailSender {
     send(email: EmailDetails, options: EmailTransportOptions) => ;
 }
 ```
-* Implements: <code><a href='/reference/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a></code>
+* Implements: <DocsLink href="/reference/core-plugins/email-plugin/email-sender#emailsender">`EmailSender`</DocsLink>
 
 
 

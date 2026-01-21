@@ -442,7 +442,7 @@ export class TypescriptDocsRenderer {
     private renderHeritageClause(clause: HeritageClause, knownTypeMap: TypeMap, docsUrl: string) {
         return (
             clause.types
-                .map(t => `<code>${this.renderType(t.getText(), knownTypeMap, docsUrl)}</code>`)
+                .map(t => this.renderHeritageType(t.getText(), knownTypeMap, docsUrl))
                 .join(', ') + '\n\n'
         );
     }
@@ -482,6 +482,25 @@ export class TypescriptDocsRenderer {
             const re = new RegExp(`(?!<a[^>]*>)\\b${key}\\b(?![^<]*<\/a>)`, 'g');
             const strippedIndex = val.replace(/\/_index$/, '');
             typeText = typeText.replace(re, `<a href='${docsUrl}/${strippedIndex}'>${key}</a>`);
+        }
+        return typeText;
+    }
+
+    /**
+     * Renders a heritage clause type (extends/implements) with DocsLink and backticks.
+     */
+    private renderHeritageType(type: string, knownTypeMap: TypeMap, docsUrl: string): string {
+        let typeText = type
+            .trim()
+            // encode HTML entities
+            .replace(/[\u00A0-\u9999\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
+            // remove newlines
+            .replace(/\n/g, ' ');
+
+        for (const [key, val] of knownTypeMap) {
+            const re = new RegExp(`(?!<DocsLink[^>]*>)\\b${key}\\b(?![^<]*<\\/DocsLink>)`, 'g');
+            const strippedIndex = val.replace(/\/_index$/, '');
+            typeText = typeText.replace(re, `<DocsLink href="${docsUrl}/${strippedIndex}">\`${key}\`</DocsLink>`);
         }
         return typeText;
     }

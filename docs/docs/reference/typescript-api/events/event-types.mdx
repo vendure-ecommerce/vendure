@@ -12,7 +12,7 @@ class AccountRegistrationEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -36,7 +36,7 @@ class AccountVerifiedEvent extends VendureEvent {
     constructor(ctx: RequestContext, customer: Customer)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -59,7 +59,7 @@ class AdministratorEvent extends VendureEntityEvent<Administrator, Administrator
     constructor(ctx: RequestContext, entity: Administrator, type: 'created' | 'updated' | 'deleted', input?: AdministratorInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>, AdministratorInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/administrator#administrator">`Administrator`</DocsLink>, AdministratorInputTypes>
 
 
 
@@ -83,7 +83,7 @@ class AssetChannelEvent extends VendureEvent {
     constructor(ctx: RequestContext, asset: Asset, channelId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -107,7 +107,7 @@ class AssetEvent extends VendureEntityEvent<Asset, AssetInputTypes> {
     asset: Asset
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>, AssetInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/asset#asset">`Asset`</DocsLink>, AssetInputTypes>
 
 
 
@@ -137,7 +137,7 @@ class AttemptedLoginEvent extends VendureEvent {
     constructor(ctx: RequestContext, strategy: string, identifier?: string)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -161,7 +161,7 @@ class ChangeChannelEvent<T extends ChannelAware & VendureEntity> extends Vendure
     constructor(ctx: RequestContext, entity: T, channelIds: ID[], type: 'assigned' | 'removed', entityType?: Type<T>)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -184,7 +184,7 @@ class ChannelEvent extends VendureEntityEvent<Channel, ChannelInputTypes> {
     constructor(ctx: RequestContext, entity: Channel, type: 'created' | 'updated' | 'deleted', input?: ChannelInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>, ChannelInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/channel#channel">`Channel`</DocsLink>, ChannelInputTypes>
 
 
 
@@ -207,7 +207,7 @@ class CollectionEvent extends VendureEntityEvent<Collection, CollectionInputType
     constructor(ctx: RequestContext, entity: Collection, type: 'created' | 'updated' | 'deleted', input?: CollectionInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>, CollectionInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/collection#collection">`Collection`</DocsLink>, CollectionInputTypes>
 
 
 
@@ -234,7 +234,7 @@ class CollectionModificationEvent extends VendureEvent {
     constructor(ctx: RequestContext, collection: Collection, productVariantIds: ID[])
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -257,7 +257,7 @@ class CountryEvent extends VendureEntityEvent<Country, CountryInputTypes> {
     constructor(ctx: RequestContext, entity: Country, type: 'created' | 'updated' | 'deleted', input?: CountryInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/country#country'>Country</a>, CountryInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/country#country">`Country`</DocsLink>, CountryInputTypes>
 
 
 
@@ -281,7 +281,7 @@ class CouponCodeEvent extends VendureEvent {
     constructor(ctx: RequestContext, couponCode: string, orderId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -306,7 +306,7 @@ class CustomerAddressEvent extends VendureEntityEvent<Address, CustomerAddressIn
     address: Address
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/address#address'>Address</a>, CustomerAddressInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/address#address">`Address`</DocsLink>, CustomerAddressInputTypes>
 
 
 
@@ -336,7 +336,7 @@ class CustomerEvent extends VendureEntityEvent<Customer, CustomerInputTypes> {
     customer: Customer
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>, CustomerInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/customer#customer">`Customer`</DocsLink>, CustomerInputTypes>
 
 
 
@@ -365,7 +365,7 @@ class CustomerGroupChangeEvent extends VendureEvent {
     constructor(ctx: RequestContext, customers: Customer[], customGroup: CustomerGroup, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -388,7 +388,7 @@ class CustomerGroupEvent extends VendureEntityEvent<CustomerGroup, CustomerGroup
     constructor(ctx: RequestContext, entity: CustomerGroup, type: 'created' | 'updated' | 'deleted', input?: CustomerGroupInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/customer-group#customergroup'>CustomerGroup</a>, CustomerGroupInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/customer-group#customergroup">`CustomerGroup`</DocsLink>, CustomerGroupInputTypes>
 
 
 
@@ -411,7 +411,7 @@ class FacetEvent extends VendureEntityEvent<Facet, FacetInputTypes> {
     constructor(ctx: RequestContext, entity: Facet, type: 'created' | 'updated' | 'deleted', input?: FacetInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/facet#facet'>Facet</a>, FacetInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/facet#facet">`Facet`</DocsLink>, FacetInputTypes>
 
 
 
@@ -434,7 +434,7 @@ class FacetValueEvent extends VendureEntityEvent<FacetValue, FacetValueInputType
     constructor(ctx: RequestContext, entity: FacetValue, type: 'created' | 'updated' | 'deleted', input?: FacetValueInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>, FacetValueInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/facet-value#facetvalue">`FacetValue`</DocsLink>, FacetValueInputTypes>
 
 
 
@@ -457,7 +457,7 @@ class FulfillmentEvent extends VendureEntityEvent<Fulfillment, CreateFulfillment
     constructor(ctx: RequestContext, entity: Fulfillment, input?: CreateFulfillmentInput)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>, CreateFulfillmentInput></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/fulfillment#fulfillment">`Fulfillment`</DocsLink>, CreateFulfillmentInput>
 
 
 
@@ -480,7 +480,7 @@ class FulfillmentStateTransitionEvent extends VendureEvent {
     constructor(fromState: FulfillmentState, toState: FulfillmentState, ctx: RequestContext, fulfillment: Fulfillment)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -504,7 +504,7 @@ class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGloba
     constructor(ctx: RequestContext, entity: GlobalSettings, input?: UpdateGlobalSettingsInput)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>, UpdateGlobalSettingsInput></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/global-settings#globalsettings">`GlobalSettings`</DocsLink>, UpdateGlobalSettingsInput>
 
 
 
@@ -528,7 +528,7 @@ class HistoryEntryEvent extends VendureEntityEvent<HistoryEntry, HistoryInput> {
     constructor(ctx: RequestContext, entity: HistoryEntry, type: 'created' | 'updated' | 'deleted', historyType: 'order' | 'customer' | string, input?: HistoryInput)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a>, HistoryInput></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/history-entry#historyentry">`HistoryEntry`</DocsLink>, HistoryInput>
 
 
 
@@ -557,7 +557,7 @@ class IdentifierChangeEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User, oldIdentifier: string)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -581,7 +581,7 @@ class IdentifierChangeRequestEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -604,7 +604,7 @@ class InitializerEvent extends VendureEvent {
     constructor()
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -627,7 +627,7 @@ class LoginEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -650,7 +650,7 @@ class LogoutEvent extends VendureEvent {
     constructor(ctx: RequestContext)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -675,7 +675,7 @@ class OrderEvent extends VendureEntityEvent<Order, OrderInputTypes> {
     order: Order
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/order#order'>Order</a>, OrderInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/order#order">`Order`</DocsLink>, OrderInputTypes>
 
 
 
@@ -704,7 +704,7 @@ class OrderLineEvent extends VendureEvent {
     constructor(ctx: RequestContext, order: Order, orderLine: OrderLine, type: 'created' | 'updated' | 'deleted' | 'cancelled')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -731,7 +731,7 @@ class OrderPlacedEvent extends VendureEvent {
     constructor(fromState: OrderState, toState: OrderState, ctx: RequestContext, order: Order)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -754,7 +754,7 @@ class OrderStateTransitionEvent extends VendureEvent {
     constructor(fromState: OrderState, toState: OrderState, ctx: RequestContext, order: Order)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -777,7 +777,7 @@ class PasswordResetEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -800,7 +800,7 @@ class PasswordResetVerifiedEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -824,7 +824,7 @@ class PaymentMethodEvent extends VendureEntityEvent<PaymentMethod, PaymentMethod
     constructor(ctx: RequestContext, entity: PaymentMethod, type: 'created' | 'updated' | 'deleted', input?: PaymentMethodInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>, PaymentMethodInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/payment-method#paymentmethod">`PaymentMethod`</DocsLink>, PaymentMethodInputTypes>
 
 
 
@@ -848,7 +848,7 @@ class PaymentStateTransitionEvent extends VendureEvent {
     constructor(fromState: PaymentState, toState: PaymentState, ctx: RequestContext, payment: Payment, order: Order)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -872,7 +872,7 @@ class ProductChannelEvent extends VendureEvent {
     constructor(ctx: RequestContext, product: Product, channelId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -897,7 +897,7 @@ class ProductEvent extends VendureEntityEvent<Product, ProductInputTypes> {
     product: Product
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/product#product'>Product</a>, ProductInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/product#product">`Product`</DocsLink>, ProductInputTypes>
 
 
 
@@ -925,7 +925,7 @@ class ProductOptionEvent extends VendureEntityEvent<ProductOption, ProductOption
     constructor(ctx: RequestContext, entity: ProductOption, type: 'created' | 'updated' | 'deleted', input?: ProductOptionInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>, ProductOptionInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/product-option#productoption">`ProductOption`</DocsLink>, ProductOptionInputTypes>
 
 
 
@@ -948,7 +948,7 @@ class ProductOptionGroupChangeEvent extends VendureEvent {
     constructor(ctx: RequestContext, product: Product, optionGroupId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -974,7 +974,7 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductOptionGroup, type: 'created' | 'updated' | 'deleted', input?: ProductOptionGroupInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><     <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,     ProductOptionGroupInputTypes ></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><     <DocsLink href="/reference/typescript-api/entities/product-option-group#productoptiongroup">`ProductOptionGroup`</DocsLink>,     ProductOptionGroupInputTypes >
 
 
 
@@ -997,7 +997,7 @@ class ProductVariantChannelEvent extends VendureEvent {
     constructor(ctx: RequestContext, productVariant: ProductVariant, channelId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -1022,7 +1022,7 @@ class ProductVariantEvent extends VendureEntityEvent<ProductVariant[], ProductVa
     variants: ProductVariant[]
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], ProductVariantInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">`ProductVariant`</DocsLink>[], ProductVariantInputTypes>
 
 
 
@@ -1053,7 +1053,7 @@ class ProductVariantPriceEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductVariantPrice[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><     <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[],     ProductVariantInputTypes ></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><     <DocsLink href="/reference/typescript-api/entities/product-variant-price#productvariantprice">`ProductVariantPrice`</DocsLink>[],     ProductVariantInputTypes >
 
 
 
@@ -1077,7 +1077,7 @@ class PromotionEvent extends VendureEntityEvent<Promotion, PromotionInputTypes> 
     constructor(ctx: RequestContext, entity: Promotion, type: 'created' | 'updated' | 'deleted', input?: PromotionInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>, PromotionInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/promotion#promotion">`Promotion`</DocsLink>, PromotionInputTypes>
 
 
 
@@ -1100,7 +1100,7 @@ class ProvinceEvent extends VendureEntityEvent<Province, ProvinceInputTypes> {
     constructor(ctx: RequestContext, entity: Province, type: 'created' | 'updated' | 'deleted', input?: ProvinceInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/province#province'>Province</a>, ProvinceInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/province#province">`Province`</DocsLink>, ProvinceInputTypes>
 
 
 
@@ -1123,7 +1123,7 @@ class RefundEvent extends VendureEvent {
     constructor(ctx: RequestContext, order: Order, refund: Refund, type: 'created')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -1146,7 +1146,7 @@ class RefundStateTransitionEvent extends VendureEvent {
     constructor(fromState: RefundState, toState: RefundState, ctx: RequestContext, refund: Refund, order: Order)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -1170,7 +1170,7 @@ class RoleChangeEvent extends VendureEvent {
     constructor(ctx: RequestContext, admin: Administrator, roleIds: ID[], type: 'assigned' | 'removed')
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -1193,7 +1193,7 @@ class RoleEvent extends VendureEntityEvent<Role, RoleInputTypes> {
     constructor(ctx: RequestContext, entity: Role, type: 'created' | 'updated' | 'deleted', input?: RoleInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/role#role'>Role</a>, RoleInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/role#role">`Role`</DocsLink>, RoleInputTypes>
 
 
 
@@ -1216,7 +1216,7 @@ class SearchEvent extends VendureEvent {
     constructor(ctx: RequestContext, input: ExtendedSearchInput)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -1239,7 +1239,7 @@ class SellerEvent extends VendureEntityEvent<Seller, SellerInputTypes> {
     constructor(ctx: RequestContext, entity: Seller, type: 'created' | 'updated' | 'deleted', input?: SellerInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/seller#seller'>Seller</a>, SellerInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/seller#seller">`Seller`</DocsLink>, SellerInputTypes>
 
 
 
@@ -1263,7 +1263,7 @@ class ShippingMethodEvent extends VendureEntityEvent<ShippingMethod, ShippingMet
     constructor(ctx: RequestContext, entity: ShippingMethod, type: 'created' | 'updated' | 'deleted', input?: ShippingMethodInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>, ShippingMethodInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/shipping-method#shippingmethod">`ShippingMethod`</DocsLink>, ShippingMethodInputTypes>
 
 
 
@@ -1287,7 +1287,7 @@ class StockLocationEvent extends VendureEntityEvent<StockLocation, StockLocation
     constructor(ctx: RequestContext, entity: StockLocation, type: 'created' | 'updated' | 'deleted', input?: StockLocationInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>, StockLocationInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/stock-location#stocklocation">`StockLocation`</DocsLink>, StockLocationInputTypes>
 
 
 
@@ -1312,7 +1312,7 @@ class StockMovementEvent extends VendureEvent {
     constructor(ctx: RequestContext, stockMovements: StockMovement[])
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -1341,7 +1341,7 @@ class TaxCategoryEvent extends VendureEntityEvent<TaxCategory, TaxCategoryInputT
     constructor(ctx: RequestContext, entity: TaxCategory, type: 'created' | 'updated' | 'deleted', input?: TaxCategoryInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>, TaxCategoryInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/tax-category#taxcategory">`TaxCategory`</DocsLink>, TaxCategoryInputTypes>
 
 
 
@@ -1365,7 +1365,7 @@ class TaxRateEvent extends VendureEntityEvent<TaxRate, TaxRateInputTypes> {
     constructor(ctx: RequestContext, entity: TaxRate, type: 'created' | 'updated' | 'deleted', input?: TaxRateInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>, TaxRateInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/tax-rate#taxrate">`TaxRate`</DocsLink>, TaxRateInputTypes>
 
 
 
@@ -1388,7 +1388,7 @@ class TaxRateModificationEvent extends VendureEvent {
     constructor(ctx: RequestContext, taxRate: TaxRate)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
@@ -1412,7 +1412,7 @@ class ZoneEvent extends VendureEntityEvent<Zone, ZoneInputTypes> {
     constructor(ctx: RequestContext, entity: Zone, type: 'created' | 'updated' | 'deleted', input?: ZoneInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a><<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, ZoneInputTypes></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink><<DocsLink href="/reference/typescript-api/entities/zone#zone">`Zone`</DocsLink>, ZoneInputTypes>
 
 
 
@@ -1436,7 +1436,7 @@ class ZoneMembersEvent extends VendureEvent {
     constructor(ctx: RequestContext, entity: Zone, type: 'assigned' | 'removed', memberIds: ID[])
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
 
 
 
