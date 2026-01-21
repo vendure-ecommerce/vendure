@@ -23,7 +23,7 @@ import {
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'path';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
@@ -585,6 +585,10 @@ describe('Mollie payments', () => {
         it('Should not allow setting immediateCapture=false via client input, when it is already set on the plugin level to true', async () => {
             MolliePlugin.options.immediateCapture = true;
             const logSpy = vi.spyOn(Logger, 'warn');
+            onTestFinished(() => {
+                MolliePlugin.options.immediateCapture = undefined;
+                logSpy.mockClear();
+            });
             let mollieRequest: any;
             nock('https://api.mollie.com/')
                 .post('/v2/payments', body => {
@@ -597,7 +601,6 @@ describe('Mollie payments', () => {
                     immediateCapture: false,
                 },
             });
-            MolliePlugin.options.immediateCapture = undefined; // Reset again for next test
             expect(logSpy.mock.calls?.[0]?.[0]).toContain(
                 `'immediateCapture' is overridden by the plugin options to 'true'`,
             );
