@@ -5,7 +5,7 @@ import { HeritageClause } from 'typescript';
 
 import { assertNever } from '../../packages/common/src/shared-utils';
 
-import { generateFrontMatter } from './docgen-utils';
+import { generateFrontMatter, titleCase } from './docgen-utils';
 import {
     ClassInfo,
     DeclarationInfo,
@@ -26,6 +26,33 @@ export class TypescriptDocsRenderer {
         let generatedCount = 0;
         if (!fs.existsSync(outputPath)) {
             fs.ensureDirSync(outputPath);
+        }
+
+        // Extract the section base path (e.g., 'typescript-api' from '.../reference/typescript-api')
+        const referenceIndex = outputPath.indexOf('/reference/');
+        const sectionBasePath = referenceIndex !== -1
+            ? outputPath.slice(referenceIndex + '/reference/'.length)
+            : '';
+
+        // Build a map of parent category paths to their direct child categories
+        const categoryChildren = new Map<string, Set<string>>();
+        // Also track direct children of the section root (for sections like 'admin-ui-api', 'dashboard')
+        const sectionRootChildren = new Set<string>();
+
+        for (const page of pages) {
+            // Track the first category as a child of the section root
+            if (page.category.length > 0) {
+                sectionRootChildren.add(page.category[0]);
+            }
+            // Track nested category relationships
+            for (let i = 0; i < page.category.length - 1; i++) {
+                const parentPath = page.category.slice(0, i + 1).join('/');
+                const childCategory = page.category[i + 1];
+                if (!categoryChildren.has(parentPath)) {
+                    categoryChildren.set(parentPath, new Set());
+                }
+                categoryChildren.get(parentPath)!.add(childCategory);
+            }
         }
 
         for (const page of pages) {
@@ -61,23 +88,123 @@ export class TypescriptDocsRenderer {
             if (!fs.existsSync(categoryDir)) {
                 fs.mkdirsSync(categoryDir);
             }
-            const pathParts = [];
+            const pathParts: string[] = [];
             for (const subCategory of page.category) {
                 pathParts.push(subCategory);
                 const indexFile = path.join(outputPath, ...pathParts, 'index.mdx');
                 const exists = fs.existsSync(indexFile);
-                const existingContent = exists && fs.readFileSync(indexFile).toString();
-                const hasActualContent = existingContent && existingContent.includes('isDefaultIndex: false');
-                if (!exists && !hasActualContent) {
-                    const indexFileContent = generateFrontMatter(subCategory, true);
+                const existingContent = exists ? fs.readFileSync(indexFile).toString() : '';
+                const isGenerated = existingContent.includes('generated: true');
+                const hasCustomContent = existingContent.includes('isDefaultIndex: false');
+
+                // Skip files with custom content
+                if (hasCustomContent) {
+                    continue;
+                }
+
+                const categoryPath = pathParts.join('/');
+                const children = categoryChildren.get(categoryPath);
+
+                // Collect existing LinkCards from the file if it exists
+                const existingLinkCards = new Set<string>();
+                if (exists && isGenerated) {
+                    const linkCardRegex = /<LinkCard href="([^"]+)"/g;
+                    let match;
+                    while ((match = linkCardRegex.exec(existingContent)) !== null) {
+                        existingLinkCards.add(match[1]);
+                    }
+                }
+
+                // Build set of new LinkCards
+                const newLinkCards = new Set<string>();
+                if (children && children.size > 0) {
+                    for (const child of children) {
+                        const basePath = sectionBasePath ? `${sectionBasePath}/` : '';
+                        const absolutePath = `/reference/${basePath}${categoryPath}/${child}`;
+                        newLinkCards.add(absolutePath);
+                    }
+                }
+
+                // Merge and check if we need to write
+                const allLinkCards = new Set([...existingLinkCards, ...newLinkCards]);
+                const hasNewCards = newLinkCards.size > 0 &&
+                    [...newLinkCards].some(card => !existingLinkCards.has(card));
+
+                if (!exists || hasNewCards) {
+                    let indexFileContent = generateFrontMatter(subCategory, true);
+
+                    if (allLinkCards.size > 0) {
+                        indexFileContent += '\n';
+                        const sortedCards = Array.from(allLinkCards).sort();
+                        for (const href of sortedCards) {
+                            // Extract child name from href for title
+                            const childName = href.split('/').pop() || '';
+                            const title = titleCase(childName.replace(/-/g, ' '));
+                            indexFileContent += `<LinkCard href="${href}" title="${title}" />\n`;
+                        }
+                    }
+
                     fs.writeFileSync(indexFile, indexFileContent);
-                    generatedCount++;
+                    if (!exists) {
+                        generatedCount++;
+                    }
                 }
             }
 
             fs.writeFileSync(path.join(categoryDir, page.fileName + '.mdx'), markdown);
             generatedCount++;
         }
+
+        // Generate index file for the section root (e.g., admin-ui-api/index.mdx, dashboard/index.mdx)
+        if (sectionBasePath && sectionRootChildren.size > 0) {
+            const sectionIndexFile = path.join(outputPath, 'index.mdx');
+            const exists = fs.existsSync(sectionIndexFile);
+            const existingContent = exists ? fs.readFileSync(sectionIndexFile).toString() : '';
+            const isGenerated = existingContent.includes('generated: true');
+            const hasCustomContent = existingContent.includes('isDefaultIndex: false');
+
+            if (!hasCustomContent) {
+                // Collect existing LinkCards
+                const existingLinkCards = new Set<string>();
+                if (exists && isGenerated) {
+                    const linkCardRegex = /<LinkCard href="([^"]+)"/g;
+                    let match;
+                    while ((match = linkCardRegex.exec(existingContent)) !== null) {
+                        existingLinkCards.add(match[1]);
+                    }
+                }
+
+                // Build new LinkCards
+                const newLinkCards = new Set<string>();
+                for (const child of sectionRootChildren) {
+                    const absolutePath = `/reference/${sectionBasePath}/${child}`;
+                    newLinkCards.add(absolutePath);
+                }
+
+                // Merge and check if update needed
+                const allLinkCards = new Set([...existingLinkCards, ...newLinkCards]);
+                const hasNewCards = [...newLinkCards].some(card => !existingLinkCards.has(card));
+
+                if (!exists || hasNewCards) {
+                    const sectionTitle = titleCase(sectionBasePath.replace(/-/g, ' '));
+                    let indexFileContent = generateFrontMatter(sectionTitle, true);
+
+                    indexFileContent += '\n';
+                    const sortedCards = Array.from(allLinkCards).sort();
+                    for (const href of sortedCards) {
+                        const childName = href.split('/').pop() || '';
+                        const title = titleCase(childName.replace(/-/g, ' '));
+                        indexFileContent += `<LinkCard href="${href}" title="${title}" />\n`;
+                    }
+
+                    fs.writeFileSync(sectionIndexFile, indexFileContent);
+                    if (!exists) {
+                        generatedCount++;
+                    }
+                }
+            }
+        }
+
         return generatedCount;
     }
 

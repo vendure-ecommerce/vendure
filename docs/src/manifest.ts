@@ -750,13 +750,10 @@ const manifestInput: DocsPackageManifestInput = {
                 {
                     title: 'TypeScript API',
                     slug: 'typescript-api',
-                    file: file('docs/reference/typescript-api/_index.mdx'),
-                    children: createNestedNavigationFromFolder(
-                        folder('docs/reference/typescript-api'),
-                        {
-                            filter: (info: FileInfo) => info.filename !== '_index.mdx',
-                        },
-                    ),
+                    file: file('docs/reference/typescript-api/index.mdx'),
+                    children: createNestedNavigationFromFolder(folder('docs/reference/typescript-api'), {
+                        filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                    }),
                 },
                 {
                     title: 'Core Plugins',
@@ -929,23 +926,17 @@ const manifestInput: DocsPackageManifestInput = {
                     title: 'Dashboard API',
                     slug: 'dashboard',
                     file: file('docs/reference/dashboard/index.mdx'),
-                    children: createNestedNavigationFromFolder(
-                        folder('docs/reference/dashboard'),
-                        {
-                            filter: (info: FileInfo) => info.filename !== 'index.mdx',
-                        },
-                    ),
+                    children: createNestedNavigationFromFolder(folder('docs/reference/dashboard'), {
+                        filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                    }),
                 },
                 {
                     title: 'Admin UI API',
                     slug: 'admin-ui-api',
                     file: file('docs/reference/admin-ui-api/index.mdx'),
-                    children: createNestedNavigationFromFolder(
-                        folder('docs/reference/admin-ui-api'),
-                        {
-                            filter: (info: FileInfo) => info.filename !== 'index.mdx',
-                        },
-                    ),
+                    children: createNestedNavigationFromFolder(folder('docs/reference/admin-ui-api'), {
+                        filter: (info: FileInfo) => info.filename !== 'index.mdx',
+                    }),
                 },
             ],
         },
