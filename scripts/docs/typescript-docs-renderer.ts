@@ -502,6 +502,16 @@ export class TypescriptDocsRenderer {
             const strippedIndex = val.replace(/\/_index$/, '');
             typeText = typeText.replace(re, `<DocsLink href="${docsUrl}/${strippedIndex}">\`${key}\`</DocsLink>`);
         }
+        // Wrap generic type wrappers (like Partial<, Array<) in backticks when they precede <DocsLink
+        // to prevent MDX from interpreting consecutive < characters as nested JSX
+        typeText = typeText.replace(/(\w+<)(<DocsLink)/g, '`$1`$2');
+        // Wrap any trailing generic type closing brackets in backticks to prevent MDX issues
+        typeText = typeText.replace(/(<\/DocsLink>)(>+)/g, '$1`$2`');
+        // If no DocsLink was added (type not in knownTypeMap) but the type contains
+        // angle brackets, wrap the entire type in backticks
+        if (!typeText.includes('<DocsLink') && typeText.includes('<')) {
+            typeText = '`' + typeText + '`';
+        }
         return typeText;
     }
 

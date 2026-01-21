@@ -1,6 +1,6 @@
 {
     "name": "@vendure/docs",
-    "version": "0.0.0-202601211435",
+    "version": "0.0.0-202601211543",
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
