@@ -587,6 +587,7 @@ describe('Mollie payments', () => {
             MolliePlugin.options.immediateCapture = true;
             const logSpy = vi.spyOn(Logger, 'warn');
             onTestFinished(() => {
+                // Revert back to plugin setting for next test
                 MolliePlugin.options.immediateCapture = originalImmediateCapture;
                 logSpy.mockClear();
             });
