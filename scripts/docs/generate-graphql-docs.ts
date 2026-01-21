@@ -141,10 +141,29 @@ function buildTypeLinksMap(referencedTypes: Set<string>): Record<string, string>
 // ============================================================================
 
 /**
- * Escapes template string special characters (backticks and ${)
+ * Escapes non-ASCII Unicode characters to \uXXXX format
+ */
+function escapeUnicodeCharacters(str: string): string {
+    return str.replace(/[^\x00-\x7F]/g, char => {
+        const codePoint = char.codePointAt(0);
+        if (codePoint !== undefined && codePoint <= 0xFFFF) {
+            return `\\u${codePoint.toString(16).toUpperCase().padStart(4, '0')}`;
+        }
+        // For characters outside BMP, use surrogate pairs
+        if (codePoint !== undefined) {
+            const highSurrogate = Math.floor((codePoint - 0x10000) / 0x400) + 0xD800;
+            const lowSurrogate = ((codePoint - 0x10000) % 0x400) + 0xDC00;
+            return `\\u${highSurrogate.toString(16).toUpperCase()}\\u${lowSurrogate.toString(16).toUpperCase()}`;
+        }
+        return char;
+    });
+}
+
+/**
+ * Escapes template string special characters (backticks and ${) and non-ASCII Unicode
  */
 function escapeTemplateString(str: string): string {
-    return str.replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+    return escapeUnicodeCharacters(str.replace(/`/g, '\\`').replace(/\$\{/g, '\\${'));
 }
 
 /**
@@ -156,6 +175,8 @@ function stripJSDocTags(description: string): string {
     for (const pattern of stringsToStrip) {
         result = result.replace(pattern, '');
     }
+    // Replace {@link SomeName} with just SomeName to avoid MDX JSX expression issues
+    result = result.replace(/\{@link\s+([^}]+)\}/g, '$1');
     return result.trim();
 }
 
@@ -383,7 +404,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
                     const sdlContent = renderQueryMutationFieldSDL(field, 'Query');
                     const deprecated = field.deprecationReason || undefined;
 
-                    queriesOutput += `\n## ${field.name} {#${field.name.toLowerCase()}}\n\n`;
+                    queriesOutput += `\n<a name="${field.name.toLowerCase()}"></a>\n\n## ${field.name}\n\n`;
                     queriesOutput += renderGraphQLDocComponent({
                         type: 'query',
                         typeName: field.name,
@@ -401,7 +422,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
                     const sdlContent = renderQueryMutationFieldSDL(field, 'Mutation');
                     const deprecated = field.deprecationReason || undefined;
 
-                    mutationsOutput += `\n## ${field.name} {#${field.name.toLowerCase()}}\n\n`;
+                    mutationsOutput += `\n<a name="${field.name.toLowerCase()}"></a>\n\n## ${field.name}\n\n`;
                     mutationsOutput += renderGraphQLDocComponent({
                         type: 'mutation',
                         typeName: field.name,
@@ -417,7 +438,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
                 const typeLinks = buildTypeLinksMap(referencedTypes);
                 const sdlContent = renderObjectTypeSDL(type);
 
-                objectTypesOutput += `\n## ${type.name} {#${type.name.toLowerCase()}}\n\n`;
+                objectTypesOutput += `\n<a name="${type.name.toLowerCase()}"></a>\n\n## ${type.name}\n\n`;
                 objectTypesOutput += renderGraphQLDocComponent({
                     type: 'type',
                     typeName: type.name,
@@ -431,7 +452,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
         if (isEnumType(type)) {
             const sdlContent = renderEnumTypeSDL(type);
 
-            enumsOutput += `\n## ${type.name} {#${type.name.toLowerCase()}}\n\n`;
+            enumsOutput += `\n<a name="${type.name.toLowerCase()}"></a>\n\n## ${type.name}\n\n`;
             enumsOutput += renderGraphQLDocComponent({
                 type: 'enum',
                 typeName: type.name,
@@ -444,7 +465,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
         if (isScalarType(type)) {
             const sdlContent = renderScalarSDL(type);
 
-            objectTypesOutput += `\n## ${type.name} {#${type.name.toLowerCase()}}\n\n`;
+            objectTypesOutput += `\n<a name="${type.name.toLowerCase()}"></a>\n\n## ${type.name}\n\n`;
             objectTypesOutput += renderGraphQLDocComponent({
                 type: 'scalar',
                 typeName: type.name,
@@ -459,7 +480,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
             const typeLinks = buildTypeLinksMap(referencedTypes);
             const sdlContent = renderInputTypeSDL(type);
 
-            inputTypesOutput += `\n## ${type.name} {#${type.name.toLowerCase()}}\n\n`;
+            inputTypesOutput += `\n<a name="${type.name.toLowerCase()}"></a>\n\n## ${type.name}\n\n`;
             inputTypesOutput += renderGraphQLDocComponent({
                 type: 'input',
                 typeName: type.name,
@@ -474,7 +495,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
             const typeLinks = buildTypeLinksMap(referencedTypes);
             const sdlContent = renderUnionSDL(type);
 
-            objectTypesOutput += `\n## ${type.name} {#${type.name.toLowerCase()}}\n\n`;
+            objectTypesOutput += `\n<a name="${type.name.toLowerCase()}"></a>\n\n## ${type.name}\n\n`;
             objectTypesOutput += renderGraphQLDocComponent({
                 type: 'union',
                 typeName: type.name,
