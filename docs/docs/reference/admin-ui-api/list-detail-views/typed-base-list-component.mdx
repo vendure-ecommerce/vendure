@@ -31,7 +31,7 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
     getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'> | string) => CustomFieldConfig[];
 }
 ```
-* Extends: <DocsLink href="/reference/admin-ui-api/list-detail-views/base-list-component#baselistcomponent">`BaseListComponent`</DocsLink><ResultOf<T>, ItemOf<ResultOf<T>, Field>, VariablesOf<T>>
+* Extends: <DocsLink href="/reference/admin-ui-api/list-detail-views/base-list-component#baselistcomponent">`BaseListComponent`</DocsLink>`<ResultOf<T>, ItemOf<ResultOf<T>, Field>, VariablesOf<T>>`
 
 
 * Implements: OnInit

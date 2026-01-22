@@ -16,7 +16,7 @@ class PromotionCondition<T extends ConfigArgs = ConfigArgs, C extends string = s
     check(ctx: RequestContext, order: Order, args: ConfigArg[], promotion: Promotion) => Promise<R>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/#configurableoperationdef">`ConfigurableOperationDef`</DocsLink><T>
+* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/#configurableoperationdef">`ConfigurableOperationDef`</DocsLink>`<T>`
 
 
 
@@ -59,7 +59,7 @@ interface PromotionConditionConfig<T extends ConfigArgs, C extends string, R ext
     priorityValue?: number;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions">`ConfigurableOperationDefOptions`</DocsLink><T>
+* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions">`ConfigurableOperationDefOptions`</DocsLink>`<T>`
 
 
 

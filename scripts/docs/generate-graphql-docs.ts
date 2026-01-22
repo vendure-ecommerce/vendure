@@ -512,6 +512,16 @@ function generateGraphqlDocs(hugoOutputPath: string) {
     fs.writeFileSync(path.join(hugoOutputPath, FileName.INPUT + '.mdx'), inputTypesOutput);
     fs.writeFileSync(path.join(hugoOutputPath, FileName.ENUM + '.mdx'), enumsOutput);
 
+    // Generate _index.mdx for the API section
+    const apiTitle = targetApi === 'admin' ? 'Admin API' : 'Shop API';
+    const indexOutput = generateFrontMatter(apiTitle) + '\n\n' +
+        `<LinkCard href="${docsUrl}${FileName.QUERY}" title="Queries" />\n` +
+        `<LinkCard href="${docsUrl}${FileName.MUTATION}" title="Mutations" />\n` +
+        `<LinkCard href="${docsUrl}${FileName.OBJECT}" title="Types" />\n` +
+        `<LinkCard href="${docsUrl}${FileName.INPUT}" title="Input Objects" />\n` +
+        `<LinkCard href="${docsUrl}${FileName.ENUM}" title="Enums" />\n`;
+    fs.writeFileSync(path.join(hugoOutputPath, '_index.mdx'), indexOutput);
+
     console.log(`Generated 5 GraphQL API docs in ${+new Date() - timeStart}ms`);
 }
 

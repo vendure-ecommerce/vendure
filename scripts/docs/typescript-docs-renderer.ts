@@ -468,51 +468,118 @@ export class TypescriptDocsRenderer {
 
     /**
      * This function takes a string representing a type (e.g. "Array<ShippingMethod>") and turns
-     * and known types (e.g. "ShippingMethod") into hyperlinks.
+     * known types (e.g. "ShippingMethod") into hyperlinks, while wrapping generic syntax in backticks
+     * to prevent MDX from interpreting them as JSX.
      */
     private renderType(type: string, knownTypeMap: TypeMap, docsUrl: string): string {
-        let typeText = type
+        const typeText = type
             .trim()
             // encode HTML entities
             .replace(/[\u00A0-\u9999\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
             // remove newlines
             .replace(/\n/g, ' ');
 
-        for (const [key, val] of knownTypeMap) {
-            const re = new RegExp(`(?!<a[^>]*>)\\b${key}\\b(?![^<]*<\/a>)`, 'g');
-            const strippedIndex = val.replace(/\/_index$/, '');
-            typeText = typeText.replace(re, `<a href='${docsUrl}/${strippedIndex}'>${key}</a>`);
+        // Sort known types by length (longest first) to avoid partial matches
+        const sortedTypes = [...knownTypeMap.entries()].sort((a, b) => b[0].length - a[0].length);
+
+        let result = '';
+        let remaining = typeText;
+
+        while (remaining.length > 0) {
+            // Try to match a known type at the current position
+            let matched = false;
+            for (const [key, val] of sortedTypes) {
+                const re = new RegExp(`^(${key})\\b`);
+                const match = remaining.match(re);
+                if (match) {
+                    const strippedIndex = val.replace(/\/_index$/, '');
+                    result += `<a href='${docsUrl}/${strippedIndex}'>${key}</a>`;
+                    remaining = remaining.slice(match[0].length);
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched) {
+                // Find the next known type in the remaining string
+                let nextTypeIndex = remaining.length;
+                for (const [key] of sortedTypes) {
+                    const re = new RegExp(`\\b(${key})\\b`);
+                    const match = remaining.match(re);
+                    if (match && match.index !== undefined && match.index > 0 && match.index < nextTypeIndex) {
+                        nextTypeIndex = match.index;
+                    }
+                }
+
+                // Extract the non-type part (syntax like <, >, [], commas, etc.)
+                const nonTypePart = remaining.slice(0, nextTypeIndex);
+                // Angle brackets inside JS template literals in JSX don't need escaping
+                result += nonTypePart;
+                remaining = remaining.slice(nextTypeIndex);
+            }
         }
-        return typeText;
+
+        return result;
     }
 
     /**
      * Renders a heritage clause type (extends/implements) with DocsLink and backticks.
+     * Processes the type string piece by piece to correctly handle nested generics.
      */
     private renderHeritageType(type: string, knownTypeMap: TypeMap, docsUrl: string): string {
-        let typeText = type
+        const typeText = type
             .trim()
             // encode HTML entities
             .replace(/[\u00A0-\u9999\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
             // remove newlines
             .replace(/\n/g, ' ');
 
-        for (const [key, val] of knownTypeMap) {
-            const re = new RegExp(`(?!<DocsLink[^>]*>)\\b${key}\\b(?![^<]*<\\/DocsLink>)`, 'g');
-            const strippedIndex = val.replace(/\/_index$/, '');
-            typeText = typeText.replace(re, `<DocsLink href="${docsUrl}/${strippedIndex}">\`${key}\`</DocsLink>`);
+        // Sort known types by length (longest first) to avoid partial matches
+        const sortedTypes = [...knownTypeMap.entries()].sort((a, b) => b[0].length - a[0].length);
+
+        let result = '';
+        let remaining = typeText;
+
+        while (remaining.length > 0) {
+            // Try to match a known type at the current position
+            let matched = false;
+            for (const [key, val] of sortedTypes) {
+                const re = new RegExp(`^(${key})\\b`);
+                const match = remaining.match(re);
+                if (match) {
+                    const strippedIndex = val.replace(/\/_index$/, '');
+                    result += `<DocsLink href="${docsUrl}/${strippedIndex}">\`${key}\`</DocsLink>`;
+                    remaining = remaining.slice(match[0].length);
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched) {
+                // Find the next known type in the remaining string
+                let nextTypeIndex = remaining.length;
+                for (const [key] of sortedTypes) {
+                    const re = new RegExp(`\\b(${key})\\b`);
+                    const match = remaining.match(re);
+                    if (match && match.index !== undefined && match.index > 0 && match.index < nextTypeIndex) {
+                        nextTypeIndex = match.index;
+                    }
+                }
+
+                // Extract the non-type part (syntax like <, >, [], commas, etc.)
+                const nonTypePart = remaining.slice(0, nextTypeIndex);
+                // Wrap in backticks if it contains angle brackets to prevent MDX parsing issues
+                // (heritage clauses are rendered directly in markdown text, not inside JSX attributes)
+                if (nonTypePart.includes('<') || nonTypePart.includes('>')) {
+                    result += '`' + nonTypePart + '`';
+                } else {
+                    result += nonTypePart;
+                }
+                remaining = remaining.slice(nextTypeIndex);
+            }
         }
-        // Wrap generic type wrappers (like Partial<, Array<) in backticks when they precede <DocsLink
-        // to prevent MDX from interpreting consecutive < characters as nested JSX
-        typeText = typeText.replace(/(\w+<)(<DocsLink)/g, '`$1`$2');
-        // Wrap any trailing generic type closing brackets in backticks to prevent MDX issues
-        typeText = typeText.replace(/(<\/DocsLink>)(>+)/g, '$1`$2`');
-        // If no DocsLink was added (type not in knownTypeMap) but the type contains
-        // angle brackets, wrap the entire type in backticks
-        if (!typeText.includes('<DocsLink') && typeText.includes('<')) {
-            typeText = '`' + typeText + '`';
-        }
-        return typeText;
+
+        return result;
     }
 
     /**
@@ -523,6 +590,9 @@ export class TypescriptDocsRenderer {
             const re = new RegExp(`{@link\\s*${key}}`, 'g');
             description = description.replace(re, `<DocsLink href="${docsUrl}/${val}">${key}</DocsLink>`);
         }
+        // Escape any remaining {@link ...} references that weren't matched by known types
+        // Convert them to inline code to prevent MDX parsing issues with { }
+        description = description.replace(/\{@link\s*(\S+)\}/g, '`$1`');
         return description;
     }
 }
