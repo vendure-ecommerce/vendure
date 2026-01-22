@@ -1,4 +1,4 @@
-import { CurrencyCode, Order, LanguageCode } from '@vendure/core';
+import { CurrencyCode, LanguageCode, Order } from '@vendure/core';
 import Stripe from 'stripe';
 
 /**
@@ -10,7 +10,7 @@ import Stripe from 'stripe';
  * > For example, to charge ¥500, provide an amount value of 500.
  *
  * Therefore, for a fractionless currency like JPY, we need to divide the amount by 100 (since Vendure always
- * stores money amounts multiplied by 100). See https://github.com/vendure-ecommerce/vendure/issues/1630
+ * stores money amounts multiplied by 100). See https://github.com/vendurehq/vendure/issues/1630
  */
 export function getAmountInStripeMinorUnits(order: Order): number {
     return currencyHasFractionPart(order.currencyCode)

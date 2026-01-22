@@ -53,7 +53,7 @@ If you have [CustomFields](/guides/developer-guide/custom-fields/) defined on yo
 * `variant:<customFieldName>`: The value of this column will populate `ProductVariant.customFields[customFieldName]`. 
 
 :::info 
-For a real example, see the [products.csv file used to populate the Vendure demo data](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/mock-data/data-sources/products.csv)
+For a real example, see the [products.csv file used to populate the Vendure demo data](https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/products.csv)
 :::
 
 #### Importing `relation` custom fields

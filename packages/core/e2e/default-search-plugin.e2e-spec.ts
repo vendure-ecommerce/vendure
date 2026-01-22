@@ -521,7 +521,7 @@ describe('Default search plugin', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1236
+        // https://github.com/vendurehq/vendure/issues/1236
         it('returns correct facetValues when not grouped by product, with search term', async () => {
             const result = await shopClient.query<SearchFacetValuesQuery, SearchFacetValuesQueryVariables>(
                 SEARCH_GET_FACET_VALUES,
@@ -1188,7 +1188,7 @@ describe('Default search plugin', () => {
                 ]);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/295
+            // https://github.com/vendurehq/vendure/issues/295
             it('enabled status survives reindex', async () => {
                 await adminClient.query<ReindexMutation>(REINDEX);
 
@@ -1201,7 +1201,7 @@ describe('Default search plugin', () => {
                 ]);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1482
+            // https://github.com/vendurehq/vendure/issues/1482
             it('price range omits disabled variant', async () => {
                 const result1 = await shopClient.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
                     SEARCH_GET_PRICES,
@@ -1245,7 +1245,7 @@ describe('Default search plugin', () => {
                 ]);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/745
+            // https://github.com/vendurehq/vendure/issues/745
             it('very long Product descriptions no not cause indexing to fail', async () => {
                 // We generate this long string out of random chars because Postgres uses compression
                 // when storing the string value, so e.g. a long series of a single character will not
@@ -1298,7 +1298,7 @@ describe('Default search plugin', () => {
             });
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/609
+        // https://github.com/vendurehq/vendure/issues/609
         describe('Synthetic index items', () => {
             let createdProductId: string;
 
@@ -1508,7 +1508,7 @@ describe('Default search plugin', () => {
                 expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/896
+            // https://github.com/vendurehq/vendure/issues/896
             it('removing from channel with multiple languages', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
@@ -1814,8 +1814,8 @@ describe('Default search plugin', () => {
                     );
                 }
 
-                // https://github.com/vendure-ecommerce/vendure/issues/1752
-                // https://github.com/vendure-ecommerce/vendure/issues/1746
+                // https://github.com/vendurehq/vendure/issues/1752
+                // https://github.com/vendurehq/vendure/issues/1746
                 it('fallbacks to default language en', async () => {
                     const { search } = await searchInLanguage(LanguageCode.af);
 
@@ -1905,7 +1905,7 @@ describe('Default search plugin', () => {
             });
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1789
+        // https://github.com/vendurehq/vendure/issues/1789
         describe('input escaping', () => {
             function search(term: string) {
                 return adminClient.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(

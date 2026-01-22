@@ -666,7 +666,7 @@ function displayOutro(outroOptions: OutroOptions) {
         '➡️ Docs: https://docs.vendure.io',
         '➡️ Discord community: https://vendure.io/community',
         '➡️ Star us on GitHub:',
-        '   https://github.com/vendure-ecommerce/vendure',
+        '   https://github.com/vendurehq/vendure',
     ];
 
     let nextSteps: string[];

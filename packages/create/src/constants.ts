@@ -24,7 +24,7 @@ export const AUTO_RUN_DELAY_MS = 10_000;
 export const DEFAULT_PROJECT_VERSION = '0.1.0';
 export const TIPS_WHILE_WAITING = [
     '☕ This can take a minute or two, so grab a coffee',
-    `✨ We'd love it if you drop us a star on GitHub: https://github.com/vendure-ecommerce/vendure`,
+    `✨ We'd love it if you drop us a star on GitHub: https://github.com/vendurehq/vendure`,
     `📖 Check out the Vendure documentation at https://docs.vendure.io`,
     `💬 Join our Discord community to chat with other Vendure developers: https://vendure.io/community`,
     '💡 In the mean time, here are some tips to get you started',

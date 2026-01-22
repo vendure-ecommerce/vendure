@@ -23,7 +23,7 @@
     "types": "client/index.d.ts",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vendure-ecommerce/vendure"
+        "url": "https://github.com/vendurehq/vendure"
     },
     "scripts": {
         "build:client": "rimraf ./client && rollup -c rollup.config.mjs --configProduction",
@@ -33,7 +33,7 @@
         "lint": "eslint --fix ."
     },
     "bugs": {
-        "url": "https://github.com/vendure-ecommerce/vendure/issues"
+        "url": "https://github.com/vendurehq/vendure/issues"
     },
     "dependencies": {
         "@angular-devkit/build-angular": "^19.2.5",

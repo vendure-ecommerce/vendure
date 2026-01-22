@@ -9,11 +9,15 @@ reviews:
     review_status: true
     sequence_diagrams: false
     estimate_code_review_effort: false
-    collapse_walkthrough: false
+    changed_files_summary: false
     auto_review:
         enabled: true
         drafts: false
-    docstrings:
-        enabled: false
+    finishing_touches:
+        docstrings:
+            enabled: false
 chat:
     auto_reply: true
+issue_enrichment:
+    planning:
+        enabled: false

@@ -8,7 +8,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 
 /**
  * Tests for GitHub issue #3266: Custom field default values not applied when explicitly set to null
- * https://github.com/vendure-ecommerce/vendure/issues/3266
+ * https://github.com/vendurehq/vendure/issues/3266
  */
 
 const customConfig = {

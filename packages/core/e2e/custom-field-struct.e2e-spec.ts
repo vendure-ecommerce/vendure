@@ -2,7 +2,7 @@ import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
@@ -85,7 +85,7 @@ const customConfig = mergeConfig(testConfig(), {
                 ],
             },
         ],
-        // https://github.com/vendure-ecommerce/vendure/issues/3381
+        // https://github.com/vendurehq/vendure/issues/3381
         GlobalSettings: [
             {
                 name: 'tipsPercentage',
