@@ -1,6 +1,6 @@
 {
     "name": "@vendure/docs",
-    "version": "0.0.0-202601211609",
+    "version": "0.0.0-202601221213",
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -14,19 +14,22 @@
     "files": [
         "dist",
         "docs",
+        "src",
         "README.md"
     ],
     "scripts": {
+        "generate-dates": "tsx scripts/generate-dates.ts",
+        "prebuild": "npm run generate-dates",
         "build": "rimraf dist && tsc -p ./tsconfig.build.json",
         "prepublishOnly": "npm run test:mdx && npm run build",
         "publish:local": "npm version 0.0.0-$(date +%Y%m%d%H%M) --no-git-tag-version && npm publish",
         "publish:local:next": "npm version 0.0.0-$(date +%Y%m%d%H%M) --no-git-tag-version && npm publish --tag next",
         "test:mdx": "tsx scripts/test-mdx.ts",
         "test:mdx:verbose": "tsx scripts/test-mdx.ts --verbose",
-        "typecheck": "tsc"
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@vendure-io/docs-provider": "^0.7.0"
+        "@vendure-io/docs-provider": "^0.8.2"
     },
     "devDependencies": {
         "rimraf": "^5.0.5",
