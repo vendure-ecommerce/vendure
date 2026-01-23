@@ -21,8 +21,8 @@ import {
 } from '@/vdb/components/ui/select.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { AlertCircle, RotateCcw } from 'lucide-react';
-import { useState } from 'react';
+import { AlertCircle } from 'lucide-react';
+import { forwardRef, useImperativeHandle, useState } from 'react';
 import { uiConfig } from 'virtual:vendure-ui-config';
 
 import { useRefundOrder } from '../hooks/use-refund-order.js';
@@ -34,40 +34,36 @@ interface RefundOrderDialogProps {
     onSuccess?: () => void;
 }
 
-export function RefundOrderDialog({ order, onSuccess }: Readonly<RefundOrderDialogProps>) {
-    const { t } = useLingui();
-    const { formatCurrency, toMajorUnits, toMinorUnits } = useLocalFormat();
-    const [open, setOpen] = useState(false);
+export interface RefundOrderDialogRef {
+    open: () => void;
+}
 
-    const refund = useRefundOrder(order, () => {
-        setOpen(false);
-        onSuccess?.();
-    });
+export const RefundOrderDialog = forwardRef<RefundOrderDialogRef, RefundOrderDialogProps>(
+    function RefundOrderDialog({ order, onSuccess }, ref) {
+        const { t } = useLingui();
+        const { formatCurrency, toMajorUnits, toMinorUnits } = useLocalFormat();
+        const [open, setOpen] = useState(false);
 
-    const { refundReasons } = uiConfig.orders;
+        const refund = useRefundOrder(order, () => {
+            setOpen(false);
+            onSuccess?.();
+        });
 
-    const handleOpen = () => {
-        refund.resetState();
-        setOpen(true);
-    };
+        useImperativeHandle(ref, () => ({
+            open: () => {
+                refund.resetState();
+                setOpen(true);
+            },
+        }));
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+        const { refundReasons } = uiConfig.orders;
 
-    return (
-        <>
-            <Button
-                variant="outline"
-                onClick={e => {
-                    e.stopPropagation();
-                    handleOpen();
-                }}
-            >
-                <RotateCcw className="w-4 h-4" />
-                <Trans>Refund & Cancel</Trans>
-            </Button>
-            <Dialog open={open}>
+        const handleClose = () => {
+            setOpen(false);
+        };
+
+        return (
+            <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="!max-w-4xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>
@@ -369,6 +365,6 @@ export function RefundOrderDialog({ order, onSuccess }: Readonly<RefundOrderDial
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </>
-    );
-}
+        );
+    },
+);
