@@ -2,8 +2,7 @@ import { VariablesOf } from 'gql.tada';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { modifyOrderDocument } from '../orders.graphql.js';
-
-import { AddressFragment, Order } from './order-types.js';
+import { AddressFragment, Order } from '../utils/order-types.js';
 
 type ModifyOrderInput = VariablesOf<typeof modifyOrderDocument>['input'];
 
