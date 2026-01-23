@@ -22,7 +22,7 @@ import {
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { AlertCircle } from 'lucide-react';
-import { useMemo } from 'react';
+import { uiConfig } from 'virtual:vendure-ui-config';
 
 import { useRefundOrder } from '../hooks/use-refund-order.js';
 import { Order } from '../utils/order-types.js';
@@ -49,20 +49,11 @@ export function RefundOrderDialog({
         onSuccess?.();
     });
 
-    const reasons = useMemo(
-        () => [
-            { value: 'customer-request', label: t`Customer request` },
-            { value: 'not-available', label: t`Item not available` },
-            { value: 'damaged-shipping', label: t`Damaged in shipping` },
-            { value: 'wrong-item', label: t`Wrong item shipped` },
-            { value: 'other', label: t`Other` },
-        ],
-        [t],
-    );
+    const { refundReasons } = uiConfig.orders;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="!max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         <Trans>Refund and cancel order</Trans>
@@ -216,7 +207,7 @@ export function RefundOrderDialog({
                                 <SelectValue placeholder={t`Select a reason...`} />
                             </SelectTrigger>
                             <SelectContent>
-                                {reasons.map(reasonOption => (
+                                {refundReasons.map(reasonOption => (
                                     <SelectItem key={reasonOption.value} value={reasonOption.value}>
                                         {reasonOption.label}
                                     </SelectItem>
