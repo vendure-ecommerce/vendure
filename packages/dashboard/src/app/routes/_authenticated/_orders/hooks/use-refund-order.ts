@@ -2,7 +2,7 @@ import { api } from '@/vdb/graphql/api.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { cancelOrderDocument, refundOrderDocument } from '../orders.graphql.js';
@@ -54,7 +54,7 @@ export interface UseRefundOrderReturn {
     resetState: () => void;
 }
 
-export function useRefundOrder(order: Order, open: boolean, onSuccess?: () => void): UseRefundOrderReturn {
+export function useRefundOrder(order: Order, onSuccess?: () => void): UseRefundOrderReturn {
     const { t } = useLingui();
     const { formatCurrency } = useLocalFormat();
 
@@ -90,15 +90,6 @@ export function useRefundOrder(order: Order, open: boolean, onSuccess?: () => vo
         setRefundTotal(0);
         setRefundablePayments(getRefundablePayments(order.payments));
     }, [order]);
-
-    // Initialize state when dialog opens
-    const prevOpen = useRef(open);
-    useEffect(() => {
-        if (open && !prevOpen.current) {
-            resetState();
-        }
-        prevOpen.current = open;
-    }, [open, resetState]);
 
     const totalRefundableAmount = useMemo(
         () => getTotalRefundableAmount(refundablePayments),
