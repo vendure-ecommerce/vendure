@@ -41,48 +41,123 @@ export const Route = createFileRoute('/_authenticated/_collections/collections')
 
 type Collection = ResultOf<typeof collectionListDocument>['collections']['items'][number];
 
+const CHILDREN_PAGE_SIZE = 20;
+
+type LoadMoreRow = {
+    _isLoadMore: true;
+    _parentId: string;
+    _totalItems: number;
+    _loadedItems: number;
+    id: string;
+    breadcrumbs: { id: string; name: string; slug: string }[];
+};
+
+type CollectionOrLoadMore = Collection | LoadMoreRow;
+
+function isLoadMoreRow(row: CollectionOrLoadMore): row is LoadMoreRow {
+    return '_isLoadMore' in row && row._isLoadMore === true;
+}
+
 function CollectionListPage() {
     const { t } = useLingui();
     const queryClient = useQueryClient();
     const [expanded, setExpanded] = useState<ExpandedState>({});
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [accumulatedChildren, setAccumulatedChildren] = useState<
+        Record<string, { items: Collection[]; totalItems: number }>
+    >({});
+    const [nextPageToFetch, setNextPageToFetch] = useState<Record<string, number>>({});
 
-    const childrenQueries = useQueries({
-        queries: Object.entries(expanded).map(([collectionId, isExpanded]) => {
-            return {
-                queryKey: ['childCollections', collectionId],
-                queryFn: () =>
-                    api.query(collectionListDocument, {
-                        options: {
-                            filter: {
-                                parentId: { eq: collectionId },
+    useQueries({
+        queries: Object.entries(expanded)
+            .filter(([collectionId]) => !accumulatedChildren[collectionId])
+            .map(([collectionId]) => {
+                return {
+                    queryKey: ['childCollections', collectionId, 'page', 0],
+                    queryFn: async () => {
+                        const result = await api.query(collectionListDocument, {
+                            options: {
+                                filter: {
+                                    parentId: { eq: collectionId },
+                                },
+                                take: CHILDREN_PAGE_SIZE,
+                                skip: 0,
                             },
-                        },
-                    }),
-                staleTime: 1000 * 60 * 5,
-            } satisfies FetchQueryOptions;
-        }),
+                        });
+                        setAccumulatedChildren(prev => ({
+                            ...prev,
+                            [collectionId]: {
+                                items: result.collections.items,
+                                totalItems: result.collections.totalItems,
+                            },
+                        }));
+                        return result;
+                    },
+                    staleTime: 1000 * 60 * 5,
+                } satisfies FetchQueryOptions;
+            }),
     });
 
-    const childCollectionsByParentId = childrenQueries.reduce(
-        (acc, query, index) => {
-            const collectionId = Object.keys(expanded)[index];
-            if (query.data) {
-                acc[collectionId] = query.data.collections.items;
-            }
-            return acc;
-        },
-        {} as Record<string, any[]>,
-    );
+    useQueries({
+        queries: Object.entries(nextPageToFetch)
+            .filter(([_, page]) => page > 0)
+            .map(([collectionId, page]) => {
+                return {
+                    queryKey: ['childCollections', collectionId, 'page', page],
+                    queryFn: async () => {
+                        const result = await api.query(collectionListDocument, {
+                            options: {
+                                filter: {
+                                    parentId: { eq: collectionId },
+                                },
+                                take: CHILDREN_PAGE_SIZE,
+                                skip: page * CHILDREN_PAGE_SIZE,
+                            },
+                        });
+                        setAccumulatedChildren(prev => {
+                            const existing = prev[collectionId];
+                            if (!existing) return prev;
+                            return {
+                                ...prev,
+                                [collectionId]: {
+                                    items: [...existing.items, ...result.collections.items],
+                                    totalItems: result.collections.totalItems,
+                                },
+                            };
+                        });
+                        setNextPageToFetch(prev => {
+                            const { [collectionId]: _, ...rest } = prev;
+                            return rest;
+                        });
+                        return result;
+                    },
+                    staleTime: 1000 * 60 * 5,
+                } satisfies FetchQueryOptions;
+            }),
+    });
 
-    const addSubCollections = (data: Collection[]) => {
-        const allRows = [] as Collection[];
+    const addSubCollections = (data: Collection[]): CollectionOrLoadMore[] => {
+        const allRows: CollectionOrLoadMore[] = [];
         const addSubRows = (row: Collection) => {
-            const subRows = childCollectionsByParentId[row.id] || [];
-            if (subRows.length) {
-                for (const subRow of subRows) {
+            const isExpanded = expanded === true || (typeof expanded === 'object' && expanded[row.id]);
+            if (!isExpanded) {
+                return;
+            }
+            const childData = accumulatedChildren[row.id];
+            if (childData?.items.length) {
+                for (const subRow of childData.items) {
                     allRows.push(subRow);
                     addSubRows(subRow);
+                }
+                if (childData.totalItems > childData.items.length) {
+                    allRows.push({
+                        _isLoadMore: true,
+                        _parentId: row.id,
+                        _totalItems: childData.totalItems,
+                        _loadedItems: childData.items.length,
+                        id: `load-more-${row.id}`,
+                        breadcrumbs: [...(row.breadcrumbs || []), { id: row.id, name: row.name, slug: row.slug }],
+                    });
                 }
             }
         };
@@ -93,7 +168,19 @@ function CollectionListPage() {
         return allRows;
     };
 
+    const handleLoadMoreChildren = (parentId: string) => {
+        const currentItems = accumulatedChildren[parentId]?.items.length ?? 0;
+        const nextPage = Math.floor(currentItems / CHILDREN_PAGE_SIZE);
+        setNextPageToFetch(prev => ({
+            ...prev,
+            [parentId]: nextPage,
+        }));
+    };
+
     const handleReorder = async (oldIndex: number, newIndex: number, item: Collection, allItems?: Collection[]) => {
+        if (isLoadMoreRow(item as CollectionOrLoadMore)) {
+            return;
+        }
         try {
             const items = allItems || [];
             const sourceParentId = getItemParentId(item);
@@ -102,7 +189,6 @@ function CollectionListPage() {
                 throw new Error('Unable to determine parent collection ID');
             }
 
-            // Calculate target position (parent and index)
             const { targetParentId, adjustedIndex: initialIndex } = calculateDragTargetPosition({
                 item,
                 oldIndex,
@@ -112,18 +198,15 @@ function CollectionListPage() {
                 expanded,
             });
 
-            // Validate no circular references when moving to different parent
             if (targetParentId !== sourceParentId && isCircularReference(item, targetParentId, items)) {
                 toast.error(t`Cannot move a collection into its own descendant`);
                 throw new Error('Circular reference detected');
             }
 
-            // Calculate final index (adjust for same-parent moves)
             const adjustedIndex = targetParentId === sourceParentId
                 ? calculateSiblingIndex({ item, oldIndex, newIndex, items, parentId: sourceParentId })
                 : initialIndex;
 
-            // Perform the move
             await api.mutate(moveCollectionDocument, {
                 input: {
                     collectionId: item.id,
@@ -132,7 +215,15 @@ function CollectionListPage() {
                 },
             });
 
-            // Invalidate queries and show success message
+            setAccumulatedChildren(prev => {
+                const newState = { ...prev };
+                delete newState[sourceParentId];
+                if (targetParentId !== sourceParentId) {
+                    delete newState[targetParentId];
+                }
+                return newState;
+            });
+
             const queriesToInvalidate = [
                 queryClient.invalidateQueries({ queryKey: ['childCollections', sourceParentId] }),
                 queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] }),
@@ -178,11 +269,12 @@ function CollectionListPage() {
                         dependencies: ['children', 'breadcrumbs'],
                     },
                     cell: ({ row }) => {
+                        const original = row.original as Collection;
                         const isExpanded = row.getIsExpanded();
-                        const hasChildren = !!row.original.children?.length;
+                        const hasChildren = !!original.children?.length;
                         return (
                             <div
-                                style={{ marginLeft: (row.original.breadcrumbs?.length - 2) * 20 + 'px' }}
+                                style={{ marginLeft: (original.breadcrumbs?.length - 2) * 20 + 'px' }}
                                 className="flex gap-2 items-center"
                             >
                                 <Button
@@ -194,7 +286,7 @@ function CollectionListPage() {
                                 >
                                     {isExpanded ? <FolderOpen /> : <Folder />}
                                 </Button>
-                                <DetailPageButton id={row.original.id} label={row.original.name} />
+                                <DetailPageButton id={original.id} label={original.name} />
                             </div>
                         );
                     },
@@ -270,12 +362,30 @@ function CollectionListPage() {
                 options.onExpandedChange = setExpanded;
                 options.getExpandedRowModel = getExpandedRowModel();
                 options.getRowCanExpand = () => true;
-                options.getRowId = row => {
-                    return row.id;
-                };
+                options.getRowId = row => row.id;
+                options.enableRowSelection = row => !isLoadMoreRow(row.original);
                 options.meta = {
                     ...options.meta,
                     resetExpanded: () => setExpanded({}),
+                    isUtilityRow: (row: { original: CollectionOrLoadMore }) => isLoadMoreRow(row.original),
+                    renderUtilityRow: (row: { original: CollectionOrLoadMore }) => {
+                        const original = row.original as LoadMoreRow;
+                        const remaining = original._totalItems - original._loadedItems;
+                        return (
+                            <div
+                                style={{ paddingLeft: (original.breadcrumbs?.length - 1) * 20 + 'px' }}
+                                className="flex justify-center py-2"
+                            >
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleLoadMoreChildren(original._parentId)}
+                                >
+                                    <Trans>Load {Math.min(remaining, CHILDREN_PAGE_SIZE)} more ({remaining} remaining)</Trans>
+                                </Button>
+                            </div>
+                        );
+                    },
                 };
                 return options;
             }}
@@ -319,7 +429,7 @@ function CollectionListPage() {
                 },
             ]}
             onReorder={handleReorder}
-            disableDragAndDrop={!!searchTerm} // Disable dragging while searching
+            disableDragAndDrop={!!searchTerm}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
