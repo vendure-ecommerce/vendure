@@ -6,18 +6,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { cancelOrderDocument, refundOrderDocument } from '../orders.graphql.js';
-import {
-    getRefundablePayments,
-    getTotalAmountToRefund,
-    getTotalRefundableAmount,
-    RefundablePayment,
-} from '../utils/get-refundable-payments.js';
 import { Order } from '../utils/order-types.js';
 import {
     allocateRefundsToPayments,
     calculateRefundTotal,
     getOrderLineInputFromSelections,
+    getRefundablePayments,
+    getTotalAmountToRefund,
+    getTotalRefundableAmount,
     LineSelection,
+    RefundablePayment,
 } from '../utils/refund-utils.js';
 
 export interface UseRefundOrderReturn {
