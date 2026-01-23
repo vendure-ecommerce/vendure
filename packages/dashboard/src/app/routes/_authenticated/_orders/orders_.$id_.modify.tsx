@@ -27,7 +27,7 @@ import { draftOrderEligibleShippingMethodsDocument, orderDetailDocument } from '
 import { loadModifyingOrder } from './utils/order-detail-loaders.js';
 import { AddressFragment } from './utils/order-types.js';
 import { computePendingOrder } from './utils/order-utils.js';
-import { useModifyOrder } from './utils/use-modify-order.js';
+import { useModifyOrder } from './hooks/use-modify-order.js';
 
 const pageId = 'order-modify';
 

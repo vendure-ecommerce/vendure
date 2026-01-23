@@ -108,7 +108,7 @@ export function useModifyOrder(order: Order | null | undefined): UseModifyOrderR
                             ...prev,
                             adjustOrderLines: [
                                 ...(prev.adjustOrderLines ?? []),
-                                { orderLineId: existingLine.id, quantity: existingLine.quantity + 1 },
+                                { orderLineId: existingLine.id, quantity: Number(existingLine.quantity) + 1 },
                             ],
                         };
                     }
