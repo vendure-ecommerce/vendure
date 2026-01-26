@@ -493,6 +493,7 @@ export type Collection = Node & {
     parent?: Maybe<Collection>;
     parentId: Scalars['ID']['output'];
     position: Scalars['Int']['output'];
+    productVariantCount: Scalars['Int']['output'];
     productVariants: ProductVariantList;
     slug: Scalars['String']['output'];
     translations: Array<CollectionTranslation>;
@@ -521,6 +522,7 @@ export type CollectionFilterParameter = {
     name?: InputMaybe<StringOperators>;
     parentId?: InputMaybe<IdOperators>;
     position?: InputMaybe<NumberOperators>;
+    productVariantCount?: InputMaybe<NumberOperators>;
     slug?: InputMaybe<StringOperators>;
     updatedAt?: InputMaybe<DateOperators>;
 };
@@ -560,6 +562,7 @@ export type CollectionSortParameter = {
     name?: InputMaybe<SortOrder>;
     parentId?: InputMaybe<SortOrder>;
     position?: InputMaybe<SortOrder>;
+    productVariantCount?: InputMaybe<SortOrder>;
     slug?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
 };
