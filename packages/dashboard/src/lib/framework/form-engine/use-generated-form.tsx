@@ -98,9 +98,13 @@ export function useGeneratedForm<
     const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages, defaultValues);
 
+    // Also ensure defaultValues has translations for all languages (for creation case)
+    const processedDefaultValues =
+        ensureTranslationsForAllLanguages(defaultValues, availableLanguages, defaultValues) ?? defaultValues;
+
     const values = processedEntity
         ? transformRelationFields(updateFields, setValues(processedEntity))
-        : defaultValues;
+        : processedDefaultValues;
 
     const form = useForm({
         resolver: async (values, context, options) => {
@@ -111,7 +115,7 @@ export function useGeneratedForm<
             return result;
         },
         mode: 'onChange',
-        defaultValues,
+        defaultValues: processedDefaultValues,
         values,
     });
     let submitHandler = (event: FormEvent): any => {
