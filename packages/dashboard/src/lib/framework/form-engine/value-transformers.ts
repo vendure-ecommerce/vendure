@@ -40,9 +40,9 @@ export const jsonStringValueTransformer: ValueTransformer = {
             return value;
         }
 
-        // For string fields, return the raw value without JSON parsing.
+        // For scalar string fields, return the raw value without JSON parsing.
         // This prevents issues like "0" being parsed as number 0, or "-0" becoming -0 which is "0" in the input.
-        if (fieldDef.type === 'string') {
+        if (fieldDef.type === 'string' && !fieldDef.list) {
             return value;
         }
 
