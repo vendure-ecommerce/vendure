@@ -12,6 +12,9 @@
       ],
       "@other/js-aliased": [
         "./fixtures-path-alias/js-aliased/index.js"
+      ],
+      "@esm-plugins/*": [
+        "./fixtures-esm-path-alias/*"
       ]
     }
   },

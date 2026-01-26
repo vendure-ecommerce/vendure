@@ -33,9 +33,7 @@ export const collectionListDocument = graphql(
                     position
                     isPrivate
                     parentId
-                    productVariants {
-                        totalItems
-                    }
+                    productVariantCount
                 }
                 totalItems
             }
