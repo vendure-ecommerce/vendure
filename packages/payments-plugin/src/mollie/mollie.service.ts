@@ -189,6 +189,17 @@ export class MollieService {
                 url: redirectUrl,
             };
         }
+        // Define immediateCapture based on plugin options or client input
+        const immediateCapture = this.options.immediateCapture ?? input.immediateCapture;
+        if (input.immediateCapture !== undefined && immediateCapture !== input.immediateCapture) {
+            // Given input is different from what will be passed to Mollie, so we log a warning
+            Logger.warn(
+                `'immediateCapture' is overridden by the plugin options to '${String(
+                    this.options.immediateCapture,
+                )}'. Ignoring client input of 'immediateCapture=${String(input.immediateCapture)}'`,
+                loggerCtx,
+            );
+        }
         const paymentInput: CreatePaymentParameters = {
             description: order.code,
             amount: toAmount(amountToPay, order.currencyCode),
@@ -199,8 +210,9 @@ export class MollieService {
             lines: toMolliePaymentLines(order, alreadyPaid),
             metadata: {
                 languageCode: ctx.languageCode,
+                immediateCapture,
             },
-            captureMode: input.immediateCapture === false ? CaptureMethod.manual : CaptureMethod.automatic,
+            captureMode: immediateCapture === false ? CaptureMethod.manual : CaptureMethod.automatic, // default should be automatic
         };
         if (molliePaymentMethodCode) {
             paymentInput.method = molliePaymentMethodCode as MollieClientMethod;
