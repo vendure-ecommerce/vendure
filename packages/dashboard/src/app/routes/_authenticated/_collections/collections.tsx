@@ -69,7 +69,7 @@ function CollectionListPage() {
     const [nextPageToFetch, setNextPageToFetch] = useState<Record<string, number>>({});
 
     useQueries({
-        queries: Object.entries(expanded)
+        queries: expanded === true ? [] : Object.entries(expanded)
             .filter(([collectionId]) => !accumulatedChildren[collectionId])
             .map(([collectionId]) => {
                 return {
@@ -182,7 +182,18 @@ function CollectionListPage() {
             return;
         }
         try {
-            const items = allItems || [];
+            const rawItems = (allItems || []) as CollectionOrLoadMore[];
+
+            // Filter out LoadMoreRows - they shouldn't affect position calculations
+            const items = rawItems.filter((i): i is Collection => !isLoadMoreRow(i));
+
+            // Recalculate indices in the filtered array
+            const adjustedOldIndex = items.findIndex(i => i.id === item.id);
+            const targetItem = rawItems[newIndex];
+            const adjustedNewIndex = isLoadMoreRow(targetItem)
+                ? items.findIndex(i => i.id === targetItem._parentId)
+                : items.findIndex(i => i.id === (targetItem as Collection).id);
+
             const sourceParentId = getItemParentId(item);
 
             if (!sourceParentId) {
@@ -191,8 +202,8 @@ function CollectionListPage() {
 
             const { targetParentId, adjustedIndex: initialIndex } = calculateDragTargetPosition({
                 item,
-                oldIndex,
-                newIndex,
+                oldIndex: adjustedOldIndex,
+                newIndex: adjustedNewIndex,
                 items,
                 sourceParentId,
                 expanded,
@@ -204,7 +215,7 @@ function CollectionListPage() {
             }
 
             const adjustedIndex = targetParentId === sourceParentId
-                ? calculateSiblingIndex({ item, oldIndex, newIndex, items, parentId: sourceParentId })
+                ? calculateSiblingIndex({ item, oldIndex: adjustedOldIndex, newIndex: adjustedNewIndex, items, parentId: sourceParentId })
                 : initialIndex;
 
             await api.mutate(moveCollectionDocument, {

@@ -223,8 +223,12 @@ export function calculateDragTargetPosition<T extends HierarchicalItem>(params: 
         targetItem,
         previousItem,
         isDraggingDown: oldIndex < newIndex,
-        isTargetExpanded: targetItem ? !!expanded[targetItem.id as keyof ExpandedState] : false,
-        isPreviousExpanded: previousItem ? !!expanded[previousItem.id as keyof ExpandedState] : false,
+        isTargetExpanded: targetItem
+            ? expanded === true || (typeof expanded === 'object' && !!expanded[targetItem.id])
+            : false,
+        isPreviousExpanded: previousItem
+            ? expanded === true || (typeof expanded === 'object' && !!expanded[previousItem.id])
+            : false,
         sourceParentId,
         items,
     };

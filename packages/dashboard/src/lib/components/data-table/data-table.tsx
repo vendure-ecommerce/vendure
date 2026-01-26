@@ -474,7 +474,7 @@ export function DataTable<TData>({
                                             const getRowCanDrag = tableMeta?.getRowCanDrag;
                                             const renderUtilityRow = tableMeta?.renderUtilityRow;
                                             const isUtilityRow = tableMeta?.isUtilityRow;
-                                            const totalColumns = columnsWithOptionalDragHandle.length + (isDragDisabled ? 0 : 1);
+                                            const totalColumns = columnsWithOptionalDragHandle.length;
 
                                             const renderRow = (row: Row<TData>) => {
                                                 // Check if this is a utility row that needs custom rendering
@@ -525,7 +525,7 @@ export function DataTable<TData>({
                                     ) : (
                                         <TableRow className="animate-in fade-in duration-100">
                                             <TableCell
-                                                colSpan={columnsWithOptionalDragHandle.length + (isDragDisabled ? 0 : 1)}
+                                                colSpan={columnsWithOptionalDragHandle.length}
                                                 className="h-24 text-center"
                                             >
                                                 <Trans>No results</Trans>
