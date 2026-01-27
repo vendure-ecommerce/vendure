@@ -5,7 +5,7 @@ import { useSavedViews } from '../../hooks/use-saved-views.js';
 import { findMatchingSavedView } from '../../utils/saved-views-utils.js';
 import { Button } from '../ui/button.js';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip.js';
-import { useDataTableContext } from './data-table-context.js';
+import { useDataTableContext } from '@/vdb/hooks/use-data-table-context.js';
 import { UserViewsSheet } from './user-views-sheet.js';
 
 export const MyViewsButton: React.FC = () => {

@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
-import { useWidgetFilters } from '../widget-filters-context.js';
+import { useWidgetFilters } from '@/vdb/hooks/use-widget-filters.js';
 import { MetricsChart } from './chart.js';
 import { orderChartDataQuery } from './metrics-widget.graphql.js';
 

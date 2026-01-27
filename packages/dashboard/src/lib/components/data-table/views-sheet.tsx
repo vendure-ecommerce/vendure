@@ -23,7 +23,7 @@ import {
 } from '../ui/dropdown-menu.js';
 import { Input } from '../ui/input.js';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '../ui/sheet.js';
-import { useDataTableContext } from './data-table-context.js';
+import { useDataTableContext } from '@/vdb/hooks/use-data-table-context.js';
 
 interface ViewsSheetProps {
     open: boolean;
