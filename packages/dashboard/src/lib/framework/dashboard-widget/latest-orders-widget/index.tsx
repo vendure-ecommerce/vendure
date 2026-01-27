@@ -12,7 +12,7 @@ import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { formatRelative } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
-import { useWidgetFilters } from '../widget-filters-context.js';
+import { useWidgetFilters } from '@/vdb/hooks/use-widget-filters.js';
 import { latestOrdersQuery } from './latest-orders-widget.graphql.js';
 
 export const WIDGET_ID = 'latest-orders-widget';

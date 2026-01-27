@@ -33,8 +33,8 @@ import {
     FacetedFilterConfig,
     PaginatedListItemFields,
     RowAction,
-    usePaginatedList,
 } from '../shared/paginated-list-data-table.js';
+import { usePaginatedList } from '@/vdb/hooks/use-paginated-list.js';
 import {
     AlertDialog,
     AlertDialogAction,

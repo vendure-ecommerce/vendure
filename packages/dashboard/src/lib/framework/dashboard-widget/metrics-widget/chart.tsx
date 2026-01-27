@@ -1,5 +1,5 @@
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
-import { useWidgetDimensions } from '../base-widget.js';
+import { useWidgetDimensions } from '@/vdb/hooks/use-widget-dimensions.js';
 
 export function MetricsChart({
     chartData,

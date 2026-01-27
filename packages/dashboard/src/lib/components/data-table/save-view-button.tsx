@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useSavedViews } from '../../hooks/use-saved-views.js';
 import { isMatchingSavedView } from '../../utils/saved-views-utils.js';
 import { Button } from '../ui/button.js';
-import { useDataTableContext } from './data-table-context.js';
+import { useDataTableContext } from '@/vdb/hooks/use-data-table-context.js';
 import { SaveViewDialog } from './save-view-dialog.js';
 
 interface SaveViewButtonProps {

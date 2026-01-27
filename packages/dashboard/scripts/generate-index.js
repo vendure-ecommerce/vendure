@@ -23,7 +23,9 @@ function getAllFiles(dir, fileList = []) {
             !file.startsWith('index.') && // Exclude index files
             !file.endsWith('.d.ts') &&
             !file.endsWith('.spec.ts') &&
-            !file.endsWith('.stories.tsx')
+            !file.endsWith('.spec.tsx') &&
+            !file.endsWith('.stories.tsx') &&
+            !file.endsWith('.stories.ts')
         ) {
             fileList.push(filePath);
         }
