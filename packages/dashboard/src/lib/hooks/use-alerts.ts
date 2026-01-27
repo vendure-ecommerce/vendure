@@ -1,5 +1,5 @@
 import { AlertSeverity, DashboardAlertDefinition } from '@/vdb/framework/extension-api/types/alerts.js';
-import { useAlertsContext } from '@/vdb/providers/alerts-provider.js';
+import { useAlertsContext } from '@/vdb/hooks/use-alerts-context.js';
 import { useMemo } from 'react';
 
 /**
