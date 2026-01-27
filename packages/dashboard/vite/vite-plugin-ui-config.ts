@@ -114,6 +114,25 @@ export interface I18nConfig {
 
 /**
  * @description
+ * Options used by the {@link vendureDashboardPlugin} to configure order-related
+ * Dashboard UI behaviour.
+ *
+ * @docsCategory vite-plugin
+ * @docsPage vendureDashboardPlugin
+ * @since 3.4.0
+ */
+export interface OrdersConfig {
+    /**
+     * @description
+     * An array of refund reasons to display in the refund order dialog.
+     * Each reason has a `value` (used as the identifier) and a `label` (displayed to the user).
+     * If not provided, default reasons will be used.
+     */
+    refundReasons?: Array<{ value: string; label: string }>;
+}
+
+/**
+ * @description
  * Options used by the {@link vendureDashboardPlugin} to configure aspects of the
  * Dashboard UI behaviour.
  *
@@ -132,6 +151,11 @@ export interface UiConfigPluginOptions {
      * Configuration for internationalization settings
      */
     i18n?: I18nConfig;
+    /**
+     * @description
+     * Configuration for order-related settings
+     */
+    orders?: OrdersConfig;
 }
 
 /**
@@ -151,6 +175,11 @@ export interface ResolvedUiConfig {
      * Note: defaultLocale remains optional as it can be undefined.
      */
     i18n: Required<Omit<I18nConfig, 'defaultLocale'>> & Pick<I18nConfig, 'defaultLocale'>;
+    /**
+     * @description
+     * Order-related settings with all defaults applied
+     */
+    orders: Required<OrdersConfig>;
 }
 
 /**
