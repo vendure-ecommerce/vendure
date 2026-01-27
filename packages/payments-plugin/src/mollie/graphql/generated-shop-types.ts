@@ -1785,6 +1785,7 @@ export type MolliePaymentIntentInput = {
      * Set this to false when you expect that order fulfillment takes longer than 24 hours.
      * If set to false, you will need to settle the "Authorized" payment in Vendure manually!
      * If you fail to do so, the Authorized payment will expire after 28 days.
+     * This setting can be overridden on the plugin level via the plugin options.
      */
     immediateCapture?: InputMaybe<Scalars['Boolean']['input']>;
     /**
@@ -1918,6 +1919,12 @@ export type Mutation = {
      * shipping method will apply to.
      */
     setOrderShippingMethod: SetOrderShippingMethodResult;
+    /**
+     * Fetch the payment status from Mollie and update the order status in Vendure accordingly.
+     * Use this mutation when the Mollie webhook is delayed and you want to manually force update the order status.
+     * Throws a ForbiddenError for unauthenticated calls when the order is not yet settled.
+     */
+    syncMolliePaymentStatus?: Maybe<Order>;
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
     /** Unsets the billing address for the active Order. Available since version 3.1.0 */
@@ -1935,12 +1942,6 @@ export type Mutation = {
     updateCustomerEmailAddress: UpdateCustomerEmailAddressResult;
     /** Update the password of the active Customer */
     updateCustomerPassword: UpdateCustomerPasswordResult;
-    /**
-     * Fetch the payment status from Mollie and update the order status in Vendure accordingly.
-     * Use this mutation when the Mollie webhook is delayed and you want to manually force update the order status.
-     * Throws a ForbiddenError for unauthenticated calls when the order is not yet settled.
-     */
-    syncMolliePaymentStatus?: Maybe<Order>;
     /**
      * Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
      *
@@ -2045,6 +2046,10 @@ export type MutationSetOrderShippingMethodArgs = {
     shippingMethodId: Array<Scalars['ID']['input']>;
 };
 
+export type MutationSyncMolliePaymentStatusArgs = {
+    orderCode: Scalars['String']['input'];
+};
+
 export type MutationTransitionOrderToStateArgs = {
     state: Scalars['String']['input'];
 };
@@ -2064,10 +2069,6 @@ export type MutationUpdateCustomerEmailAddressArgs = {
 export type MutationUpdateCustomerPasswordArgs = {
     currentPassword: Scalars['String']['input'];
     newPassword: Scalars['String']['input'];
-};
-
-export type MutationSyncMolliePaymentStatusArgs = {
-    orderCode: Scalars['String']['input'];
 };
 
 export type MutationVerifyCustomerAccountArgs = {
