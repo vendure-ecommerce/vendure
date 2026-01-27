@@ -256,7 +256,6 @@ export * from './framework/layout-engine/layout-extensions.js';
 export * from './framework/layout-engine/location-wrapper.js';
 export * from './framework/layout-engine/page-block-provider.js';
 export * from './framework/layout-engine/page-layout.js';
-export * from './framework/layout-engine/page-layout.spec.js';
 export * from './framework/layout-engine/page-provider.js';
 export * from './framework/nav-menu/nav-menu-extensions.js';
 export * from './framework/page/detail-page-route-loader.js';
