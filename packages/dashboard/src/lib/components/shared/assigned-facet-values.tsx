@@ -18,17 +18,15 @@ interface AssignedFacetValuesProps {
     value?: string[] | null;
     facetValues: FacetValue[];
     canUpdate?: boolean;
-    onBlur?: () => void;
     onChange?: (value: string[]) => void;
 }
 
 export function AssignedFacetValues({
-                                        value = [],
-                                        facetValues,
-                                        canUpdate = true,
-                                        onBlur,
-                                        onChange,
-                                    }: AssignedFacetValuesProps) {
+    value = [],
+    facetValues,
+    canUpdate = true,
+    onChange,
+}: Readonly<AssignedFacetValuesProps>) {
     const [knownFacetValues, setKnownFacetValues] = useState<FacetValue[]>(facetValues);
 
     function onSelectHandler(facetValue: FacetValue) {

@@ -1570,7 +1570,7 @@ describe('Orders resolver', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/873
+        // https://github.com/vendurehq/vendure/issues/873
         it('can add another refund if the first one fails', async () => {
             await createTestOrder(adminClient, shopClient, customers[0].emailAddress, password);
             await proceedToArrangingPayment(shopClient, 2);
@@ -1612,7 +1612,7 @@ describe('Orders resolver', () => {
             expect(refund2.total).toBe(totalWithTax2);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/2302
+        // https://github.com/vendurehq/vendure/issues/2302
         it('passes correct amount to createRefund function after cancellation', async () => {
             await createTestOrder(adminClient, shopClient, customers[0].emailAddress, password);
             await proceedToArrangingPayment(shopClient, 2);
@@ -2016,7 +2016,7 @@ describe('Orders resolver', () => {
             );
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/847
+        // https://github.com/vendurehq/vendure/issues/847
         it('manual call to settlePayment works with multiple payments', async () => {
             await createTestOrder(adminClient, shopClient, customers[1].emailAddress, password);
             await proceedToArrangingPayment(shopClient);
@@ -2055,7 +2055,7 @@ describe('Orders resolver', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/2505
+    // https://github.com/vendurehq/vendure/issues/2505
     describe('updating order customer', () => {
         let orderId: string;
         let customerId: string;
@@ -2139,7 +2139,7 @@ describe('Orders resolver', () => {
     });
 
     describe('issues', () => {
-        // https://github.com/vendure-ecommerce/vendure/issues/639
+        // https://github.com/vendurehq/vendure/issues/639
         it('returns fulfillments for Order with no lines', async () => {
             await shopClient.asAnonymousUser();
             // Apply a coupon code just to create an active order with no OrderLines
@@ -2154,7 +2154,7 @@ describe('Orders resolver', () => {
             expect(order?.fulfillments).toEqual([]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/603
+        // https://github.com/vendurehq/vendure/issues/603
         it('orders correctly resolves quantities and OrderItems', async () => {
             await shopClient.asAnonymousUser();
             const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
@@ -2175,7 +2175,7 @@ describe('Orders resolver', () => {
             expect(orders.items[0].lines[0].quantity).toBe(2);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/716
+        // https://github.com/vendurehq/vendure/issues/716
         it('get an Order with a deleted ShippingMethod', async () => {
             const { createShippingMethod: shippingMethod } = await adminClient.query(
                 createShippingMethodDocument,
@@ -2232,7 +2232,7 @@ describe('Orders resolver', () => {
             });
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/868
+        // https://github.com/vendurehq/vendure/issues/868
         it('allows multiple refunds of same OrderLine', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
             await shopClient.query(addItemToOrderDocument, {
@@ -2267,7 +2267,7 @@ describe('Orders resolver', () => {
             refundGuard.assertSuccess(refund2);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1125
+        // https://github.com/vendurehq/vendure/issues/1125
         it('resolves deleted Product of OrderLine ProductVariants', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
             await shopClient.query(addItemToOrderDocument, {
@@ -2299,7 +2299,7 @@ describe('Orders resolver', () => {
             ).toBe('gaming-pc');
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1508
+        // https://github.com/vendurehq/vendure/issues/1508
         it('resolves price of deleted ProductVariant of OrderLine', async () => {
             const { activeCustomer } = await shopClient.query(
                 getActiveCustomerWithOrdersProductPriceDocument,
@@ -2317,7 +2317,7 @@ describe('Orders resolver', () => {
             ).toBe(108720);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/2204
+        // https://github.com/vendurehq/vendure/issues/2204
         it('creates correct history entries and results in correct state when manually adding payment to order', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
             const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
@@ -2360,7 +2360,7 @@ describe('Orders resolver', () => {
             }
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/2191
+        // https://github.com/vendurehq/vendure/issues/2191
         it('correctly transitions order & fulfillment on partial fulfillment being shipped', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
             const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {

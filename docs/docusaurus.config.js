@@ -40,7 +40,7 @@ const config = {
                 docs: {
                     routeBasePath: '/',
                     sidebarPath: require.resolve('./sidebars.js'),
-                    editUrl: 'https://github.com/vendure-ecommerce/vendure/blob/master/docs/',
+                    editUrl: 'https://github.com/vendurehq/vendure/blob/master/docs/',
                     showLastUpdateTime: true,
                     admonitions: {
                         keywords: ['cli'],
@@ -104,7 +104,7 @@ const config = {
                         position: 'right',
                     },
                     {
-                        href: 'https://github.com/vendure-ecommerce/vendure',
+                        href: 'https://github.com/vendurehq/vendure',
                         label: 'GitHub',
                         position: 'right',
                     },
@@ -126,7 +126,7 @@ const config = {
                             },
                             {
                                 label: 'GitHub',
-                                href: 'https://github.com/vendure-ecommerce/vendure',
+                                href: 'https://github.com/vendurehq/vendure',
                             },
                         ],
                     },

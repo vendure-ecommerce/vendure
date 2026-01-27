@@ -34,7 +34,7 @@ class TestResolver {
     }
 }
 
-// A plugin to explore solutions to https://github.com/vendure-ecommerce/vendure/issues/1107
+// A plugin to explore solutions to https://github.com/vendurehq/vendure/issues/1107
 @VendurePlugin({
     imports: [PluginCommonModule],
     adminApiExtensions: {
@@ -47,7 +47,10 @@ class TestResolver {
     },
 })
 export class EventBusTransactionsPlugin implements OnModuleInit {
-    constructor(private eventBus: EventBus, private connection: TransactionalConnection) {}
+    constructor(
+        private eventBus: EventBus,
+        private connection: TransactionalConnection,
+    ) {}
 
     onModuleInit(): any {
         this.eventBus.ofType(AssetEvent).subscribe(async event => {

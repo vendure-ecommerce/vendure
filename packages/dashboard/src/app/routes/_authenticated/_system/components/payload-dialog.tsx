@@ -14,11 +14,18 @@ type PayloadDialogProps = {
     trigger: React.ReactNode;
     title?: string | React.ReactNode;
     description?: string | React.ReactNode;
+    onOpenChange?: (open: boolean) => void;
 };
 
-export function PayloadDialog({ payload, trigger, title, description }: Readonly<PayloadDialogProps>) {
+export function PayloadDialog({
+    payload,
+    trigger,
+    title,
+    description,
+    onOpenChange,
+}: Readonly<PayloadDialogProps>) {
     return (
-        <Dialog>
+        <Dialog onOpenChange={open => onOpenChange?.(open)}>
             <DialogTrigger asChild>{trigger}</DialogTrigger>
             <DialogContent>
                 <DialogHeader>

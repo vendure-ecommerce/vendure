@@ -121,7 +121,7 @@ clicking the `< />` icon when hovering over a page block.
 type PageBlockLocation = {
     pageId: string;
     position: PageBlockPosition;
-    column: 'main' | 'side';
+    column: 'main' | 'side' | 'full';
 }
 ```
 
@@ -139,7 +139,7 @@ type PageBlockLocation = {
 
 ### column
 
-<MemberInfo kind="property" type={`'main' | 'side'`}   />
+<MemberInfo kind="property" type={`'main' | 'side' | 'full'`}   />
 
 
 

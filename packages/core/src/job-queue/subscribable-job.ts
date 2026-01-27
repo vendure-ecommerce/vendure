@@ -2,8 +2,8 @@ import { JobState } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import ms from 'ms';
-import { interval, merge, Observable, timer } from 'rxjs';
-import { distinctUntilChanged, filter, map, switchMap, take, takeWhile, tap } from 'rxjs/operators';
+import { interval, Observable, race, timer } from 'rxjs';
+import { distinctUntilChanged, filter, map, switchMap, takeWhile, tap } from 'rxjs/operators';
 
 import { InternalServerError } from '../common/error/errors';
 import { Logger } from '../config/index';
@@ -42,7 +42,7 @@ export type JobUpdateOptions = {
      */
     timeoutMs?: number;
     /**
-     * Observable sequence will end with an error if true. Default to false
+     * Observable sequence will end with an error if true. Default to true
      */
     errorOnFail?: boolean;
 };
@@ -80,7 +80,7 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
      */
     updates(options?: JobUpdateOptions): Observable<JobUpdate<T>> {
         const pollInterval = Math.max(50, options?.pollInterval ?? 200);
-        const timeoutMs = Math.max(pollInterval, options?.timeoutMs ?? ms('1h'));
+        const timeoutMs = Math.max(1, options?.timeoutMs ?? ms('1h'));
         const strategy = this.jobQueueStrategy;
         if (!isInspectableJobQueueStrategy(strategy)) {
             throw new InternalServerError(
@@ -133,9 +133,10 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
                 ),
             );
 
-            // Use merge + take(1) instead of race() to handle immediate timer emissions more reliably
-            // This prevents race conditions where the timer might fire before race() can capture it
-            return merge(updates$, timeout$).pipe(take(1));
+            // Use race() to return whichever observable emits first and follow it to completion.
+            // - If updates$ emits first, it will continue emitting until the job settles
+            // - If timeout$ emits first, it will emit the timeout message and complete
+            return race(updates$, timeout$) as Observable<JobUpdate<T>>;
         }
     }
 }

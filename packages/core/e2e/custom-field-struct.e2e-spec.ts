@@ -86,7 +86,7 @@ const customConfig = mergeConfig(testConfig(), {
                 ],
             },
         ],
-        // https://github.com/vendure-ecommerce/vendure/issues/3381
+        // https://github.com/vendurehq/vendure/issues/3381
         GlobalSettings: [
             {
                 name: 'tipsPercentage',

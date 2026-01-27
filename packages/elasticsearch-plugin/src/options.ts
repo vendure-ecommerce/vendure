@@ -101,7 +101,7 @@ export interface ElasticsearchOptions {
      * },
      * ```
      * A more complete example can be found in the discussion thread
-     * [How to make elastic plugin to search by substring with stemming](https://github.com/vendure-ecommerce/vendure/discussions/1066).
+     * [How to make elastic plugin to search by substring with stemming](https://github.com/vendurehq/vendure/discussions/1066).
      *
      * @since 1.2.0
      * @default

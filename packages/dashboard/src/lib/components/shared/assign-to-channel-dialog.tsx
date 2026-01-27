@@ -70,7 +70,7 @@ export function AssignToChannelDialog({
             onOpenChange(false);
         },
         onError: () => {
-            toast.error(`Failed to assign ${entityIdsLength} ${entityType} to channel`);
+            toast.error(t`Failed to assign ${entityIdsLength} ${entityType} to channel`);
         },
     });
 

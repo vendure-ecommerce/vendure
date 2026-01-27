@@ -33,9 +33,7 @@ export const collectionListDocument = graphql(
                     position
                     isPrivate
                     parentId
-                    productVariants {
-                        totalItems
-                    }
+                    productVariantCount
                 }
                 totalItems
             }
@@ -163,6 +161,7 @@ export const moveCollectionDocument = graphql(`
     mutation MoveCollection($input: MoveCollectionInput!) {
         moveCollection(input: $input) {
             id
+            position
         }
     }
 `);

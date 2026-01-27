@@ -78,7 +78,7 @@ Much of the visual styling of the Admin UI can be customized by providing your o
       --clr-link-visited-color: hsl(110, 55%, 75%);
     }
     ```
-   To get an idea of which custom properties are available for theming, take a look at the source of the [Default theme](https://github.com/vendure-ecommerce/vendure/tree/master/packages/admin-ui/src/lib/static/styles/theme/default.scss) and the [Dark theme](https://github.com/vendure-ecommerce/vendure/tree/master/packages/admin-ui/src/lib/static/styles/theme/dark.scss)
+   To get an idea of which custom properties are available for theming, take a look at the source of the [Default theme](https://github.com/vendurehq/vendure/tree/master/packages/admin-ui/src/lib/static/styles/theme/default.scss) and the [Dark theme](https://github.com/vendurehq/vendure/tree/master/packages/admin-ui/src/lib/static/styles/theme/dark.scss)
 3. Set this as a globalStyles extension:   
     ```ts title="src/vendure-config.ts"
     import path from 'path';

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListQueryBuilder
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="201" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="207" packageName="@vendure/core" />
 
 This helper class is used when fetching entities the database from queries which return a <a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> type.
 These queries all follow the same format:
@@ -121,7 +121,7 @@ to join that relation.
 
 ## ExtendedListQueryOptions
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="42" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="48" packageName="@vendure/core" />
 
 Options which can be passed to the ListQueryBuilder's `build()` method.
 

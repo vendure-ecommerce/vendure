@@ -48,3 +48,13 @@ export const createCustomStripePaymentIntentDocument = graphql(`
         createCustomStripePaymentIntent
     }
 `);
+
+export const syncMolliePaymentStatusDocument = graphql(`
+    mutation syncMolliePaymentStatus($orderCode: String!) {
+        syncMolliePaymentStatus(orderCode: $orderCode) {
+            id
+            code
+            state
+        }
+    }
+`);

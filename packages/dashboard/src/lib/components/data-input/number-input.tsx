@@ -3,11 +3,14 @@ import { Input } from '@/vdb/components/ui/input.js';
 
 import { DashboardFormComponentProps } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { isReadonlyField } from '@/vdb/framework/form-engine/utils.js';
+import { ReactNode } from 'react';
 
 export type NumberInputProps = DashboardFormComponentProps & {
     min?: number;
     max?: number;
     step?: number;
+    prefix?: ReactNode;
+    suffix?: ReactNode;
 };
 
 /**
@@ -17,28 +20,43 @@ export type NumberInputProps = DashboardFormComponentProps & {
  * @docsCategory form-components
  * @docsPage NumberInput
  */
-export function NumberInput({ fieldDef, onChange, ...fieldProps }: Readonly<NumberInputProps>) {
+export function NumberInput({
+    fieldDef,
+    onChange,
+    prefix: overridePrefix,
+    suffix: overrideSuffix,
+    ...fieldProps
+}: Readonly<NumberInputProps>) {
     const readOnly = fieldProps.disabled || isReadonlyField(fieldDef);
     const isFloat = fieldDef ? fieldDef.type === 'float' : false;
     const min = fieldProps.min ?? fieldDef?.ui?.min;
     const max = fieldProps.max ?? fieldDef?.ui?.max;
     const step = fieldProps.step ?? (fieldDef?.ui?.step || (isFloat ? 0.01 : 1));
-    const prefix = fieldDef?.ui?.prefix;
-    const suffix = fieldDef?.ui?.suffix;
+    const prefix = overridePrefix ?? fieldDef?.ui?.prefix;
+    const suffix = overrideSuffix ?? fieldDef?.ui?.suffix;
     const shouldUseAffixedInput = prefix || suffix;
+    const value = fieldProps.value ?? '';
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (readOnly) return;
-        const numValue = e.target.valueAsNumber;
+
+        let numValue = e.target.valueAsNumber;
+
+        if (Number.isNaN(numValue) && e.target.value) {
+            const normalized = e.target.value.replace(',', '.');
+            numValue = Number(normalized);
+        }
+
         if (Number.isNaN(numValue)) {
             onChange(null);
         } else {
-            onChange(e.target.valueAsNumber);
+            onChange(numValue);
         }
     };
     if (shouldUseAffixedInput) {
         return (
             <AffixedInput
                 {...fieldProps}
+                value={value}
                 type="number"
                 onChange={handleChange}
                 min={min}
@@ -57,6 +75,7 @@ export function NumberInput({ fieldDef, onChange, ...fieldProps }: Readonly<Numb
             type="number"
             onChange={handleChange}
             {...fieldProps}
+            value={value}
             min={min}
             max={max}
             step={step}

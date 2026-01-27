@@ -257,7 +257,7 @@ describe('Order process', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/963
+        // https://github.com/vendurehq/vendure/issues/963
         it('allows addPaymentToOrder from a custom state', async () => {
             await shopClient.query(setShippingMethodDocument, { id: ['T_1'] });
             const result0 = await shopClient.query(transitionToStateDocument, {

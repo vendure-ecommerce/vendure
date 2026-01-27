@@ -3,8 +3,6 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import {
     Asset,
     Channel,
-    CustomOrderFields,
-    CustomProductFields,
     Order,
     OrderService,
     PluginCommonModule,
@@ -39,7 +37,7 @@ const schema = gql`
 `;
 
 /**
- * Test plugin for https://github.com/vendure-ecommerce/vendure/issues/1664
+ * Test plugin for https://github.com/vendurehq/vendure/issues/1664
  *
  * Test query:
  * ```graphql
@@ -102,7 +100,10 @@ const schema = gql`
     },
 })
 export class Test1664Plugin implements OnApplicationBootstrap {
-    constructor(private connection: TransactionalConnection, private orderService: OrderService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private orderService: OrderService,
+    ) {}
 
     async onApplicationBootstrap() {
         await this.createDummyProfiles();

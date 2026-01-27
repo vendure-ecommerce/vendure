@@ -18,7 +18,7 @@ import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { usePermissions } from '@/vdb/hooks/use-permissions.js';
 import { useSortedLanguages } from '@/vdb/hooks/use-sorted-languages.js';
-import { globalLanguageCodes } from '@/vdb/utils/global-languages.js';
+import { schemaLanguageCodes as globalLanguageCodes } from '@/vdb/graphql/schema-enums.js';
 import { Trans } from '@lingui/react/macro';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Lock } from 'lucide-react';

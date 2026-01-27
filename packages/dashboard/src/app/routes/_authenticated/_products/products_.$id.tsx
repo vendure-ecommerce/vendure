@@ -10,9 +10,7 @@ import { FormControl, FormDescription, FormItem, FormMessage } from '@/vdb/compo
 import { Input } from '@/vdb/components/ui/input.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
-import {
-    ActionBarItem,
-    CustomFieldsPageBlock,
+import {    CustomFieldsPageBlock,
     DetailFormGrid,
     Page,
     PageActionBar,
@@ -20,6 +18,7 @@ import {
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -30,7 +29,16 @@ import { toast } from 'sonner';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductOptionGroupBadge } from './components/product-option-group-badge.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
-import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
+import {
+    assignProductsToChannelDocument,
+    createProductDocument,
+    productDetailDocument,
+    removeProductsFromChannelDocument,
+    updateProductDocument,
+} from './products.graphql.js';
+import { api } from '@/vdb/graphql/api.js';
+import { AssignedChannels } from '@/vdb/components/shared/assigned-channels.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 
 const pageId = 'product-detail';
 
@@ -55,6 +63,7 @@ function ProductDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
     const refreshRef = useRef<() => void>(() => {});
+    const { channels } = useChannel();
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
         pageId,
@@ -69,6 +78,7 @@ function ProductDetailPage() {
                 featuredAssetId: entity.featuredAsset?.id,
                 assetIds: entity.assets.map(asset => asset.id),
                 facetValueIds: entity.facetValues.map(facetValue => facetValue.id),
+                channelIds: entity.channels.map(c => c.id) ?? [],
                 translations: entity.translations.map(translation => ({
                     id: translation.id,
                     languageCode: translation.languageCode,
@@ -202,6 +212,18 @@ function ProductDetailPage() {
                         )}
                     />
                 </PageBlock>
+                {channels.length > 1 && entity && (
+                    <PageBlock column="side" blockId="channels" title={<Trans>Channels</Trans>}>
+                        <AssignedChannels
+                            channels={entity.channels}
+                            entityId={entity.id}
+                            canUpdate={!creatingNewEntity}
+                            assignMutationFn={api.mutate(assignProductsToChannelDocument)}
+                            removeMutationFn={api.mutate(removeProductsFromChannelDocument)}
+                        />
+                    </PageBlock>
+                )}
+
                 <PageBlock column="side" blockId="assets" title={<Trans>Assets</Trans>}>
                     <FormItem>
                         <FormControl>

@@ -24,6 +24,7 @@ interface DashboardNavSectionDefinition {
     title: string;
     icon?: LucideIcon;
     order?: number;
+    placement?: 'top' | 'bottom';
 }
 ```
 
@@ -56,6 +57,11 @@ import { PlusIcon } from 'lucide-react';
 <MemberInfo kind="property" type={`number`}   />
 
 Optional order number to control the position of this section in the sidebar.
+### placement
+
+<MemberInfo kind="property" type={`'top' | 'bottom'`}   />
+
+Optional placement to control the position of this section in the sidebar.
 
 
 </div>

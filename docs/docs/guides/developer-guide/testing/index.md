@@ -12,7 +12,7 @@ The `@vendure/testing` package gives you some simple but powerful tooling for cr
 By "end-to-end" we mean we are testing the _entire server stack_ - from API, to services, to database - by making a real API request, and then making assertions about the response. This is a very effective way to ensure that _all_ parts of your plugin are working correctly together.
 
 :::info
-For a working example of a Vendure plugin with e2e testing, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
+For a working example of a Vendure plugin with e2e testing, see the [real-world-vendure Reviews plugin](https://github.com/vendurehq/real-world-vendure/tree/master/src/plugins/reviews)
 :::
 
 ## Usage
@@ -53,7 +53,7 @@ export default defineConfig({
         swc.vite({
             jsc: {
                 transform: {
-                    // See https://github.com/vendure-ecommerce/vendure/issues/2099
+                    // See https://github.com/vendurehq/vendure/issues/2099
                     useDefineForClassFields: false,
                 },
             },
@@ -157,8 +157,8 @@ afterAll(async () => {
 
 An explanation of the options:
 
-* `productsCsvPath` This is a path to an optional CSV file containing product data. See [Product Import Format](/guides/developer-guide/importing-data/#product-import-format). You can see [an example used in the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/e2e/fixtures/e2e-products-full.csv) to get an idea of how it works. To start with you can just copy this file directly and use it as-is.
-* `initialData` This is an object which defines how other non-product data (Collections, ShippingMethods, Countries etc.) is populated. See [Initial Data Format](/guides/developer-guide/importing-data/#initial-data). You can [copy this example from the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/e2e-common/e2e-initial-data.ts)
+* `productsCsvPath` This is a path to an optional CSV file containing product data. See [Product Import Format](/guides/developer-guide/importing-data/#product-import-format). You can see [an example used in the Vendure e2e tests](https://github.com/vendurehq/vendure/blob/master/packages/core/e2e/fixtures/e2e-products-full.csv) to get an idea of how it works. To start with you can just copy this file directly and use it as-is.
+* `initialData` This is an object which defines how other non-product data (Collections, ShippingMethods, Countries etc.) is populated. See [Initial Data Format](/guides/developer-guide/importing-data/#initial-data). You can [copy this example from the Vendure e2e tests](https://github.com/vendurehq/vendure/blob/master/e2e-common/e2e-initial-data.ts)
 * `customerCount` Specifies the number of fake Customers to create. Defaults to 10 if not specified.
 
 ### Write your tests

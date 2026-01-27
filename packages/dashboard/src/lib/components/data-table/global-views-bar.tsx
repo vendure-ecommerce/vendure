@@ -28,7 +28,7 @@ export const GlobalViewsBar: React.FC = () => {
     );
 
     const handleViewClick = (view: SavedView) => {
-        handleApplyView(view.filters, view.searchTerm);
+        handleApplyView(view.filters, view.columnConfig, view.searchTerm);
     };
 
     const isViewActive = (view: SavedView) => {

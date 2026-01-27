@@ -234,7 +234,7 @@ describe('CustomerGroup resolver', () => {
         expect(customerGroups.totalItems).toBe(0);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1785
+    // https://github.com/vendurehq/vendure/issues/1785
     it('removes customer from group when customer is deleted', async () => {
         const customer5Id = customers[4].id;
         const { createCustomerGroup } = await adminClient.query(createCustomerGroupDocument, {

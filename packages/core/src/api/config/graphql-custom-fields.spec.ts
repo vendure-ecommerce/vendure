@@ -25,7 +25,7 @@ describe('addGraphQLCustomFields()', () => {
     });
 
     // regression test for
-    // https://github.com/vendure-ecommerce/vendure/issues/3158
+    // https://github.com/vendurehq/vendure/issues/3158
     it('uses JSON scalar in UpdateActiveAdministratorInput if only internal custom fields defined on Administrator', () => {
         // custom field that is internal but not readonly - should not cause
         // `addActiveAdministratorCustomFields` to assume that

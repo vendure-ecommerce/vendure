@@ -127,7 +127,7 @@ This defines the order of widgets with their default widths. The actual layout i
 
 ## Overriding default widgets
 
-The Admin UI comes with a set of default widgets, such as the order summary and latest orders widgets (they can be found in [the default-widgets.ts file](https://github.com/vendure-ecommerce/vendure/blob/master/packages/admin-ui/src/lib/dashboard/src/default-widgets.ts)).
+The Admin UI comes with a set of default widgets, such as the order summary and latest orders widgets (they can be found in [the default-widgets.ts file](https://github.com/vendurehq/vendure/blob/master/packages/admin-ui/src/lib/dashboard/src/default-widgets.ts)).
 
 Sometimes you may wish to alter the permissions settings of the default widgets to better control which of your Administrators is able to access it.
 

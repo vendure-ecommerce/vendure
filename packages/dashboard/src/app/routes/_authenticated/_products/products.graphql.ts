@@ -38,6 +38,11 @@ export const productDetailFragment = graphql(
             assets {
                 ...Asset
             }
+            channels {
+                id
+                code
+                token
+            }
             translations {
                 id
                 languageCode

@@ -24,7 +24,7 @@ const SentryOptionsProvider = {
  * :::info
  * This documentation applies from v3.5.0 of the plugin, which works differently to previous
  * versions. Documentation for prior versions can
- * be found [here](https://github.com/vendure-ecommerce/vendure/blob/1bb9cf8ca1584bce026ccc82f33f866b766ef47d/packages/sentry-plugin/src/sentry-plugin.ts).
+ * be found [here](https://github.com/vendurehq/vendure/blob/1bb9cf8ca1584bce026ccc82f33f866b766ef47d/packages/sentry-plugin/src/sentry-plugin.ts).
  * :::
  *
  * ## Pre-requisites

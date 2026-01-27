@@ -7,6 +7,12 @@ customize any existing detail page in the Dashboard.
 
 ## Custom form inputs
 
+:::warning Custom Fields
+This feature replaces inputs for **built-in entity fields** only (like `name`, `description`, `slug`).
+
+To customize the form input for a **custom field** you defined in your plugin, use the [Custom Field Components](/guides/extending-the-dashboard/custom-form-components/#custom-field-components) instead.
+:::
+
 You can replace any of the default form inputs with your own components using the `inputs` property.
 
 Let's say you want to replace the default HTML description editor with a markdown editor component:

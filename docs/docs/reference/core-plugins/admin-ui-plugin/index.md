@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiPlugin
 
-<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="146" packageName="@vendure/admin-ui-plugin" />
+<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="147" packageName="@vendure/admin-ui-plugin" />
 
 :::warning Deprecated
 From Vendure v3.5.0, the Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/).

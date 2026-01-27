@@ -22,7 +22,7 @@ In order to use the Railway trial plan, you'll need to connect your GitHub accou
 
 :::info
 If you'd like to quickly get started with a ready-made Vendure project which includes sample data, you can clone our
-[Vendure one-click-deploy repo](https://github.com/vendure-ecommerce/one-click-deploy).
+[Vendure one-click-deploy repo](https://github.com/vendurehq/one-click-deploy).
 :::
 
 ## Configuration

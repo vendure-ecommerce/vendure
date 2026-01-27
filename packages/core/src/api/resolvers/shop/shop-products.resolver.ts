@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Info, Query, Resolver } from '@nestjs/graphql';
 import {
     QueryCollectionArgs,
     QueryCollectionsArgs,
@@ -10,7 +10,10 @@ import {
 } from '@vendure/common/lib/generated-shop-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { GraphQLResolveInfo } from 'graphql';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
+import { CacheKey } from '../../../common/constants';
 import { InternalServerError, UserInputError } from '../../../common/error/errors';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
@@ -21,6 +24,7 @@ import { CollectionService, FacetService } from '../../../service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
+import { isFieldInSelection } from '../../common/is-field-in-selection';
 import { RequestContext } from '../../common/request-context';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
@@ -33,6 +37,7 @@ export class ShopProductsResolver {
         private facetValueService: FacetValueService,
         private collectionService: CollectionService,
         private facetService: FacetService,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     @Query()
@@ -84,6 +89,7 @@ export class ShopProductsResolver {
             omit: ['productVariants', 'assets', 'parent.productVariants', 'children.productVariants'],
         })
         relations: RelationPaths<Collection>,
+        @Info() info: GraphQLResolveInfo,
     ): Promise<PaginatedList<Translated<Collection>>> {
         const options: ListQueryOptions<Collection> = {
             ...args.options,
@@ -92,7 +98,15 @@ export class ShopProductsResolver {
                 isPrivate: { eq: false },
             },
         };
-        return this.collectionService.findAll(ctx, options || undefined, relations);
+        const collections = await this.collectionService.findAll(ctx, options || undefined, relations);
+        // Cache the variant counts query promise if productVariantCount is requested,
+        // allowing the DB query to start before the field resolvers are called
+        if (isFieldInSelection(info, 'productVariantCount')) {
+            const collectionIds = collections.items.map(c => c.id);
+            const countsPromise = this.collectionService.getProductVariantCounts(ctx, collectionIds);
+            this.requestContextCache.set(ctx, CacheKey.CollectionVariantCounts, countsPromise);
+        }
+        return collections;
     }
 
     @Query()

@@ -88,7 +88,6 @@ export const productVariantDetailDocument = graphql(
                 prices {
                     currencyCode
                     price
-                    customFields
                 }
                 trackInventory
                 outOfStockThreshold

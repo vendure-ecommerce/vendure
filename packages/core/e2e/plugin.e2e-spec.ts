@@ -3,11 +3,10 @@ import { ConfigService } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { TestPluginWithAllLifecycleHooks } from './fixtures/test-plugins/with-all-lifecycle-hooks';
 import { TestAPIExtensionPlugin } from './fixtures/test-plugins/with-api-extensions';
@@ -54,7 +53,7 @@ describe('Plugins', () => {
         expect(configService.defaultLanguageCode).toBe(LanguageCode.zh);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/2906
+    // https://github.com/vendurehq/vendure/issues/2906
     it('handles plugins that return new config object references', async () => {
         const configService = server.app.get(ConfigService);
         expect(configService.customFields.Customer).toEqual([

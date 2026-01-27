@@ -273,7 +273,7 @@ describe('Custom field relations', () => {
             assertTranslatableCustomFieldValues(product);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/2453
+        // https://github.com/vendurehq/vendure/issues/2453
         it('translatable eager-loaded relation works (issue 2453)', async () => {
             const { collections } = await adminClient.query(gql`
                 query {
@@ -496,7 +496,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateCollection.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on Collection does not delete primitive values', async () => {
                 const { updateCollection } = await adminClient.query(gql`
                     mutation {
@@ -613,7 +613,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateFacet.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on Facet does not delete primitive values', async () => {
                 const { updateFacet } = await adminClient.query(gql`
                     mutation {
@@ -673,7 +673,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateFacetValues[0].customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on FacetValue does not delete primitive values', async () => {
                 const { updateFacetValues } = await adminClient.query(gql`
                     mutation {
@@ -764,7 +764,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(setOrderCustomFields.customFields, 'T_1', ['T_1', 'T_2']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1664#issuecomment-1320872627
+            // https://github.com/vendurehq/vendure/issues/1664#issuecomment-1320872627
             it('admin order query with eager-loaded custom field relation', async () => {
                 const { order } = await adminClient.query(gql`
                     query {
@@ -844,7 +844,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateProduct.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on Product does not delete primitive values', async () => {
                 const { updateProduct } = await adminClient.query(gql`
                     mutation {
@@ -902,7 +902,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateProductVariants[0].customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on ProductVariant does not delete primitive values', async () => {
                 const { updateProductVariants } = await adminClient.query(gql`
                     mutation {
@@ -922,7 +922,7 @@ describe('Custom field relations', () => {
             });
 
             describe('issue 1664', () => {
-                // https://github.com/vendure-ecommerce/vendure/issues/1664
+                // https://github.com/vendurehq/vendure/issues/1664
                 it('successfully gets product by id with eager-loading custom field relation', async () => {
                     const { product } = await shopClient.query(gql`
                         query {
@@ -942,7 +942,7 @@ describe('Custom field relations', () => {
                     expect(product).toBeDefined();
                 });
 
-                // https://github.com/vendure-ecommerce/vendure/issues/1664
+                // https://github.com/vendurehq/vendure/issues/1664
                 it('successfully gets product by id with nested eager-loading custom field relation', async () => {
                     const { customer } = await adminClient.query(gql`
                         query {
@@ -966,7 +966,7 @@ describe('Custom field relations', () => {
                     expect(customer).toBeDefined();
                 });
 
-                // https://github.com/vendure-ecommerce/vendure/issues/1664
+                // https://github.com/vendurehq/vendure/issues/1664
                 it('successfully gets product.variants with nested custom field relation', async () => {
                     await adminClient.query(gql`
                         mutation {
@@ -1088,7 +1088,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateProductOptionGroup.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on ProductOptionGroup does not delete primitive values', async () => {
                 const { updateProductOptionGroup } = await adminClient.query(gql`
                     mutation {
@@ -1146,7 +1146,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateProductOption.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on ProductOption does not delete primitive values', async () => {
                 const { updateProductOption } = await adminClient.query(gql`
                     mutation {
@@ -1221,7 +1221,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateShippingMethod.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on ShippingMethod does not delete primitive values', async () => {
                 const { updateShippingMethod } = await adminClient.query(gql`
                     mutation {
@@ -1304,7 +1304,7 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updatePaymentMethod.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            // https://github.com/vendurehq/vendure/issues/2840
             it('updating custom field relation on PaymentMethod does not delete primitive values', async () => {
                 const { updatePaymentMethod } = await adminClient.query(gql`
                     mutation {
@@ -1370,7 +1370,7 @@ describe('Custom field relations', () => {
                 expect(asset.customFields.multi.length).toEqual(2);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1636
+            // https://github.com/vendurehq/vendure/issues/1636
             it('calling TransactionalConnection.findOneInChannel() returns custom field relations', async () => {
                 TestPlugin1636_1664.testResolverSpy.mockReset();
                 await shopClient.query(gql`

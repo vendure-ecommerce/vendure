@@ -23,7 +23,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path-to-signatures: 'license/signatures/version1/cla.json'
-          path-to-document: 'https://github.com/vendure-ecommerce/vendure/blob/master/license/CLA.md'
+          path-to-document: 'https://github.com/vendurehq/vendure/blob/master/license/CLA.md'
           branch: 'master'
           allowlist: user1,bot*
 

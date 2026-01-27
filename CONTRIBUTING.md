@@ -30,7 +30,7 @@ In order to make the best use of both your time and that of the Vendure maintain
 
 ### Creating a fork
 
-Start by creating a fork of the repository. This can be done by navigating to our [repository](https://github.com/vendure-ecommerce/vendure) and clicking on the fork button. This creates your own copy under your GitHub account. We recommend keeping "vendure" as the name of the fork.
+Start by creating a fork of the repository. This can be done by navigating to our [repository](https://github.com/vendurehq/vendure) and clicking on the fork button. This creates your own copy under your GitHub account. We recommend keeping "vendure" as the name of the fork.
 
 ### Cloning locally
 
@@ -41,10 +41,10 @@ git clone https://github.com/YOUR-USERNAME/vendure.git
 cd vendure
 ```
 
-Add the [Vendure repository](https://github.com/vendure-ecommerce/vendure) as the upstream remote to your clone:
+Add the [Vendure repository](https://github.com/vendurehq/vendure) as the upstream remote to your clone:
 
 ```bash
-git remote add upstream https://github.com/vendure-ecommerce/vendure.git
+git remote add upstream https://github.com/vendurehq/vendure.git
 ```
 
 This lets you pull updates from the original repository directly to your local clone.
@@ -299,7 +299,7 @@ If you have the [GitHub CLI](https://cli.github.com/) installed, run:
 ```bash
 gh pr create
 ```
-and follow the prompts - this will automatically use our [pull request template](https://github.com/vendure-ecommerce/vendure/blob/master/.github/pull_request_template.md).
+and follow the prompts - this will automatically use our [pull request template](https://github.com/vendurehq/vendure/blob/master/.github/pull_request_template.md).
 
 **Option B: Using GitHub Web Interface**
 
@@ -478,7 +478,7 @@ docs/docs
 
 ### Contributing to the Admin UI translations
 
-If you wish to contribute translations of the Admin UI into another language (or improve an existing set of translations), please see the [Localization guide](https://github.com/vendure-ecommerce/vendure/blob/master/packages/admin-ui/README.md#localization) in the admin-ui package.
+If you wish to contribute translations of the Admin UI into another language (or improve an existing set of translations), please see the [Localization guide](https://github.com/vendurehq/vendure/blob/master/packages/admin-ui/README.md#localization) in the admin-ui package.
 
 ## Help & Support
 

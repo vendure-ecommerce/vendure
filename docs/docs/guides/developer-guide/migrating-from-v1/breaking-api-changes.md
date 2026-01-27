@@ -10,7 +10,7 @@ sidebar_position: 3
 ### TypeScript
 - v2 is built on TypeScript **v4.9.5**. You should update your TypeScript version to match this. Doing so is quite likely to reveal new compiler errors (as is usual with TypeScript minor release updates).
 - If you are using `ts-node`, update it to the latest version
-- If you are targeting `ES2022` or `ESNEXT` in your `tsconfig.json`, you'll need to set `"useDefineForClassFields": false`. See [this issue](https://github.com/vendure-ecommerce/vendure/issues/2099) for more context.
+- If you are targeting `ES2022` or `ESNEXT` in your `tsconfig.json`, you'll need to set `"useDefineForClassFields": false`. See [this issue](https://github.com/vendurehq/vendure/issues/2099) for more context.
 
 ### Apollo Server & GraphQL
 If you have any custom ApolloServerPlugins, the plugin methods must now return a Promise. Example:
@@ -92,7 +92,7 @@ Also note that `shippingOptions.customFulfillmentProcess` and `paymentOptions.cu
 
 ### OrderItem no longer exists
 
-As a result of [#1981](https://github.com/vendure-ecommerce/vendure/issues/1981), the `OrderItem` entity no longer exists. The function and data of `OrderItem` is now transferred to `OrderLine`. As a result, the following APIs which previously used OrderItem arguments have now changed:
+As a result of [#1981](https://github.com/vendurehq/vendure/issues/1981), the `OrderItem` entity no longer exists. The function and data of `OrderItem` is now transferred to `OrderLine`. As a result, the following APIs which previously used OrderItem arguments have now changed:
 
 - `FulfillmentHandler`
 - `ChangedPriceHandlingStrategy`
@@ -125,7 +125,7 @@ const order = await this.connection
 
 ### ProductVariant stock changes
 
-With [#1545](https://github.com/vendure-ecommerce/vendure/issues/1545) we have changed the way we model stock levels in order to support multiple stock locations. This means that the `ProductVariant.stockOnHand` and `ProductVariant.stockAllocated` properties no longer exist on the `ProductVariant` entity in TypeScript.
+With [#1545](https://github.com/vendurehq/vendure/issues/1545) we have changed the way we model stock levels in order to support multiple stock locations. This means that the `ProductVariant.stockOnHand` and `ProductVariant.stockAllocated` properties no longer exist on the `ProductVariant` entity in TypeScript.
 
 Instead, this information is now located at `ProductVariant.stockLevels`, which is an array of [StockLevel](/reference/typescript-api/entities/stock-level) entities.
 

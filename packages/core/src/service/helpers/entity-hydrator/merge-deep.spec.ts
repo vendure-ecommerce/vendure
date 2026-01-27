@@ -5,7 +5,7 @@ import { Order, Sale } from '../../../entity';
 import { mergeDeep } from './merge-deep';
 
 describe('mergeDeep()', () => {
-    // https://github.com/vendure-ecommerce/vendure/issues/2864
+    // https://github.com/vendurehq/vendure/issues/2864
     it('should sync the order of sub relations', () => {
         const prefetched = new Order({
             lines: [
@@ -48,17 +48,17 @@ describe('mergeDeep()', () => {
             name: 'John',
             age: 30,
             address: {
-              city: 'New York',
-              zip: '10001',
+                city: 'New York',
+                zip: '10001',
             },
         };
-        
+
         const second = {
             name: 'Jane',
             age: 25,
             address: {
-              city: 'Los Angeles',
-              zip: '90001',
+                city: 'Los Angeles',
+                zip: '90001',
             },
         };
 

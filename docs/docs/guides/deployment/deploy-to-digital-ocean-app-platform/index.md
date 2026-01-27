@@ -20,7 +20,7 @@ deploying from docker registries, but that is out of the scope of this guide.
 
 :::info
 If you'd like to quickly get started with a ready-made Vendure project which includes sample data, you can clone our
-[Vendure one-click-deploy repo](https://github.com/vendure-ecommerce/one-click-deploy).
+[Vendure one-click-deploy repo](https://github.com/vendurehq/one-click-deploy).
 :::
 
 ## Configuration

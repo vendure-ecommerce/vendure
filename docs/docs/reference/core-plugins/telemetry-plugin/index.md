@@ -44,7 +44,7 @@ export const config: VendureConfig = {
     TelemetryPlugin.init({
       loggerOptions: {
         // Log to the console at the verbose level
-        console: LogLevel.Verbose,
+        logToConsole: LogLevel.Verbose,
       },
     }),
   ],

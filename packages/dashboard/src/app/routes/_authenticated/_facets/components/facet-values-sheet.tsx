@@ -7,6 +7,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/vdb/components/ui/sheet.js';
+import { FullWidthPageBlock } from '@/vdb/framework/layout-engine/page-layout.js';
 import { Trans } from '@lingui/react/macro';
 import { PanelLeftOpen } from 'lucide-react';
 import { FacetValuesTable } from './facet-values-table.js';
@@ -38,7 +39,9 @@ export function FacetValuesSheet({ facetName, facetId, children }: Readonly<Face
                     </SheetDescription>
                 </SheetHeader>
                 <div className="px-4">
-                    <FacetValuesTable facetId={facetId} />
+                    <FullWidthPageBlock blockId="facet-values-sheet-table">
+                        <FacetValuesTable facetId={facetId} />
+                    </FullWidthPageBlock>
                 </div>
             </SheetContent>
         </Sheet>

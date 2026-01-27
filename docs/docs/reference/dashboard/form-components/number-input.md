@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## NumberInput
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/number-input.tsx" sourceLine="20" packageName="@vendure/dashboard" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-input/number-input.tsx" sourceLine="23" packageName="@vendure/dashboard" />
 
 A component for displaying a numeric value.
 

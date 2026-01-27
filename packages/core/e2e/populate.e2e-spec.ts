@@ -189,7 +189,7 @@ describe('populate() function', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1445
+    // https://github.com/vendurehq/vendure/issues/1445
     describe('clashing option names', () => {
         let app: INestApplication;
 

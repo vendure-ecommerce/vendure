@@ -13,9 +13,7 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
-import {
-    ActionBarItem,
-    CustomFieldsPageBlock,
+import {    CustomFieldsPageBlock,
     DetailFormGrid,
     Page,
     PageActionBar,
@@ -23,6 +21,7 @@ import {
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
@@ -53,7 +52,7 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
                 return [
-                    { path: '/product', label: <Trans>Products</Trans> },
+                    { path: '/products', label: <Trans>Products</Trans> },
                     { path: `/products/${entity?.product.id}`, label: entity?.product.name ?? '' },
                     entity?.name,
                 ];
@@ -96,7 +95,7 @@ function ProductVariantDetailPage() {
                 prices: entity.prices,
                 trackInventory: entity.trackInventory,
                 outOfStockThreshold: entity.outOfStockThreshold,
-                useGlobalOutOfStockThreshold : entity.useGlobalOutOfStockThreshold,
+                useGlobalOutOfStockThreshold: entity.useGlobalOutOfStockThreshold,
                 stockLevels: entity.stockLevels.map(stockLevel => ({
                     stockOnHand: stockLevel.stockOnHand,
                     stockLocationId: stockLevel.stockLocation.id,

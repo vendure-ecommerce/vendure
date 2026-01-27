@@ -176,7 +176,7 @@ export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecor
         // created a new Module in the ApiModule, and if those resolvers depend on any providers,
         // the must be exported. See the function {@link createDynamicGraphQlModulesForPlugins}
         // for the implementation.
-        // However, we must omit any global providers (https://github.com/vendure-ecommerce/vendure/issues/837)
+        // However, we must omit any global providers (https://github.com/vendurehq/vendure/issues/837)
         const nestGlobalProviderTokens = [APP_INTERCEPTOR, APP_FILTER, APP_GUARD, APP_PIPE];
         const exportedProviders = (nestModuleMetadata.providers || []).filter(provider => {
             if (isNamedProvider(provider)) {

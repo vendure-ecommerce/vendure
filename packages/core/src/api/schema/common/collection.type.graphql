@@ -16,6 +16,7 @@ type Collection implements Node {
     filters: [ConfigurableOperation!]!
     translations: [CollectionTranslation!]!
     productVariants(options: ProductVariantListOptions): ProductVariantList!
+    productVariantCount: Int!
 }
 
 type CollectionBreadcrumb {

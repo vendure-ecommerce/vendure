@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## vendureDashboardPlugin
 
-<GenerationInfo sourceFile="packages/dashboard/vite/vite-plugin-vendure-dashboard.ts" sourceLine="154" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/vite/vite-plugin-vendure-dashboard.ts" sourceLine="166" packageName="@vendure/dashboard" since="3.4.0" />
 
 This is the Vite plugin which powers the Vendure Dashboard, including:
 
@@ -102,6 +102,18 @@ type VitePluginVendureDashboardOptions = {
      * the location based on the location of the `@vendure/core` package.
      */
     pluginPackageScanner?: PackageScannerConfig;
+    /**
+     * @description
+     * Allows you to specify the module system to use when compiling and loading your Vendure config.
+     * By default, the compiler will use CommonJS, but you can set it to `esm` if you are using
+     * ES Modules in your Vendure project.
+     *
+     * **Status** Developer preview. If you are using ESM please try this out and provide us with feedback!
+     *
+     * @since 3.5.1
+     * @default 'commonjs'
+     */
+    module?: 'commonjs' | 'esm';
     /**
      * @description
      * Allows you to selectively disable individual plugins.

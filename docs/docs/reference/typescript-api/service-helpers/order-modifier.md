@@ -54,7 +54,7 @@ already exists then we will be adding the new quantity to the existing quantity.
 - `quantityInOtherOrderLines` is used when we have more than 1 OrderLine containing the same
 ProductVariant. This occurs when there are custom fields defined on the OrderLine and the lines
 have differing values for one or more custom fields. In this case, we need to take _all_ of these
-OrderLines into account when constraining the quantity. See https://github.com/vendure-ecommerce/vendure/issues/2702
+OrderLines into account when constraining the quantity. See https://github.com/vendurehq/vendure/issues/2702
 for more on this.
 ### getExistingOrderLine
 

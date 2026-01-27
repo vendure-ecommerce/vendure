@@ -36,7 +36,7 @@ describe('Entity prefix edge-cases', () => {
         await server.destroy();
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1569
+    // https://github.com/vendurehq/vendure/issues/1569
     it('customers list filter by postalCode', async () => {
         const result = await adminClient.query(getCustomerListDocument, {
             options: {

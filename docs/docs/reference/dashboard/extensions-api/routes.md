@@ -20,8 +20,8 @@ interface DashboardRouteDefinition {
     component: (route: AnyRoute) => React.ReactNode;
     path: string;
     navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
-    loader?: RouteOptions['loader'];
-    validateSearch?: RouteOptions['validateSearch'];
+    loader?: RouteOptions<any>['loader'];
+    validateSearch?: RouteOptions<any>['validateSearch'];
     authenticated?: boolean;
 }
 ```
@@ -50,14 +50,14 @@ this item should appear in. It can also point to custom nav menu sections that
 have been defined using the `navSections` extension property.
 ### loader
 
-<MemberInfo kind="property" type={`RouteOptions['loader']`}   />
+<MemberInfo kind="property" type={`RouteOptions&#60;any&#62;['loader']`}   />
 
 Optional loader function to fetch data before the route renders.
 The value is a Tanstack Router
 [loader function](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#route-loaders)
 ### validateSearch
 
-<MemberInfo kind="property" type={`RouteOptions['validateSearch']`}   />
+<MemberInfo kind="property" type={`RouteOptions&#60;any&#62;['validateSearch']`}   />
 
 Optional search parameter validation function.
 The value is a Tanstack Router

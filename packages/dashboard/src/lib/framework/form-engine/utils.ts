@@ -253,14 +253,43 @@ export function isStringStructField(input: StructField): input is StringStructFi
 }
 
 /**
- * String struct field that has options (select dropdown)
+ * String struct field that has options (select dropdown).
+ * Checks for options defined either directly or via ui.options.
  */
 export function isStringStructFieldWithOptions(
     input: StructField,
 ): input is StringStructField & { options: any[] } {
-    return (
-        input.type === 'string' && input.hasOwnProperty('options') && Array.isArray((input as any).options)
-    );
+    if (input.type !== 'string') {
+        return false;
+    }
+    // Check for direct options property
+    if (input.hasOwnProperty('options') && Array.isArray((input as any).options)) {
+        return true;
+    }
+    // Also check for ui.options (fallback pattern)
+    if (Array.isArray((input as any).ui?.options)) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Extracts options from a field definition, normalizing the different locations
+ * where options can be defined (direct property or ui.options).
+ * Works for both ConfigurableFieldDef and StructField types.
+ */
+export function extractFieldOptions(
+    field: ConfigurableFieldDef | StructField,
+): NonNullable<StringCustomFieldConfig['options']> {
+    // Check direct options property first
+    if ((field as any).options && Array.isArray((field as any).options)) {
+        return (field as any).options;
+    }
+    // Fall back to ui.options
+    if (field.ui?.options && Array.isArray(field.ui.options)) {
+        return field.ui.options;
+    }
+    return [];
 }
 
 /**

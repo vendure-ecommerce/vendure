@@ -12,7 +12,7 @@ import TabItem from '@theme/TabItem';
 
 [Northflank](https://northflank.com) is a comprehensive developer platform to build and scale your apps. It has an outstanding developer experience and has a free tier for small projects, and is well-suited for deploying and scaling Vendure applications.
 
-This guide will walk you through the steps to deploy [a sample Vendure application](https://github.com/vendure-ecommerce/one-click-deploy) to Northflank.
+This guide will walk you through the steps to deploy [a sample Vendure application](https://github.com/vendurehq/one-click-deploy) to Northflank.
 
 ## Set up a Northflank account
 
@@ -208,7 +208,7 @@ If you want to use the free plan, use the "Lite Template".
               "deploymentPlan": "nf-compute-20"
             },
             "vcsData": {
-              "projectUrl": "https://github.com/vendure-ecommerce/one-click-deploy",
+              "projectUrl": "https://github.com/vendurehq/one-click-deploy",
               "projectType": "github"
             },
             "buildSettings": {
@@ -455,7 +455,7 @@ This setup is suitable for testing purposes, but is not recommended for producti
               "deploymentPlan": "nf-compute-10"
             },
             "vcsData": {
-              "projectUrl": "https://github.com/vendure-ecommerce/one-click-deploy",
+              "projectUrl": "https://github.com/vendurehq/one-click-deploy",
               "projectType": "github"
             },
             "buildSettings": {

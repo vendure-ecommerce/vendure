@@ -9,6 +9,7 @@ import {
 } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
+import { getInputComponent } from '@/vdb/framework/extension-api/input-component-extensions.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { CheckIcon, PencilIcon, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
@@ -20,7 +21,11 @@ import {
     StructCustomFieldConfig,
     StructField,
 } from '@/vdb/framework/form-engine/form-engine-types.js';
-import { isReadonlyField, isStructFieldConfig } from '@/vdb/framework/form-engine/utils.js';
+import {
+    isReadonlyField,
+    isStringStructFieldWithOptions,
+    isStructFieldConfig,
+} from '@/vdb/framework/form-engine/utils.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { CustomFieldListInput } from './custom-field-list-input.js';
 import { DateTimeInput } from './datetime-input.js';
@@ -138,7 +143,11 @@ export function StructFormInput({ fieldDef, ...field }: Readonly<DashboardFormCo
                                         </div>
                                         <div className="flex-[2]">
                                             <FormControl>
-                                                {renderStructFieldInput(structField, structInputField)}
+                                                {renderStructFieldInput(
+                                                    structField,
+                                                    structInputField,
+                                                    isReadonly,
+                                                )}
                                             </FormControl>
                                             <FormMessage />
                                         </div>
@@ -204,12 +213,28 @@ const renderStructFieldInput = (
 
     // Helper function to render single input for a struct field
     const renderSingleStructInput = (singleField: ControllerRenderProps<any, any>) => {
+        // Check for custom component via ui.component first
+        const customComponentId = structField.ui?.component as string | undefined;
+        if (customComponentId) {
+            const CustomComponent = getInputComponent(customComponentId);
+            if (CustomComponent) {
+                // Cast to any since struct fields share the relevant properties with ConfigurableFieldDef
+                // (name, type, ui, etc.) but aren't the same union type
+                return <CustomComponent {...singleField} fieldDef={structField as any} disabled={isReadonly} />;
+            }
+        }
+
         switch (structField.type) {
             case 'string': {
-                // Check if the field has options (dropdown)
-                const stringField = structField as any; // GraphQL union types need casting
-                if (stringField.options && stringField.options.length > 0) {
-                    return <SelectWithOptions {...singleField} fieldDef={stringField} isListField={false} />;
+                if (isStringStructFieldWithOptions(structField)) {
+                    return (
+                        <SelectWithOptions
+                            {...singleField}
+                            fieldDef={structField}
+                            isListField={false}
+                            disabled={isReadonly}
+                        />
+                    );
                 }
                 return (
                     <Input
@@ -269,19 +294,29 @@ const renderStructFieldInput = (
         }
     };
 
-    // Handle string fields with options (dropdown) - already handles list case with multi-select
-    if (structField.type === 'string') {
-        const stringField = structField as any; // GraphQL union types need casting
-        if (stringField.options && stringField.options.length > 0) {
-            return (
-                <SelectWithOptions
-                    {...inputField}
-                    fieldDef={stringField}
-                    disabled={isReadonly}
-                    isListField={isList}
-                />
-            );
+    // Check for custom component via ui.component first (for list fields)
+    const customComponentId = structField.ui?.component as string | undefined;
+    if (customComponentId) {
+        const CustomComponent = getInputComponent(customComponentId);
+        if (CustomComponent) {
+            // If the custom component handles lists itself, use it directly
+            if (CustomComponent.metadata?.isListInput === true || CustomComponent.metadata?.isListInput === 'dynamic') {
+                // Cast to any since struct fields share the relevant properties with ConfigurableFieldDef
+                return <CustomComponent {...inputField} fieldDef={structField as any} disabled={isReadonly} />;
+            }
         }
+    }
+
+    // Handle string fields with options (dropdown) - already handles list case with multi-select
+    if (isStringStructFieldWithOptions(structField)) {
+        return (
+            <SelectWithOptions
+                {...inputField}
+                fieldDef={structField}
+                disabled={isReadonly}
+                isListField={isList}
+            />
+        );
     }
 
     // For list struct fields, wrap with list input
@@ -301,9 +336,6 @@ const renderStructFieldInput = (
                     return '';
             }
         };
-
-        // Determine if the field type needs full width
-        const needsFullWidth = structField.type === 'text' || structField.type === 'localeText';
 
         return (
             <CustomFieldListInput

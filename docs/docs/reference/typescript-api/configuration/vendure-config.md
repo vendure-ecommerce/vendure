@@ -14,7 +14,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1172" packageName="@vendure/core" />
 
 All possible configuration options are defined by the
-[`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/vendure-config.ts) interface.
+[`VendureConfig`](https://github.com/vendurehq/vendure/blob/master/packages/core/src/config/vendure-config.ts) interface.
 
 ```ts title="Signature"
 interface VendureConfig {

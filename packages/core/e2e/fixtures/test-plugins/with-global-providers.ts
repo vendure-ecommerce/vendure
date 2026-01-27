@@ -54,7 +54,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
 /**
  * This plugin doesn't do anything other than attempt to register the global Nest providers
- * in order to test https://github.com/vendure-ecommerce/vendure/issues/837
+ * in order to test https://github.com/vendurehq/vendure/issues/837
  */
 @VendurePlugin({
     providers: [

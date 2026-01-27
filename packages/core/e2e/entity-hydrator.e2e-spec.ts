@@ -160,7 +160,7 @@ describe('Entity hydration', () => {
         expect(getVariantWithName(hydrateProduct, 'Laptop 15 inch 16GB').priceWithTax).toBe(275880);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1153
+    // https://github.com/vendurehq/vendure/issues/1153
     it('correctly handles empty array relations', async () => {
         // Product T_5 has no asset defined
         const { hydrateProductAsset } = await adminClient.query(getHydratedProductAssetDocument, {
@@ -170,14 +170,14 @@ describe('Entity hydration', () => {
         expect(hydrateProductAsset.assets).toEqual([]);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1324
+    // https://github.com/vendurehq/vendure/issues/1324
     it('correctly handles empty nested array relations', async () => {
         const { hydrateProductWithNoFacets } = await adminClient.query(getHydratedProductNoFacetsDocument);
 
         expect(hydrateProductWithNoFacets.facetValues).toEqual([]);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1161
+    // https://github.com/vendurehq/vendure/issues/1161
     it('correctly expands missing relations', async () => {
         const { hydrateProductVariant } = await adminClient.query(getHydratedVariantDocument, { id: 'T_1' });
 
@@ -185,7 +185,7 @@ describe('Entity hydration', () => {
         expect(hydrateProductVariant.product.facetValues.map(fv => fv.id).sort()).toEqual(['T_1', 'T_2']);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1172
+    // https://github.com/vendurehq/vendure/issues/1172
     it('can hydrate entity with getters (Order)', async () => {
         const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
             productVariantId: 'T_1',
@@ -201,7 +201,7 @@ describe('Entity hydration', () => {
         expect(hydrateOrder.payments).toEqual([]);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1229
+    // https://github.com/vendurehq/vendure/issues/1229
     it('deep merges existing properties', async () => {
         await shopClient.asAnonymousUser();
         const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
@@ -217,7 +217,7 @@ describe('Entity hydration', () => {
         expect(hydrateOrderReturnQuantities).toEqual([2]);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1284
+    // https://github.com/vendurehq/vendure/issues/1284
     it('hydrates custom field relations', async () => {
         await adminClient.query(updateChannelDocument, {
             input: {
@@ -256,7 +256,7 @@ describe('Entity hydration', () => {
         expect(hydrateChannelWithNestedRelation.customFields.additionalConfig).toBeDefined();
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/2682
+    // https://github.com/vendurehq/vendure/issues/2682
     it('hydrates a nested custom field where the first level is null', async () => {
         await adminClient.query(updateChannelDocument, {
             input: {
@@ -277,7 +277,7 @@ describe('Entity hydration', () => {
         expect(hydrateChannelWithNestedRelation.customFields.additionalConfig).toBeNull();
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/2013
+    // https://github.com/vendurehq/vendure/issues/2013
     describe('hydration of OrderLine ProductVariantPrices', () => {
         let order: Order | undefined;
 
@@ -332,7 +332,7 @@ describe('Entity hydration', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/2546
+    // https://github.com/vendurehq/vendure/issues/2546
     it('Preserves ordering when merging arrays of relations', async () => {
         await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
         await shopClient.query(addItemToOrderDocument, {
@@ -375,7 +375,7 @@ describe('Entity hydration', () => {
     /*
      * Postgres has a character limit for alias names which can cause issues when joining
      * multiple aliases with the same prefix
-     * https://github.com/vendure-ecommerce/vendure/issues/2899
+     * https://github.com/vendurehq/vendure/issues/2899
      */
     it('Hydrates properties with very long names', async () => {
         await adminClient.query(updateChannelDocument, {

@@ -1,6 +1,6 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { ActionBarItem } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -24,6 +24,7 @@ function ZoneListPage() {
             title={<Trans>Zones</Trans>}
             defaultVisibility={{
                 name: true,
+                regions: true,
             }}
             customizeColumns={{
                 name: {

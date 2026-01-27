@@ -52,6 +52,7 @@ import { Cancellation } from '../../../entity/stock-movement/cancellation.entity
 import { Release } from '../../../entity/stock-movement/release.entity';
 import { Sale } from '../../../entity/stock-movement/sale.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
+import { OrderEvent } from '../../../event-bus';
 import { EventBus } from '../../../event-bus/event-bus';
 import { OrderLineEvent } from '../../../event-bus/events/order-line-event';
 import { CountryService } from '../../services/country.service';
@@ -66,7 +67,6 @@ import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../translator/translator.service';
 import { getOrdersFromLines, orderLinesAreAllCancelled } from '../utils/order-utils';
 import { patchEntity } from '../utils/patch-entity';
-import { OrderEvent } from '../../../event-bus';
 
 /**
  * @description
@@ -110,7 +110,7 @@ export class OrderModifier {
      * - `quantityInOtherOrderLines` is used when we have more than 1 OrderLine containing the same
      * ProductVariant. This occurs when there are custom fields defined on the OrderLine and the lines
      * have differing values for one or more custom fields. In this case, we need to take _all_ of these
-     * OrderLines into account when constraining the quantity. See https://github.com/vendure-ecommerce/vendure/issues/2702
+     * OrderLines into account when constraining the quantity. See https://github.com/vendurehq/vendure/issues/2702
      * for more on this.
      */
     async constrainQuantityToSaleable(

@@ -27,6 +27,7 @@ export function DataTableBulkActions<TData>({
     // Cache to store selected items across page changes
     const selectedItemsCache = useRef<Map<string, TData>>(new Map());
     const selectedRowIds = Object.keys(table.getState().rowSelection);
+    const visibleSelectedCount = table.getRowModel().rows.filter(row => row.getIsSelected()).length;
 
     // Get selection from cache instead of trying to get from table
     const selection = selectedRowIds
@@ -49,7 +50,7 @@ export function DataTableBulkActions<TData>({
         .filter((item): item is TData => item !== undefined);
 
     const { position, shouldShow } = useFloatingBulkActions({
-        selectionCount: selection.length,
+        selectionCount: visibleSelectedCount,
         containerSelector: '[data-table-root], .data-table-container, table',
         bottomOffset: 40,
     });

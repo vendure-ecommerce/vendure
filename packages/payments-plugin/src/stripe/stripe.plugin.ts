@@ -140,7 +140,7 @@ import { StripePluginOptions } from './types';
  *
  * :::info
  * A full working storefront example of the Stripe integration can be found in the
- * [Remix Starter repo](https://github.com/vendure-ecommerce/storefront-remix-starter/tree/master/app/components/checkout/stripe)
+ * [Remix Starter repo](https://github.com/vendurehq/storefront-remix-starter/tree/master/app/components/checkout/stripe)
  * :::
  *
  * ## Local development

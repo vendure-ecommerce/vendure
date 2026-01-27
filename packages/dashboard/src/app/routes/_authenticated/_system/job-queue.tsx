@@ -6,7 +6,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
-import { ActionBarItem } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -78,12 +78,17 @@ function JobQueuePage() {
     const refreshRef = useRef<() => void>(() => {});
     const { t } = useLingui();
     const [refreshInterval, setRefreshInterval] = useState(10000);
+    const isActionMenuOpenRef = useRef(false);
 
     useEffect(() => {
         if (refreshInterval === 0) return;
 
         const interval = setInterval(() => {
-            refreshRef.current();
+            // Pause auto-refresh while the row action dropdown is open
+            // to avoid closing it mid-interaction
+            if (!isActionMenuOpenRef.current) {
+                refreshRef.current();
+            }
         }, refreshInterval);
 
         return () => clearInterval(interval);
@@ -111,6 +116,7 @@ function JobQueuePage() {
                         <PayloadDialog
                             payload={row.original.data}
                             title={<Trans>View job data</Trans>}
+                            onOpenChange={open => (isActionMenuOpenRef.current = open)}
                             description={<Trans>The data that has been passed to the job</Trans>}
                             trigger={
                                 <Button size="sm" variant="secondary">
@@ -129,6 +135,7 @@ function JobQueuePage() {
                             <PayloadDialog
                                 payload={row.original.result}
                                 title={<Trans>View job result</Trans>}
+                                onOpenChange={open => (isActionMenuOpenRef.current = open)}
                                 description={<Trans>The result of the job</Trans>}
                                 trigger={
                                     <Button size="sm" variant="secondary">
@@ -168,7 +175,9 @@ function JobQueuePage() {
                                 {row.original.state}
                                 {row.original.state === 'RUNNING' ? (
                                     <div className="flex items-center gap-2">
-                                        <DropdownMenu>
+                                        <DropdownMenu
+                                            onOpenChange={open => (isActionMenuOpenRef.current = open)}
+                                        >
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
                                                     <MoreVertical className="h-4 w-4" />

@@ -866,7 +866,7 @@ describe('Elasticsearch plugin', () => {
                 expect(t3?.enabled).toEqual(false);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/295
+            // https://github.com/vendurehq/vendure/issues/295
             it('enabled status survives reindex', async () => {
                 await adminClient.query(reindexDocument);
 
@@ -882,7 +882,7 @@ describe('Elasticsearch plugin', () => {
             });
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/609
+        // https://github.com/vendurehq/vendure/issues/609
         describe('Synthetic index items', () => {
             let createdProductId: string;
 
@@ -1110,7 +1110,7 @@ describe('Elasticsearch plugin', () => {
                 expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/896
+            // https://github.com/vendurehq/vendure/issues/896
             it('removing from channel with multiple languages', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
@@ -1287,7 +1287,7 @@ describe('Elasticsearch plugin', () => {
             });
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1638
+        // https://github.com/vendurehq/vendure/issues/1638
         it('hydrates variant custom field relation', async () => {
             await adminClient.query(updateProductVariantsDocument, {
                 input: [

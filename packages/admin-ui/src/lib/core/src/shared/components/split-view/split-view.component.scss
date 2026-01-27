@@ -20,7 +20,7 @@
             background-color: var(--clr-global-selection-color);
         }
         &.expanded {
-            // Fix for Firefox layout https://github.com/vendure-ecommerce/vendure/issues/531
+            // Fix for Firefox layout https://github.com/vendurehq/vendure/issues/531
             width: calc(100% - 40vw);
         }
     }

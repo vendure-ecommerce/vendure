@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Info, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     ConfigurableOperationDefinition,
     DeletionResponse,
@@ -15,7 +15,10 @@ import {
     QueryPreviewCollectionVariantsArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { GraphQLResolveInfo } from 'graphql';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
+import { CacheKey } from '../../../common/constants';
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
@@ -23,6 +26,7 @@ import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ConfigurableOperationCodec } from '../../common/configurable-operation-codec';
+import { isFieldInSelection } from '../../common/is-field-in-selection';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
@@ -35,6 +39,7 @@ export class CollectionResolver {
         private collectionService: CollectionService,
         private facetValueService: FacetValueService,
         private configurableOperationCodec: ConfigurableOperationCodec,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     @Query()
@@ -56,8 +61,17 @@ export class CollectionResolver {
             omit: ['productVariants', 'assets', 'parent.productVariants', 'children.productVariants'],
         })
         relations: RelationPaths<Collection>,
+        @Info() info: GraphQLResolveInfo,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        return this.collectionService.findAll(ctx, args.options || undefined, relations);
+        const collections = await this.collectionService.findAll(ctx, args.options || undefined, relations);
+        // Cache the variant counts query promise if productVariantCount is requested,
+        // allowing the DB query to start before the field resolvers are called
+        if (isFieldInSelection(info, 'productVariantCount')) {
+            const collectionIds = collections.items.map(c => c.id);
+            const countsPromise = this.collectionService.getProductVariantCounts(ctx, collectionIds);
+            this.requestContextCache.set(ctx, CacheKey.CollectionVariantCounts, countsPromise);
+        }
+        return collections;
     }
 
     @Query()
