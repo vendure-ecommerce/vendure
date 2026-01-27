@@ -226,8 +226,13 @@ export function useRefundOrder(order: Order, onSuccess?: () => void): UseRefundO
     ]);
 
     const canSubmit = useMemo(() => {
-        return refundTotal > 0 && amountToRefundTotal === refundTotal && !!reason;
-    }, [refundTotal, amountToRefundTotal, reason]);
+        return (
+            refundTotal > 0 &&
+            amountToRefundTotal === refundTotal &&
+            !!reason &&
+            validationErrors.length === 0
+        );
+    }, [refundTotal, amountToRefundTotal, reason, validationErrors]);
 
     const isCancelling = useMemo(() => {
         return Object.values(lineSelections).some(line => line.quantity > 0 && line.cancel);
