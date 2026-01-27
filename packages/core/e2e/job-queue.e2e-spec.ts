@@ -164,6 +164,20 @@ describe('JobQueue', () => {
         const jobs = await getJobsInTestQueue(JobState.RUNNING);
         expect(jobs.items.length).toBe(1);
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/4112
+    it('updates() should emit multiple times until job completes', async () => {
+        const restControllerUrl = `http://localhost:${activeConfig.apiOptions.port}/run-job/subscribe-all-updates`;
+        const response = await adminClient.fetch(restControllerUrl);
+        const result = JSON.parse(await response.text());
+
+        // Job does 4 progress steps (25%, 50%, 75%, 100%), so we should see at least 3 distinct updates
+        expect(result.updateCount).toBeGreaterThanOrEqual(3);
+        // Final state should be COMPLETED
+        expect(result.finalState).toBe(JobState.COMPLETED);
+        // Final result should be what the job returned
+        expect(result.finalResult).toBe('completed');
+    });
 });
 
 function sleep(ms: number): Promise<void> {

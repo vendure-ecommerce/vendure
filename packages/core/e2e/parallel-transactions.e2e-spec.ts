@@ -58,7 +58,7 @@ describe('Parallel transactions', () => {
         );
     }, 100000);
 
-    // A real-world error-case originally reported in https://github.com/vendure-ecommerce/vendure/issues/527
+    // A real-world error-case originally reported in https://github.com/vendurehq/vendure/issues/527
     it('does not deadlock on concurrent creating ProductVariants', async () => {
         const CONCURRENCY_LIMIT = 4;
 

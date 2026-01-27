@@ -202,7 +202,7 @@ const customConfig = mergeConfig(testConfig(), {
             },
         ],
         // Single readonly Address custom field to test
-        // https://github.com/vendure-ecommerce/vendure/issues/3326
+        // https://github.com/vendurehq/vendure/issues/3326
         Address: [
             {
                 name: 'hereId',
@@ -715,7 +715,7 @@ describe('Custom fields', () => {
             }, 'async error'),
         );
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1000
+        // https://github.com/vendurehq/vendure/issues/1000
         it(
             'supports validation of relation types',
             assertThrowsWithMessage(async () => {
@@ -734,7 +734,7 @@ describe('Custom fields', () => {
             }, 'relation error'),
         );
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1091
+        // https://github.com/vendurehq/vendure/issues/1091
         it('handles well graphql internal fields', async () => {
             // throws "Cannot read property 'args' of undefined" if broken
             await adminClient.query(
@@ -754,7 +754,7 @@ describe('Custom fields', () => {
             );
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1953
+        // https://github.com/vendurehq/vendure/issues/1953
         describe('validation of OrderLine custom fields', () => {
             it('addItemToOrder', async () => {
                 try {
@@ -899,7 +899,7 @@ describe('Custom fields', () => {
             }, 'Cannot query field "internalString" on type "ProductCustomFields"'),
         );
 
-        // https://github.com/vendure-ecommerce/vendure/issues/3049
+        // https://github.com/vendurehq/vendure/issues/3049
         it('does not leak private fields via JSON type', async () => {
             const { collection } = await shopClient.query(getCollectionCustomFieldsDocument, { id: 'T_1' });
 
@@ -915,7 +915,7 @@ describe('Custom fields', () => {
             expect(products.totalItems).toBe(1);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1581
+        // https://github.com/vendurehq/vendure/issues/1581
         it('can sort by localeString custom fields', async () => {
             const { products } = await adminClient.query(getProductsSortByLocaleStringDocument);
 

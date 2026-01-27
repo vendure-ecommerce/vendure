@@ -1256,7 +1256,7 @@ describe('ListQueryBuilder', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1586
+    // https://github.com/vendurehq/vendure/issues/1586
     it('using the getMany() of the resulting QueryBuilder', async () => {
         const { testEntitiesGetMany } = await adminClient.query(GET_ARRAY_LIST, {});
         const actualPrices = testEntitiesGetMany
@@ -1267,7 +1267,7 @@ describe('ListQueryBuilder', () => {
         expect(actualPrices).toEqual(expectedPrices);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1611
+    // https://github.com/vendurehq/vendure/issues/1611
     describe('translations handling', () => {
         const allTranslations = [
             [
@@ -1436,7 +1436,7 @@ describe('ListQueryBuilder', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/3267
+    // https://github.com/vendurehq/vendure/issues/3267
     describe('filtering with duplicate custom property fields in _and blocks', () => {
         it('filters by single tagId', async () => {
             const { testEntities } = await shopClient.query(GET_LIST_WITH_TAGS, {

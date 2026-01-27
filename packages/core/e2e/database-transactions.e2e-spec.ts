@@ -236,7 +236,7 @@ describe('Transaction infrastructure', () => {
         expect(TransactionTestPlugin.errorHandler).not.toHaveBeenCalled();
     });
 
-    // Testing https://github.com/vendure-ecommerce/vendure/issues/520
+    // Testing https://github.com/vendurehq/vendure/issues/520
     it('passing transaction via EventBus', async () => {
         TransactionTestPlugin.reset();
         const { createTestAdministrator } = await adminClient.query(createTestAdministratorDocument, {
@@ -249,7 +249,7 @@ describe('Transaction infrastructure', () => {
         expect(TransactionTestPlugin.errorHandler).not.toHaveBeenCalled();
     });
 
-    // Testing https://github.com/vendure-ecommerce/vendure/issues/1107
+    // Testing https://github.com/vendurehq/vendure/issues/1107
     it('passing transaction via EventBus with delay in committing transaction', async () => {
         TransactionTestPlugin.reset();
         const { createTestAdministrator4 } = await adminClient.query(createTestAdministrator4Document, {

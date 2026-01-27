@@ -239,7 +239,7 @@ describe('ChannelAware Customers', () => {
             expect(customers.items.map(customer => customer.emailAddress)).toContain('john.doe.2@test.com');
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/834
+        // https://github.com/vendurehq/vendure/issues/834
         it('handles concurrent assignments to a new channel', async () => {
             const THIRD_CHANNEL_TOKEN = 'third_channel_token';
             await adminClient.query(createChannelDocument, {

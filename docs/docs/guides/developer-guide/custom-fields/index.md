@@ -1377,7 +1377,7 @@ One way to ensure that your custom field typings always get imported first is to
 :::
 
 :::tip
-For a working example of this setup, see the [real-world-vendure repo](https://github.com/vendure-ecommerce/real-world-vendure/blob/master/src/plugins/reviews/types.ts)
+For a working example of this setup, see the [real-world-vendure repo](https://github.com/vendurehq/real-world-vendure/blob/master/src/plugins/reviews/types.ts)
 :::
 
 ## Special cases

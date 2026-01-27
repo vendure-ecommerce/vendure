@@ -529,7 +529,7 @@ describe('Shop auth & accounts', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1659
+    // https://github.com/vendurehq/vendure/issues/1659
     describe('password reset before verification', () => {
         const emailAddress = 'test3@test.com';
         let passwordResetToken: string;

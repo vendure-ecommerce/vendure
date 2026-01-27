@@ -68,7 +68,7 @@ class TestOrderPlacedStrategy extends DefaultOrderPlacedStrategy {
         order: Order,
     ): boolean {
         if ((order.customFields as any).test1557) {
-            // This branch is used in testing https://github.com/vendure-ecommerce/vendure/issues/1557
+            // This branch is used in testing https://github.com/vendurehq/vendure/issues/1557
             // i.e. it will cause the Order to be set to `active: false` but without creating any
             // Allocations for the OrderLines.
             if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
@@ -458,7 +458,7 @@ describe('Stock control', () => {
             expect(variant3.stockMovements.items[3].quantity).toBe(4);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1198
+        // https://github.com/vendurehq/vendure/issues/1198
         it('creates Cancellations & adjusts stock when cancelling a Fulfillment', async () => {
             async function getTrackedVariant() {
                 const result = await getProductWithStockMovement('T_2');
@@ -1039,7 +1039,7 @@ describe('Stock control', () => {
                 );
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/691
+            // https://github.com/vendurehq/vendure/issues/691
             it('returns InsufficientStockError when tracking inventory & adding too many individually', async () => {
                 await shopClient.asAnonymousUser();
                 const { addItemToOrder: add1 } = await shopClient.query(addItemToOrderDocument, {
@@ -1064,7 +1064,7 @@ describe('Stock control', () => {
                 expect((add2 as any).order.lines[0].quantity).toBe(3);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1273
+            // https://github.com/vendurehq/vendure/issues/1273
             it('adjustOrderLine when saleable stock changes to zero', async () => {
                 await adminClient.query(updateProductVariantsDocument, {
                     input: [
@@ -1104,7 +1104,7 @@ describe('Stock control', () => {
                 expect(activeOrder!.lines.length).toBe(0);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1557
+            // https://github.com/vendurehq/vendure/issues/1557
             it('cancelling an Order only creates Releases for OrderItems that have actually been allocated', async () => {
                 const product = await getProductWithStockMovement('T_2');
                 const variant6 = product!.variants.find(v => v.id === variant6Id);
@@ -1164,7 +1164,7 @@ describe('Stock control', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1028
+    // https://github.com/vendurehq/vendure/issues/1028
     describe('OrderLines with same variant but different custom fields', () => {
         let orderId: string;
 
@@ -1280,7 +1280,7 @@ describe('Stock control', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1738
+    // https://github.com/vendurehq/vendure/issues/1738
     describe('going out of stock after being added to order', () => {
         const variantId = 'T_1';
 

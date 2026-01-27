@@ -222,7 +222,7 @@ function CollectionListPage() {
                         );
                     },
                 },
-                productVariants: {
+                productVariantCount: {
                     header: () => <Trans>Contents</Trans>,
                     cell: ({ row }) => {
                         return (
@@ -230,7 +230,7 @@ function CollectionListPage() {
                                 collectionId={row.original.id}
                                 collectionName={row.original.name}
                             >
-                                <Trans>{row.original.productVariants?.totalItems} variants</Trans>
+                                <Trans>{row.original.productVariantCount} variants</Trans>
                             </CollectionContentsSheet>
                         );
                     },
@@ -262,7 +262,7 @@ function CollectionListPage() {
                 'name',
                 'slug',
                 'breadcrumbs',
-                'productVariants',
+                'productVariantCount',
             ]}
             transformData={data => {
                 return addSubCollections(data);

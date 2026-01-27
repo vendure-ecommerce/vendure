@@ -19,7 +19,7 @@ For this guide you'll need to have your Vendure project in a git repo on either 
 
 :::info
 If you'd like to quickly get started with a ready-made Vendure project which includes sample data, you can use our
-[Vendure one-click-deploy repo](https://github.com/vendure-ecommerce/one-click-deploy), which means you won't have
+[Vendure one-click-deploy repo](https://github.com/vendurehq/one-click-deploy), which means you won't have
 to set up your own git repo.
 :::
 
@@ -111,7 +111,7 @@ to connect your account and grant access to the repository containing your Vendu
 If you are using the one-click-deploy repo, you should instead use the "Public Git repository" option and enter the URL of the repo:
 
 ```
-https://github.com/vendure-ecommerce/one-click-deploy
+https://github.com/vendurehq/one-click-deploy
 ```
 :::
 
