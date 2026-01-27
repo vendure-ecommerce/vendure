@@ -890,7 +890,3 @@ export function isOfType(el: unknown, type: React.FunctionComponent<any>): boole
     }
     return false;
 }
-
-// Re-export ActionBarItem for convenience alongside other page layout components
-export { ActionBarItem } from './action-bar-item-wrapper.js';
-export type { ActionBarItemProps } from './action-bar-item-wrapper.js';
