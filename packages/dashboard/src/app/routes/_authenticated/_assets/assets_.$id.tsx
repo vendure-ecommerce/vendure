@@ -6,15 +6,14 @@ import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Label } from '@/vdb/components/ui/label.js';
-import {
-    ActionBarItem,
-    CustomFieldsPageBlock,
+import {    CustomFieldsPageBlock,
     Page,
     PageActionBar,
     PageBlock,
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';

@@ -1,5 +1,6 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { Button } from '@/vdb/components/ui/button.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -230,7 +231,7 @@ function CollectionListPage() {
                                 collectionId={row.original.id}
                                 collectionName={row.original.name}
                             >
-                                <Trans>{row.original.productVariantCount} variants</Trans>
+                                <Trans>{row.original.productVariantCount as number} variants</Trans>
                             </CollectionContentsSheet>
                         );
                     },

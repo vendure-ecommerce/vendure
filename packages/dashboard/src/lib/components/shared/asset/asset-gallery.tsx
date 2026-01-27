@@ -13,7 +13,8 @@ import {
     PaginationPrevious,
 } from '@/vdb/components/ui/pagination.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
-import { ActionBarItem, PageActionBar } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
+import { PageActionBar } from '@/vdb/framework/layout-engine/page-layout.js';
 import { api } from '@/vdb/graphql/api.js';
 import { assetFragment, AssetFragment } from '@/vdb/graphql/fragments.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
