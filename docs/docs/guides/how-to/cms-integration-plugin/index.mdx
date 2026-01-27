@@ -6,9 +6,9 @@ A CMS integration plugin allows you to automatically synchronize your Vendure pr
 
 This is done in a way that establishes Vendure as the source of truth for the ecommerce's data.
 
-This guide demonstrates how to build a production-ready CMS integration plugin. The principles covered here are designed to be CMS-agnostic, however we do have [working examples](/guides/how-to/cms-integration-plugin/#platform-specific-setup) for various platforms.
+This guide demonstrates how to build a production-ready CMS integration plugin. The principles covered here are designed to be CMS-agnostic, however we do have [working examples](/how-to/cms-integration-plugin/#platform-specific-setup) for various platforms.
 
-Platfroms covered in the [guide](/guides/how-to/cms-integration-plugin/#platform-specific-setup):
+Platfroms covered in the [guide](/how-to/cms-integration-plugin/#platform-specific-setup):
 
 - [Payload](https://payloadcms.com/)
 - [Sanity](https://www.sanity.io/)
@@ -27,16 +27,16 @@ The code examples in this guide are simplified for educational purposes. The act
 ## Prerequisites
 
 - Node.js 20+ with npm package manager
-- An existing Vendure project created with the [Vendure create command](/guides/getting-started/installation/)
+- An existing Vendure project created with the [Vendure create command](/getting-started/installation/)
 - An access key to a CMS platform that provides an API
 
 ## Core Concepts
 
-This [plugin](/guides/developer-guide/plugins/) leverages several key Vendure concepts:
+This [plugin](/developer-guide/plugins/) leverages several key Vendure concepts:
 
-- **[EventBus](/guides/developer-guide/events/)**: Provides real-time notifications when entities are created, updated, or deleted.
-- **[Job Queues](/guides/developer-guide/worker-job-queue/)**: Ensures that synchronization tasks are performed reliably and asynchronously, with retries on failure.
-- **[Plugin API](/guides/developer-guide/plugins/)**: The foundation for extending Vendure with custom capabilities.
+- **[EventBus](/developer-guide/events/)**: Provides real-time notifications when entities are created, updated, or deleted.
+- **[Job Queues](/developer-guide/worker-job-queue/)**: Ensures that synchronization tasks are performed reliably and asynchronously, with retries on failure.
+- **[Plugin API](/developer-guide/plugins/)**: The foundation for extending Vendure with custom capabilities.
 
 ## How It Works
 
@@ -92,11 +92,11 @@ npx vendure add -s CmsSpecificService --selected-plugin CmsPlugin
 # Explained later in the Event-Driven Synchronization Section
 ```
 
-Now we start by defining the main [plugin](/guides/developer-guide/plugins/) class, its [services](/guides/developer-guide/the-service-layer/), and the configuration types.
+Now we start by defining the main [plugin](/developer-guide/plugins/) class, its [services](/developer-guide/the-service-layer/), and the configuration types.
 
 ### Plugin Definition
 
-The `CmsPlugin` class registers the necessary [services](/guides/developer-guide/the-service-layer/) (`CmsSyncService`, `CmsSpecificService`) and sets up any Admin API extensions.
+The `CmsPlugin` class registers the necessary [services](/developer-guide/the-service-layer/) (`CmsSyncService`, `CmsSpecificService`) and sets up any Admin API extensions.
 
 ```ts title="src/plugins/cms/cms.plugin.ts"
 import { VendurePlugin, PluginCommonModule, Type, OnModuleInit } from '@vendure/core';
@@ -161,9 +161,9 @@ export interface SyncResponse {
 
 ## Event-Driven Synchronization
 
-The plugin uses Vendure's [EventBus](/guides/developer-guide/events/) to capture changes in real-time.
+The plugin uses Vendure's [EventBus](/developer-guide/events/) to capture changes in real-time.
 
-In the [onModuleInit](/guides/developer-guide/events/#subscribing-to-events) lifecycle hook, we create job queues and subscribe to entity events.
+In the [onModuleInit](/developer-guide/events/#subscribing-to-events) lifecycle hook, we create job queues and subscribe to entity events.
 
 ### Creating Job Queues and Subscribing to Events
 
@@ -280,7 +280,7 @@ The sync service handles several critical functions:
 
 ### Service Structure and Dependencies
 
-The service follows Vendure's [dependency injection pattern](/guides/developer-guide/the-service-layer/) and requires several core Vendure services:
+The service follows Vendure's [dependency injection pattern](/developer-guide/the-service-layer/) and requires several core Vendure services:
 
 ```ts title="src/plugins/cms/services/cms-sync.service.ts"
 @Injectable()

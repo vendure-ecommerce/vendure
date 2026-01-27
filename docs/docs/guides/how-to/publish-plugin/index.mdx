@@ -2,7 +2,7 @@
 title: "Publishing a Plugin"
 ---
 
-Vendure's [plugin-based architecture](/guides/developer-guide/plugins/) means you'll be writing a lot of plugins.
+Vendure's [plugin-based architecture](/developer-guide/plugins/) means you'll be writing a lot of plugins.
 Some of those plugins may be useful to others, and you may want to share them with the community.
 
 We have created [Vendure Hub](https://vendure.io/hub) as a central listing for high-quality Vendure plugins.
@@ -44,7 +44,7 @@ a must. The same goes for any of the transitive dependencies of Vendure core suc
 that these dependencies will be available in the Vendure project that uses your plugin.
 
 As for version compatibility, you should use the
-[compatibility property](/guides/developer-guide/plugins/#step-7-specify-compatibility) in your plugin definition to ensure that the Vendure project
+[compatibility property](/developer-guide/plugins/#step-7-specify-compatibility) in your plugin definition to ensure that the Vendure project
 is using a compatible version of Vendure.
 
 ### License
@@ -380,7 +380,7 @@ export class LoyaltyPointsTransactionEvent extends VendureEvent {
 Testing is an important part of ensuring the quality of your plugin, as well as preventing regressions when you make
 changes.
 
-For plugins of any complexity, you should aim to have a suite of end-to-end tests as covered in the [testing docs](/guides/developer-guide/testing/).
+For plugins of any complexity, you should aim to have a suite of end-to-end tests as covered in the [testing docs](/developer-guide/testing/).
 
 In future we may use the test results to help determine the quality of a plugin.
 

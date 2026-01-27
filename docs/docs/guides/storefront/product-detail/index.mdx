@@ -145,11 +145,11 @@ This single query provides all the data we need to display our PDP.
 
 ## Formatting prices
 
-As explained in the [Money & Currency guide](/guides/core-concepts/money/), the prices are returned as integers in the
+As explained in the [Money & Currency guide](/core-concepts/money/), the prices are returned as integers in the
 smallest unit of the currency (e.g. cents for USD). Therefore, when we display the price, we need to divide by 100 and
 format it according to the currency's formatting rules.
 
-In the demo at the end of this guide, we'll use the [`formatCurrency` function](/guides/core-concepts/money/#displaying-monetary-values)
+In the demo at the end of this guide, we'll use the [`formatCurrency` function](/core-concepts/money/#displaying-monetary-values)
 which makes use of the browser's `Intl` API to format the price according to the user's locale.
 
 ## Displaying images
@@ -274,9 +274,9 @@ fragment UpdatedOrder on Order {
 
 There are some important things to note about this mutation:
 
-- Because the `addItemToOrder` mutation returns a union type, we need to use a [fragment](/guides/getting-started/graphql-intro/#fragments) to specify the fields we want to return.
+- Because the `addItemToOrder` mutation returns a union type, we need to use a [fragment](/getting-started/graphql-intro/#fragments) to specify the fields we want to return.
 In this case we have defined a fragment called `UpdatedOrder` which contains the fields we are interested in.
-- If any [expected errors](/guides/developer-guide/error-handling/) occur, the mutation will return an `ErrorResult` object. We'll be able to
+- If any [expected errors](/developer-guide/error-handling/) occur, the mutation will return an `ErrorResult` object. We'll be able to
 see the `errorCode` and `message` fields in the response, so that we can display a meaningful error message to the user.
 - In the special case of the `InsufficientStockError`, in addition to the `errorCode` and `message` fields, we also get the `quantityAvailable` field
 which tells us how many of the requested quantity are available (and have been added to the order). This is useful information to display to the user.

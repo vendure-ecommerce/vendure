@@ -47,7 +47,7 @@ Here's an explanation of each column:
 
 ### Importing Custom Field Data
 
-If you have [CustomFields](/guides/developer-guide/custom-fields/) defined on your Product or ProductVariant entities, this data can also be encoded in the import csv:
+If you have [CustomFields](/developer-guide/custom-fields/) defined on your Product or ProductVariant entities, this data can also be encoded in the import csv:
 
 * `product:<customFieldName>`: The value of this column will populate `Product.customFields[customFieldName]`. 
 * `variant:<customFieldName>`: The value of this column will populate `ProductVariant.customFields[customFieldName]`. 
@@ -264,9 +264,9 @@ Running this script will populate the database with the test data like when you 
 
 ### Custom populate scripts
 
-If you require more control over how your data is being imported - for example if you also need to import data into custom entities, or import customer or order information - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts](/guides/developer-guide/stand-alone-scripts/).
+If you require more control over how your data is being imported - for example if you also need to import data into custom entities, or import customer or order information - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts](/developer-guide/stand-alone-scripts/).
 
-In addition to all the services available in the [Service Layer](/guides/developer-guide/the-service-layer/), the following specialized import services are available:
+In addition to all the services available in the [Service Layer](/developer-guide/the-service-layer/), the following specialized import services are available:
 
 * [`ImportParser`](/reference/typescript-api/import-export/import-parser): Used to parse the CSV file into an array of objects.
 * [`FastImporterService`](/reference/typescript-api/import-export/fast-importer-service): Used to create new products & variants in bulk, optimized for speed.

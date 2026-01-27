@@ -10,7 +10,7 @@ An Order is a collection of one or more ProductVariants which can be purchased b
 Every Order has a `state` property of type [`OrderState`](/reference/typescript-api/orders/order-process/#orderstate). The following diagram shows the default states and how an Order transitions from one to the next.
 
 :::note
-Note that this default workflow can be modified to better fit your business processes. See the [Customizing the Order Process guide](/guides/core-concepts/orders/#custom-order-processes).
+Note that this default workflow can be modified to better fit your business processes. See the [Customizing the Order Process guide](/core-concepts/orders/#custom-order-processes).
 :::
 
 ![./order_state_diagram.png](./order_state_diagram.png)
@@ -25,7 +25,7 @@ Here is a simplified diagram illustrating this relationship:
 
 ## Shop client order workflow
 
-The [GraphQL Shop API Guide](/guides/storefront/active-order) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
+The [GraphQL Shop API Guide](/storefront/active-order) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
 
 In this section, we'll cover some examples of how these operations would look in your storefront.
 

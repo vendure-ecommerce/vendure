@@ -94,7 +94,7 @@ async function importCustomerData() {
 
 ## Creating a RequestContext
 
-Almost all the methods exposed by Vendure's core services take a `RequestContext` object as the first argument. Usually, this object is created in the [API Layer](/guides/developer-guide/the-api-layer/#resolvers) by the `@Ctx()` decorator, and contains information related to the current API request.
+Almost all the methods exposed by Vendure's core services take a `RequestContext` object as the first argument. Usually, this object is created in the [API Layer](/developer-guide/the-api-layer/#resolvers) by the `@Ctx()` decorator, and contains information related to the current API request.
 
 When running a stand-alone script, we aren't making any API requests, so we need to create a `RequestContext` object manually. This can be done using the [`RequestContextService`](/reference/typescript-api/request/request-context-service/):
 

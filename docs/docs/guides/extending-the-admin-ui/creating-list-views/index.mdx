@@ -39,14 +39,14 @@ type ProductReviewList implements PaginatedList {
 ```
 
 :::info
-See the [Paginated Lists guide](/guides/how-to/paginated-list/) for details on how to implement this in your server plugin code.
+See the [Paginated Lists guide](/how-to/paginated-list/) for details on how to implement this in your server plugin code.
 :::
 
 ### Create the list component
 
 The list component itself is an Angular component which extends the [BaseListComponent](/reference/admin-ui-api/list-detail-views/base-list-component/) or [TypedBaseListComponent](/reference/admin-ui-api/list-detail-views/typed-base-list-component) class.
 
-This example assumes you have set up your project to use code generation as described in the [GraphQL code generation guide](/guides/how-to/codegen/#codegen-for-admin-ui-extensions).
+This example assumes you have set up your project to use code generation as described in the [GraphQL code generation guide](/how-to/codegen/#codegen-for-admin-ui-extensions).
 
 ```ts title="src/plugins/reviews/ui/components/review-list/review-list.component.ts"
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -247,7 +247,7 @@ export default [
 
 ## Supporting custom fields
 
-From Vendure v2.2, it is possible for your [custom entities to support custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields).
+From Vendure v2.2, it is possible for your [custom entities to support custom fields](/developer-guide/database-entity/#supporting-custom-fields).
 
 If you have set up your entity to support custom fields, and you want custom fields to be available in the Admin UI list view,
 you need to add the following to your list component:

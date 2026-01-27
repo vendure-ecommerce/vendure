@@ -3,7 +3,7 @@ title: "Uploading Files"
 showtoc: true
 ---
 
-Vendure handles file uploads with the [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec). Internally, we use the [graphql-upload package](https://github.com/jaydenseric/graphql-upload). Once uploaded, a file is known as an [Asset](/guides/core-concepts/images-assets/). Assets are typically used for images, but can represent any kind of binary data such as PDF files or videos.
+Vendure handles file uploads with the [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec). Internally, we use the [graphql-upload package](https://github.com/jaydenseric/graphql-upload). Once uploaded, a file is known as an [Asset](/core-concepts/images-assets/). Assets are typically used for images, but can represent any kind of binary data such as PDF files or videos.
 
 ## Upload clients
 
@@ -55,11 +55,11 @@ function UploadFile() {
 
 ## Custom upload mutations
 
-How about if you want to implement a custom mutation for file uploads? Let's take an example where we want to allow customers to set an avatar image. To do this, we'll add a [custom field](/guides/developer-guide/custom-fields/) to the Customer entity and then define a new mutation in the Shop API.
+How about if you want to implement a custom mutation for file uploads? Let's take an example where we want to allow customers to set an avatar image. To do this, we'll add a [custom field](/developer-guide/custom-fields/) to the Customer entity and then define a new mutation in the Shop API.
 
 ### Configuration
 
-Let's define a custom field to associate the avatar `Asset` with the `Customer` entity. To keep everything encapsulated, we'll do all of this in a [plugin](/guides/developer-guide/plugins/)
+Let's define a custom field to associate the avatar `Asset` with the `Customer` entity. To keep everything encapsulated, we'll do all of this in a [plugin](/developer-guide/plugins/)
 
 ```ts title="src/plugins/customer-avatar/customer-avatar.plugin.ts"
 import { Asset, LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';

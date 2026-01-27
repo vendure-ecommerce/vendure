@@ -13,8 +13,8 @@ These are the major parts of a Vendure application:
 
 * **Server**: The Vendure server is the part that handles requests coming in to the GraphQL APIs. It serves both the [Shop API](/reference/graphql-api/shop/queries) and [Admin API](/reference/graphql-api/admin/queries), and can send jobs to the Job Queue to be processed by the Worker.
 * **Worker**: The Worker runs in the background and deals with tasks such as updating the search index, sending emails, and other tasks which may be long-running, resource-intensive or require retries.
-* **Dashboard**: The Dashboard is how shop administrators manage orders, customers, products, settings and so on. The Dashboard can be further extended to support custom functionality, as detailed in the [Extending the Dashboard](/guides/extending-the-dashboard/extending-overview/) section
-* **Storefront**: With headless commerce, you are free to implement your storefront exactly as you see fit, unconstrained by the back-end, using any technologies that you like. To make this process easier, we have created a number of [storefront starter kits](/guides/storefront/storefront-starters/), as well as [guides on building a storefront](/guides/storefront/connect-api/).
+* **Dashboard**: The Dashboard is how shop administrators manage orders, customers, products, settings and so on. The Dashboard can be further extended to support custom functionality, as detailed in the [Extending the Dashboard](/extending-the-dashboard/extending-overview/) section
+* **Storefront**: With headless commerce, you are free to implement your storefront exactly as you see fit, unconstrained by the back-end, using any technologies that you like. To make this process easier, we have created a number of [storefront starter kits](/storefront/storefront-starters/), as well as [guides on building a storefront](/storefront/connect-api/).
 
 ![./Vendure_docs-architecture.webp](./Vendure_docs-architecture.webp) 
 

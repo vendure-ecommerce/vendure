@@ -10,7 +10,7 @@ access to routes in the app, and can be extended and modified by UI extensions.
 
 Once you have defined some custom routes, you need some way for the administrator to access them. For this you will use the [addNavMenuItem](/reference/admin-ui-api/nav-menu/add-nav-menu-item/) and [addNavMenuSection](/reference/admin-ui-api/nav-menu/add-nav-menu-section) functions.
 
-Let's add a new section to the Admin UI main nav bar containing a link to the "greeter" module from the [Getting Started guide](/guides/extending-the-admin-ui/getting-started/#routes) example:
+Let's add a new section to the Admin UI main nav bar containing a link to the "greeter" module from the [Getting Started guide](/extending-the-admin-ui/getting-started/#routes) example:
 
 ```ts title="src/plugins/greeter/ui/providers.ts"
 import { addNavMenuSection } from '@vendure/admin-ui/core';

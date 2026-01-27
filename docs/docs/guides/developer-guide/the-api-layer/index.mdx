@@ -144,7 +144,7 @@ data transformation.
 
 Guards, interceptors, pipes and filters can be added to your own custom resolvers and controllers
 using the NestJS decorators as given in the NestJS docs. However, a common pattern is to register them globally via a
-[Vendure plugin](/guides/developer-guide/plugins/):
+[Vendure plugin](/developer-guide/plugins/):
 
 ```ts title="src/plugins/my-plugin/my-plugin.ts"
 import { VendurePlugin } from '@vendure/core';
@@ -468,4 +468,4 @@ Although Vendure is primarily a GraphQL-based API, it is possible to add REST en
 you need to integrate with a third-party service or client application which only supports REST, for example.
 
 Creating a REST endpoint is covered in detail in the [Add a REST endpoint
-guide](/guides/developer-guide/rest-endpoint/).
+guide](/developer-guide/rest-endpoint/).

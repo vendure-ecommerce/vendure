@@ -20,7 +20,7 @@ All the concepts presented here have been implemented in our [example multi-vend
 
 ## Sellers, Channels & Roles
 
-The core of Vendure's multi-vendor support is Channels. Read the [Channels guide](/guides/core-concepts/channels/) to get a more detailed understanding of how they work.
+The core of Vendure's multi-vendor support is Channels. Read the [Channels guide](/core-concepts/channels/) to get a more detailed understanding of how they work.
 
 Each Channel is assigned to a [Seller](/reference/typescript-api/entities/seller/), which is another term for the vendor who is selling things in our marketplace.
 
@@ -60,7 +60,7 @@ Bob can now log in to the Dashboard using the provided credentials and begin cre
 
 In some marketplaces, the same product may be sold by multiple sellers. When this is the case, the product and its variants
 will be assigned not only to the default channel, but to multiple other channels as well - see the 
-[Channels, Currencies & Prices section](/guides/core-concepts/channels/#channels-currencies--prices) for a visual explanation of how this works.
+[Channels, Currencies & Prices section](/core-concepts/channels/#channels-currencies--prices) for a visual explanation of how this works.
 
 This means that there will be multiple ProductVariantPrice entities per variant, one for each channel. 
  

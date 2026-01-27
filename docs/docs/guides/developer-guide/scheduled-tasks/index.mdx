@@ -17,7 +17,7 @@ Since Vendure v3.3, there is a built-in mechanism which allows you to define sch
 All the information on page applies to Vendure v3.3+
 
 For older versions, there is no built-in support for scheduled tasks, but you can
-instead use a [stand-alone script](/guides/developer-guide/stand-alone-scripts/) triggered by a cron job.
+instead use a [stand-alone script](/developer-guide/stand-alone-scripts/) triggered by a cron job.
 :::
 
 ## Setting up the DefaultSchedulerPlugin
@@ -34,7 +34,7 @@ export const config: VendureConfig = {
 };
 ```
 
-When you first add this plugin to your config, you'll need to [generate a migration](/guides/developer-guide/migrations/) because the
+When you first add this plugin to your config, you'll need to [generate a migration](/developer-guide/migrations/) because the
 plugin will make use of a new database table in order to guarantee only-once execution of tasks.
 
 You can then start adding tasks. Vendure ships with a task that will clean up old sessions from the database.
@@ -239,7 +239,7 @@ The second problem is handled by having tasks only executed on worker processes.
 
 ## Scheduled tasks vs job queue
 
-There is some overlap between the use of a scheduled task and a [job queue job](/guides/developer-guide/worker-job-queue/). They both perform some
+There is some overlap between the use of a scheduled task and a [job queue job](/developer-guide/worker-job-queue/). They both perform some
 task on the worker, independent of requests coming in to the server.
 
 The first difference is that jobs must be triggered explicitly, whereas scheduled tasks are triggered automatically according to the schedule.

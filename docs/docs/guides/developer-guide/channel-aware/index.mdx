@@ -7,7 +7,7 @@ showtoc: true
 
 Making an entity channel-aware means that it can be associated with a specific [Channel](/reference/typescript-api/entities/channel).
 This is useful when you want to have different data or features for different channels. First you will have to create
-an entity ([Define a database entity](/guides/developer-guide/database-entity/)) that implements the `ChannelAware` interface.
+an entity ([Define a database entity](/developer-guide/database-entity/)) that implements the `ChannelAware` interface.
 This interface requires the entity to provide a `channels` property
 
 ```ts title="src/plugins/requests/entities/product-request.entity.ts"
@@ -64,7 +64,7 @@ export class RequestService {
     }
 }
 ```
-For [Translatable entities](/guides/developer-guide/translations/), the best place to assign the channels is inside the `beforeSave` input of the [TranslatableSaver](/reference/typescript-api/service-helpers/translatable-saver/) helper class.
+For [Translatable entities](/developer-guide/translations/), the best place to assign the channels is inside the `beforeSave` input of the [TranslatableSaver](/reference/typescript-api/service-helpers/translatable-saver/) helper class.
 
 
 ## Querying channel-aware entities

@@ -142,7 +142,7 @@ Sometimes you might need to extend things beyond what is provided by the default
 
 ### Adding a new state
 
-Let's say your company can only sell to customers with a valid EU tax ID. We'll assume that you've already used a [custom field](/guides/developer-guide/custom-fields/) to store that code on the Customer entity.
+Let's say your company can only sell to customers with a valid EU tax ID. We'll assume that you've already used a [custom field](/developer-guide/custom-fields/) to store that code on the Customer entity.
 
 Now you want to add a step _before_ the customer handles payment, where we can collect and verify the tax ID.
 
@@ -248,7 +248,7 @@ const customerValidationProcess: OrderProcess<'ValidatingCustomer'> = {
 ```
 
 :::info
-For an explanation of the `init()` method and `injector` argument, see the guide on [injecting dependencies in configurable operations](/guides/developer-guide/strategies-configurable-operations/#injecting-dependencies).
+For an explanation of the `init()` method and `injector` argument, see the guide on [injecting dependencies in configurable operations](/developer-guide/strategies-configurable-operations/#injecting-dependencies).
 :::
 
 ### Responding to a state transition

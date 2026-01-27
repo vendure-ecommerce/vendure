@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow,@typescript-eslint/no-shadow */
 // prettier-ignore
-import { LanguageCode, LocalizedString } from './generated-types';
+import { LanguageCode,LocalizedString } from './generated-types';
 
 /**
  * A recursive implementation of the Partial<T> type.
@@ -96,7 +96,7 @@ export type ID = string | number;
  * struct       | json (m), jsonb (p), text (s)         | JSON
  * relation     | many-to-one / many-to-many relation   | As specified in config
  *
- * Additionally, the CustomFieldType also dictates which [configuration options](/guides/developer-guide/custom-fields/#custom-field-config-properties)
+ * Additionally, the CustomFieldType also dictates which [configuration options](/developer-guide/custom-fields/#custom-field-config-properties)
  * are available for that custom field.
  *
  * @docsCategory custom-fields
@@ -338,7 +338,7 @@ export interface AdminUiConfig {
      * @description
      * Allows you to provide default reasons for a refund or cancellation. This will be used in the
      * refund/cancel dialog. The values can be literal strings (e.g. "Not in stock") or translation
-     * tokens (see [Adding Admin UI Translations](/guides/extending-the-admin-ui/adding-ui-translations/)).
+     * tokens (see [Adding Admin UI Translations](/extending-the-admin-ui/adding-ui-translations/)).
      *
      * @since 1.5.0
      * @default ['order.cancel-reason-customer-request', 'order.cancel-reason-not-available']

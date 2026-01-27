@@ -18,7 +18,7 @@ CPU resources are generally measured in "cores" or "vCPUs" (virtual CPUs) depend
 
 Because Node.js is single-threaded, a single instance of the Vendure server or worker will not be able to take advantage of multiple CPUs. For example, if you set up a server instance running with 4 CPUs, the server will only use 1 of those CPUs and the other 3 will be wasted.
 
-Therefore, when looking to optimize performance (for example, the number of requests that can be serviced per second), it makes sense to scale horizontally by running multiple instances of the Vendure server. See the [Horizontal Scaling guide](/guides/deployment/horizontal-scaling).
+Therefore, when looking to optimize performance (for example, the number of requests that can be serviced per second), it makes sense to scale horizontally by running multiple instances of the Vendure server. See the [Horizontal Scaling guide](/deployment/horizontal-scaling).
 
 ## Load testing
 

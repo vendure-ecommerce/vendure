@@ -143,7 +143,7 @@ This is the recommended way of creating a new plugin.
 
 ## Writing a plugin from scratch
 
-Although the [Vendure CLI](/guides/developer-guide/cli/) is the recommended way to create a new plugin, it can be useful to understand the process of creating
+Although the [Vendure CLI](/developer-guide/cli/) is the recommended way to create a new plugin, it can be useful to understand the process of creating
 a plugin manually.
 
 Vendure **plugins** are used to extend the core functionality of the server. Plugins can be pre-made functionality that you can install via npm, or they can be custom plugins that you write yourself.
@@ -164,7 +164,7 @@ For any unit of functionality that you need to add to your project, you'll be cr
 :::info
 For a complete working example of a Vendure plugin, see the [real-world-vendure Reviews plugin](https://github.com/vendurehq/real-world-vendure/tree/master/src/plugins/reviews)
 
-You can also use the [Vendure CLI](/guides/developer-guide/cli) to quickly scaffold a new plugin.
+You can also use the [Vendure CLI](/developer-guide/cli) to quickly scaffold a new plugin.
 :::
 
 In this guide, we will implement a simple but fully-functional **wishlist plugin** step-by-step. The goal of this plugin is to allow signed-in customers to add products to a wishlist, and to view and manage their wishlist.
@@ -306,7 +306,7 @@ import './types';
 ```
 
 :::note
-Custom fields are not solely restricted to Vendure's native entities though, it's also possible to add support for custom fields to your own custom entities. This way other plugins would be able to extend our example `WishlistItem`. See: [Supporting custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields)
+Custom fields are not solely restricted to Vendure's native entities though, it's also possible to add support for custom fields to your own custom entities. This way other plugins would be able to extend our example `WishlistItem`. See: [Supporting custom fields](/developer-guide/database-entity/#supporting-custom-fields)
 :::
 
 ### Step 4: Create a service
@@ -800,4 +800,4 @@ mutation RemoveFromWishlist {
 If you have created a plugin that you would like to share with the community, you can publish it to npm, and even
 have it listed on the [Vendure Hub](https://vendure.io/hub).
 
-For a full guide to publishing plugins, see the [Publishing a Plugin how-to guide](/guides/how-to/publish-plugin/).
+For a full guide to publishing plugins, see the [Publishing a Plugin how-to guide](/how-to/publish-plugin/).

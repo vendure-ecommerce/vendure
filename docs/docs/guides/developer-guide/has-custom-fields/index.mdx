@@ -3,7 +3,7 @@ title: "Implementing HasCustomFields"
 showtoc: true
 ---
 
-From Vendure v2.2, it is possible to add support for [custom fields](/guides/developer-guide/custom-fields/) to your custom entities. This is useful when you are defining a custom entity as part of a plugin which is intended to be used by other developers. For example, a plugin which defines a new entity for storing product reviews might want to allow the developer to add custom fields to the review entity.
+From Vendure v2.2, it is possible to add support for [custom fields](/developer-guide/custom-fields/) to your custom entities. This is useful when you are defining a custom entity as part of a plugin which is intended to be used by other developers. For example, a plugin which defines a new entity for storing product reviews might want to allow the developer to add custom fields to the review entity.
 
 ## Defining entities that support custom fields
 
@@ -52,7 +52,7 @@ export class ProductReview extends VendureEntity implements HasCustomFields {
 
 ### Type generation
 
-Given the above entity your [API extension](/guides/developer-guide/extend-graphql-api/) might look like this:
+Given the above entity your [API extension](/developer-guide/extend-graphql-api/) might look like this:
 
 ```graphql
 type ProductReview implements Node {
@@ -88,7 +88,7 @@ In order for Vendure to find the correct input types to extend to, they must con
 - `Create<EntityName>Input`
 - `Update<EntityName>Input`
 
-And if your entity is [supporting translations](/guides/developer-guide/translatable):
+And if your entity is [supporting translations](/developer-guide/translatable):
 
 - `<EntityName>Translation`
 - `<EntityName>TranslationInput`
@@ -120,7 +120,7 @@ export type UpdateProductReviewInput = {
 
 ## Supporting custom fields in your services
 
-Creating and updating your entity works now by setting the fields like usual, with one important addition being, you mustn't forget to update relations via the `CustomFieldRelationService`. This is needed because a consumer of your plugin may extend the entity with custom fields of type [`relation`](/guides/developer-guide/custom-fields/#properties-for-relation-fields) which need to get saved separately.
+Creating and updating your entity works now by setting the fields like usual, with one important addition being, you mustn't forget to update relations via the `CustomFieldRelationService`. This is needed because a consumer of your plugin may extend the entity with custom fields of type [`relation`](/developer-guide/custom-fields/#properties-for-relation-fields) which need to get saved separately.
 
 ```ts title="src/plugins/reviews/services/review.service.ts"
 import { Injectable } from '@nestjs/common';
@@ -171,4 +171,4 @@ export const config: VendureConfig = {
 
 ## Migrations
 
-Extending entities will alter the database schema requiring a migration. See the [migrations guide](/guides/developer-guide/migrations/) for further details.
+Extending entities will alter the database schema requiring a migration. See the [migrations guide](/developer-guide/migrations/) for further details.

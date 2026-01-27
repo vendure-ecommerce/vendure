@@ -13,14 +13,14 @@ in that case you won't be able to use the built-in Angular-specific components.
 
 ## Example: Creating a Product Detail View
 
-Let's say you have a plugin which adds a new entity to the database called `ProductReview`. You have already created a [list view](/guides/extending-the-admin-ui/creating-list-views/), and
+Let's say you have a plugin which adds a new entity to the database called `ProductReview`. You have already created a [list view](/extending-the-admin-ui/creating-list-views/), and
 now you need a detail view which can be used to view and edit individual reviews.
 
 ### Extend the TypedBaseDetailComponent class
 
 The detail component itself is an Angular component which extends the [BaseDetailComponent](/reference/admin-ui-api/list-detail-views/base-detail-component/) or [TypedBaseDetailComponent](/reference/admin-ui-api/list-detail-views/typed-base-detail-component) class.
 
-This example assumes you have set up your project to use code generation as described in the [GraphQL code generation guide](/guides/how-to/codegen/#codegen-for-admin-ui-extensions).
+This example assumes you have set up your project to use code generation as described in the [GraphQL code generation guide](/how-to/codegen/#codegen-for-admin-ui-extensions).
 
 ```ts title="src/plugins/reviews/ui/components/review-detail/review-detail.component.ts"
 import { ResultOf } from '@graphql-typed-document-node/core';
@@ -236,7 +236,7 @@ export default [
 
 ## Supporting custom fields
 
-From Vendure v2.2, it is possible for your [custom entities to support custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields).
+From Vendure v2.2, it is possible for your [custom entities to support custom fields](/developer-guide/database-entity/#supporting-custom-fields).
 
 If you have set up your entity to support custom fields, and you want custom fields to be available in the Admin UI detail view,
 you need to add the following to your detail component:

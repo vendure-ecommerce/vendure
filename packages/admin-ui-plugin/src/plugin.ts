@@ -93,7 +93,7 @@ export interface AdminUiPluginOptions {
  * @description
  *
  * :::warning Deprecated
- * From Vendure v3.5.0, the Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/guides/extending-the-dashboard/getting-started/).
+ * From Vendure v3.5.0, the Angular-based Admin UI has been replaced by the new [React Admin Dashboard](/extending-the-dashboard/getting-started/).
  * The Angular Admin UI will not be maintained after **July 2026**. Until then, we will continue patching critical bugs and security issues.
  * Community contributions will always be merged and released.
  * :::

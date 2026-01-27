@@ -133,7 +133,7 @@ export const config: VendureConfig = {
 ```
 
 :::info
-If your PaymentMethodHandler needs access to the database or other providers, see the [configurable operation dependency injection guide](/guides/developer-guide/strategies-configurable-operations/#injecting-dependencies).
+If your PaymentMethodHandler needs access to the database or other providers, see the [configurable operation dependency injection guide](/developer-guide/strategies-configurable-operations/#injecting-dependencies).
 :::
 
 ## The PaymentMethod entity
@@ -150,7 +150,7 @@ The payment method also has a **code**, which is a string identifier used to spe
 
 ### Eligible payment methods
 
-Once the active Order has been transitioned to the `ArrangingPayment` state (see the [Order guide](/guides/core-concepts/orders/)), we can query the available payment methods by executing the [`eligiblePaymentMethods` query](/reference/graphql-api/shop/queries#eligiblepaymentmethods).
+Once the active Order has been transitioned to the `ArrangingPayment` state (see the [Order guide](/core-concepts/orders/)), we can query the available payment methods by executing the [`eligiblePaymentMethods` query](/reference/graphql-api/shop/queries#eligiblepaymentmethods).
 
 <Tabs>
 <TabItem value="Request" label="Request" default>

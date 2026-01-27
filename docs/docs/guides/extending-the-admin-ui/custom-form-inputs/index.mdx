@@ -2,7 +2,7 @@
 title: 'Custom Form Inputs'
 ---
 
-You can define custom Angular or React components which can be used to render [Custom Fields](/guides/developer-guide/custom-fields/) you have defined on your entities as well as [configurable args](/reference/typescript-api/configurable-operation-def/config-args/) used by custom [Configurable Operations](/guides/developer-guide/strategies-configurable-operations/#configurable-operations).
+You can define custom Angular or React components which can be used to render [Custom Fields](/developer-guide/custom-fields/) you have defined on your entities as well as [configurable args](/reference/typescript-api/configurable-operation-def/config-args/) used by custom [Configurable Operations](/developer-guide/strategies-configurable-operations/#configurable-operations).
 
 ## For Custom Fields
 
@@ -128,7 +128,7 @@ export default [
 
 ### 3. Register the providers
 
-The `providers.ts` is then passed to the `compileUiExtensions()` function as described in the [UI Extensions Getting Started guide](/guides/extending-the-admin-ui/getting-started/):
+The `providers.ts` is then passed to the `compileUiExtensions()` function as described in the [UI Extensions Getting Started guide](/extending-the-admin-ui/getting-started/):
 
 ```ts title="src/vendure-config.ts"
 import * as path from 'path';
@@ -253,7 +253,7 @@ export class RelationReviewInputComponent implements OnInit, FormInputComponent<
 
 ## For ConfigArgs
 
-[ConfigArgs](/reference/typescript-api/configurable-operation-def/config-args/) are used by classes which extend [Configurable Operations](/guides/developer-guide/strategies-configurable-operations/#configurable-operations) (such as ShippingCalculator or PaymentMethodHandler). These ConfigArgs allow user-input values to be passed to the operation's business logic.
+[ConfigArgs](/reference/typescript-api/configurable-operation-def/config-args/) are used by classes which extend [Configurable Operations](/developer-guide/strategies-configurable-operations/#configurable-operations) (such as ShippingCalculator or PaymentMethodHandler). These ConfigArgs allow user-input values to be passed to the operation's business logic.
 
 They are configured in a very similar way to custom fields, and likewise can use custom form inputs by specifying the `ui` property. 
 

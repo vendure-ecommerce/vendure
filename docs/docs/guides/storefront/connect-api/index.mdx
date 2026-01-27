@@ -113,7 +113,7 @@ length of time that a session will stay valid since the last API call.
 
 ## Specifying a channel
 
-If your project has multiple [channels](/guides/core-concepts/channels/), you can specify the active channel by setting
+If your project has multiple [channels](/core-concepts/channels/), you can specify the active channel by setting
 the `vendure-token` header on each request to match the `channelToken` for the desired channel.
 
 Let's say you have a channel with the token `uk-channel` and you want to make a request to the Shop API to get the
@@ -161,7 +161,7 @@ POST http://localhost:3000/shop-api?languageCode=de
 If you are building your storefront with TypeScript, we highly recommend you set up code generation to ensure
 that the responses from your queries & mutation are always correctly typed according the fields you request.
 
-See the [GraphQL Code Generation guide](/guides/storefront/codegen/) for more information.
+See the [GraphQL Code Generation guide](/storefront/codegen/) for more information.
 
 ## Examples
 

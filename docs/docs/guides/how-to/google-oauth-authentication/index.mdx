@@ -12,7 +12,7 @@ This is particularly valuable for **consumer-facing stores** where users prefer 
 
 This guide shows you how to **add Google OAuth support** to your Vendure store using a custom [AuthenticationStrategy](/reference/typescript-api/auth/authentication-strategy/) and Google Identity Services.
 
-An **AuthenticationStrategy** in Vendure defines how users can log in to your store. Learn more about [authentication in Vendure](/guides/core-concepts/auth/).
+An **AuthenticationStrategy** in Vendure defines how users can log in to your store. Learn more about [authentication in Vendure](/core-concepts/auth/).
 
 ## Creating the Plugin
 
@@ -22,7 +22,7 @@ An **AuthenticationStrategy** in Vendure defines how users can log in to your st
 npx vendure add -p GoogleAuthPlugin
 ```
 
-This creates a basic [plugin](/guides/developer-guide/plugins/) structure with the necessary files.
+This creates a basic [plugin](/developer-guide/plugins/) structure with the necessary files.
 
 ## Installing Dependencies
 
@@ -477,7 +477,7 @@ mutation AuthenticateWithGoogle {
 - **Profile**: First and last names from Google profile, with fallbacks
 - **Security**: No password stored - authentication handled entirely by Google
 
-This means **Google users work seamlessly** with Vendure's [order management](/guides/core-concepts/orders/), [promotions](/guides/core-concepts/promotions/), and all customer workflows.
+This means **Google users work seamlessly** with Vendure's [order management](/core-concepts/orders/), [promotions](/core-concepts/promotions/), and all customer workflows.
 
 ## Testing the Integration
 

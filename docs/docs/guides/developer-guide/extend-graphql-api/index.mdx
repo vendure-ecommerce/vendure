@@ -157,7 +157,7 @@ class BannerAdminResolver {
 Note that we have used the `@Allow()` decorator to ensure that only users with the `UpdateSettings` permission can call this mutation. We have also wrapped the resolver in a transaction using `@Transaction()`, which is a good idea for any mutation which modifies the database.
 
 :::info
-For more information on the available decorators, see the [API Layer "decorators" guide](/guides/developer-guide/the-api-layer/#api-decorators).
+For more information on the available decorators, see the [API Layer "decorators" guide](/developer-guide/the-api-layer/#api-decorators).
 :::
 
 Finally, we add the resolver to the plugin metadata:
@@ -191,7 +191,7 @@ export class BannerPlugin {}
 
 If you have defined a new database entity, it is likely that you'll want to expose this entity in your GraphQL API. To do so, you'll need to define a corresponding GraphQL type.
 
-Using the `ProductReview` entity from the [Define a database entity guide](/guides/developer-guide/database-entity), let's see how we can expose it as a new type in the API.
+Using the `ProductReview` entity from the [Define a database entity guide](/developer-guide/database-entity), let's see how we can expose it as a new type in the API.
 
 As a reminder, here is the `ProductReview` entity:
 
@@ -384,7 +384,7 @@ export class FieldOverrideExampleResolver {
 
 When dealing with operations that return a GraphQL union type, there is an extra step needed.
 
-Union types are commonly returned from mutations in the Vendure APIs. For more detail on this see the section on [ErrorResults](/guides/developer-guide/error-handling#expected-errors-errorresults). For example: 
+Union types are commonly returned from mutations in the Vendure APIs. For more detail on this see the section on [ErrorResults](/developer-guide/error-handling#expected-errors-errorresults). For example: 
 
 ```graphql
 type MyCustomErrorResult implements ErrorResult {

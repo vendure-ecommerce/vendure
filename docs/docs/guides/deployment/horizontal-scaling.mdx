@@ -11,7 +11,7 @@ This type of scaling has two main advantages:
 1. It can enable increased throughput (requests/second) by distributing the incoming requests between multiple instances.
 2. It can increase resilience because if a single instance fails, the other instances will still be able to service requests.
 
-As discussed in the [Server resource requirements guide](/guides/deployment/server-resource-requirements), horizontal scaling can be the most cost-effective way of deploying your Vendure server due to the single-threaded nature of Node.js.
+As discussed in the [Server resource requirements guide](/deployment/server-resource-requirements), horizontal scaling can be the most cost-effective way of deploying your Vendure server due to the single-threaded nature of Node.js.
 
 In Vendure, both the server and the worker can be scaled horizontally. Scaling the server will increase the throughput of the GraphQL APIs, whereas scaling the worker can increase the speed with which the job queue is processed by allowing more jobs to be run in parallel.
 
@@ -43,7 +43,7 @@ One way of implementing horizontal scaling is to use Docker to wrap your Vendure
 Some hosting providers allow you to provide a Docker image and will then run multiple instances of that image. Kubernetes can also be used to manage multiple instances
 of a Docker image.
 
-For a more complete guide, see the [Using Docker guide](/guides/deployment/using-docker).
+For a more complete guide, see the [Using Docker guide](/deployment/using-docker).
 
 ## Using PM2
 

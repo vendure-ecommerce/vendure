@@ -14,7 +14,7 @@ Some use-cases for custom fields include:
 * Adding a longitude and latitude to the `StockLocation` for use in selecting the closest location to a customer.
 
 :::note
-Custom fields are not solely restricted to Vendure's native entities though, it's also possible to add support for custom fields to your own custom entities. See: [Supporting custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields)
+Custom fields are not solely restricted to Vendure's native entities though, it's also possible to add support for custom fields to your own custom entities. See: [Supporting custom fields](/developer-guide/database-entity/#supporting-custom-fields)
 :::
 
 ## Defining custom fields
@@ -39,7 +39,7 @@ const config = {
 
 With the example config above, the following will occur:
 
-1. The database schema will be altered, and a column will be added for each custom field. **Note: changes to custom fields require a database migration**. See the [Migrations guide](/guides/developer-guide/migrations/).
+1. The database schema will be altered, and a column will be added for each custom field. **Note: changes to custom fields require a database migration**. See the [Migrations guide](/developer-guide/migrations/).
 2. The GraphQL APIs will be modified to add the custom fields to the `Product` and `User` types respectively.
 3. If you are using the [AdminUiPlugin](/reference/core-plugins/admin-ui-plugin/), the Admin UI detail pages will now contain form inputs to allow the custom field data to be added or edited, and the list view data tables will allow custom field columns to be added, sorted and filtered.
 
@@ -643,7 +643,7 @@ const config = {
 The `requiresPermission` property only affects the _Admin API_. Access to a custom field via the _Shop API_ is controlled by the `public` property.
 
 If you need special logic to control access to a custom field in the Shop API, you can set `public: false` and then implement
-a custom [field resolver](/guides/developer-guide/extend-graphql-api/#add-fields-to-existing-types) which contains the necessary logic, and returns
+a custom [field resolver](/developer-guide/extend-graphql-api/#add-fields-to-existing-types) which contains the necessary logic, and returns
 the entity's custom field value if the current customer meets the requirements.
 
 :::
@@ -1195,7 +1195,7 @@ This table shows the default form input component used for each custom field typ
 
 The Dashboard app has built-in selection components for "relation" custom fields that reference certain common entity types, such as Asset, Product, ProductVariant and Customer. If you are relating to an entity not covered by the built-in selection components, you will see a generic relation component which allows you to manually enter the ID of the entity you wish to select.
 
-If the generic selector is not suitable, or is you wish to replace one of the built-in selector components, you can create a UI extension that defines a custom field control for that custom field. You can read more about this in the [custom form input guide](/guides/extending-the-admin-ui/custom-form-inputs/)
+If the generic selector is not suitable, or is you wish to replace one of the built-in selector components, you can create a UI extension that defines a custom field control for that custom field. You can read more about this in the [custom form input guide](/extending-the-admin-ui/custom-form-inputs/)
 :::
 
 ### Specifying the input component
@@ -1281,7 +1281,7 @@ The various configuration options for each of the built-in form input  (e.g. `su
 
 ### Custom form input components
 
-If none of the built-in form input components are suitable, you can create your own. This is a more advanced topic which is covered in detail in the [Custom Form Input Components](/guides/extending-the-admin-ui/custom-form-inputs/) guide.
+If none of the built-in form input components are suitable, you can create your own. This is a more advanced topic which is covered in detail in the [Custom Form Input Components](/extending-the-admin-ui/custom-form-inputs/) guide.
 
 ## Tabbed custom fields
 
@@ -1312,7 +1312,7 @@ const config = {
 ## TypeScript Typings
 
 Because custom fields are generated at run-time, TypeScript has no way of knowing about them based on your
-VendureConfig. Consider the example above - let's say we have a [plugin](/guides/developer-guide/plugins/) which needs to
+VendureConfig. Consider the example above - let's say we have a [plugin](/developer-guide/plugins/) which needs to
 access the custom field values on a Product entity.
 
 Attempting to access the custom field will result in a TS compiler error:
@@ -1389,7 +1389,7 @@ When you define custom fields on the `OrderLine` entity, the following API chang
 - Admin API: the equivalent mutations for manipulating draft orders and for modifying and order will also have inputs to allow custom field values to be set.
 
 :::info
-To see an example of this in practice, see the [Configurable Product guide](/guides/how-to/configurable-products/)
+To see an example of this in practice, see the [Configurable Product guide](/how-to/configurable-products/)
 :::
 
 ### Order custom fields

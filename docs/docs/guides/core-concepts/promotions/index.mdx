@@ -32,7 +32,7 @@ Vendure comes with some built-in actions, but you can also create your own actio
 ## Creating custom conditions
 
 To create a custom condition, you need to define a new [`PromotionCondition` object](/reference/typescript-api/promotions/promotion-condition/).
-A promotion condition is an example of a [configurable operation](/guides/developer-guide/strategies-configurable-operations/#configurable-operations).
+A promotion condition is an example of a [configurable operation](/developer-guide/strategies-configurable-operations/#configurable-operations).
 Here is an annotated example of one of the built-in PromotionConditions.
 
 ```ts
@@ -321,4 +321,4 @@ export const buyXGetYFreeCondition = new PromotionCondition({
 
 ## Injecting providers
 
-If your PromotionCondition or PromotionAction needs access to the database or other providers, they can be injected by defining an `init()` function in your PromotionAction or PromotionCondition. See the [configurable operation guide](/guides/developer-guide/strategies-configurable-operations/#injecting-dependencies) for details.
+If your PromotionCondition or PromotionAction needs access to the database or other providers, they can be injected by defining an `init()` function in your PromotionAction or PromotionCondition. See the [configurable operation guide](/developer-guide/strategies-configurable-operations/#injecting-dependencies) for details.
