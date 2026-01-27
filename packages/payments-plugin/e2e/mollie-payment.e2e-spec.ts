@@ -23,7 +23,7 @@ import {
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'node:path';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
@@ -51,7 +51,6 @@ import {
 } from './graphql/shop-definitions';
 import {
     addManualPayment,
-    CREATE_MOLLIE_PAYMENT_INTENT,
     createFixedDiscountCoupon,
     createFreeShippingCoupon,
     refundOrderLine,
@@ -577,7 +576,7 @@ describe('Mollie payments', () => {
                     return true;
                 })
                 .reply(200, mollieMockData.molliePaymentResponse);
-            await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            await shopClient.query(createMolliePaymentIntentDocument, {
                 input: {
                     immediateCapture: false,
                 },
@@ -598,7 +597,7 @@ describe('Mollie payments', () => {
                     return true;
                 })
                 .reply(200, mollieMockData.molliePaymentResponse);
-            await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            await shopClient.query(createMolliePaymentIntentDocument, {
                 input: {
                     immediateCapture: true,
                 },
