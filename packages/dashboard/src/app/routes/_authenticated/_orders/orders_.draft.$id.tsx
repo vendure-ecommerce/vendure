@@ -3,6 +3,7 @@ import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js'
 import { CustomerSelector } from '@/vdb/components/shared/customer-selector.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Alert, AlertDescription, AlertTitle } from '@/vdb/components/ui/alert.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
@@ -289,11 +290,39 @@ function DraftOrderPage() {
         });
     };
 
+    const hasCustomer = !!entity.customer;
+    const hasLines = entity.lines.length > 0;
+    const hasShippingMethod = entity.shippingLines.length > 0;
+    const isDraftState = entity.state === 'Draft';
+
+    const isCompleteDraftDisabled = !hasCustomer || !hasLines || !hasShippingMethod || !isDraftState;
+
+    let completeDraftDisabledReason: string | null = null;
+    if (!hasCustomer) {
+        completeDraftDisabledReason = t`Select a customer to continue`;
+    } else if (!hasLines) {
+        completeDraftDisabledReason = t`Add at least one item to the order`;
+    } else if (!hasShippingMethod) {
+        completeDraftDisabledReason = t`Set a shipping address and select a shipping method`;
+    } else if (!isDraftState) {
+        completeDraftDisabledReason = t`Only draft orders can be completed`;
+    }
+
     return (
         <Page pageId="draft-order-detail" form={form} entity={entity}>
             <PageTitle>
                 <Trans>Draft order</Trans>: {entity?.code ?? ''}
             </PageTitle>
+            {isCompleteDraftDisabled && completeDraftDisabledReason ? (
+                <div className="mb-4">
+                    <Alert variant="destructive">
+                        <AlertTitle>
+                            <Trans>Draft order is not ready to complete</Trans>
+                        </AlertTitle>
+                        <AlertDescription>{completeDraftDisabledReason}</AlertDescription>
+                    </Alert>
+                </div>
+            ) : null}
             <PageActionBar>
                 <PageActionBarRight>
                     <PermissionGuard requires={['DeleteOrder']}>
@@ -312,12 +341,7 @@ function DraftOrderPage() {
                     <PermissionGuard requires={['UpdateOrder']}>
                         <Button
                             type="button"
-                            disabled={
-                                !entity.customer ||
-                                entity.lines.length === 0 ||
-                                entity.shippingLines.length === 0 ||
-                                entity.state !== 'Draft'
-                            }
+                            disabled={isCompleteDraftDisabled}
                             onClick={() => completeDraftOrder({ id: entity.id, state: 'ArrangingPayment' })}
                         >
                             <Trans>Complete draft</Trans>
