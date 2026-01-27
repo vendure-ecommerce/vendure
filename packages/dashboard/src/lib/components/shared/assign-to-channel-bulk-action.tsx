@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
 import { AssignToChannelDialog } from '@/vdb/components/shared/assign-to-channel-dialog.js';
-import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { usePaginatedList } from '@/vdb/hooks/use-paginated-list.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans } from '@lingui/react/macro';
 

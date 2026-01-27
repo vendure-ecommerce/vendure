@@ -282,6 +282,7 @@ export * from './hooks/use-local-format.js';
 export * from './hooks/use-mobile.js';
 export * from './hooks/use-page-block.js';
 export * from './hooks/use-page.js';
+export * from './hooks/use-paginated-list.js';
 export * from './hooks/use-permissions.js';
 export * from './hooks/use-saved-views.js';
 export * from './hooks/use-server-config.js';
