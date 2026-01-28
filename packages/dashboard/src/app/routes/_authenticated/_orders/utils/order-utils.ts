@@ -1,10 +1,10 @@
 import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { VariablesOf } from 'gql.tada';
 
+import { ProductVariantInfo } from '../hooks/use-modify-order.js';
 import { modifyOrderDocument } from '../orders.graphql.js';
 
 import { Fulfillment, Order, Payment } from './order-types.js';
-import { ProductVariantInfo } from './use-modify-order.js';
 
 type ModifyOrderInput = VariablesOf<typeof modifyOrderDocument>['input'];
 
@@ -156,4 +156,55 @@ export function computePendingOrder(
                   .filter(x => x !== undefined)
             : order.shippingLines,
     };
+}
+
+/**
+ * Gets the total quantity already refunded for an order line across all payments.
+ */
+export function getRefundedQuantity(order: Order, lineId: string): number {
+    return (
+        order.payments
+            ?.reduce((all, payment) => [...all, ...payment.refunds], [] as Payment['refunds'])
+            .filter(refund => refund.state !== 'Failed')
+            .reduce(
+                (all, refund) => [...all, ...refund.lines],
+                [] as Array<{ orderLineId: string; quantity: number }>,
+            )
+            .filter(refundLine => refundLine.orderLineId === lineId)
+            .reduce((sum, refundLine) => sum + refundLine.quantity, 0) ?? 0
+    );
+}
+
+/**
+ * Checks if an order line can still be refunded (has unrefunded quantity).
+ */
+export function lineCanBeRefunded(order: Order, line: Order['lines'][number]): boolean {
+    const refundedCount = getRefundedQuantity(order, line.id);
+    return refundedCount < line.orderPlacedQuantity;
+}
+
+/**
+ * Gets the maximum refundable quantity for an order line.
+ */
+export function getMaxRefundableQuantity(order: Order, line: Order['lines'][number]): number {
+    const refundedCount = getRefundedQuantity(order, line.id);
+    return Math.max(0, line.orderPlacedQuantity - refundedCount);
+}
+
+/**
+ * Checks if an order has any settled payments that can be refunded.
+ */
+export function orderHasSettledPayments(order: Order): boolean {
+    return !!order.payments?.some(p => p.state === 'Settled');
+}
+
+/**
+ * Determines if the refund button should be shown for an order.
+ * Shows refund for orders with settled payments that are not in initial states.
+ */
+export function canRefundOrder(order: Order): boolean {
+    if (!order || order.type === 'Aggregate') return false;
+    const hasSettled = orderHasSettledPayments(order);
+    const notInInitialState = order.state !== 'PaymentAuthorized' && order.active !== true;
+    return hasSettled && notInInitialState;
 }

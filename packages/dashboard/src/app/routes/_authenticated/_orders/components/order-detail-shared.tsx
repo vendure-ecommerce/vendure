@@ -17,7 +17,8 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
-import { Pencil, User } from 'lucide-react';
+import { Pencil, RotateCcw, User } from 'lucide-react';
+import { useRef } from 'react';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
 import {
@@ -25,9 +26,10 @@ import {
     setOrderCustomFieldsDocument,
     transitionOrderToStateDocument,
 } from '../orders.graphql.js';
-import { canAddFulfillment, shouldShowAddManualPaymentButton } from '../utils/order-utils.js';
+import { canAddFulfillment, canRefundOrder, shouldShowAddManualPaymentButton } from '../utils/order-utils.js';
 import { AddManualPaymentDialog } from './add-manual-payment-dialog.js';
 import { FulfillOrderDialog } from './fulfill-order-dialog.js';
+import { RefundOrderDialog, RefundOrderDialogRef } from './refund-order-dialog.js';
 import { FulfillmentDetails } from './fulfillment-details.js';
 import { OrderAddress } from './order-address.js';
 import { OrderHistoryContainer } from './order-history/order-history-container.js';
@@ -99,6 +101,7 @@ export function OrderDetailShared({
     });
 
     const customFieldConfig = useCustomFieldConfig('Order');
+    const refundDialogRef = useRef<RefundOrderDialogRef>(null);
 
     const stateTransitionActions = useMemo(() => {
         if (!entity) {
@@ -143,6 +146,7 @@ export function OrderDetailShared({
     const nextStates = entity.nextStates;
     const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
     const showFulfillButton = canAddFulfillment(entity);
+    const showRefundOption = canRefundOrder(entity);
 
     async function refreshOrderAndHistory() {
         if (entity) {
@@ -160,10 +164,24 @@ export function OrderDetailShared({
                     ...(nextStates.includes('Modifying')
                         ? [
                               {
+                                  requiresPermission: ['UpdateOrder'],
                                   component: () => (
                                       <DropdownMenuItem onClick={handleModifyClick}>
                                           <Pencil className="w-4 h-4" />
                                           <Trans>Modify</Trans>
+                                      </DropdownMenuItem>
+                                  ),
+                              },
+                          ]
+                        : []),
+                    ...(showRefundOption
+                        ? [
+                              {
+                                  requiresPermission: ['UpdateOrder'],
+                                  component: () => (
+                                      <DropdownMenuItem onClick={() => refundDialogRef.current?.open()}>
+                                          <RotateCcw className="w-4 h-4" />
+                                          <Trans>Refund & Cancel</Trans>
                                       </DropdownMenuItem>
                                   ),
                               },
@@ -192,6 +210,15 @@ export function OrderDetailShared({
                     </ActionBarItem>
                 )}
             </PageActionBar>
+            {showRefundOption && (
+                <RefundOrderDialog
+                    ref={refundDialogRef}
+                    order={entity}
+                    onSuccess={() => {
+                        refreshOrderAndHistory();
+                    }}
+                />
+            )}
             <PageLayout>
                 {/* Main Column Blocks */}
                 {beforeOrderTable?.(entity)}

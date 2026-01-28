@@ -30,9 +30,14 @@ declare module 'virtual:vendure-ui-config' {
         availableLocales: string[];
     }
 
+    interface ResolvedOrdersConfig {
+        refundReasons: Array<{ value: string; label: string }>;
+    }
+
     interface ResolvedUiConfig {
         api: ResolvedApiConfig;
         i18n: ResolvedI18nConfig;
+        orders: ResolvedOrdersConfig;
     }
 
     export const uiConfig: ResolvedUiConfig;

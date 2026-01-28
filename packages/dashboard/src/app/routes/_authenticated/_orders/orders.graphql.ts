@@ -742,6 +742,47 @@ export const settleRefundDocument = graphql(
     [errorResultFragment],
 );
 
+export const refundOrderDocument = graphql(
+    `
+        mutation RefundOrder($input: RefundOrderInput!) {
+            refundOrder(input: $input) {
+                __typename
+                ... on Refund {
+                    id
+                    state
+                    total
+                    reason
+                    transactionId
+                    method
+                    metadata
+                    lines {
+                        orderLineId
+                        quantity
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const cancelOrderDocument = graphql(
+    `
+        mutation CancelOrder($input: CancelOrderInput!) {
+            cancelOrder(input: $input) {
+                __typename
+                ... on Order {
+                    id
+                    state
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
 export const setOrderCustomFieldsDocument = graphql(`
     mutation SetOrderCustomFields($input: UpdateOrderInput!) {
         setOrderCustomFields(input: $input) {

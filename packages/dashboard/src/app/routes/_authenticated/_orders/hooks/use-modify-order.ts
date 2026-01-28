@@ -2,8 +2,7 @@ import { VariablesOf } from 'gql.tada';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { modifyOrderDocument } from '../orders.graphql.js';
-
-import { AddressFragment, Order } from './order-types.js';
+import { AddressFragment, Order } from '../utils/order-types.js';
 
 type ModifyOrderInput = VariablesOf<typeof modifyOrderDocument>['input'];
 
@@ -108,7 +107,7 @@ export function useModifyOrder(order: Order | null | undefined): UseModifyOrderR
                             ...prev,
                             adjustOrderLines: [
                                 ...(prev.adjustOrderLines ?? []),
-                                { orderLineId: existingLine.id, quantity: existingLine.quantity + 1 },
+                                { orderLineId: existingLine.id, quantity: Number(existingLine.quantity) + 1 },
                             ],
                         };
                     }

@@ -45,8 +45,23 @@ export function getUiConfig(config: VendureConfig, pluginOptions: UiConfigPlugin
                 : defaultAvailableLocales,
     };
 
+    // Merge orders configuration with defaults
+    const orders = {
+        refundReasons:
+            pluginOptions.orders?.refundReasons && pluginOptions.orders.refundReasons.length > 0
+                ? pluginOptions.orders.refundReasons
+                : [
+                      { value: 'customer-request', label: 'Customer request' },
+                      { value: 'not-available', label: 'Item not available' },
+                      { value: 'damaged-shipping', label: 'Damaged in shipping' },
+                      { value: 'wrong-item', label: 'Wrong item shipped' },
+                      { value: 'other', label: 'Other' },
+                  ],
+    };
+
     return {
         api,
         i18n,
+        orders,
     };
 }
