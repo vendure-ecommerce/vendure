@@ -2,7 +2,7 @@
 title: "MolliePlugin"
 generated: true
 ---
-<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="195" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="203" packageName="@vendure/payments-plugin" />
 
 Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).
 This plugin uses the Order API from Mollie, not the Payments API.
@@ -148,6 +148,7 @@ interface MolliePluginOptions {
         ctx: RequestContext,
         order: Order | null,
     ) => AdditionalEnabledPaymentMethodsParams | Promise<AdditionalEnabledPaymentMethodsParams>;
+    immediateCapture?: boolean;
 }
 ```
 
@@ -195,6 +196,14 @@ export const config: VendureConfig = {
   ],
 };
 ```
+### immediateCapture
+
+<MemberInfo kind="property" type={`boolean`}   />
+
+Immediate capture mode for pay-later methods like Klarna.
+Setting this option will make the plugin ignore the `immediateCapture` option in the `createMolliePaymentIntent` mutation.
+
+The default is true, unless set otherwise as input in the `createMolliePaymentIntent` mutation.
 
 
 </div>

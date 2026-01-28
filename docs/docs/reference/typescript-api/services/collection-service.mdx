@@ -16,6 +16,7 @@ class CollectionService implements OnModuleInit {
     getAvailableFilters(ctx: RequestContext) => ConfigurableOperationDefinition[];
     getParent(ctx: RequestContext, collectionId: ID) => Promise<Collection | undefined>;
     getChildren(ctx: RequestContext, collectionId: ID) => Promise<Collection[]>;
+    getProductVariantCounts(ctx: RequestContext, collectionIds: ID[]) => Promise<Map<ID, number>>;
     getBreadcrumbs(ctx: RequestContext, collection: Collection) => Promise<Array<{ name: string; id: ID; slug: string }>>;
     getCollectionsByProductId(ctx: RequestContext, productId: ID, publicOnly: boolean) => Promise<Array<Translated<Collection>>>;
     getDescendants(ctx: RequestContext, rootId: ID, maxDepth: number = Number.MAX_SAFE_INTEGER) => Promise<Array<Translated<Collection>>>;
@@ -80,6 +81,13 @@ Returns all configured CollectionFilters, as specified by the [CatalogOptions](/
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collectionId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]>`}   />
 
 Returns all child Collections of the Collection with the given id.
+### getProductVariantCounts
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collectionIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise<Map<<a href='/reference/typescript-api/common/id#id'>ID</a>, number>>`}   />
+
+Returns a Map of collection IDs to their product variant counts.
+This performs a single bulk query to get counts for all provided collection IDs,
+avoiding N+1 query issues when resolving productVariantCount on multiple collections.
 ### getBreadcrumbs
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collection: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>) => Promise<Array<{ name: string; id: <a href='/reference/typescript-api/common/id#id'>ID</a>; slug: string }>>`}   />
