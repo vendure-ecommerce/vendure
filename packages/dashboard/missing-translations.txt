@@ -24,6 +24,11 @@ msgid_text|translated_text
 
 ## Missing Translations:
 
+ar
+Draft order status
+Order draft is ready to be completed
+Order draft isn't ready to be completed
+---
 bg
 Type and press Enter or comma to add...
 Active
@@ -45,7 +50,7 @@ Collection position updated
 Content:
 Current
 Dark
-Draft order is not ready to complete
+Draft order status
 Enter the transaction ID for this refund settlement
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
@@ -61,6 +66,8 @@ Month to date
 No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -86,7 +93,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -95,6 +102,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -115,7 +124,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -124,6 +133,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -144,7 +155,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -153,6 +164,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -173,7 +186,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -182,6 +195,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -202,7 +217,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -211,6 +226,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -231,7 +248,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -240,6 +257,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -260,7 +279,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -269,6 +288,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -289,7 +310,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -298,6 +319,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -318,7 +341,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -327,6 +350,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -347,7 +372,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -356,6 +381,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -376,7 +403,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -385,6 +412,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -405,7 +434,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -414,6 +443,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -434,7 +465,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -443,6 +474,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -463,7 +496,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -472,6 +505,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -492,7 +527,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -501,6 +536,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -521,7 +558,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -530,6 +567,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -550,7 +589,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -559,6 +598,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -579,7 +620,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -588,6 +629,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -608,7 +651,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -617,6 +660,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue
@@ -637,7 +682,7 @@ Cannot remove from active channel
 Collection moved to new parent
 Collection position updated
 Content:
-Draft order is not ready to complete
+Draft order status
 Failed to assign {entityIdsLength} {entityType} to channel
 Failed to remove countries from zone
 Failed to remove product from channel
@@ -646,6 +691,8 @@ Failed to update collection position
 Includes tax at {taxRate}%
 Note
 Only draft orders can be completed
+Order draft is ready to be completed
+Order draft isn't ready to be completed
 Remove from zone
 Removed {0} {1} from zone
 Select a customer to continue

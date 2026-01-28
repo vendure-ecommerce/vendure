@@ -1130,7 +1130,7 @@ msgstr "Are you sure you want to delete {selectionLength} assets?"
 msgid "Are you sure you want to delete this address?"
 msgstr "Are you sure you want to delete this address?"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:331
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:328
 msgid "Are you sure you want to delete this draft order?"
 msgstr "Are you sure you want to delete this draft order?"
 
@@ -1231,7 +1231,7 @@ msgstr "between"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:270
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:269
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:474
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:490
 msgid "Billing address"
 msgstr "Billing address"
 
@@ -1400,7 +1400,7 @@ msgstr "Column settings"
 msgid "Company"
 msgstr "Company"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:347
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:344
 msgid "Complete draft"
 msgstr "Complete draft"
 
@@ -1535,7 +1535,7 @@ msgid "Create variants for your product"
 msgstr "Create variants for your product"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:114
-#: src/lib/framework/layout-engine/page-layout.tsx:433
+#: src/lib/framework/layout-engine/page-layout.tsx:557
 msgid "Created"
 msgstr "Created"
 
@@ -1561,7 +1561,7 @@ msgstr "Current facet values"
 msgid "Current status"
 msgstr "Current status"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:401
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:399
 msgid "Custom fields"
 msgstr "Custom fields"
 
@@ -1575,7 +1575,7 @@ msgstr "Custom fields changed"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:245
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:226
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:427
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:443
 #: src/lib/components/shared/role-code-label.tsx:8
 msgid "Customer"
 msgstr "Customer"
@@ -1695,11 +1695,11 @@ msgstr "Delete Address"
 msgid "Delete column"
 msgstr "Delete column"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:337
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:334
 msgid "Delete draft"
 msgstr "Delete draft"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:330
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:327
 msgid "Delete draft order"
 msgstr "Delete draft order"
 
@@ -1775,7 +1775,7 @@ msgstr "Do not track"
 msgid "does not contain"
 msgstr "does not contain"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:314
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:321
 #: src/app/routes/_authenticated/_orders/orders.tsx:115
 msgid "Draft order"
 msgstr "Draft order"
@@ -1789,8 +1789,12 @@ msgid "Draft order deleted"
 msgstr "Draft order deleted"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:320
-msgid "Draft order is not ready to complete"
-msgstr "Draft order is not ready to complete"
+#~ msgid "Draft order is not ready to complete"
+#~ msgstr "Draft order is not ready to complete"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:428
+msgid "Draft order status"
+msgstr "Draft order status"
 
 #: src/lib/components/data-input/custom-field-list-input.tsx:72
 msgid "Drag to reorder"
@@ -1940,7 +1944,7 @@ msgstr "Enter the transaction ID for this refund settlement"
 msgid "Enter transaction ID"
 msgstr "Enter transaction ID"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:406
+#: src/lib/framework/layout-engine/page-layout.tsx:530
 msgid "Entity Information"
 msgstr "Entity Information"
 
@@ -3274,6 +3278,10 @@ msgstr "Normal"
 msgid "not in"
 msgstr "not in"
 
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:433
+#~ msgid "Not ready to be completed"
+#~ msgstr "Not ready to be completed"
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:163
 msgid "Not Running"
 msgstr "Not Running"
@@ -3371,6 +3379,14 @@ msgstr "Order custom fields updated"
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
 msgid "Order delivered"
 msgstr "Order delivered"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:436
+msgid "Order draft is ready to be completed"
+msgstr "Order draft is ready to be completed"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:434
+msgid "Order draft isn't ready to be completed"
+msgstr "Order draft isn't ready to be completed"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:75
 msgid "Order fulfilled"
@@ -3693,6 +3709,10 @@ msgstr "Queue"
 msgid "Rate"
 msgstr "Rate"
 
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:433
+#~ msgid "Ready to be completed"
+#~ msgstr "Ready to be completed"
+
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:233
 msgid "Reason"
 msgstr "Reason"
@@ -3761,7 +3781,7 @@ msgstr "Registered"
 msgid "Remaining:"
 msgstr "Remaining:"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:515
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:531
 msgid "Remove"
 msgstr "Remove"
 
@@ -4103,7 +4123,7 @@ msgstr "Sellers"
 msgid "Set a shipping address and select a shipping method"
 msgstr "Set a shipping address and select a shipping method"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:422
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:420
 msgid "Set custom fields"
 msgstr "Set custom fields"
 
@@ -4145,7 +4165,7 @@ msgstr "Shipping"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:262
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:243
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:442
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:458
 msgid "Shipping address"
 msgstr "Shipping address"
 
@@ -4862,7 +4882,7 @@ msgstr "Update"
 msgid "Update the note content or visibility"
 msgstr "Update the note content or visibility"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:446
+#: src/lib/framework/layout-engine/page-layout.tsx:570
 msgid "Updated"
 msgstr "Updated"
 

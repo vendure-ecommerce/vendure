@@ -3,7 +3,7 @@ import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js'
 import { CustomerSelector } from '@/vdb/components/shared/customer-selector.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
-import { Alert, AlertDescription, AlertTitle } from '@/vdb/components/ui/alert.js';
+import { StatusAlert } from '@/vdb/components/shared/status-alert.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
@@ -22,7 +22,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
-import { User } from 'lucide-react';
+import { AlertTriangle, Info, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { CustomerAddressSelector } from './components/customer-address-selector.js';
 import { EditOrderTable } from './components/edit-order-table.js';
@@ -308,21 +308,18 @@ function DraftOrderPage() {
         completeDraftDisabledReason = t`Only draft orders can be completed`;
     }
 
+    let alertVariant: 'default' | 'destructive' = 'default';
+    let AlertIcon = Info;
+    if (!hasCustomer || !hasLines || !hasShippingMethod) {
+        alertVariant = 'destructive';
+        AlertIcon = AlertTriangle;
+    }
+
     return (
         <Page pageId="draft-order-detail" form={form} entity={entity}>
             <PageTitle>
                 <Trans>Draft order</Trans>: {entity?.code ?? ''}
             </PageTitle>
-            {isCompleteDraftDisabled && completeDraftDisabledReason ? (
-                <div className="mb-4">
-                    <Alert variant="destructive">
-                        <AlertTitle>
-                            <Trans>Draft order is not ready to complete</Trans>
-                        </AlertTitle>
-                        <AlertDescription>{completeDraftDisabledReason}</AlertDescription>
-                    </Alert>
-                </div>
-            ) : null}
             <PageActionBar>
                 <PageActionBarRight>
                     <PermissionGuard requires={['DeleteOrder']}>
@@ -349,6 +346,7 @@ function DraftOrderPage() {
                     </PermissionGuard>
                 </PageActionBarRight>
             </PageActionBar>
+
             <PageLayout>
                 <PageBlock column="main" blockId="order-table">
                     <EditOrderTable
@@ -424,6 +422,24 @@ function DraftOrderPage() {
                         </div>
                     </Form>
                 </PageBlock>
+                <PageBlock
+                    column="side"
+                    blockId="draft-order-status"
+                    title={<Trans>Draft order status</Trans>}
+                >
+                    <StatusAlert
+                        severity={isCompleteDraftDisabled ? 'error' : 'info'}
+                        title={
+                            isCompleteDraftDisabled ? (
+                                <Trans>Order draft isn't ready to be completed</Trans>
+                            ) : (
+                                <Trans>Order draft is ready to be completed</Trans>
+                            )
+                        }
+                        description={completeDraftDisabledReason}
+                    />
+                </PageBlock>
+
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     {entity?.customer?.id ? (
                         <Button variant="outline" asChild className="mb-4">
