@@ -14,9 +14,9 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { ColumnFiltersState, ColumnSort, SortingState, Table } from '@tanstack/react-table';
 import { ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
 import React from 'react';
-import { PaginatedListContext } from './paginated-list-context.js';
 import { getColumnVisibility, getStandardizedDefaultColumnOrder } from '../data-table/data-table-utils.js';
 import { useGeneratedColumns } from '../data-table/use-generated-columns.js';
+import { PaginatedListContext } from './paginated-list-context.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -96,6 +96,11 @@ export type ColumnDefWithMetaDependencies<T extends TypedDocumentNode<any, any>>
     meta?: {
         /**
          * @description
+         * If true, the column will not be displayed in the table.
+         */
+        disabled?: boolean;
+        /**
+         * @description
          * Columns that rely on _other_ columns in order to correctly render,
          * can declare those other columns as dependencies in order to ensure that
          * those columns are always fetched, even when those columns are not explicitly
@@ -152,7 +157,6 @@ export type ListQueryOptionsShape = {
 export type AdditionalColumns<T extends TypedDocumentNode<any, any>> = {
     [key: string]: ColumnDefWithMetaDependencies<PaginatedListItemFields<T>>;
 };
-
 
 export interface RowAction<T> {
     label: React.ReactNode;
