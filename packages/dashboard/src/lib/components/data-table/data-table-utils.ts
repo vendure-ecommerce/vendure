@@ -154,6 +154,35 @@ function isDroppingIntoExpandedPreviousWhenDraggingUp<T extends HierarchicalItem
 }
 
 /**
+ * Checks if an item is in an expanded state
+ */
+function isItemExpanded(itemId: string | undefined, expanded: ExpandedState): boolean {
+    if (!itemId) return false;
+    return expanded === true || (typeof expanded === 'object' && !!expanded[itemId]);
+}
+
+/**
+ * Handles dropping into expanded items (first child position)
+ */
+function handleExpandedItemDrop<T extends HierarchicalItem>(context: DragContext<T>): TargetPosition | null {
+    const { targetItem, previousItem } = context;
+
+    if (isDroppingIntoExpandedTarget(context) && targetItem) {
+        return createFirstChildPosition(targetItem.id);
+    }
+
+    if (previousItem && isDroppingIntoExpandedPreviousChildren(context)) {
+        return createFirstChildPosition(previousItem.id);
+    }
+
+    if (previousItem && isDroppingIntoExpandedPreviousWhenDraggingUp(context)) {
+        return createFirstChildPosition(previousItem.id);
+    }
+
+    return null;
+}
+
+/**
  * Creates a position for dropping into an expanded item as first child
  */
 function createFirstChildPosition(parentId: string): TargetPosition {
@@ -223,27 +252,16 @@ export function calculateDragTargetPosition<T extends HierarchicalItem>(params: 
         targetItem,
         previousItem,
         isDraggingDown: oldIndex < newIndex,
-        isTargetExpanded: targetItem
-            ? expanded === true || (typeof expanded === 'object' && !!expanded[targetItem.id])
-            : false,
-        isPreviousExpanded: previousItem
-            ? expanded === true || (typeof expanded === 'object' && !!expanded[previousItem.id])
-            : false,
+        isTargetExpanded: isItemExpanded(targetItem?.id, expanded),
+        isPreviousExpanded: isItemExpanded(previousItem?.id, expanded),
         sourceParentId,
         items,
     };
 
     // Handle dropping into expanded items (becomes first child)
-    if (isDroppingIntoExpandedTarget(context)) {
-        return createFirstChildPosition(targetItem.id);
-    }
-
-    if (previousItem && isDroppingIntoExpandedPreviousChildren(context)) {
-        return createFirstChildPosition(previousItem.id);
-    }
-
-    if (previousItem && isDroppingIntoExpandedPreviousWhenDraggingUp(context)) {
-        return createFirstChildPosition(previousItem.id);
+    const expandedDropPosition = handleExpandedItemDrop(context);
+    if (expandedDropPosition) {
+        return expandedDropPosition;
     }
 
     // Handle cross-parent drag operations
