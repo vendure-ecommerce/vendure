@@ -54,12 +54,17 @@ import { toast } from 'sonner';
 interface DraggableRowProps<TData> {
     row: Row<TData>;
     isDragDisabled: boolean;
+    getRowCanDrag?: (row: Row<TData>) => boolean;
 }
 
-function DraggableRow<TData>({ row, isDragDisabled }: Readonly<DraggableRowProps<TData>>) {
+function DraggableRow<TData>({ row, isDragDisabled, getRowCanDrag }: Readonly<DraggableRowProps<TData>>) {
+    // Check if this specific row can be dragged
+    const rowCanDrag = getRowCanDrag ? getRowCanDrag(row) : true;
+    const isRowDragDisabled = isDragDisabled || !rowCanDrag;
+
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: row.id,
-        disabled: isDragDisabled,
+        disabled: isRowDragDisabled,
     });
 
     const style = {
@@ -77,13 +82,15 @@ function DraggableRow<TData>({ row, isDragDisabled }: Readonly<DraggableRowProps
         >
             {!isDragDisabled && (
                 <TableCell className="w-[40px] h-12">
-                    <div
-                        {...attributes}
-                        {...listeners}
-                        className="cursor-move text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        <GripVertical className="h-4 w-4" />
-                    </div>
+                    {rowCanDrag ? (
+                        <div
+                            {...attributes}
+                            {...listeners}
+                            className="cursor-move text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            <GripVertical className="h-4 w-4" />
+                        </div>
+                    ) : null}
                 </TableCell>
             )}
             {row.getVisibleCells().filter(cell => cell.column.id !== '__drag_handle__').map(cell => (
@@ -463,31 +470,62 @@ export function DataTable<TData>({
                                         (() => {
                                             const isDraggableEnabled = onReorder && !isDragDisabled;
                                             const rows = table.getRowModel().rows;
-                                            
-                                            if (isDraggableEnabled) {
-                                                return rows.map(row => (
-                                                    <DraggableRow key={`${row.id}-${componentId}`} row={row} isDragDisabled={isDragDisabled} />
-                                                ));
-                                            }
-                                            
-                                            return rows.map(row => (
-                                                <TableRow
-                                                    key={row.id}
-                                                    data-state={row.getIsSelected() && 'selected'}
-                                                    className="animate-in fade-in duration-100"
-                                                >
-                                                    {row.getVisibleCells().map(cell => (
-                                                        <TableCell key={cell.id} className="h-12">
-                                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                        </TableCell>
-                                                    ))}
-                                                </TableRow>
-                                            ));
+                                            const tableMeta = table.options.meta as any;
+                                            const getRowCanDrag = tableMeta?.getRowCanDrag;
+                                            const renderUtilityRow = tableMeta?.renderUtilityRow;
+                                            const isUtilityRow = tableMeta?.isUtilityRow;
+                                            const totalColumns = columnsWithOptionalDragHandle.length;
+
+                                            const renderRow = (row: Row<TData>) => {
+                                                // Check if this is a utility row that needs custom rendering
+                                                if (isUtilityRow?.(row) && renderUtilityRow) {
+                                                    return (
+                                                        <TableRow
+                                                            key={row.id}
+                                                            className="animate-in fade-in duration-100"
+                                                        >
+                                                            <TableCell
+                                                                colSpan={totalColumns}
+                                                                className="h-12"
+                                                            >
+                                                                {renderUtilityRow(row)}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                }
+
+                                                if (isDraggableEnabled) {
+                                                    return (
+                                                        <DraggableRow
+                                                            key={`${row.id}-${componentId}`}
+                                                            row={row}
+                                                            isDragDisabled={isDragDisabled}
+                                                            getRowCanDrag={getRowCanDrag}
+                                                        />
+                                                    );
+                                                }
+
+                                                return (
+                                                    <TableRow
+                                                        key={row.id}
+                                                        data-state={row.getIsSelected() && 'selected'}
+                                                        className="animate-in fade-in duration-100"
+                                                    >
+                                                        {row.getVisibleCells().map(cell => (
+                                                            <TableCell key={cell.id} className="h-12">
+                                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                            </TableCell>
+                                                        ))}
+                                                    </TableRow>
+                                                );
+                                            };
+
+                                            return rows.map(renderRow);
                                         })()
                                     ) : (
                                         <TableRow className="animate-in fade-in duration-100">
                                             <TableCell
-                                                colSpan={columnsWithOptionalDragHandle.length + (isDragDisabled ? 0 : 1)}
+                                                colSpan={columnsWithOptionalDragHandle.length}
                                                 className="h-24 text-center"
                                             >
                                                 <Trans>No results</Trans>
