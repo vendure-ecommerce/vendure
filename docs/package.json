@@ -32,6 +32,7 @@
         "@vendure-io/docs-provider": "^0.9.0"
     },
     "devDependencies": {
+        "@types/node": "^22.10.10",
         "rimraf": "^5.0.5",
         "tsx": "^4.7.0",
         "typescript": "5.8.2"
