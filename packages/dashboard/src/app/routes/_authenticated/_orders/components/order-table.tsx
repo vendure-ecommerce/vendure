@@ -175,6 +175,7 @@ export function OrderTable({ order, pageId }: Readonly<OrderTableProps>) {
                 columns={columns as any}
                 data={data as any}
                 totalItems={data.length}
+                itemsPerPage={data.length}
                 disableViewOptions={false}
                 defaultColumnVisibility={columnVisibility}
                 onColumnVisibilityChange={(_, columnVisibility) => {

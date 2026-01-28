@@ -218,8 +218,8 @@ export function FulfillOrderDialog({ order, onSuccess }: Readonly<FulfillOrderDi
             >
                 <Trans>Fulfill order</Trans>
             </Button>
-            <Dialog open={open}>
-                <DialogContent className="sm:max-w-[600px]">
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col">
                     <DialogHeader>
                         <DialogTitle>
                             <Trans>Fulfill order</Trans>
@@ -234,9 +234,9 @@ export function FulfillOrderDialog({ order, onSuccess }: Readonly<FulfillOrderDi
                                 e.stopPropagation();
                                 form.handleSubmit(handleSubmit)(e);
                             }}
-                            className="space-y-4"
+                            className="space-y-4 flex-1 overflow-hidden flex flex-col"
                         >
-                            <div className="space-y-4">
+                            <div className="space-y-4 flex-1 overflow-y-auto">
                                 <div className="font-medium">
                                     <Trans>Order lines</Trans>
                                 </div>
