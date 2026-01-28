@@ -65,6 +65,7 @@ export class TranslationDiffer<Entity extends Translatable> {
         if (toAdd.length) {
             for (const translation of toAdd) {
                 translation.base = entity;
+                (translation as any).baseId = entity.id;
                 let newTranslation: any;
                 try {
                     newTranslation = await this.connection
