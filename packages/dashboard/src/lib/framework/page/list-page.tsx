@@ -154,6 +154,7 @@ export interface ListPageProps<
      *      };
      *    }}
      *  />
+     * ```
      * @param searchTerm
      */
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
@@ -207,6 +208,13 @@ export interface ListPageProps<
      *           </div>
      *           );
      *       },
+     *     },
+     *     // Use `meta.disabled` to completely exclude a column from the table,
+     *     // including the column visibility toggle. This is useful when you need
+     *     // to fetch certain fields for use in custom cell renderers, but don't
+     *     // want those fields to appear as their own columns.
+     *     productVariantCount: {
+     *       meta: { disabled: true },
      *     },
      * ```
      */
