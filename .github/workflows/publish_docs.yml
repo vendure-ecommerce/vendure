@@ -1,12 +1,17 @@
 name: Publish Docs to NPM
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs/**'
   workflow_dispatch:
     inputs:
       branch:
         description: 'Branch to publish from'
         required: true
-        default: 'docs-v2-migration'
+        default: 'master'
         type: string
 
 jobs:
@@ -22,7 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ inputs.branch || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
