@@ -89,7 +89,7 @@ export function MyComponent({ variant }: MyComponentProps) {
 ## Support for multiple currencies
 
 Vendure supports multiple currencies out-of-the-box. The available currencies must first be set at the Channel level
-(see the [Channels, Currencies & Prices section](/guides/core-concepts/channels/#channels-currencies--prices)), and then
+(see the [Channels, Currencies & Prices section](/core-concepts/channels/#channels-currencies--prices)), and then
 a price may be set on a `ProductVariant` in each of the available currencies.
 
 When using multiple currencies, the [ProductVariantPriceSelectionStrategy](/reference/typescript-api/configuration/product-variant-price-selection-strategy/)
@@ -123,13 +123,13 @@ type ShippingLine {
 }
 ```
 
-If you are defining custom GraphQL types, or adding fields to existing types (see the [Extending the GraphQL API doc](/guides/developer-guide/extend-graphql-api/)),
+If you are defining custom GraphQL types, or adding fields to existing types (see the [Extending the GraphQL API doc](/developer-guide/extend-graphql-api/)),
 then you should also use the `Money` scalar for any monetary values.
 
 
 ## The `@Money()` decorator
 
-When [defining new database entities](/guides/developer-guide/database-entity), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
+When [defining new database entities](/developer-guide/database-entity), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
 decorator, you should use Vendure's [`@Money()` decorator](/reference/typescript-api/money/money-decorator).
 
 Using this decorator allows Vendure to correctly store the value in the database according to the configured `MoneyStrategy` (see below).

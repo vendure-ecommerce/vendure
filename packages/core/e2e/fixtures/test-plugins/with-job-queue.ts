@@ -6,6 +6,7 @@ import { take } from 'rxjs/operators';
 @Controller('run-job')
 class TestController implements OnModuleInit {
     private queue: JobQueue<{ returnValue?: string }>;
+    private progressQueue: JobQueue<{ duration: number }>;
 
     constructor(private jobQueueService: JobQueueService) {}
 
@@ -35,6 +36,21 @@ class TestController implements OnModuleInit {
                 }
             },
         });
+
+        // Queue for testing that updates() emits multiple times until job completion
+        this.progressQueue = await this.jobQueueService.createQueue({
+            name: 'test-progress',
+            process: async job => {
+                const duration = job.data.duration;
+                const steps = 4;
+                const stepDuration = duration / steps;
+                for (let i = 1; i <= steps; i++) {
+                    await new Promise(resolve => setTimeout(resolve, stepDuration));
+                    job.setProgress(i * 25);
+                }
+                return 'completed';
+            },
+        });
     }
 
     @Get()
@@ -60,6 +76,49 @@ class TestController implements OnModuleInit {
             .toPromise()
             .then(update => update?.result);
         return result;
+    }
+
+    /**
+     * This endpoint tests that job.updates() emits multiple times as the job progresses,
+     * and continues until the job reaches a terminal state (COMPLETED).
+     * See https://github.com/vendure-ecommerce/vendure/issues/4112
+     */
+    @Get('subscribe-all-updates')
+    async runJobAndSubscribeAllUpdates() {
+        const job = await this.progressQueue.add({ duration: 500 });
+        const allUpdates: Array<{ state: string; progress: number; result: any }> = [];
+        return new Promise(resolve => {
+            job.updates({ pollInterval: 50, timeoutMs: 10000 }).subscribe({
+                next: update => {
+                    allUpdates.push({
+                        state: update.state as string,
+                        progress: update.progress,
+                        result: update.result,
+                    });
+                },
+                error: err => {
+                    resolve(
+                        JSON.stringify({
+                            updateCount: allUpdates.length,
+                            states: allUpdates.map(u => u.state),
+                            finalState: allUpdates[allUpdates.length - 1]?.state,
+                            finalResult: allUpdates[allUpdates.length - 1]?.result,
+                            error: err.message,
+                        }),
+                    );
+                },
+                complete: () => {
+                    resolve(
+                        JSON.stringify({
+                            updateCount: allUpdates.length,
+                            states: allUpdates.map(u => u.state),
+                            finalState: allUpdates[allUpdates.length - 1]?.state,
+                            finalResult: allUpdates[allUpdates.length - 1]?.result,
+                        }),
+                    );
+                },
+            });
+        });
     }
 }
 

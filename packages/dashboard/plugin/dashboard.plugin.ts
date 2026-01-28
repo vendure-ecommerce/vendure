@@ -62,7 +62,7 @@ export interface DashboardPluginOptions {
  * ## Usage
  *
  * First you need to set up compilation of the Dashboard, using the Vite configuration
- * described in the [Dashboard Getting Started Guide](/guides/extending-the-dashboard/getting-started/)
+ * described in the [Dashboard Getting Started Guide](/extending-the-dashboard/getting-started/)
  *
  * ## Development vs Production
  *

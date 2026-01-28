@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
-import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { usePaginatedList } from '@/vdb/hooks/use-paginated-list.js';
 import { api } from '@/vdb/graphql/api.js';
 import { duplicateEntityDocument } from '@/vdb/graphql/common-operations.js';
 import { Trans, useLingui } from '@lingui/react/macro';

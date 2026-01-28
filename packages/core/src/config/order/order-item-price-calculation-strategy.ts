@@ -51,7 +51,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
  * * A gift-wrapping service, where a boolean custom field is defined on the OrderLine. If `true`,
  *   a gift-wrapping surcharge would be added to the price.
  * * A product-configurator where e.g. various finishes, colors, and materials can be selected and stored
- *   as OrderLine custom fields (see [the Custom Fields guide](/guides/developer-guide/custom-fields/).
+ *   as OrderLine custom fields (see [the Custom Fields guide](/developer-guide/custom-fields/).
  * * Price lists or bulk pricing, where different price bands are stored e.g. in a customField on the ProductVariant, and this
  *   is used to calculate the price based on the current quantity.
  *

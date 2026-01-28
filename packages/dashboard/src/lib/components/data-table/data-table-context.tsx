@@ -1,7 +1,7 @@
 'use client';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
-import React, { createContext, ReactNode, useContext } from 'react';
+import React, { createContext, ReactNode } from 'react';
 
 export type ColumnConfig = { columnOrder: string[]; columnVisibility: Record<string, boolean> };
 
@@ -21,7 +21,7 @@ interface DataTableContextValue {
     handleApplyView: (filters: ColumnFiltersState, columnConfig: ColumnConfig, searchTerm?: string) => void;
 }
 
-const DataTableContext = createContext<DataTableContextValue | undefined>(undefined);
+export const DataTableContext = createContext<DataTableContextValue | undefined>(undefined);
 
 export interface DataTableProviderProps {
     children: ReactNode;
@@ -95,12 +95,4 @@ export function DataTableProvider({
     };
 
     return <DataTableContext.Provider value={value}>{children}</DataTableContext.Provider>;
-}
-
-export function useDataTableContext() {
-    const context = useContext(DataTableContext);
-    if (context === undefined) {
-        throw new Error('useDataTableContext must be used within a DataTableProvider');
-    }
-    return context;
 }

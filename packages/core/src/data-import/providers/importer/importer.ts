@@ -11,8 +11,8 @@ import { InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { Logger } from '../../../config/index';
-import { Facet } from '../../../entity/facet/facet.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { Facet } from '../../../entity/facet/facet.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -61,7 +61,7 @@ export class Importer {
 
     /**
      * @description
-     * Parses the contents of the [product import CSV file](/guides/developer-guide/importing-data/#product-import-format) and imports
+     * Parses the contents of the [product import CSV file](/developer-guide/importing-data/#product-import-format) and imports
      * the resulting Product & ProductVariants, as well as any associated Assets, Facets & FacetValues.
      *
      * The `ctxOrLanguageCode` argument is used to specify the languageCode to be used when creating the Products.

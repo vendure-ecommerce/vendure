@@ -2,17 +2,14 @@
 title: "Checkout Flow"
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 Once the customer has added the desired products to the active order, it's time to check out.
 
-This guide assumes that you are using the [default OrderProcess](/guides/core-concepts/orders/#the-order-process), so
+This guide assumes that you are using the [default OrderProcess](/core-concepts/orders/#the-order-process), so
 if you have defined a custom process, some of these steps may be slightly different.
 
 :::note
 In this guide, we will assume that an `ActiveOrder` fragment has been defined, as detailed in the
-[Managing the Active Order guide](/guides/storefront/active-order/#define-an-order-fragment), but for the purposes of
+[Managing the Active Order guide](/storefront/active-order/#define-an-order-fragment), but for the purposes of
 checking out the fragment should also include `customer` `shippingAddress` and `billingAddress` fields.
 :::
 
@@ -391,7 +388,7 @@ Our [`MolliePlugin` docs](/reference/core-plugins/payments-plugin/mollie-plugin/
 
 ### Other payment providers
 
-For more information on how to integrate with a payment provider, see the [Payment](/guides/core-concepts/payment/) guide.
+For more information on how to integrate with a payment provider, see the [Payment](/core-concepts/payment/) guide.
 
 ## Display confirmation
 
