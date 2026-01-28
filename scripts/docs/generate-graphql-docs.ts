@@ -160,10 +160,13 @@ function escapeUnicodeCharacters(str: string): string {
 }
 
 /**
- * Escapes template string special characters (backticks and ${) and non-ASCII Unicode
+ * Escapes template string special characters (backslashes, backticks and ${) and non-ASCII Unicode
  */
 function escapeTemplateString(str: string): string {
-    return escapeUnicodeCharacters(str.replace(/`/g, '\\`').replace(/\$\{/g, '\\${'));
+    // Escape backslashes first, then backticks and ${
+    return escapeUnicodeCharacters(
+        str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${'),
+    );
 }
 
 /**
