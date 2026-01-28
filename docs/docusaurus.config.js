@@ -66,6 +66,13 @@ const config = {
     themeConfig:
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
+            announcementBar: {
+                id: 'new_docs_experience',
+                content: '✨ Try the <a href="https://staging.docs.vendure.io">new docs experience</a>!',
+                backgroundColor: '#17c1ff',
+                textColor: '#000212',
+                isCloseable: true,
+            },
             colorMode: {
                 defaultMode: 'dark',
                 disableSwitch: false,
