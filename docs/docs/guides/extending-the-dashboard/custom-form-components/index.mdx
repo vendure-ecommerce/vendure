@@ -254,7 +254,7 @@ operation argument.
 
 You can access validation data for the current field or the whole form by using the `useFormContext` hook.
 
-:::note Error Messages
+:::note[Error Messages]
 Your component does not need to handle standard error messages - the Dashboard will handle them for you.
 
 For example, if your custom field specifies a `pattern` property, the Dashboard will automatically display an error message
@@ -306,7 +306,7 @@ export const ValidatedInputComponent: DashboardFormComponent = ({ value, onChang
 }
 ```
 
-:::tip Best Practices
+:::tip[Best Practices]
 
 1. **Always use Shadcn UI components** from the `@vendure/dashboard` package for consistent styling
 2. **Handle React Hook Form events properly** - call `onChange` and `onBlur` appropriately for custom field components

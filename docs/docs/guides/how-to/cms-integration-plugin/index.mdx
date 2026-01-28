@@ -395,7 +395,7 @@ async findCollectionsForVariant(
 }
 ```
 
-:::info Additional Entity Types
+:::info[Additional Entity Types]
 The service can also includes `syncVariantToCms()` and `syncCollectionToCms()` methods that follow the same pattern as the product sync shown above.
 
 These implementations are omitted from this guide for brevity, but they handle their respective entity types with similar data fetching, relationship resolution, and error handling patterns.
@@ -410,7 +410,7 @@ This sync service provides the foundation for handling all Vendure-specific comp
 <Tabs>
 <TabItem value="storyblok" label="Storyblok">
 
-:::tip Working Example
+:::tip[Working Example]
 The complete, production-ready Storyblok implementation can be found in the [Storyblok integration example](https://github.com/vendurehq/examples/tree/master/examples/storyblok-cms-integration). Refer to it for a minimal working implementation.
 :::
 
@@ -728,7 +728,7 @@ The complete implementations can be found in the working [example repositories](
 </TabItem>
 <TabItem value="contentful" label="Contentful">
 
-:::tip Working Example
+:::tip[Working Example]
 The complete, production-ready Contentful implementation can be found in the [Contentful integration example](https://github.com/vendurehq/examples/tree/master/examples/contentful-cms-integration). It includes advanced features like locale mapping, bulk operations, and a robust setup process.
 :::
 
@@ -966,7 +966,7 @@ This same pattern is used to link variants to their parent product and to their 
 
 These methods perform the core Create, Read, Update, and Delete logic. They rely on our centralized `makeContentfulRequest` method and handle the specifics of Contentful's API, such as versioning and the publish workflow.
 
-:::info Contentful's Publish Workflow
+:::info[Contentful's Publish Workflow]
 Contentful requires entries to be explicitly published before they are visible in the Delivery API. After creating or updating an entry, we must make a separate API call to publish it. Similarly, to delete an entry, it must first be unpublished.
 :::
 
@@ -1052,7 +1052,7 @@ This configuration provides a complete Contentful CMS integration that automatic
 
 <TabItem value="strapi" label="Strapi">
 
-:::tip Working Example
+:::tip[Working Example]
 The complete, production-ready Strapi implementation can be found in the [Strapi integration example](https://github.com/vendurehq/examples/tree/master/examples/strapi-cms-integration). It includes advanced features like plugin-based content types, batch operations, and relationship management.
 :::
 
@@ -1382,7 +1382,7 @@ The complete implementations can be found in the working [example repositories](
 </TabItem>
 <TabItem value="Sanity" label="Sanity">
 
-:::tip Working Example
+:::tip[Working Example]
 The complete, production-ready Sanity implementation can be found in the [Sanity integration example](https://github.com/vendurehq/examples/tree/master/examples/sanity-cms-integration). It includes advanced features like content type management and bulk operations.
 :::
 
@@ -1647,7 +1647,7 @@ https://github.com/vendurehq/examples/tree/master/examples/sanity-cms-integratio
 </TabItem>
 <TabItem value="payload" label="Payload">
 
-:::tip Working Example
+:::tip[Working Example]
 The complete, production-ready Payload implementation can be found in the [Payload integration example](https://github.com/vendurehq/examples/tree/master/examples/payload-cms-integration). It includes advanced features like local API communication, collection management, and relationship handling.
 :::
 
