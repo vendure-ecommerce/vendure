@@ -24,6 +24,7 @@
         "prepublishOnly": "npm run test:mdx && npm run build",
         "publish:local": "npm version 0.0.0-$(date +%Y%m%d%H%M) --no-git-tag-version && npm publish --tag latest",
         "publish:local:next": "npm version 0.0.0-$(date +%Y%m%d%H%M) --no-git-tag-version && npm publish --tag next",
+        "pretest:mdx": "npm run generate-dates",
         "test:mdx": "tsx scripts/test-mdx.ts",
         "test:mdx:verbose": "tsx scripts/test-mdx.ts --verbose",
         "typecheck": "tsc --noEmit"
