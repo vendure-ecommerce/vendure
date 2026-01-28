@@ -39,6 +39,24 @@ class ProductReview extends VendureEntity {
 }
 ```
 
+:::caution TypeScript ES2022+ Compatibility
+If your `tsconfig.json` uses `"target": "ES2022"` or later (including **Node.js v24+**), you **must** also set `"useDefineForClassFields": false`.
+
+Without this setting, ES2022 class field semantics cause entity fields to be overwritten with `undefined` after the constructor runs, resulting in "null value in column violates not-null constraint" database errors.
+
+```json title="tsconfig.json"
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        // highlight-next-line
+        "useDefineForClassFields": false
+    }
+}
+```
+
+See the [TypeScript documentation](https://www.typescriptlang.org/tsconfig/useDefineForClassFields.html) for more details.
+:::
+
 :::note
 Any custom entities *must* extend the [`VendureEntity`](/reference/typescript-api/entities/vendure-entity/) class.
 :::
