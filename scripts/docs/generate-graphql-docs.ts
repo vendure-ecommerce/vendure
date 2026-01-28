@@ -176,7 +176,8 @@ function stripJSDocTags(description: string): string {
         result = result.replace(pattern, '');
     }
     // Replace {@link SomeName} with just SomeName to avoid MDX JSX expression issues
-    result = result.replace(/\{@link\s+([^}]+)\}/g, '$1');
+    // Use non-greedy +? to prevent ReDoS via backtracking
+    result = result.replace(/\{@link\s+([^}]+?)\}/g, '$1');
     return result.trim();
 }
 
