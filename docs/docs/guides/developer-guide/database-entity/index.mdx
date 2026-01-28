@@ -39,7 +39,7 @@ class ProductReview extends VendureEntity {
 }
 ```
 
-:::caution TypeScript ES2022+ Compatibility
+:::caution[TypeScript ES2022+ Compatibility]
 If your `tsconfig.json` uses `"target": "ES2022"` or later (including **Node.js v24+**), you **must** also set `"useDefineForClassFields": false`.
 
 Without this setting, ES2022 class field semantics cause entity fields to be overwritten with `undefined` after the constructor runs, resulting in "null value in column violates not-null constraint" database errors.
