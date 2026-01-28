@@ -5,7 +5,7 @@ import { HeritageClause } from 'typescript';
 
 import { assertNever } from '../../packages/common/src/shared-utils';
 
-import { generateFrontMatter } from './docgen-utils';
+import { generateFrontMatter, titleCase } from './docgen-utils';
 import {
     ClassInfo,
     DeclarationInfo,
@@ -26,6 +26,33 @@ export class TypescriptDocsRenderer {
         let generatedCount = 0;
         if (!fs.existsSync(outputPath)) {
             fs.ensureDirSync(outputPath);
+        }
+
+        // Extract the section base path (e.g., 'typescript-api' from '.../reference/typescript-api')
+        const referenceIndex = outputPath.indexOf('/reference/');
+        const sectionBasePath = referenceIndex !== -1
+            ? outputPath.slice(referenceIndex + '/reference/'.length)
+            : '';
+
+        // Build a map of parent category paths to their direct child categories
+        const categoryChildren = new Map<string, Set<string>>();
+        // Also track direct children of the section root (for sections like 'admin-ui-api', 'dashboard')
+        const sectionRootChildren = new Set<string>();
+
+        for (const page of pages) {
+            // Track the first category as a child of the section root
+            if (page.category.length > 0) {
+                sectionRootChildren.add(page.category[0]);
+            }
+            // Track nested category relationships
+            for (let i = 0; i < page.category.length - 1; i++) {
+                const parentPath = page.category.slice(0, i + 1).join('/');
+                const childCategory = page.category[i + 1];
+                if (!categoryChildren.has(parentPath)) {
+                    categoryChildren.set(parentPath, new Set());
+                }
+                categoryChildren.get(parentPath)!.add(childCategory);
+            }
         }
 
         for (const page of pages) {
@@ -61,25 +88,123 @@ export class TypescriptDocsRenderer {
             if (!fs.existsSync(categoryDir)) {
                 fs.mkdirsSync(categoryDir);
             }
-            const pathParts = [];
+            const pathParts: string[] = [];
             for (const subCategory of page.category) {
                 pathParts.push(subCategory);
-                const indexFile = path.join(outputPath, ...pathParts, 'index.md');
+                const indexFile = path.join(outputPath, ...pathParts, 'index.mdx');
                 const exists = fs.existsSync(indexFile);
-                const existingContent = exists && fs.readFileSync(indexFile).toString();
-                const hasActualContent = existingContent && existingContent.includes('isDefaultIndex: false');
-                if (!exists && !hasActualContent) {
-                    const indexFileContent =
-                        generateFrontMatter(subCategory, true) +
-                        `\n\nimport DocCardList from '@theme/DocCardList';\n\n<DocCardList />`;
+                const existingContent = exists ? fs.readFileSync(indexFile).toString() : '';
+                const isGenerated = existingContent.includes('generated: true');
+                const hasCustomContent = existingContent.includes('isDefaultIndex: false');
+
+                // Skip files with custom content
+                if (hasCustomContent) {
+                    continue;
+                }
+
+                const categoryPath = pathParts.join('/');
+                const children = categoryChildren.get(categoryPath);
+
+                // Collect existing LinkCards from the file if it exists
+                const existingLinkCards = new Set<string>();
+                if (exists && isGenerated) {
+                    const linkCardRegex = /<LinkCard href="([^"]+)"/g;
+                    let match;
+                    while ((match = linkCardRegex.exec(existingContent)) !== null) {
+                        existingLinkCards.add(match[1]);
+                    }
+                }
+
+                // Build set of new LinkCards
+                const newLinkCards = new Set<string>();
+                if (children && children.size > 0) {
+                    for (const child of children) {
+                        const basePath = sectionBasePath ? `${sectionBasePath}/` : '';
+                        const absolutePath = `/reference/${basePath}${categoryPath}/${child}`;
+                        newLinkCards.add(absolutePath);
+                    }
+                }
+
+                // Merge and check if we need to write
+                const allLinkCards = new Set([...existingLinkCards, ...newLinkCards]);
+                const hasNewCards = newLinkCards.size > 0 &&
+                    [...newLinkCards].some(card => !existingLinkCards.has(card));
+
+                if (!exists || hasNewCards) {
+                    let indexFileContent = generateFrontMatter(subCategory, true);
+
+                    if (allLinkCards.size > 0) {
+                        indexFileContent += '\n';
+                        const sortedCards = Array.from(allLinkCards).sort();
+                        for (const href of sortedCards) {
+                            // Extract child name from href for title
+                            const childName = href.split('/').pop() || '';
+                            const title = titleCase(childName.replace(/-/g, ' '));
+                            indexFileContent += `<LinkCard href="${href}" title="${title}" />\n`;
+                        }
+                    }
+
                     fs.writeFileSync(indexFile, indexFileContent);
-                    generatedCount++;
+                    if (!exists) {
+                        generatedCount++;
+                    }
                 }
             }
 
-            fs.writeFileSync(path.join(categoryDir, page.fileName + '.md'), markdown);
+            fs.writeFileSync(path.join(categoryDir, page.fileName + '.mdx'), markdown);
             generatedCount++;
         }
+
+        // Generate index file for the section root (e.g., admin-ui-api/index.mdx, dashboard/index.mdx)
+        if (sectionBasePath && sectionRootChildren.size > 0) {
+            const sectionIndexFile = path.join(outputPath, 'index.mdx');
+            const exists = fs.existsSync(sectionIndexFile);
+            const existingContent = exists ? fs.readFileSync(sectionIndexFile).toString() : '';
+            const isGenerated = existingContent.includes('generated: true');
+            const hasCustomContent = existingContent.includes('isDefaultIndex: false');
+
+            if (!hasCustomContent) {
+                // Collect existing LinkCards
+                const existingLinkCards = new Set<string>();
+                if (exists && isGenerated) {
+                    const linkCardRegex = /<LinkCard href="([^"]+)"/g;
+                    let match;
+                    while ((match = linkCardRegex.exec(existingContent)) !== null) {
+                        existingLinkCards.add(match[1]);
+                    }
+                }
+
+                // Build new LinkCards
+                const newLinkCards = new Set<string>();
+                for (const child of sectionRootChildren) {
+                    const absolutePath = `/reference/${sectionBasePath}/${child}`;
+                    newLinkCards.add(absolutePath);
+                }
+
+                // Merge and check if update needed
+                const allLinkCards = new Set([...existingLinkCards, ...newLinkCards]);
+                const hasNewCards = [...newLinkCards].some(card => !existingLinkCards.has(card));
+
+                if (!exists || hasNewCards) {
+                    const sectionTitle = titleCase(sectionBasePath.replace(/-/g, ' '));
+                    let indexFileContent = generateFrontMatter(sectionTitle, true);
+
+                    indexFileContent += '\n';
+                    const sortedCards = Array.from(allLinkCards).sort();
+                    for (const href of sortedCards) {
+                        const childName = href.split('/').pop() || '';
+                        const title = titleCase(childName.replace(/-/g, ' '));
+                        indexFileContent += `<LinkCard href="${href}" title="${title}" />\n`;
+                    }
+
+                    fs.writeFileSync(sectionIndexFile, indexFileContent);
+                    if (!exists) {
+                        generatedCount++;
+                    }
+                }
+            }
+        }
+
         return generatedCount;
     }
 
@@ -93,7 +218,6 @@ export class TypescriptDocsRenderer {
     ): string {
         const { title, weight, category, description, members } = info;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(info);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output +=
@@ -120,7 +244,6 @@ export class TypescriptDocsRenderer {
     private renderTypeAlias(typeAliasInfo: TypeAliasInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, type, fullText } = typeAliasInfo;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(typeAliasInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += this.renderTypeAliasSignature(typeAliasInfo);
@@ -135,7 +258,6 @@ export class TypescriptDocsRenderer {
     private renderEnum(enumInfo: EnumInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, fullText } = enumInfo;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(enumInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += this.renderEnumSignature(enumInfo);
@@ -145,7 +267,6 @@ export class TypescriptDocsRenderer {
     private renderFunction(functionInfo: FunctionInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, fullText, parameters } = functionInfo;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(functionInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += this.renderFunctionSignature(functionInfo, knownTypeMap);
@@ -159,7 +280,6 @@ export class TypescriptDocsRenderer {
     private renderVariable(variableInfo: VariableInfo, knownTypeMap: TypeMap, docsUrl: string): string {
         const { title, weight, description, fullText } = variableInfo;
         let output = '';
-        output += `\n\n## ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(variableInfo);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         return output;
@@ -322,7 +442,7 @@ export class TypescriptDocsRenderer {
     private renderHeritageClause(clause: HeritageClause, knownTypeMap: TypeMap, docsUrl: string) {
         return (
             clause.types
-                .map(t => `<code>${this.renderType(t.getText(), knownTypeMap, docsUrl)}</code>`)
+                .map(t => this.renderHeritageType(t.getText(), knownTypeMap, docsUrl))
                 .join(', ') + '\n\n'
         );
     }
@@ -348,22 +468,118 @@ export class TypescriptDocsRenderer {
 
     /**
      * This function takes a string representing a type (e.g. "Array<ShippingMethod>") and turns
-     * and known types (e.g. "ShippingMethod") into hyperlinks.
+     * known types (e.g. "ShippingMethod") into hyperlinks, while wrapping generic syntax in backticks
+     * to prevent MDX from interpreting them as JSX.
      */
     private renderType(type: string, knownTypeMap: TypeMap, docsUrl: string): string {
-        let typeText = type
+        const typeText = type
             .trim()
             // encode HTML entities
-            .replace(/[\u00A0-\u9999<>\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
+            .replace(/[\u00A0-\u9999\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
             // remove newlines
             .replace(/\n/g, ' ');
 
-        for (const [key, val] of knownTypeMap) {
-            const re = new RegExp(`(?!<a[^>]*>)\\b${key}\\b(?![^<]*<\/a>)`, 'g');
-            const strippedIndex = val.replace(/\/_index$/, '');
-            typeText = typeText.replace(re, `<a href='${docsUrl}/${strippedIndex}'>${key}</a>`);
+        // Sort known types by length (longest first) to avoid partial matches
+        const sortedTypes = [...knownTypeMap.entries()].sort((a, b) => b[0].length - a[0].length);
+
+        let result = '';
+        let remaining = typeText;
+
+        while (remaining.length > 0) {
+            // Try to match a known type at the current position
+            let matched = false;
+            for (const [key, val] of sortedTypes) {
+                const re = new RegExp(`^(${key})\\b`);
+                const match = remaining.match(re);
+                if (match) {
+                    const strippedIndex = val.replace(/\/_index$/, '');
+                    result += `<a href='${docsUrl}/${strippedIndex}'>${key}</a>`;
+                    remaining = remaining.slice(match[0].length);
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched) {
+                // Find the next known type in the remaining string
+                let nextTypeIndex = remaining.length;
+                for (const [key] of sortedTypes) {
+                    const re = new RegExp(`\\b(${key})\\b`);
+                    const match = remaining.match(re);
+                    if (match && match.index !== undefined && match.index > 0 && match.index < nextTypeIndex) {
+                        nextTypeIndex = match.index;
+                    }
+                }
+
+                // Extract the non-type part (syntax like <, >, [], commas, etc.)
+                const nonTypePart = remaining.slice(0, nextTypeIndex);
+                // Angle brackets inside JS template literals in JSX don't need escaping
+                result += nonTypePart;
+                remaining = remaining.slice(nextTypeIndex);
+            }
         }
-        return typeText;
+
+        return result;
+    }
+
+    /**
+     * Renders a heritage clause type (extends/implements) with DocsLink and backticks.
+     * Processes the type string piece by piece to correctly handle nested generics.
+     */
+    private renderHeritageType(type: string, knownTypeMap: TypeMap, docsUrl: string): string {
+        const typeText = type
+            .trim()
+            // encode HTML entities
+            .replace(/[\u00A0-\u9999\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
+            // remove newlines
+            .replace(/\n/g, ' ');
+
+        // Sort known types by length (longest first) to avoid partial matches
+        const sortedTypes = [...knownTypeMap.entries()].sort((a, b) => b[0].length - a[0].length);
+
+        let result = '';
+        let remaining = typeText;
+
+        while (remaining.length > 0) {
+            // Try to match a known type at the current position
+            let matched = false;
+            for (const [key, val] of sortedTypes) {
+                const re = new RegExp(`^(${key})\\b`);
+                const match = remaining.match(re);
+                if (match) {
+                    const strippedIndex = val.replace(/\/_index$/, '');
+                    result += `[\`${key}\`](${docsUrl}/${strippedIndex})`;
+                    remaining = remaining.slice(match[0].length);
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched) {
+                // Find the next known type in the remaining string
+                let nextTypeIndex = remaining.length;
+                for (const [key] of sortedTypes) {
+                    const re = new RegExp(`\\b(${key})\\b`);
+                    const match = remaining.match(re);
+                    if (match && match.index !== undefined && match.index > 0 && match.index < nextTypeIndex) {
+                        nextTypeIndex = match.index;
+                    }
+                }
+
+                // Extract the non-type part (syntax like <, >, [], commas, etc.)
+                const nonTypePart = remaining.slice(0, nextTypeIndex);
+                // Wrap in backticks if it contains angle brackets to prevent MDX parsing issues
+                // (heritage clauses are rendered directly in markdown text, not inside JSX attributes)
+                if (nonTypePart.includes('<') || nonTypePart.includes('>')) {
+                    result += '`' + nonTypePart + '`';
+                } else {
+                    result += nonTypePart;
+                }
+                remaining = remaining.slice(nextTypeIndex);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -372,8 +588,11 @@ export class TypescriptDocsRenderer {
     private renderDescription(description: string, knownTypeMap: TypeMap, docsUrl: string): string {
         for (const [key, val] of knownTypeMap) {
             const re = new RegExp(`{@link\\s*${key}}`, 'g');
-            description = description.replace(re, `<a href='${docsUrl}/${val}'>${key}</a>`);
+            description = description.replace(re, `[${key}](${docsUrl}/${val})`);
         }
+        // Escape any remaining {@link ...} references that weren't matched by known types
+        // Convert them to inline code to prevent MDX parsing issues with { }
+        description = description.replace(/\{@link\s*(\S+)\}/g, '`$1`');
         return description;
     }
 }

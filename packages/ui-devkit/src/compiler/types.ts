@@ -120,7 +120,7 @@ export interface UiExtensionRouteDefinition {
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
  *
- * See [Extending the Admin UI](/guides/extending-the-admin-ui/getting-started/) for
+ * See [Extending the Admin UI](/extending-the-admin-ui/getting-started/) for
  * detailed instructions.
  *
  * @docsCategory UiDevkit
@@ -128,9 +128,7 @@ export interface UiExtensionRouteDefinition {
  * @docsWeight 0
  */
 export interface AdminUiExtension
-    extends Partial<TranslationExtension>,
-        Partial<StaticAssetExtension>,
-        Partial<GlobalStylesExtension> {
+    extends Partial<TranslationExtension>, Partial<StaticAssetExtension>, Partial<GlobalStylesExtension> {
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
