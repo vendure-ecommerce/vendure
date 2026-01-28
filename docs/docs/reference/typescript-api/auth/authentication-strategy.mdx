@@ -24,7 +24,7 @@ interface AuthenticationStrategy<Data = unknown> extends InjectableStrategy {
     onLogOut?(ctx: RequestContext, user: User): Promise<void>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -79,7 +79,7 @@ the _first_ input will be assumed to be the top-level input.
 
 Used to authenticate a user with the authentication provider. This method
 will implement the provider-specific authentication logic, and should resolve to either a
-<DocsLink href="/reference/typescript-api/entities/user#user">User</DocsLink> object on success, or `false | string` on failure.
+[User](/reference/typescript-api/entities/user#user) object on success, or `false | string` on failure.
 A `string` return could be used to describe what error happened, otherwise `false` to an unknown error.
 ### onLogOut
 

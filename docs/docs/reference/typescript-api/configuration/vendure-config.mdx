@@ -67,7 +67,7 @@ Defines custom fields which can be used to extend the built-in entities.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/settings-store-fields#settingsstorefields'>SettingsStoreFields</a>`}  since="3.4.0"  />
 
 Defines key-value fields that can be set and read via the `getKeyValue`/`setKeyValue` GraphQL APIs
-and via the <DocsLink href="/reference/typescript-api/services/settings-store-service#settingsstoreservice">SettingsStoreService</DocsLink>. These differ from custom fields in that they are not associated
+and via the [SettingsStoreService](/reference/typescript-api/services/settings-store-service#settingsstoreservice). These differ from custom fields in that they are not associated
 with a specific entity, but can be scoped globally or to a specific user etc, and defining them does not
 require any changes to the database schema.
 ### dbConnectionOptions
@@ -135,7 +135,7 @@ Configures the available checkers and calculators for ShippingMethods.
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>`} default={`<a href='/reference/typescript-api/logger/default-logger#defaultlogger'>DefaultLogger</a>`}   />
 
-Provide a logging service which implements the <DocsLink href="/reference/typescript-api/logger/vendure-logger#vendurelogger">VendureLogger</DocsLink> interface.
+Provide a logging service which implements the [VendureLogger](/reference/typescript-api/logger/vendure-logger#vendurelogger) interface.
 Note that the logging of SQL queries is controlled separately by the
 `dbConnectionOptions.logging` property.
 ### taxOptions

@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/order/default-active-order-strategy.ts" sourceLine="18" packageName="@vendure/core" since="1.9.0" />
 
-The default <DocsLink href="/reference/typescript-api/orders/active-order-strategy#activeorderstrategy">ActiveOrderStrategy</DocsLink>, which uses the current <DocsLink href="/reference/typescript-api/entities/session#session">Session</DocsLink> to determine
+The default [ActiveOrderStrategy](/reference/typescript-api/orders/active-order-strategy#activeorderstrategy), which uses the current [Session](/reference/typescript-api/entities/session#session) to determine
 the active Order, and requires no additional input in the Shop API since it is based on the
 session which is part of the RequestContext.
 
@@ -16,7 +16,7 @@ class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
     determineActiveOrder(ctx: RequestContext) => ;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/orders/active-order-strategy#activeorderstrategy">`ActiveOrderStrategy`</DocsLink>
+* Implements: [`ActiveOrderStrategy`](/reference/typescript-api/orders/active-order-strategy#activeorderstrategy)
 
 
 

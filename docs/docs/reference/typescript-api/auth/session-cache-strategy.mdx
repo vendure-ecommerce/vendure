@@ -9,18 +9,18 @@ object for permissions data, it can become a bottleneck to go to the database an
 SQL query each time. Therefore, we cache the session data only perform the SQL query once and upon
 invalidation of the cache.
 
-The Vendure default from v3.1+ is to use a the <DocsLink href="/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy">DefaultSessionCacheStrategy</DocsLink>, which delegates
-to the configured <DocsLink href="/reference/typescript-api/cache/cache-strategy#cachestrategy">CacheStrategy</DocsLink> to store the session data. This should be suitable
+The Vendure default from v3.1+ is to use a the [DefaultSessionCacheStrategy](/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy), which delegates
+to the configured [CacheStrategy](/reference/typescript-api/cache/cache-strategy#cachestrategy) to store the session data. This should be suitable
 for most use-cases.
 
 :::note
 
 If you are using v3.1 or later, you should not normally need to implement a custom `SessionCacheStrategy`,
-since this is now handled by the <DocsLink href="/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy">DefaultSessionCacheStrategy</DocsLink>.
+since this is now handled by the [DefaultSessionCacheStrategy](/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy).
 
 :::
 
-Prior to v3.1, the default was to use the <DocsLink href="/reference/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy">InMemorySessionCacheStrategy</DocsLink>, which is fast but suitable for
+Prior to v3.1, the default was to use the [InMemorySessionCacheStrategy](/reference/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy), which is fast but suitable for
 single-instance deployments.
 
 :::info
@@ -125,7 +125,7 @@ interface SessionCacheStrategy extends InjectableStrategy {
     clear(): void | Promise<void>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

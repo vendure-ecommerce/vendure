@@ -5,7 +5,7 @@ generated: true
 <GenerationInfo sourceFile="packages/core/src/entity/user/user.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
 A User represents any authenticated user of the Vendure API. This includes both
-<DocsLink href="/reference/typescript-api/entities/administrator#administrator">Administrator</DocsLink>s as well as registered <DocsLink href="/reference/typescript-api/entities/customer#customer">Customer</DocsLink>s.
+[Administrator](/reference/typescript-api/entities/administrator#administrator)s as well as registered [Customer](/reference/typescript-api/entities/customer#customer)s.
 
 ```ts title="Signature"
 class User extends VendureEntity implements HasCustomFields, SoftDeletable {
@@ -32,10 +32,10 @@ class User extends VendureEntity implements HasCustomFields, SoftDeletable {
     getNativeAuthenticationMethod(strict?: boolean) => NativeAuthenticationMethod | undefined;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/vendure-entity#vendureentity">`VendureEntity`</DocsLink>
+* Extends: [`VendureEntity`](/reference/typescript-api/entities/vendure-entity#vendureentity)
 
 
-* Implements: HasCustomFields, <DocsLink href="/reference/typescript-api/entities/interfaces#softdeletable">`SoftDeletable`</DocsLink>
+* Implements: HasCustomFields, [`SoftDeletable`](/reference/typescript-api/entities/interfaces#softdeletable)
 
 
 

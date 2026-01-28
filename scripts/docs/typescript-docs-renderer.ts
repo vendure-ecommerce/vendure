@@ -548,7 +548,7 @@ export class TypescriptDocsRenderer {
                 const match = remaining.match(re);
                 if (match) {
                     const strippedIndex = val.replace(/\/_index$/, '');
-                    result += `<DocsLink href="${docsUrl}/${strippedIndex}">\`${key}\`</DocsLink>`;
+                    result += `[\`${key}\`](${docsUrl}/${strippedIndex})`;
                     remaining = remaining.slice(match[0].length);
                     matched = true;
                     break;
@@ -588,7 +588,7 @@ export class TypescriptDocsRenderer {
     private renderDescription(description: string, knownTypeMap: TypeMap, docsUrl: string): string {
         for (const [key, val] of knownTypeMap) {
             const re = new RegExp(`{@link\\s*${key}}`, 'g');
-            description = description.replace(re, `<DocsLink href="${docsUrl}/${val}">${key}</DocsLink>`);
+            description = description.replace(re, `[${key}](${docsUrl}/${val})`);
         }
         // Escape any remaining {@link ...} references that weren't matched by known types
         // Convert them to inline code to prevent MDX parsing issues with { }

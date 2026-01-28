@@ -4,8 +4,8 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/sql-job-queue-strategy.ts" sourceLine="22" packageName="@vendure/core" />
 
-A <DocsLink href="/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy">JobQueueStrategy</DocsLink> which uses the configured SQL database to persist jobs in the queue.
-This strategy is used by the <DocsLink href="/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin">DefaultJobQueuePlugin</DocsLink>.
+A [JobQueueStrategy](/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy) which uses the configured SQL database to persist jobs in the queue.
+This strategy is used by the [DefaultJobQueuePlugin](/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin).
 
 ```ts title="Signature"
 class SqlJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
@@ -20,10 +20,10 @@ class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Inspectable
     removeSettledJobs(queueNames: string[] = [], olderThan?: Date) => ;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/job-queue/polling-job-queue-strategy#pollingjobqueuestrategy">`PollingJobQueueStrategy`</DocsLink>
+* Extends: [`PollingJobQueueStrategy`](/reference/typescript-api/job-queue/polling-job-queue-strategy#pollingjobqueuestrategy)
 
 
-* Implements: <DocsLink href="/reference/typescript-api/job-queue/inspectable-job-queue-strategy#inspectablejobqueuestrategy">`InspectableJobQueueStrategy`</DocsLink>
+* Implements: [`InspectableJobQueueStrategy`](/reference/typescript-api/job-queue/inspectable-job-queue-strategy#inspectablejobqueuestrategy)
 
 
 

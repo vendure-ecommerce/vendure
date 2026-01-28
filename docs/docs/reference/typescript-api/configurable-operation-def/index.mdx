@@ -9,15 +9,15 @@ code blocks which have arguments which are configurable at run-time by the admin
 
 This is the mechanism used by:
 
-* <DocsLink href="/reference/typescript-api/configuration/collection-filter#collectionfilter">CollectionFilter</DocsLink>
-* <DocsLink href="/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler">PaymentMethodHandler</DocsLink>
-* <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionaction">PromotionAction</DocsLink>
-* <DocsLink href="/reference/typescript-api/promotions/promotion-condition#promotioncondition">PromotionCondition</DocsLink>
-* <DocsLink href="/reference/typescript-api/shipping/shipping-calculator#shippingcalculator">ShippingCalculator</DocsLink>
-* <DocsLink href="/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker">ShippingEligibilityChecker</DocsLink>
+* [CollectionFilter](/reference/typescript-api/configuration/collection-filter#collectionfilter)
+* [PaymentMethodHandler](/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler)
+* [PromotionAction](/reference/typescript-api/promotions/promotion-action#promotionaction)
+* [PromotionCondition](/reference/typescript-api/promotions/promotion-condition#promotioncondition)
+* [ShippingCalculator](/reference/typescript-api/shipping/shipping-calculator#shippingcalculator)
+* [ShippingEligibilityChecker](/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker)
 
 Any class which extends ConfigurableOperationDef works in the same way: it takes a
-config object as the constructor argument. That config object extends the <DocsLink href="/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions">ConfigurableOperationDefOptions</DocsLink>
+config object as the constructor argument. That config object extends the [ConfigurableOperationDefOptions](/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions)
 interface and typically adds some kind of business logic function to it.
 
 For example, in the case of `ShippingEligibilityChecker`,
@@ -31,13 +31,13 @@ arguments that are exposed via the Admin UI as data input components. This allow
 be set at run-time by the Administrator. Those values can then be accessed in the business logic
 of the operation.
 
-The data type of the args can be one of <DocsLink href="/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype">ConfigArgType</DocsLink>, and the configuration is further explained in
-the docs of <DocsLink href="/reference/typescript-api/configurable-operation-def/config-args#configargs">ConfigArgs</DocsLink>.
+The data type of the args can be one of [ConfigArgType](/reference/typescript-api/configurable-operation-def/config-arg-type#configargtype), and the configuration is further explained in
+the docs of [ConfigArgs](/reference/typescript-api/configurable-operation-def/config-args#configargs).
 
 ## Dependency Injection
 If your business logic relies on injectable providers, such as the `TransactionalConnection` object, or any of the
 internal Vendure services or those defined in a plugin, you can inject them by using the config object's
-`init()` method, which exposes the <DocsLink href="/reference/typescript-api/common/injector#injector">Injector</DocsLink>.
+`init()` method, which exposes the [Injector](/reference/typescript-api/common/injector#injector).
 
 Here's an example of a ShippingCalculator that injects a service which has been defined in a plugin:
 

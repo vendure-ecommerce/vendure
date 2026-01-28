@@ -4,14 +4,14 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/fulfillment/default-fulfillment-process.ts" sourceLine="45" packageName="@vendure/core" since="2.0.0" />
 
-The default <DocsLink href="/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess">FulfillmentProcess</DocsLink>. This process includes the following actions:
+The default [FulfillmentProcess](/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess). This process includes the following actions:
 
 - Executes the configured `FulfillmentHandler.onFulfillmentTransition()` before any state
   transition.
-- On cancellation of a Fulfillment, creates the necessary <DocsLink href="/reference/typescript-api/entities/stock-movement#cancellation">Cancellation</DocsLink> & <DocsLink href="/reference/typescript-api/entities/stock-movement#allocation">Allocation</DocsLink>
+- On cancellation of a Fulfillment, creates the necessary [Cancellation](/reference/typescript-api/entities/stock-movement#cancellation) & [Allocation](/reference/typescript-api/entities/stock-movement#allocation)
   stock movement records.
 - When a Fulfillment transitions from the `Created` to `Pending` state, the necessary
-  <DocsLink href="/reference/typescript-api/entities/stock-movement#sale">Sale</DocsLink> stock movements are created.
+  [Sale](/reference/typescript-api/entities/stock-movement#sale) stock movements are created.
 
 <GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-process.ts" sourceLine="26" packageName="@vendure/core" since="2.0.0" />
 
@@ -20,7 +20,7 @@ in, and how it may transition from one state to another. Using the `onTransition
 FulfillmentProcess can perform checks before allowing a state transition to occur, and the `onTransitionEnd()`
 hook allows logic to be executed after a state change.
 
-For detailed description of the interface members, see the <DocsLink href="/reference/typescript-api/state-machine/state-machine-config#statemachineconfig">StateMachineConfig</DocsLink> docs.
+For detailed description of the interface members, see the [StateMachineConfig](/reference/typescript-api/state-machine/state-machine-config#statemachineconfig) docs.
 
 ```ts title="Signature"
 interface FulfillmentProcess<State extends keyof CustomFulfillmentStates | string> extends InjectableStrategy {
@@ -31,7 +31,7 @@ interface FulfillmentProcess<State extends keyof CustomFulfillmentStates | strin
     onTransitionError?: OnTransitionErrorFn<State | FulfillmentState>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

@@ -9,7 +9,7 @@ in, and how it may transition from one state to another. Using the `onTransition
 OrderProcess can perform checks before allowing a state transition to occur, and the `onTransitionEnd()`
 hook allows logic to be executed after a state change.
 
-For detailed description of the interface members, see the <DocsLink href="/reference/typescript-api/state-machine/state-machine-config#statemachineconfig">StateMachineConfig</DocsLink> docs.
+For detailed description of the interface members, see the [StateMachineConfig](/reference/typescript-api/state-machine/state-machine-config#statemachineconfig) docs.
 
 :::info
 
@@ -26,7 +26,7 @@ interface OrderProcess<State extends keyof CustomOrderStates | string> extends I
     onTransitionError?: OnTransitionErrorFn<State | OrderState>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -57,8 +57,8 @@ interface OrderProcess<State extends keyof CustomOrderStates | string> extends I
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="50" packageName="@vendure/core" since="2.0.0" />
 
-Options which can be passed to the <DocsLink href="/reference/typescript-api/orders/order-process#configuredefaultorderprocess">configureDefaultOrderProcess</DocsLink> function
-to configure an instance of the default <DocsLink href="/reference/typescript-api/orders/order-process#orderprocess">OrderProcess</DocsLink>. By default, all
+Options which can be passed to the [configureDefaultOrderProcess](/reference/typescript-api/orders/order-process#configuredefaultorderprocess) function
+to configure an instance of the default [OrderProcess](/reference/typescript-api/orders/order-process#orderprocess). By default, all
 options are set to `true`.
 
 ```ts title="Signature"
@@ -144,7 +144,7 @@ the Order are part of a Fulfillment which itself is in the `Shipped` state.
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="163" packageName="@vendure/core" since="2.0.0" />
 
-Used to configure a customized instance of the default <DocsLink href="/reference/typescript-api/orders/order-process#orderprocess">OrderProcess</DocsLink> that ships with Vendure.
+Used to configure a customized instance of the default [OrderProcess](/reference/typescript-api/orders/order-process#orderprocess) that ships with Vendure.
 Using this function allows you to turn off certain checks and constraints that are enabled by default.
 
 ```ts
@@ -163,8 +163,8 @@ export const config: VendureConfig = {
   },
 };
 ```
-The <DocsLink href="/reference/typescript-api/orders/order-process#defaultorderprocessoptions">DefaultOrderProcessOptions</DocsLink> type defines all available options. If you require even
-more customization, you can create your own implementation of the <DocsLink href="/reference/typescript-api/orders/order-process#orderprocess">OrderProcess</DocsLink> interface.
+The [DefaultOrderProcessOptions](/reference/typescript-api/orders/order-process#defaultorderprocessoptions) type defines all available options. If you require even
+more customization, you can create your own implementation of the [OrderProcess](/reference/typescript-api/orders/order-process#orderprocess) interface.
 
 ```ts title="Signature"
 function configureDefaultOrderProcess(options: DefaultOrderProcessOptions): void
@@ -177,13 +177,13 @@ Parameters
 
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="475" packageName="@vendure/core" since="2.0.0" />
 
-This is the built-in <DocsLink href="/reference/typescript-api/orders/order-process#orderprocess">OrderProcess</DocsLink> that ships with Vendure. A customized version of this process
-can be created using the <DocsLink href="/reference/typescript-api/orders/order-process#configuredefaultorderprocess">configureDefaultOrderProcess</DocsLink> function, which allows you to pass in an object
+This is the built-in [OrderProcess](/reference/typescript-api/orders/order-process#orderprocess) that ships with Vendure. A customized version of this process
+can be created using the [configureDefaultOrderProcess](/reference/typescript-api/orders/order-process#configuredefaultorderprocess) function, which allows you to pass in an object
 to enable/disable certain checks.
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="21" packageName="@vendure/core" since="2.0.0" />
 
-An interface to extend the <DocsLink href="/reference/typescript-api/orders/order-process#orderstate">OrderState</DocsLink> type.
+An interface to extend the [OrderState](/reference/typescript-api/orders/order-process#orderstate) type.
 
 ```ts title="Signature"
 interface OrderStates {
@@ -193,8 +193,8 @@ interface OrderStates {
 <GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="42" packageName="@vendure/core" />
 
 These are the default states of the Order process. They can be augmented and
-modified by using the <DocsLink href="/reference/typescript-api/orders/order-options#orderoptions">OrderOptions</DocsLink> `process` property, and by default
-the <DocsLink href="/reference/typescript-api/orders/order-process#defaultorderprocess">defaultOrderProcess</DocsLink> will add the states
+modified by using the [OrderOptions](/reference/typescript-api/orders/order-options#orderoptions) `process` property, and by default
+the [defaultOrderProcess](/reference/typescript-api/orders/order-process#defaultorderprocess) will add the states
 
 - `ArrangingPayment`
 - `PaymentAuthorized`
@@ -216,7 +216,7 @@ type OrderState = | 'Created'
 ```
 <GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="57" packageName="@vendure/core" />
 
-This is the object passed to the <DocsLink href="/reference/typescript-api/orders/order-process#orderprocess">OrderProcess</DocsLink> state transition hooks.
+This is the object passed to the [OrderProcess](/reference/typescript-api/orders/order-process#orderprocess) state transition hooks.
 
 ```ts title="Signature"
 interface OrderTransitionData {

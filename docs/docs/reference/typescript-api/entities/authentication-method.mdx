@@ -4,8 +4,8 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/entity/authentication-method/authentication-method.entity.ts" sourceLine="14" packageName="@vendure/core" />
 
-An AuthenticationMethod represents the means by which a <DocsLink href="/reference/typescript-api/entities/user#user">User</DocsLink> is authenticated. There are two kinds:
-<DocsLink href="/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod">NativeAuthenticationMethod</DocsLink> and <DocsLink href="/reference/typescript-api/entities/authentication-method#externalauthenticationmethod">ExternalAuthenticationMethod</DocsLink>.
+An AuthenticationMethod represents the means by which a [User](/reference/typescript-api/entities/user#user) is authenticated. There are two kinds:
+[NativeAuthenticationMethod](/reference/typescript-api/entities/authentication-method#nativeauthenticationmethod) and [ExternalAuthenticationMethod](/reference/typescript-api/entities/authentication-method#externalauthenticationmethod).
 
 ```ts title="Signature"
 class AuthenticationMethod extends VendureEntity {
@@ -14,7 +14,7 @@ class AuthenticationMethod extends VendureEntity {
     user: User;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/vendure-entity#vendureentity">`VendureEntity`</DocsLink>
+* Extends: [`VendureEntity`](/reference/typescript-api/entities/vendure-entity#vendureentity)
 
 
 
@@ -44,7 +44,7 @@ class ExternalAuthenticationMethod extends AuthenticationMethod {
     metadata: any;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/authentication-method#authenticationmethod">`AuthenticationMethod`</DocsLink>
+* Extends: [`AuthenticationMethod`](/reference/typescript-api/entities/authentication-method#authenticationmethod)
 
 
 
@@ -94,7 +94,7 @@ class NativeAuthenticationMethod extends AuthenticationMethod {
     pendingIdentifier: string | null;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/authentication-method#authenticationmethod">`AuthenticationMethod`</DocsLink>
+* Extends: [`AuthenticationMethod`](/reference/typescript-api/entities/authentication-method#authenticationmethod)
 
 
 

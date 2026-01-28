@@ -9,7 +9,7 @@ A PaymentMethodHandler contains the code which is used to generate a Payment whe
 third-party payment gateway before the Payment is created and can also define actions to fire
 when the state of the payment is changed.
 
-PaymentMethodHandlers are instantiated using a <DocsLink href="/reference/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions">PaymentMethodConfigOptions</DocsLink> object, which
+PaymentMethodHandlers are instantiated using a [PaymentMethodConfigOptions](/reference/typescript-api/payment/payment-method-config-options#paymentmethodconfigoptions) object, which
 configures the business logic used to create, settle and refund payments.
 
 *Example*
@@ -62,7 +62,7 @@ class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Configurab
     constructor(config: PaymentMethodConfigOptions<T>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/#configurableoperationdef">`ConfigurableOperationDef`</DocsLink>`<T>`
+* Extends: [`ConfigurableOperationDef`](/reference/typescript-api/configurable-operation-def/#configurableoperationdef)`<T>`
 
 
 

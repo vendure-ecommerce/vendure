@@ -6,7 +6,7 @@ generated: true
 
 A Job represents a piece of work to be run in the background, i.e. outside the request-response cycle.
 It is intended to be used for long-running work triggered by API requests. Jobs should now generally
-be directly instantiated. Rather, the <DocsLink href="/reference/typescript-api/job-queue/#jobqueue">JobQueue</DocsLink> `add()` method should be used to create and
+be directly instantiated. Rather, the [JobQueue](/reference/typescript-api/job-queue/#jobqueue) `add()` method should be used to create and
 add a new Job to a queue.
 
 ```ts title="Signature"
@@ -125,7 +125,7 @@ class Job<T extends JobData<T> = any> {
 <MemberInfo kind="method" type={`() => `}   />
 
 Calling this signifies that the job work has started. This method should be
-called in the <DocsLink href="/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy">JobQueueStrategy</DocsLink> `next()` method.
+called in the [JobQueueStrategy](/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy) `next()` method.
 ### setProgress
 
 <MemberInfo kind="method" type={`(percent: number) => `}   />

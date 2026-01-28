@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/order/default-guest-checkout-strategy.ts" sourceLine="64" packageName="@vendure/core" since="2.0.0" />
 
-The default implementation of the <DocsLink href="/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy">GuestCheckoutStrategy</DocsLink>. This strategy allows
+The default implementation of the [GuestCheckoutStrategy](/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy). This strategy allows
 guest checkouts by default, but can be configured to disallow them.
 
 *Example*
@@ -30,7 +30,7 @@ class DefaultGuestCheckoutStrategy implements GuestCheckoutStrategy {
     setCustomerForOrder(ctx: RequestContext, order: Order, input: CreateCustomerInput) => Promise<ErrorResultUnion<SetCustomerForOrderResult, Customer>>;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy">`GuestCheckoutStrategy`</DocsLink>
+* Implements: [`GuestCheckoutStrategy`](/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy)
 
 
 
@@ -56,7 +56,7 @@ class DefaultGuestCheckoutStrategy implements GuestCheckoutStrategy {
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/order/default-guest-checkout-strategy.ts" sourceLine="20" packageName="@vendure/core" since="2.0.0" />
 
-Options available for the <DocsLink href="/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy">DefaultGuestCheckoutStrategy</DocsLink>.
+Options available for the [DefaultGuestCheckoutStrategy](/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy).
 
 ```ts title="Signature"
 interface DefaultGuestCheckoutStrategyOptions {

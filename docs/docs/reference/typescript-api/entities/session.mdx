@@ -4,8 +4,8 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/entity/session/session.entity.ts" sourceLine="18" packageName="@vendure/core" />
 
-A Session is created when a user makes a request to restricted API operations. A Session can be an <DocsLink href="/reference/typescript-api/entities/anonymous-session#anonymoussession">AnonymousSession</DocsLink>
-in the case of un-authenticated users, otherwise it is an <DocsLink href="/reference/typescript-api/entities/authenticated-session#authenticatedsession">AuthenticatedSession</DocsLink>.
+A Session is created when a user makes a request to restricted API operations. A Session can be an [AnonymousSession](/reference/typescript-api/entities/anonymous-session#anonymoussession)
+in the case of un-authenticated users, otherwise it is an [AuthenticatedSession](/reference/typescript-api/entities/authenticated-session#authenticatedsession).
 
 ```ts title="Signature"
 class Session extends VendureEntity implements HasCustomFields {
@@ -28,7 +28,7 @@ class Session extends VendureEntity implements HasCustomFields {
     customFields: CustomSessionFields;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/vendure-entity#vendureentity">`VendureEntity`</DocsLink>
+* Extends: [`VendureEntity`](/reference/typescript-api/entities/vendure-entity#vendureentity)
 
 
 * Implements: HasCustomFields

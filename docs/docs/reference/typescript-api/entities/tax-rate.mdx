@@ -4,11 +4,11 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/entity/tax-rate/tax-rate.entity.ts" sourceLine="26" packageName="@vendure/core" />
 
-A TaxRate defines the rate of tax to apply to a <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> based on three factors:
+A TaxRate defines the rate of tax to apply to a [ProductVariant](/reference/typescript-api/entities/product-variant#productvariant) based on three factors:
 
-1. the ProductVariant's <DocsLink href="/reference/typescript-api/entities/tax-category#taxcategory">TaxCategory</DocsLink>
-2. the applicable <DocsLink href="/reference/typescript-api/entities/zone#zone">Zone</DocsLink> ("applicable" being defined by the configured <DocsLink href="/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy">TaxZoneStrategy</DocsLink>)
-3. the <DocsLink href="/reference/typescript-api/entities/customer-group#customergroup">CustomerGroup</DocsLink> of the current Customer
+1. the ProductVariant's [TaxCategory](/reference/typescript-api/entities/tax-category#taxcategory)
+2. the applicable [Zone](/reference/typescript-api/entities/zone#zone) ("applicable" being defined by the configured [TaxZoneStrategy](/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy))
+3. the [CustomerGroup](/reference/typescript-api/entities/customer-group#customergroup) of the current Customer
 
 ```ts title="Signature"
 class TaxRate extends VendureEntity implements HasCustomFields {
@@ -39,7 +39,7 @@ class TaxRate extends VendureEntity implements HasCustomFields {
     test(zone: Zone | ID, taxCategory: TaxCategory | ID) => boolean;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/vendure-entity#vendureentity">`VendureEntity`</DocsLink>
+* Extends: [`VendureEntity`](/reference/typescript-api/entities/vendure-entity#vendureentity)
 
 
 * Implements: HasCustomFields

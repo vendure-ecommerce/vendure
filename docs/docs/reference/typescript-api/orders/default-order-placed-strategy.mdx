@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/order/default-order-placed-strategy.ts" sourceLine="14" packageName="@vendure/core" />
 
-The default <DocsLink href="/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy">OrderPlacedStrategy</DocsLink>. The order is set as "placed" when it transitions from
+The default [OrderPlacedStrategy](/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy). The order is set as "placed" when it transitions from
 'ArrangingPayment' to either 'PaymentAuthorized' or 'PaymentSettled'.
 
 ```ts title="Signature"
@@ -12,7 +12,7 @@ class DefaultOrderPlacedStrategy implements OrderPlacedStrategy {
     shouldSetAsPlaced(ctx: RequestContext, fromState: OrderState, toState: OrderState, order: Order) => boolean;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy">`OrderPlacedStrategy`</DocsLink>
+* Implements: [`OrderPlacedStrategy`](/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy)
 
 
 

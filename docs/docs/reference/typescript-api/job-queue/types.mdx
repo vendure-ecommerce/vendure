@@ -12,7 +12,7 @@ type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job) => nu
 ```
 <GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="23" packageName="@vendure/core" />
 
-Job update status as returned from the <DocsLink href="/reference/typescript-api/job-queue/subscribable-job#subscribablejob">SubscribableJob</DocsLink>'s `update()` method.
+Job update status as returned from the [SubscribableJob](/reference/typescript-api/job-queue/subscribable-job#subscribablejob)'s `update()` method.
 
 ```ts title="Signature"
 type JobUpdate<T extends JobData<T>> = Pick<
@@ -22,7 +22,7 @@ type JobUpdate<T extends JobData<T>> = Pick<
 ```
 <GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="35" packageName="@vendure/core" />
 
-Job update options, that you can specify by calling <DocsLink href="/reference/typescript-api/job-queue/subscribable-job#subscribablejob">SubscribableJob</DocsLink> `updates` method.
+Job update options, that you can specify by calling [SubscribableJob](/reference/typescript-api/job-queue/subscribable-job#subscribablejob) `updates` method.
 
 ```ts title="Signature"
 type JobUpdateOptions = {
@@ -54,7 +54,7 @@ type JobUpdateOptions = {
 </div>
 <GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="15" packageName="@vendure/core" />
 
-Used to configure a new <DocsLink href="/reference/typescript-api/job-queue/#jobqueue">JobQueue</DocsLink> instance.
+Used to configure a new [JobQueue](/reference/typescript-api/job-queue/#jobqueue) instance.
 
 ```ts title="Signature"
 interface CreateQueueOptions<T extends JobData<T>> {
@@ -81,14 +81,14 @@ should resolve when the job is complete, or be rejected in case of an error.
 </div>
 <GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="37" packageName="@vendure/core" />
 
-A JSON-serializable data type which provides a <DocsLink href="/reference/typescript-api/job-queue/job#job">Job</DocsLink>with the data it needs to be processed.
+A JSON-serializable data type which provides a [Job](/reference/typescript-api/job-queue/job#job)with the data it needs to be processed.
 
 ```ts title="Signature"
 type JobData<T> = JsonCompatible<T>
 ```
 <GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="46" packageName="@vendure/core" />
 
-Used to instantiate a new <DocsLink href="/reference/typescript-api/job-queue/job#job">Job</DocsLink>
+Used to instantiate a new [Job](/reference/typescript-api/job-queue/job#job)
 
 ```ts title="Signature"
 interface JobConfig<T extends JobData<T>> {

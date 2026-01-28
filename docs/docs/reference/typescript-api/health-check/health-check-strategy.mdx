@@ -15,7 +15,7 @@ Custom strategies should be added to the `systemOptions.healthChecks` array.
 By default, Vendure includes the `TypeORMHealthCheckStrategy`, so if you set the value of the `healthChecks`
 array, be sure to include it manually.
 
-Vendure also ships with the <DocsLink href="/reference/typescript-api/health-check/http-health-check-strategy#httphealthcheckstrategy">HttpHealthCheckStrategy</DocsLink>, which is convenient
+Vendure also ships with the [HttpHealthCheckStrategy](/reference/typescript-api/health-check/http-health-check-strategy#httphealthcheckstrategy), which is convenient
 for adding a health check dependent on an HTTP ping.
 
 :::info
@@ -48,7 +48,7 @@ interface HealthCheckStrategy extends InjectableStrategy {
     getHealthIndicator(): HealthIndicatorFunction;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

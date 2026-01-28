@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/default-shipping-line-assignment-strategy.ts" sourceLine="16" packageName="@vendure/core" since="2.0.0" />
 
-This is the default <DocsLink href="/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy">ShippingLineAssignmentStrategy</DocsLink> which simply assigns all OrderLines to the
+This is the default [ShippingLineAssignmentStrategy](/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy) which simply assigns all OrderLines to the
 ShippingLine, and is suitable for the most common scenario of a single shipping method per Order.
 
 ```ts title="Signature"
@@ -12,7 +12,7 @@ class DefaultShippingLineAssignmentStrategy implements ShippingLineAssignmentStr
     assignShippingLineToOrderLines(ctx: RequestContext, shippingLine: ShippingLine, order: Order) => OrderLine[] | Promise<OrderLine[]>;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy">`ShippingLineAssignmentStrategy`</DocsLink>
+* Implements: [`ShippingLineAssignmentStrategy`](/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy)
 
 
 

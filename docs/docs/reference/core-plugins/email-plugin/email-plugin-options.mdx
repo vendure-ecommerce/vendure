@@ -46,7 +46,7 @@ Configures how the emails are sent.
 
 <MemberInfo kind="property" type={`Array<<a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a><string, any>>`}   />
 
-An array of <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink>s which define which Vendure events will trigger
+An array of [EmailEventHandler](/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler)s which define which Vendure events will trigger
 emails, and how those emails are generated.
 ### globalTemplateVars
 
@@ -115,7 +115,7 @@ interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'transport'
     route: string;
 }
 ```
-* Extends: `Omit<`<DocsLink href="/reference/core-plugins/email-plugin/email-plugin-options#emailpluginoptions">`EmailPluginOptions`</DocsLink>`, 'transport'>`
+* Extends: `Omit<`[`EmailPluginOptions`](/reference/core-plugins/email-plugin/email-plugin-options#emailpluginoptions)`, 'transport'>`
 
 
 

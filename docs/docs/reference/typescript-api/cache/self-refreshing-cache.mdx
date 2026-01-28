@@ -45,7 +45,7 @@ an update operation to the source data in the database.
 </div>
 <GenerationInfo sourceFile="packages/core/src/common/self-refreshing-cache.ts" sourceLine="46" packageName="@vendure/core" />
 
-Configuration options for creating a <DocsLink href="/reference/typescript-api/cache/self-refreshing-cache#selfrefreshingcache">SelfRefreshingCache</DocsLink>.
+Configuration options for creating a [SelfRefreshingCache](/reference/typescript-api/cache/self-refreshing-cache#selfrefreshingcache).
 
 ```ts title="Signature"
 interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
@@ -93,7 +93,7 @@ By default uses `() => new Date().getTime()`
 </div>
 <GenerationInfo sourceFile="packages/core/src/common/self-refreshing-cache.ts" sourceLine="114" packageName="@vendure/core" />
 
-Creates a <DocsLink href="/reference/typescript-api/cache/self-refreshing-cache#selfrefreshingcache">SelfRefreshingCache</DocsLink> object, which is used to cache a single frequently-accessed value. In this type
+Creates a [SelfRefreshingCache](/reference/typescript-api/cache/self-refreshing-cache#selfrefreshingcache) object, which is used to cache a single frequently-accessed value. In this type
 of cache, the function used to populate the value (`refreshFn`) is defined during the creation of the cache, and
 it is immediately used to populate the initial value.
 

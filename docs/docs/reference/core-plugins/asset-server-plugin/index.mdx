@@ -5,7 +5,7 @@ generated: true
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/plugin.ts" sourceLine="176" packageName="@vendure/asset-server-plugin" />
 
 The `AssetServerPlugin` serves assets (images and other files) from the local file system, and can also be configured to use
-other storage strategies (e.g. <DocsLink href="/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy">S3AssetStorageStrategy</DocsLink>. It can also perform on-the-fly image transformations
+other storage strategies (e.g. [S3AssetStorageStrategy](/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy). It can also perform on-the-fly image transformations
 and caches the results for subsequent calls.
 
 ## Installation
@@ -127,11 +127,11 @@ a given configuration. Caching can be disabled per-request by setting the `?cach
 ### Limiting transformations
 
 By default, the AssetServerPlugin will allow any transformation to be performed on an image. However, it is possible to restrict the transformations
-which can be performed by using an <DocsLink href="/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy">ImageTransformStrategy</DocsLink>. This can be used to limit the transformations to a known set of presets, for example.
+which can be performed by using an [ImageTransformStrategy](/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy). This can be used to limit the transformations to a known set of presets, for example.
 
 This is advisable in order to prevent abuse of the image transformation feature, as it can be computationally expensive.
 
-Since v3.1.0 we ship with a <DocsLink href="/reference/core-plugins/asset-server-plugin/preset-only-strategy#presetonlystrategy">PresetOnlyStrategy</DocsLink> which allows only transformations using a known set of presets.
+Since v3.1.0 we ship with a [PresetOnlyStrategy](/reference/core-plugins/asset-server-plugin/preset-only-strategy#presetonlystrategy) which allows only transformations using a known set of presets.
 
 *Example*
 

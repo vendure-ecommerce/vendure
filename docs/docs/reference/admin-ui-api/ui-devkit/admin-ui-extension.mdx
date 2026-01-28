@@ -12,9 +12,7 @@ See [Extending the Admin UI](/extending-the-admin-ui/getting-started/) for
 detailed instructions.
 
 ```ts title="Signature"
-interface AdminUiExtension extends Partial<TranslationExtension>,
-        Partial<StaticAssetExtension>,
-        Partial<GlobalStylesExtension> {
+interface AdminUiExtension extends Partial<TranslationExtension>, Partial<StaticAssetExtension>, Partial<GlobalStylesExtension> {
     id?: string;
     extensionPath: string;
     ngModules?: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
@@ -24,7 +22,7 @@ interface AdminUiExtension extends Partial<TranslationExtension>,
     exclude?: string[];
 }
 ```
-* Extends: `Partial<`<DocsLink href="/reference/admin-ui-api/ui-devkit/admin-ui-extension#translationextension">`TranslationExtension`</DocsLink>`>`, `Partial<`<DocsLink href="/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetextension">`StaticAssetExtension`</DocsLink>`>`, `Partial<`<DocsLink href="/reference/admin-ui-api/ui-devkit/admin-ui-extension#globalstylesextension">`GlobalStylesExtension`</DocsLink>`>`
+* Extends: `Partial<`[`TranslationExtension`](/reference/admin-ui-api/ui-devkit/admin-ui-extension#translationextension)`>`, `Partial<`[`StaticAssetExtension`](/reference/admin-ui-api/ui-devkit/admin-ui-extension#staticassetextension)`>`, `Partial<`[`GlobalStylesExtension`](/reference/admin-ui-api/ui-devkit/admin-ui-extension#globalstylesextension)`>`
 
 
 
@@ -165,7 +163,7 @@ exclude: ['**/*.spec.ts']
 <GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="18" packageName="@vendure/ui-devkit" />
 
 Defines extensions to the Admin UI translations. Can be used as a stand-alone extension definition which only adds translations
-without adding new UI functionality, or as part of a full <DocsLink href="/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextension">AdminUiExtension</DocsLink>.
+without adding new UI functionality, or as part of a full [AdminUiExtension](/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextension).
 
 ```ts title="Signature"
 interface TranslationExtension {
@@ -295,7 +293,7 @@ This is useful when the extension is intended to replace the default Admin UI, r
 
 
 </div>
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="280" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="278" packageName="@vendure/ui-devkit" />
 
 A static asset can be provided as a path to the asset, or as an object containing a path and a new
 name, which will cause the compiler to copy and then rename the asset.
@@ -303,7 +301,7 @@ name, which will cause the compiler to copy and then rename the asset.
 ```ts title="Signature"
 type StaticAssetDefinition = string | { path: string; rename: string }
 ```
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="289" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="287" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 
@@ -337,7 +335,7 @@ The name of the extension module class.
 
 
 </div>
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="316" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="314" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 

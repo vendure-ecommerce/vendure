@@ -6,9 +6,9 @@ generated: true
 
 A StockLocation represents a physical location where stock is held. For example, a warehouse or a shop.
 
-When the stock of a <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> is adjusted, the adjustment is applied to a specific StockLocation,
+When the stock of a [ProductVariant](/reference/typescript-api/entities/product-variant#productvariant) is adjusted, the adjustment is applied to a specific StockLocation,
 and the stockOnHand of that ProductVariant is updated accordingly. When there are multiple StockLocations
-configured, the <DocsLink href="/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy">StockLocationStrategy</DocsLink> is used to determine which StockLocation should be used for
+configured, the [StockLocationStrategy](/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy) is used to determine which StockLocation should be used for
 a given operation.
 
 ```ts title="Signature"
@@ -27,10 +27,10 @@ class StockLocation extends VendureEntity implements HasCustomFields, ChannelAwa
     stockMovements: StockMovement[];
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/vendure-entity#vendureentity">`VendureEntity`</DocsLink>
+* Extends: [`VendureEntity`](/reference/typescript-api/entities/vendure-entity#vendureentity)
 
 
-* Implements: HasCustomFields, <DocsLink href="/reference/typescript-api/entities/interfaces#channelaware">`ChannelAware`</DocsLink>
+* Implements: HasCustomFields, [`ChannelAware`](/reference/typescript-api/entities/interfaces#channelaware)
 
 
 

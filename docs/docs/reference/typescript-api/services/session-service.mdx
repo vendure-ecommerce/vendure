@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="33" packageName="@vendure/core" />
 
-Contains methods relating to <DocsLink href="/reference/typescript-api/entities/session#session">Session</DocsLink> entities.
+Contains methods relating to [Session](/reference/typescript-api/entities/session#session) entities.
 
 ```ts title="Signature"
 class SessionService implements EntitySubscriberInterface, OnApplicationBootstrap {
@@ -43,12 +43,12 @@ class SessionService implements EntitySubscriberInterface, OnApplicationBootstra
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, user: <a href='/reference/typescript-api/entities/user#user'>User</a>, authenticationStrategyName: string) => Promise<<a href='/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>>`}   />
 
-Creates a new <DocsLink href="/reference/typescript-api/entities/authenticated-session#authenticatedsession">AuthenticatedSession</DocsLink>. To be used after successful authentication.
+Creates a new [AuthenticatedSession](/reference/typescript-api/entities/authenticated-session#authenticatedsession). To be used after successful authentication.
 ### createAnonymousSession
 
 <MemberInfo kind="method" type={`() => Promise<<a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>>`}   />
 
-Create an <DocsLink href="/reference/typescript-api/entities/anonymous-session#anonymoussession">AnonymousSession</DocsLink> and caches it using the configured <DocsLink href="/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy">SessionCacheStrategy</DocsLink>,
+Create an [AnonymousSession](/reference/typescript-api/entities/anonymous-session#anonymoussession) and caches it using the configured [SessionCacheStrategy](/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy),
 and returns the cached session object.
 ### getSessionFromToken
 
@@ -59,7 +59,7 @@ Returns the cached session object matching the given session token.
 
 <MemberInfo kind="method" type={`(session: <a href='/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> | <a href='/reference/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>) => <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>`}   />
 
-Serializes a <DocsLink href="/reference/typescript-api/entities/session#session">Session</DocsLink> instance into a simplified plain object suitable for caching.
+Serializes a [Session](/reference/typescript-api/entities/session#session) instance into a simplified plain object suitable for caching.
 ### setActiveOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, serializedSession: <a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise<<a href='/reference/typescript-api/auth/session-cache-strategy#cachedsession'>CachedSession</a>>`}   />

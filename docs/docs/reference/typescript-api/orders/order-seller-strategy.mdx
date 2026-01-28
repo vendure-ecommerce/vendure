@@ -28,7 +28,7 @@ interface OrderSellerStrategy extends InjectableStrategy {
     ): void | Promise<void>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -39,15 +39,15 @@ interface OrderSellerStrategy extends InjectableStrategy {
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>) => <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | undefined | Promise<<a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | undefined>`}   />
 
 This method is called whenever a new OrderLine is added to the Order via the `addItemToOrder` mutation or the
-underlying `addItemToOrder()` method of the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink>.
+underlying `addItemToOrder()` method of the [OrderService](/reference/typescript-api/services/order-service#orderservice).
 
 It should return the Channel to which this OrderLine will be assigned, which will be used to set the
-<DocsLink href="/reference/typescript-api/entities/order-line#orderline">OrderLine</DocsLink> `sellerChannel` property.
+[OrderLine](/reference/typescript-api/entities/order-line#orderline) `sellerChannel` property.
 ### splitOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => <a href='/reference/typescript-api/orders/order-seller-strategy#splitordercontents'>SplitOrderContents</a>[] | Promise<<a href='/reference/typescript-api/orders/order-seller-strategy#splitordercontents'>SplitOrderContents</a>[]>`}   />
 
-Upon checkout (by default, when the Order moves from "active" to "inactive" according to the <DocsLink href="/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy">OrderPlacedStrategy</DocsLink>),
+Upon checkout (by default, when the Order moves from "active" to "inactive" according to the [OrderPlacedStrategy](/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy)),
 this method will be called in order to split the Order into multiple Orders, one for each Seller.
 ### afterSellerOrdersCreated
 
@@ -68,7 +68,7 @@ class DefaultOrderSellerStrategy implements OrderSellerStrategy {
 
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/orders/order-seller-strategy#ordersellerstrategy">`OrderSellerStrategy`</DocsLink>
+* Implements: [`OrderSellerStrategy`](/reference/typescript-api/orders/order-seller-strategy#ordersellerstrategy)
 
 
 <GenerationInfo sourceFile="packages/core/src/config/order/order-seller-strategy.ts" sourceLine="19" packageName="@vendure/core" since="2.0.0" />

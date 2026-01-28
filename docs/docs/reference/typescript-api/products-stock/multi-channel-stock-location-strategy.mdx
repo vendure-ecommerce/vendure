@@ -4,13 +4,13 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/catalog/multi-channel-stock-location-strategy.ts" sourceLine="32" packageName="@vendure/core" since="3.1.0" />
 
-The MultiChannelStockLocationStrategy is an implementation of the <DocsLink href="/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy">StockLocationStrategy</DocsLink>.
+The MultiChannelStockLocationStrategy is an implementation of the [StockLocationStrategy](/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy).
 which is suitable for both single- and multichannel setups. It takes into account the active
 channel when determining stock levels, and also ensures that allocations are made only against
 stock locations which are associated with the active channel.
 
 This strategy became the default in Vendure 3.1.0. If you want to use the previous strategy which
-does not take channels into account, update your VendureConfig to use to <DocsLink href="/reference/typescript-api/products-stock/default-stock-location-strategy#defaultstocklocationstrategy">DefaultStockLocationStrategy</DocsLink>.
+does not take channels into account, update your VendureConfig to use to [DefaultStockLocationStrategy](/reference/typescript-api/products-stock/default-stock-location-strategy#defaultstocklocationstrategy).
 
 ```ts title="Signature"
 class MultiChannelStockLocationStrategy extends BaseStockLocationStrategy {

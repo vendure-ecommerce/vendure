@@ -14,7 +14,7 @@ class AutoIncrementIdStrategy implements EntityIdStrategy<'increment'> {
     encodeId(primaryKey: number) => string;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy">`EntityIdStrategy`</DocsLink>`<'increment'>`
+* Implements: [`EntityIdStrategy`](/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy)`<'increment'>`
 
 
 
@@ -44,7 +44,7 @@ The EntityIdStrategy determines how entity IDs are generated and stored in the
 database, as well as how they are transformed when being passed from the API to the
 service layer and vice versa.
 
-Vendure ships with two strategies: <DocsLink href="/reference/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy">AutoIncrementIdStrategy</DocsLink> and <DocsLink href="/reference/typescript-api/configuration/entity-id-strategy#uuididstrategy">UuidIdStrategy</DocsLink>,
+Vendure ships with two strategies: [AutoIncrementIdStrategy](/reference/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy) and [UuidIdStrategy](/reference/typescript-api/configuration/entity-id-strategy#uuididstrategy),
 but custom strategies can be used, e.g. to apply some custom encoding to the ID before exposing
 it in the GraphQL API.
 
@@ -69,7 +69,7 @@ interface EntityIdStrategy<T extends 'increment' | 'uuid'> extends InjectableStr
     decodeId: (id: string) => PrimaryKeyType<T>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -107,7 +107,7 @@ back to the raw ID value.
 An id strategy which uses string uuids as primary keys
 for all entities. This strategy can be configured with the
 `entityIdStrategy` property of the `entityOptions` property
-of <DocsLink href="/reference/typescript-api/configuration/vendure-config#vendureconfig">VendureConfig</DocsLink>.
+of [VendureConfig](/reference/typescript-api/configuration/vendure-config#vendureconfig).
 
 *Example*
 
@@ -129,7 +129,7 @@ class UuidIdStrategy implements EntityIdStrategy<'uuid'> {
     encodeId(primaryKey: string) => string;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy">`EntityIdStrategy`</DocsLink>`<'uuid'>`
+* Implements: [`EntityIdStrategy`](/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy)`<'uuid'>`
 
 
 

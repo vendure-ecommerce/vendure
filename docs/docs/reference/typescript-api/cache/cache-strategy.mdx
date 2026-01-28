@@ -6,7 +6,7 @@ generated: true
 
 The CacheStrategy defines how the underlying shared cache mechanism is implemented.
 
-It is used by the <DocsLink href="/reference/typescript-api/cache/cache-service#cacheservice">CacheService</DocsLink> to take care of storage and retrieval of items
+It is used by the [CacheService](/reference/typescript-api/cache/cache-service#cacheservice) to take care of storage and retrieval of items
 from the cache.
 
 If you are using the `DefaultCachePlugin` or the `RedisCachePlugin`, you will not need to
@@ -28,7 +28,7 @@ interface CacheStrategy extends InjectableStrategy {
     invalidateTags(tags: string[]): Promise<void>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

@@ -4,11 +4,11 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/tax/address-based-tax-zone-strategy.ts" sourceLine="40" packageName="@vendure/core" since="3.1.0" />
 
-Address based <DocsLink href="/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy">TaxZoneStrategy</DocsLink> which tries to find the applicable <DocsLink href="/reference/typescript-api/entities/zone#zone">Zone</DocsLink> based on the
+Address based [TaxZoneStrategy](/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy) which tries to find the applicable [Zone](/reference/typescript-api/entities/zone#zone) based on the
 country of the shipping address of the Order.
 This is useful for shops that do cross-border B2C orders and use the One-Stop-Shop (OSS) VAT scheme.
 
-Returns the default <DocsLink href="/reference/typescript-api/entities/channel#channel">Channel</DocsLink>'s default tax zone if no applicable zone is found.
+Returns the default [Channel](/reference/typescript-api/entities/channel#channel)'s default tax zone if no applicable zone is found.
 
 :::info
 
@@ -36,7 +36,7 @@ class AddressBasedTaxZoneStrategy implements TaxZoneStrategy {
     determineTaxZone(ctx: RequestContext, zones: Zone[], channel: Channel, order?: Order) => Zone;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy">`TaxZoneStrategy`</DocsLink>
+* Implements: [`TaxZoneStrategy`](/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy)
 
 
 

@@ -33,7 +33,7 @@ An array of available ShippingCalculators for use in configuring ShippingMethods
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy'>ShippingLineAssignmentStrategy</a>`}  since="2.0.0"  />
 
-This strategy is used to assign a given <DocsLink href="/reference/typescript-api/entities/shipping-line#shippingline">ShippingLine</DocsLink> to one or more <DocsLink href="/reference/typescript-api/entities/order-line#orderline">OrderLine</DocsLink>s of the Order.
+This strategy is used to assign a given [ShippingLine](/reference/typescript-api/entities/shipping-line#shippingline) to one or more [OrderLine](/reference/typescript-api/entities/order-line#orderline)s of the Order.
 This allows you to set multiple shipping methods for a single order, each assigned a different subset of
 OrderLines.
 ### customFulfillmentProcess
@@ -41,13 +41,13 @@ OrderLines.
 <MemberInfo kind="property" type={`Array<<a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a><any>>`}   />
 
 Allows the definition of custom states and transition logic for the fulfillment process state machine.
-Takes an array of objects implementing the <DocsLink href="/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess">FulfillmentProcess</DocsLink> interface.
+Takes an array of objects implementing the [FulfillmentProcess](/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess) interface.
 ### process
 
 <MemberInfo kind="property" type={`Array<<a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a><any>>`} default={`<a href='/reference/typescript-api/fulfillment/fulfillment-process#defaultfulfillmentprocess'>defaultFulfillmentProcess</a>`}  since="2.0.0"  />
 
 Allows the definition of custom states and transition logic for the fulfillment process state machine.
-Takes an array of objects implementing the <DocsLink href="/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess">FulfillmentProcess</DocsLink> interface.
+Takes an array of objects implementing the [FulfillmentProcess](/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess) interface.
 ### fulfillmentHandlers
 
 <MemberInfo kind="property" type={`Array<<a href='/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler'>FulfillmentHandler</a><any>>`}   />

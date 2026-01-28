@@ -12,7 +12,7 @@ are multiple instances of the worker running.
 To do this, the strategy must use some form of shared storage and a method of
 locking so that only a single worker is allowed to execute the task.
 
-By default, the <DocsLink href="/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy">DefaultSchedulerStrategy</DocsLink> will use the database to enable
+By default, the [DefaultSchedulerStrategy](/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy) will use the database to enable
 this functionality.
 
 ```ts title="Signature"
@@ -25,7 +25,7 @@ interface SchedulerStrategy extends InjectableStrategy {
     updateTask(input: UpdateScheduledTaskInput): Promise<TaskReport>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -46,7 +46,7 @@ Execute a scheduled task. This method must also take care of
 ensuring that the task is executed exactly once at the scheduled time,
 even if there are multiple instances of the worker running.
 
-For instance, in the <DocsLink href="/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy">DefaultSchedulerStrategy</DocsLink> we make use of a
+For instance, in the [DefaultSchedulerStrategy](/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy) we make use of a
 dedicated database table and a locking mechansim. If you implement a custom
 SchedulerStrategy, you must use some other form of shared locking mechanism
 that could make use of something like Redis etc. to ensure that the task
@@ -75,7 +75,7 @@ instance which we typically do not want. Instead, it should be used
 to signal to the strategy that this specific task needs to be invoked
 at the soonest opportunity.
 
-For instance, in the <DocsLink href="/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy">DefaultSchedulerStrategy</DocsLink> this is done by setting
+For instance, in the [DefaultSchedulerStrategy](/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy) this is done by setting
 a flag in the database table which is checked periodically and causes those tasks
 to get immediately invoked.
 ### updateTask

@@ -39,7 +39,7 @@ interface SMTPTransportOptions extends SMTPTransport.Options {
 
 <MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
-If true, uses the configured <DocsLink href="/reference/typescript-api/logger/vendure-logger#vendurelogger">VendureLogger</DocsLink> to log messages from Nodemailer as it interacts with
+If true, uses the configured [VendureLogger](/reference/typescript-api/logger/vendure-logger#vendurelogger) to log messages from Nodemailer as it interacts with
 the SMTP server.
 
 
@@ -166,7 +166,7 @@ interface FileTransportOptions {
 <GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="277" packageName="@vendure/email-plugin" />
 
 Does nothing with the generated email. Intended for use in testing where we don't care about the email transport,
-or when using a custom <DocsLink href="/reference/core-plugins/email-plugin/email-sender#emailsender">EmailSender</DocsLink> which does not require transport options.
+or when using a custom [EmailSender](/reference/core-plugins/email-plugin/email-sender#emailsender) which does not require transport options.
 
 ```ts title="Signature"
 interface NoopTransportOptions {

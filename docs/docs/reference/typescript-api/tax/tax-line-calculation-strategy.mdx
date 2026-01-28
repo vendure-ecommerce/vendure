@@ -5,8 +5,8 @@ generated: true
 <GenerationInfo sourceFile="packages/core/src/config/tax/tax-line-calculation-strategy.ts" sourceLine="29" packageName="@vendure/core" />
 
 This strategy defines how the TaxLines on OrderItems are calculated. By default,
-the <DocsLink href="/reference/typescript-api/tax/default-tax-line-calculation-strategy#defaulttaxlinecalculationstrategy">DefaultTaxLineCalculationStrategy</DocsLink> is used, which directly applies
-a single TaxLine based on the applicable <DocsLink href="/reference/typescript-api/entities/tax-rate#taxrate">TaxRate</DocsLink>.
+the [DefaultTaxLineCalculationStrategy](/reference/typescript-api/tax/default-tax-line-calculation-strategy#defaulttaxlinecalculationstrategy) is used, which directly applies
+a single TaxLine based on the applicable [TaxRate](/reference/typescript-api/entities/tax-rate#taxrate).
 
 However, custom strategies may use any suitable method for calculating TaxLines.
 For example, a third-party tax API or a lookup of a custom tax table may be used.
@@ -23,7 +23,7 @@ interface TaxLineCalculationStrategy extends InjectableStrategy {
     calculate(args: CalculateTaxLinesArgs): TaxLine[] | Promise<TaxLine[]>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

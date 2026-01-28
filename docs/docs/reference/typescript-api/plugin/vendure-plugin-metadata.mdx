@@ -29,7 +29,7 @@ interface VendurePluginMetadata extends ModuleMetadata {
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#pluginconfigurationfn'>PluginConfigurationFn</a>`}   />
 
-A function which can modify the <DocsLink href="/reference/typescript-api/configuration/vendure-config#vendureconfig">VendureConfig</DocsLink> object before the server bootstraps.
+A function which can modify the [VendureConfig](/reference/typescript-api/configuration/vendure-config#vendureconfig) object before the server bootstraps.
 ### shopApiExtensions
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/plugin/vendure-plugin-metadata#apiextensiondefinition'>APIExtensionDefinition</a>`}   />
@@ -67,7 +67,7 @@ To effectively disable this check for a plugin, you can use an overly-permissive
 
 :::note
 Since Vendure v3.1.0, it is possible to ignore compatibility errors for specific plugins by
-passing the `ignoreCompatibilityErrorsForPlugins` option to the <DocsLink href="/reference/typescript-api/common/bootstrap#bootstrap">bootstrap</DocsLink> function.
+passing the `ignoreCompatibilityErrorsForPlugins` option to the [bootstrap](/reference/typescript-api/common/bootstrap#bootstrap) function.
 :::
 
 *Example*
@@ -125,7 +125,7 @@ Read more about defining custom scalars in the
 </div>
 <GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="119" packageName="@vendure/core" />
 
-This method is called before the app bootstraps and should be used to perform any needed modifications to the <DocsLink href="/reference/typescript-api/configuration/vendure-config#vendureconfig">VendureConfig</DocsLink>.
+This method is called before the app bootstraps and should be used to perform any needed modifications to the [VendureConfig](/reference/typescript-api/configuration/vendure-config#vendureconfig).
 
 ```ts title="Signature"
 type PluginConfigurationFn = (

@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/config/preset-only-strategy.ts" sourceLine="85" packageName="@vendure/asset-server-plugin" since="3.1.0" />
 
-An <DocsLink href="/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy">ImageTransformStrategy</DocsLink> which only allows transformations to be made using
+An [ImageTransformStrategy](/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy) which only allows transformations to be made using
 presets which are defined in the available presets.
 
 With this strategy enabled, requests to the asset server must include a `preset` parameter (or use the default preset)
@@ -45,7 +45,7 @@ class PresetOnlyStrategy implements ImageTransformStrategy {
     }: GetImageTransformParametersArgs) => Promise<ImageTransformParameters> | ImageTransformParameters;
 }
 ```
-* Implements: <DocsLink href="/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy">`ImageTransformStrategy`</DocsLink>
+* Implements: [`ImageTransformStrategy`](/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy)
 
 
 
@@ -69,7 +69,7 @@ class PresetOnlyStrategy implements ImageTransformStrategy {
 </div>
 <GenerationInfo sourceFile="packages/asset-server-plugin/src/config/preset-only-strategy.ts" sourceLine="16" packageName="@vendure/asset-server-plugin" />
 
-Configuration options for the <DocsLink href="/reference/core-plugins/asset-server-plugin/preset-only-strategy#presetonlystrategy">PresetOnlyStrategy</DocsLink>.
+Configuration options for the [PresetOnlyStrategy](/reference/core-plugins/asset-server-plugin/preset-only-strategy#presetonlystrategy).
 
 ```ts title="Signature"
 interface PresetOnlyStrategyOptions {

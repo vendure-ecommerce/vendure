@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/service/services/payment.service.ts" sourceLine="43" packageName="@vendure/core" />
 
-Contains methods relating to <DocsLink href="/reference/typescript-api/entities/payment#payment">Payment</DocsLink> entities.
+Contains methods relating to [Payment](/reference/typescript-api/entities/payment#payment) entities.
 
 ```ts title="Signature"
 class PaymentService {
@@ -45,7 +45,7 @@ class PaymentService {
 Transitions a Payment to the given state.
 
 When updating a Payment in the context of an Order, it is
-preferable to use the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink> `transitionPaymentToState()` method, which will also handle
+preferable to use the [OrderService](/reference/typescript-api/services/order-service#orderservice) `transitionPaymentToState()` method, which will also handle
 updating the Order state too.
 ### getNextStates
 
@@ -59,7 +59,7 @@ updating the Order state too.
 Creates a new Payment.
 
 When creating a Payment in the context of an Order, it is
-preferable to use the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink> `addPaymentToOrder()` method, which will also handle
+preferable to use the [OrderService](/reference/typescript-api/services/order-service#orderservice) `addPaymentToOrder()` method, which will also handle
 updating the Order state too.
 ### settlePayment
 
@@ -68,7 +68,7 @@ updating the Order state too.
 Settles a Payment.
 
 When settling a Payment in the context of an Order, it is
-preferable to use the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink> `settlePayment()` method, which will also handle
+preferable to use the [OrderService](/reference/typescript-api/services/order-service#orderservice) `settlePayment()` method, which will also handle
 updating the Order state too.
 ### cancelPayment
 
@@ -82,7 +82,7 @@ updating the Order state too.
 Creates a Payment from the manual payment mutation in the Admin API
 
 When creating a manual Payment in the context of an Order, it is
-preferable to use the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink> `addManualPaymentToOrder()` method, which will also handle
+preferable to use the [OrderService](/reference/typescript-api/services/order-service#orderservice) `addManualPaymentToOrder()` method, which will also handle
 updating the Order state too.
 ### createRefund
 
@@ -93,7 +93,7 @@ specified Payment (in the case of multiple payments on a single Order), then the
 refund amount will be refunded against the next available Payment from the Order.
 
 When creating a Refund in the context of an Order, it is
-preferable to use the <DocsLink href="/reference/typescript-api/services/order-service#orderservice">OrderService</DocsLink> `refundOrder()` method, which performs additional
+preferable to use the [OrderService](/reference/typescript-api/services/order-service#orderservice) `refundOrder()` method, which performs additional
 validation.
 
 

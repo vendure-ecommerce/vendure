@@ -8,7 +8,7 @@ This strategy is used to determine the active Order for all order-related operat
 the Shop API. By default, all the Shop API operations that relate to the active Order (e.g.
 `activeOrder`, `addItemToOrder`, `applyCouponCode` etc.) will implicitly create a new Order
 and set it on the current Session, and then read the session to obtain the active Order.
-This behaviour is defined by the <DocsLink href="/reference/typescript-api/orders/default-active-order-strategy#defaultactiveorderstrategy">DefaultActiveOrderStrategy</DocsLink>.
+This behaviour is defined by the [DefaultActiveOrderStrategy](/reference/typescript-api/orders/default-active-order-strategy#defaultactiveorderstrategy).
 
 The `InputType` generic argument should correspond to the input type defined by the
 `defineInputType()` method.
@@ -127,7 +127,7 @@ interface ActiveOrderStrategy<InputType extends Record<string, any> | void = voi
     determineActiveOrder(ctx: RequestContext, input: InputType): Promise<Order | undefined>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

@@ -4,11 +4,11 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-line-assignment-strategy.ts" sourceLine="52" packageName="@vendure/core" since="2.0.0" />
 
-This strategy is used to assign a given <DocsLink href="/reference/typescript-api/entities/shipping-line#shippingline">ShippingLine</DocsLink> to one or more <DocsLink href="/reference/typescript-api/entities/order-line#orderline">OrderLine</DocsLink>s of the Order.
+This strategy is used to assign a given [ShippingLine](/reference/typescript-api/entities/shipping-line#shippingline) to one or more [OrderLine](/reference/typescript-api/entities/order-line#orderline)s of the Order.
 This allows you to set multiple shipping methods for a single order, each assigned a different subset of
 OrderLines.
 
-The <DocsLink href="/reference/typescript-api/shipping/default-shipping-line-assignment-strategy#defaultshippinglineassignmentstrategy">DefaultShippingLineAssignmentStrategy</DocsLink> simply assigns _all_ OrderLines, so is suitable for the
+The [DefaultShippingLineAssignmentStrategy](/reference/typescript-api/shipping/default-shipping-line-assignment-strategy#defaultshippinglineassignmentstrategy) simply assigns _all_ OrderLines, so is suitable for the
 most common scenario of a single shipping method per Order.
 
 :::info
@@ -54,7 +54,7 @@ interface ShippingLineAssignmentStrategy extends InjectableStrategy {
     ): OrderLine[] | Promise<OrderLine[]>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

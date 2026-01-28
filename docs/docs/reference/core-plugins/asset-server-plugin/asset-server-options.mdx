@@ -35,7 +35,7 @@ The route to the asset server.
 
 <MemberInfo kind="property" type={`string`}   />
 
-The local directory to which assets will be uploaded when using the <DocsLink href="/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy">LocalAssetStorageStrategy</DocsLink>.
+The local directory to which assets will be uploaded when using the [LocalAssetStorageStrategy](/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy).
 ### assetUrlPrefix
 
 <MemberInfo kind="property" type={`string | ((ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, identifier: string) => string)`}   />
@@ -61,7 +61,7 @@ The max height in pixels of a generated preview image.
 
 <MemberInfo kind="property" type={`<a href='/reference/core-plugins/asset-server-plugin/image-transform-preset#imagetransformpreset'>ImageTransformPreset</a>[]`}   />
 
-An array of additional <DocsLink href="/reference/core-plugins/asset-server-plugin/image-transform-preset#imagetransformpreset">ImageTransformPreset</DocsLink> objects.
+An array of additional [ImageTransformPreset](/reference/core-plugins/asset-server-plugin/image-transform-preset#imagetransformpreset) objects.
 ### imageTransformStrategy
 
 <MemberInfo kind="property" type={`<a href='/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy'>ImageTransformStrategy</a> | <a href='/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy'>ImageTransformStrategy</a>[]`} default={`[]`}  since="3.1.0"  />
@@ -83,13 +83,13 @@ Defines how asset files and preview images are named before being saved.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a>`}  since="1.7.0"  />
 
 Defines how previews are generated for a given Asset binary. By default, this uses
-the <DocsLink href="/reference/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewstrategy">SharpAssetPreviewStrategy</DocsLink>
+the [SharpAssetPreviewStrategy](/reference/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewstrategy)
 ### storageStrategyFactory
 
 <MemberInfo kind="property" type={`(         options: <a href='/reference/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>,     ) => <a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> | Promise<<a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>>`} default={`() => <a href='/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a>`}   />
 
-A function which can be used to configure an <DocsLink href="/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy">AssetStorageStrategy</DocsLink>. This is useful e.g. if you wish to store your assets
-using a cloud storage provider. By default, the <DocsLink href="/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy">LocalAssetStorageStrategy</DocsLink> is used.
+A function which can be used to configure an [AssetStorageStrategy](/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy). This is useful e.g. if you wish to store your assets
+using a cloud storage provider. By default, the [LocalAssetStorageStrategy](/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy) is used.
 ### cacheHeader
 
 <MemberInfo kind="property" type={`<a href='/reference/core-plugins/asset-server-plugin/cache-config#cacheconfig'>CacheConfig</a> | string`} default={`'public, max-age=15552000'`}  since="1.9.3"  />

@@ -30,7 +30,7 @@ class StockLevelService {
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>>`}   />
 
-Returns the StockLevel for the given <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> and <DocsLink href="/reference/typescript-api/entities/stock-location#stocklocation">StockLocation</DocsLink>.
+Returns the StockLevel for the given [ProductVariant](/reference/typescript-api/entities/product-variant#productvariant) and [StockLocation](/reference/typescript-api/entities/stock-location#stocklocation).
 ### getStockLevelsForVariant
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/stock-level#stocklevel'>StockLevel</a>[]>`}   />
@@ -40,18 +40,18 @@ Returns the StockLevel for the given <DocsLink href="/reference/typescript-api/e
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/products-stock/stock-location-strategy#availablestock'>AvailableStock</a>>`}   />
 
-Returns the available stock (on hand and allocated) for the given <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink>. This is determined
-by the configured <DocsLink href="/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy">StockLocationStrategy</DocsLink>.
+Returns the available stock (on hand and allocated) for the given [ProductVariant](/reference/typescript-api/entities/product-variant#productvariant). This is determined
+by the configured [StockLocationStrategy](/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy).
 ### updateStockOnHandForLocation
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/reference/typescript-api/common/id#id'>ID</a>, change: number) => `}   />
 
-Updates the `stockOnHand` for the given <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> and <DocsLink href="/reference/typescript-api/entities/stock-location#stocklocation">StockLocation</DocsLink>.
+Updates the `stockOnHand` for the given [ProductVariant](/reference/typescript-api/entities/product-variant#productvariant) and [StockLocation](/reference/typescript-api/entities/stock-location#stocklocation).
 ### updateStockAllocatedForLocation
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, stockLocationId: <a href='/reference/typescript-api/common/id#id'>ID</a>, change: number) => `}   />
 
-Updates the `stockAllocated` for the given <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> and <DocsLink href="/reference/typescript-api/entities/stock-location#stocklocation">StockLocation</DocsLink>.
+Updates the `stockAllocated` for the given [ProductVariant](/reference/typescript-api/entities/product-variant#productvariant) and [StockLocation](/reference/typescript-api/entities/stock-location#stocklocation).
 
 
 </div>

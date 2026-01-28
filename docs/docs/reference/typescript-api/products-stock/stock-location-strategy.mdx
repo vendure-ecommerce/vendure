@@ -4,10 +4,10 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/catalog/stock-location-strategy.ts" sourceLine="55" packageName="@vendure/core" since="2.0.0" />
 
-The StockLocationStrategy is responsible for determining which <DocsLink href="/reference/typescript-api/entities/stock-location#stocklocation">StockLocation</DocsLink>s
-should be used to fulfill an <DocsLink href="/reference/typescript-api/entities/order-line#orderline">OrderLine</DocsLink> and how much stock should be allocated
+The StockLocationStrategy is responsible for determining which [StockLocation](/reference/typescript-api/entities/stock-location#stocklocation)s
+should be used to fulfill an [OrderLine](/reference/typescript-api/entities/order-line#orderline) and how much stock should be allocated
 from each location. It is also used to determine the available stock for a given
-<DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink>.
+[ProductVariant](/reference/typescript-api/entities/product-variant#productvariant).
 
 :::info
 
@@ -49,7 +49,7 @@ interface StockLocationStrategy extends InjectableStrategy {
     ): LocationWithQuantity[] | Promise<LocationWithQuantity[]>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -91,7 +91,7 @@ of an OrderLine which has already been fulfilled.
 <GenerationInfo sourceFile="packages/core/src/config/catalog/stock-location-strategy.ts" sourceLine="18" packageName="@vendure/core" since="2.0.0" />
 
 The overall available stock for a ProductVariant as determined by the logic of the
-<DocsLink href="/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy">StockLocationStrategy</DocsLink>'s `getAvailableStock` method.
+[StockLocationStrategy](/reference/typescript-api/products-stock/stock-location-strategy#stocklocationstrategy)'s `getAvailableStock` method.
 
 ```ts title="Signature"
 interface AvailableStock {

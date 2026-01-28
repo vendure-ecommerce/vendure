@@ -5,8 +5,8 @@ generated: true
 <GenerationInfo sourceFile="packages/core/src/entity/region/region.entity.ts" sourceLine="22" packageName="@vendure/core" />
 
 A Region represents a geographical administrative unit, such as a Country, Province, State, Prefecture etc.
-This is an abstract class which is extended by the <DocsLink href="/reference/typescript-api/entities/country#country">Country</DocsLink> and <DocsLink href="/reference/typescript-api/entities/province#province">Province</DocsLink> entities.
-Regions can be grouped into <DocsLink href="/reference/typescript-api/entities/zone#zone">Zone</DocsLink>s which are in turn used to determine applicable shipping and taxes for an <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink>.
+This is an abstract class which is extended by the [Country](/reference/typescript-api/entities/country#country) and [Province](/reference/typescript-api/entities/province#province) entities.
+Regions can be grouped into [Zone](/reference/typescript-api/entities/zone#zone)s which are in turn used to determine applicable shipping and taxes for an [Order](/reference/typescript-api/entities/order#order).
 
 ```ts title="Signature"
 class Region extends VendureEntity implements Translatable, HasCustomFields {
@@ -26,10 +26,10 @@ class Region extends VendureEntity implements Translatable, HasCustomFields {
     customFields: CustomRegionFields;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/vendure-entity#vendureentity">`VendureEntity`</DocsLink>
+* Extends: [`VendureEntity`](/reference/typescript-api/entities/vendure-entity#vendureentity)
 
 
-* Implements: <DocsLink href="/reference/typescript-api/entities/interfaces#translatable">`Translatable`</DocsLink>, HasCustomFields
+* Implements: [`Translatable`](/reference/typescript-api/entities/interfaces#translatable), HasCustomFields
 
 
 

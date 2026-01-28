@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="48" packageName="@vendure/core" />
 
-The ShippingCalculator is used by a <DocsLink href="/reference/typescript-api/entities/shipping-method#shippingmethod">ShippingMethod</DocsLink> to calculate the price of shipping on a given <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink>.
+The ShippingCalculator is used by a [ShippingMethod](/reference/typescript-api/entities/shipping-method#shippingmethod) to calculate the price of shipping on a given [Order](/reference/typescript-api/entities/order#order).
 
 *Example*
 
@@ -37,7 +37,7 @@ class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Configurable
     constructor(config: ShippingCalculatorConfig<T>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/#configurableoperationdef">`ConfigurableOperationDef`</DocsLink>`<T>`
+* Extends: [`ConfigurableOperationDef`](/reference/typescript-api/configurable-operation-def/#configurableoperationdef)`<T>`
 
 
 
@@ -53,7 +53,7 @@ class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Configurable
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="79" packageName="@vendure/core" />
 
-The return value of the <DocsLink href="/reference/typescript-api/shipping/shipping-calculator#calculateshippingfn">CalculateShippingFn</DocsLink>.
+The return value of the [CalculateShippingFn](/reference/typescript-api/shipping/shipping-calculator#calculateshippingfn).
 
 ```ts title="Signature"
 interface ShippingCalculationResult {
@@ -93,10 +93,10 @@ needed in the storefront application when listing eligible shipping methods.
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="119" packageName="@vendure/core" />
 
-A function which implements the specific shipping calculation logic. It takes an <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink> and
+A function which implements the specific shipping calculation logic. It takes an [Order](/reference/typescript-api/entities/order#order) and
 an arguments object and should return the shipping price as an integer in cents.
 
-Should return a <DocsLink href="/reference/typescript-api/shipping/shipping-calculator#shippingcalculationresult">ShippingCalculationResult</DocsLink> object.
+Should return a [ShippingCalculationResult](/reference/typescript-api/shipping/shipping-calculator#shippingcalculationresult) object.
 
 ```ts title="Signature"
 type CalculateShippingFn<T extends ConfigArgs> = (

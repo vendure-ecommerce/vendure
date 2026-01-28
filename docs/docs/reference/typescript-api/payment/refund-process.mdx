@@ -9,7 +9,7 @@ in, and how it may transition from one state to another. Using the `onTransition
 RefundProcess can perform checks before allowing a state transition to occur, and the `onTransitionEnd()`
 hook allows logic to be executed after a state change.
 
-For detailed description of the interface members, see the <DocsLink href="/reference/typescript-api/state-machine/state-machine-config#statemachineconfig">StateMachineConfig</DocsLink> docs.
+For detailed description of the interface members, see the [StateMachineConfig](/reference/typescript-api/state-machine/state-machine-config#statemachineconfig) docs.
 
 ```ts title="Signature"
 interface RefundProcess<State extends keyof CustomRefundStates | string> extends InjectableStrategy {
@@ -19,7 +19,7 @@ interface RefundProcess<State extends keyof CustomRefundStates | string> extends
     onTransitionError?: OnTransitionErrorFn<State | RefundState>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

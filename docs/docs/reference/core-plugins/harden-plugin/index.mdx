@@ -21,7 +21,7 @@ or
 
 `npm install @vendure/harden-plugin`
 
-Then add the `HardenPlugin`, calling the `.init()` method with <DocsLink href="/reference/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions">HardenPluginOptions</DocsLink>:
+Then add the `HardenPlugin`, calling the `.init()` method with [HardenPluginOptions](/reference/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions):
 
 *Example*
 
@@ -79,7 +79,7 @@ query EvilQuery {
 This evil query has a complexity score of 2,443,203 - much greater than the default of 1,000!
 
 The complexity score is calculated by the [graphql-query-complexity library](https://www.npmjs.com/package/graphql-query-complexity),
-and by default uses the <DocsLink href="/reference/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator">defaultVendureComplexityEstimator</DocsLink>, which is tuned specifically to the Vendure Shop API.
+and by default uses the [defaultVendureComplexityEstimator](/reference/core-plugins/harden-plugin/default-vendure-complexity-estimator#defaultvendurecomplexityestimator), which is tuned specifically to the Vendure Shop API.
 
 :::caution
 Note: By default, if the "take" argument is omitted from a list query (e.g. the `products` or `collections` query), a default factor of 1000 is applied.

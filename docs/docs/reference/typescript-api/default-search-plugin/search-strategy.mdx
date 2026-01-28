@@ -10,7 +10,7 @@ should follow.
 :::info
 
 This is configured via the `searchStrategy` property of
-the <DocsLink href="/reference/typescript-api/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions">DefaultSearchPluginInitOptions</DocsLink>.
+the [DefaultSearchPluginInitOptions](/reference/typescript-api/default-search-plugin/default-search-plugin-init-options#defaultsearchplugininitoptions).
 
 :::
 
@@ -22,7 +22,7 @@ interface SearchStrategy extends InjectableStrategy {
     getCollectionIds(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<Map<ID, number>>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 

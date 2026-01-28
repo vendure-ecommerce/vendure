@@ -4,8 +4,8 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="281" packageName="@vendure/core" />
 
-An abstract class which is extended by <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionitemaction">PromotionItemAction</DocsLink>, <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionorderaction">PromotionOrderAction</DocsLink>,
-and <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionshippingaction">PromotionShippingAction</DocsLink>.
+An abstract class which is extended by [PromotionItemAction](/reference/typescript-api/promotions/promotion-action#promotionitemaction), [PromotionOrderAction](/reference/typescript-api/promotions/promotion-action#promotionorderaction),
+and [PromotionShippingAction](/reference/typescript-api/promotions/promotion-action#promotionshippingaction).
 
 ```ts title="Signature"
 class PromotionAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCondition[] | undefined = any> extends ConfigurableOperationDef<T> {
@@ -13,7 +13,7 @@ class PromotionAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCond
     constructor(config: PromotionActionConfig<T, U>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/#configurableoperationdef">`ConfigurableOperationDef`</DocsLink>`<T>`
+* Extends: [`ConfigurableOperationDef`](/reference/typescript-api/configurable-operation-def/#configurableoperationdef)`<T>`
 
 
 
@@ -24,7 +24,7 @@ class PromotionAction<T extends ConfigArgs = ConfigArgs, U extends PromotionCond
 <MemberInfo kind="property" type={`number`} default={`0`}   />
 
 Used to determine the order of application of multiple Promotions
-on the same Order. See the <DocsLink href="/reference/typescript-api/entities/promotion#promotion">Promotion</DocsLink> `priorityScore` field for
+on the same Order. See the [Promotion](/reference/typescript-api/entities/promotion#promotion) `priorityScore` field for
 more information.
 ### constructor
 
@@ -36,7 +36,7 @@ more information.
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="354" packageName="@vendure/core" />
 
-Represents a PromotionAction which applies to individual <DocsLink href="/reference/typescript-api/entities/order-line#orderline">OrderLine</DocsLink>s.
+Represents a PromotionAction which applies to individual [OrderLine](/reference/typescript-api/entities/order-line#orderline)s.
 
 *Example*
 
@@ -57,7 +57,7 @@ class PromotionItemAction<T extends ConfigArgs = ConfigArgs, U extends Array<Pro
     constructor(config: PromotionItemActionConfig<T, U>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionaction">`PromotionAction`</DocsLink>`<T, U>`
+* Extends: [`PromotionAction`](/reference/typescript-api/promotions/promotion-action#promotionaction)`<T, U>`
 
 
 
@@ -73,7 +73,7 @@ class PromotionItemAction<T extends ConfigArgs = ConfigArgs, U extends Array<Pro
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="464" packageName="@vendure/core" />
 
-Represents a PromotionAction which applies to the <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink> as a whole.
+Represents a PromotionAction which applies to the [Order](/reference/typescript-api/entities/order#order) as a whole.
 
 *Example*
 
@@ -94,7 +94,7 @@ class PromotionOrderAction<T extends ConfigArgs = ConfigArgs, U extends Promotio
     constructor(config: PromotionOrderActionConfig<T, U>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionaction">`PromotionAction`</DocsLink>`<T, U>`
+* Extends: [`PromotionAction`](/reference/typescript-api/promotions/promotion-action#promotionaction)`<T, U>`
 
 
 
@@ -117,7 +117,7 @@ class PromotionShippingAction<T extends ConfigArgs = ConfigArgs, U extends Promo
     constructor(config: PromotionShippingActionConfig<T, U>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionaction">`PromotionAction`</DocsLink>`<T, U>`
+* Extends: [`PromotionAction`](/reference/typescript-api/promotions/promotion-action#promotionaction)`<T, U>`
 
 
 
@@ -202,7 +202,7 @@ type PromotionActionSideEffectFn<T extends ConfigArgs> = (
 ```
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="155" packageName="@vendure/core" />
 
-Configuration for all types of <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionaction">PromotionAction</DocsLink>.
+Configuration for all types of [PromotionAction](/reference/typescript-api/promotions/promotion-action#promotionaction).
 
 ```ts title="Signature"
 interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionCondition<any>> | undefined> extends ConfigurableOperationDefOptions<T> {
@@ -212,7 +212,7 @@ interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionC
     onDeactivate?: PromotionActionSideEffectFn<T>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions">`ConfigurableOperationDefOptions`</DocsLink>`<T>`
+* Extends: [`ConfigurableOperationDefOptions`](/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions)`<T>`
 
 
 
@@ -223,7 +223,7 @@ interface PromotionActionConfig<T extends ConfigArgs, U extends Array<PromotionC
 <MemberInfo kind="property" type={`number`} default={`0`}   />
 
 Used to determine the order of application of multiple Promotions
-on the same Order. See the <DocsLink href="/reference/typescript-api/entities/promotion#promotion">Promotion</DocsLink> `priorityScore` field for
+on the same Order. See the [Promotion](/reference/typescript-api/entities/promotion#promotion) `priorityScore` field for
 more information.
 ### conditions
 
@@ -255,14 +255,14 @@ Used to reverse or clean up any side effects executed as part of the `onActivate
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="209" packageName="@vendure/core" />
 
-Configuration for a <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionitemaction">PromotionItemAction</DocsLink>
+Configuration for a [PromotionItemAction](/reference/typescript-api/promotions/promotion-action#promotionitemaction)
 
 ```ts title="Signature"
 interface PromotionItemActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
     execute: ExecutePromotionItemActionFn<T, U>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionactionconfig">`PromotionActionConfig`</DocsLink>`<T, U>`
+* Extends: [`PromotionActionConfig`](/reference/typescript-api/promotions/promotion-action#promotionactionconfig)`<T, U>`
 
 
 
@@ -280,14 +280,14 @@ the OrderLine, i.e. the number should be negative.
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="227" packageName="@vendure/core" />
 
-Configuration for a <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionlineaction">PromotionLineAction</DocsLink>
+Configuration for a [PromotionLineAction](/reference/typescript-api/promotions/promotion-action#promotionlineaction)
 
 ```ts title="Signature"
 interface PromotionLineActionConfig<T extends ConfigArgs, U extends PromotionCondition[]> extends PromotionActionConfig<T, U> {
     execute: ExecutePromotionLineActionFn<T, U>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionactionconfig">`PromotionActionConfig`</DocsLink>`<T, U>`
+* Extends: [`PromotionActionConfig`](/reference/typescript-api/promotions/promotion-action#promotionactionconfig)`<T, U>`
 
 
 
@@ -312,7 +312,7 @@ interface PromotionOrderActionConfig<T extends ConfigArgs, U extends PromotionCo
     execute: ExecutePromotionOrderActionFn<T, U>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionactionconfig">`PromotionActionConfig`</DocsLink>`<T, U>`
+* Extends: [`PromotionActionConfig`](/reference/typescript-api/promotions/promotion-action#promotionactionconfig)`<T, U>`
 
 
 
@@ -337,7 +337,7 @@ interface PromotionShippingActionConfig<T extends ConfigArgs, U extends Promotio
     execute: ExecutePromotionShippingActionFn<T, U>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionactionconfig">`PromotionActionConfig`</DocsLink>`<T, U>`
+* Extends: [`PromotionActionConfig`](/reference/typescript-api/promotions/promotion-action#promotionactionconfig)`<T, U>`
 
 
 
@@ -355,7 +355,7 @@ the Shipping, i.e. the number should be negative.
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="409" packageName="@vendure/core" />
 
-Represents a PromotionAction which applies to individual <DocsLink href="/reference/typescript-api/entities/order-line#orderline">OrderLine</DocsLink>s.
+Represents a PromotionAction which applies to individual [OrderLine](/reference/typescript-api/entities/order-line#orderline)s.
 The difference from PromotionItemAction is that it applies regardless of the Quantity of the OrderLine.
 
 *Example*
@@ -377,7 +377,7 @@ class PromotionLineAction<T extends ConfigArgs = ConfigArgs, U extends Array<Pro
     constructor(config: PromotionLineActionConfig<T, U>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/promotions/promotion-action#promotionaction">`PromotionAction`</DocsLink>`<T, U>`
+* Extends: [`PromotionAction`](/reference/typescript-api/promotions/promotion-action#promotionaction)`<T, U>`
 
 
 

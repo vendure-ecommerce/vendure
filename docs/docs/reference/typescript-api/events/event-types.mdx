@@ -12,7 +12,7 @@ class AccountRegistrationEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -36,7 +36,7 @@ class AccountVerifiedEvent extends VendureEvent {
     constructor(ctx: RequestContext, customer: Customer)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -52,14 +52,14 @@ class AccountVerifiedEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/administrator-event.ts" sourceLine="18" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/administrator#administrator">Administrator</DocsLink> is added, updated or deleted.
+This event is fired whenever a [Administrator](/reference/typescript-api/entities/administrator#administrator) is added, updated or deleted.
 
 ```ts title="Signature"
 class AdministratorEvent extends VendureEntityEvent<Administrator, AdministratorInputTypes> {
     constructor(ctx: RequestContext, entity: Administrator, type: 'created' | 'updated' | 'deleted', input?: AdministratorInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/administrator#administrator">`Administrator`</DocsLink>`, AdministratorInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Administrator`](/reference/typescript-api/entities/administrator#administrator)`, AdministratorInputTypes>`
 
 
 
@@ -75,7 +75,7 @@ class AdministratorEvent extends VendureEntityEvent<Administrator, Administrator
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/asset-channel-event.ts" sourceLine="15" packageName="@vendure/core" />
 
-This event is fired whenever an <DocsLink href="/reference/typescript-api/entities/asset#asset">Asset</DocsLink> is assigned or removed
+This event is fired whenever an [Asset](/reference/typescript-api/entities/asset#asset) is assigned or removed
 From a channel.
 
 ```ts title="Signature"
@@ -83,7 +83,7 @@ class AssetChannelEvent extends VendureEvent {
     constructor(ctx: RequestContext, asset: Asset, channelId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -99,7 +99,7 @@ class AssetChannelEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/asset-event.ts" sourceLine="18" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/asset#asset">Asset</DocsLink> is added, updated or deleted.
+This event is fired whenever a [Asset](/reference/typescript-api/entities/asset#asset) is added, updated or deleted.
 
 ```ts title="Signature"
 class AssetEvent extends VendureEntityEvent<Asset, AssetInputTypes> {
@@ -107,7 +107,7 @@ class AssetEvent extends VendureEntityEvent<Asset, AssetInputTypes> {
     asset: Asset
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/asset#asset">`Asset`</DocsLink>`, AssetInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Asset`](/reference/typescript-api/entities/asset#asset)`, AssetInputTypes>`
 
 
 
@@ -137,7 +137,7 @@ class AttemptedLoginEvent extends VendureEvent {
     constructor(ctx: RequestContext, strategy: string, identifier?: string)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -153,7 +153,7 @@ class AttemptedLoginEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/change-channel-event.ts" sourceLine="17" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever an <DocsLink href="/reference/typescript-api/entities/interfaces#channelaware">ChannelAware</DocsLink> entity is assigned or removed
+This event is fired whenever an [ChannelAware](/reference/typescript-api/entities/interfaces#channelaware) entity is assigned or removed
 from a channel. The entity property contains the value before updating the channels.
 
 ```ts title="Signature"
@@ -161,7 +161,7 @@ class ChangeChannelEvent<T extends ChannelAware & VendureEntity> extends Vendure
     constructor(ctx: RequestContext, entity: T, channelIds: ID[], type: 'assigned' | 'removed', entityType?: Type<T>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -177,14 +177,14 @@ class ChangeChannelEvent<T extends ChannelAware & VendureEntity> extends Vendure
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/channel-event.ts" sourceLine="18" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/channel#channel">Channel</DocsLink> is added, updated or deleted.
+This event is fired whenever a [Channel](/reference/typescript-api/entities/channel#channel) is added, updated or deleted.
 
 ```ts title="Signature"
 class ChannelEvent extends VendureEntityEvent<Channel, ChannelInputTypes> {
     constructor(ctx: RequestContext, entity: Channel, type: 'created' | 'updated' | 'deleted', input?: ChannelInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/channel#channel">`Channel`</DocsLink>`, ChannelInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Channel`](/reference/typescript-api/entities/channel#channel)`, ChannelInputTypes>`
 
 
 
@@ -200,14 +200,14 @@ class ChannelEvent extends VendureEntityEvent<Channel, ChannelInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/collection-event.ts" sourceLine="18" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/collection#collection">Collection</DocsLink> is added, updated or deleted.
+This event is fired whenever a [Collection](/reference/typescript-api/entities/collection#collection) is added, updated or deleted.
 
 ```ts title="Signature"
 class CollectionEvent extends VendureEntityEvent<Collection, CollectionInputTypes> {
     constructor(ctx: RequestContext, entity: Collection, type: 'created' | 'updated' | 'deleted', input?: CollectionInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/collection#collection">`Collection`</DocsLink>`, CollectionInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Collection`](/reference/typescript-api/entities/collection#collection)`, CollectionInputTypes>`
 
 
 
@@ -234,7 +234,7 @@ class CollectionModificationEvent extends VendureEvent {
     constructor(ctx: RequestContext, collection: Collection, productVariantIds: ID[])
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -250,14 +250,14 @@ class CollectionModificationEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/country-event.ts" sourceLine="18" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/country#country">Country</DocsLink> is added, updated or deleted.
+This event is fired whenever a [Country](/reference/typescript-api/entities/country#country) is added, updated or deleted.
 
 ```ts title="Signature"
 class CountryEvent extends VendureEntityEvent<Country, CountryInputTypes> {
     constructor(ctx: RequestContext, entity: Country, type: 'created' | 'updated' | 'deleted', input?: CountryInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/country#country">`Country`</DocsLink>`, CountryInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Country`](/reference/typescript-api/entities/country#country)`, CountryInputTypes>`
 
 
 
@@ -273,15 +273,15 @@ class CountryEvent extends VendureEntityEvent<Country, CountryInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/coupon-code-event.ts" sourceLine="15" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever an coupon code of an active <DocsLink href="/reference/typescript-api/entities/promotion#promotion">Promotion</DocsLink>
-is assigned or removed to an <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink>.
+This event is fired whenever an coupon code of an active [Promotion](/reference/typescript-api/entities/promotion#promotion)
+is assigned or removed to an [Order](/reference/typescript-api/entities/order#order).
 
 ```ts title="Signature"
 class CouponCodeEvent extends VendureEvent {
     constructor(ctx: RequestContext, couponCode: string, orderId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -297,7 +297,7 @@ class CouponCodeEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/customer-address-event.ts" sourceLine="22" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/address#address">Address</DocsLink> is added, updated
+This event is fired whenever a [Address](/reference/typescript-api/entities/address#address) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -306,7 +306,7 @@ class CustomerAddressEvent extends VendureEntityEvent<Address, CustomerAddressIn
     address: Address
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/address#address">`Address`</DocsLink>`, CustomerAddressInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Address`](/reference/typescript-api/entities/address#address)`, CustomerAddressInputTypes>`
 
 
 
@@ -327,7 +327,7 @@ class CustomerAddressEvent extends VendureEntityEvent<Address, CustomerAddressIn
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/customer-event.ts" sourceLine="22" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/customer#customer">Customer</DocsLink> is added, updated
+This event is fired whenever a [Customer](/reference/typescript-api/entities/customer#customer) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -336,7 +336,7 @@ class CustomerEvent extends VendureEntityEvent<Customer, CustomerInputTypes> {
     customer: Customer
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/customer#customer">`Customer`</DocsLink>`, CustomerInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Customer`](/reference/typescript-api/entities/customer#customer)`, CustomerInputTypes>`
 
 
 
@@ -357,15 +357,15 @@ class CustomerEvent extends VendureEntityEvent<Customer, CustomerInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/customer-group-change-event.ts" sourceLine="15" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever one or more <DocsLink href="/reference/typescript-api/entities/customer#customer">Customer</DocsLink> is assigned to or removed from a
-<DocsLink href="/reference/typescript-api/entities/customer-group#customergroup">CustomerGroup</DocsLink>.
+This event is fired whenever one or more [Customer](/reference/typescript-api/entities/customer#customer) is assigned to or removed from a
+[CustomerGroup](/reference/typescript-api/entities/customer-group#customergroup).
 
 ```ts title="Signature"
 class CustomerGroupChangeEvent extends VendureEvent {
     constructor(ctx: RequestContext, customers: Customer[], customGroup: CustomerGroup, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -381,14 +381,14 @@ class CustomerGroupChangeEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/customer-group-event.ts" sourceLine="18" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/customer-group#customergroup">CustomerGroup</DocsLink> is added, updated or deleted.
+This event is fired whenever a [CustomerGroup](/reference/typescript-api/entities/customer-group#customergroup) is added, updated or deleted.
 
 ```ts title="Signature"
 class CustomerGroupEvent extends VendureEntityEvent<CustomerGroup, CustomerGroupInputTypes> {
     constructor(ctx: RequestContext, entity: CustomerGroup, type: 'created' | 'updated' | 'deleted', input?: CustomerGroupInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/customer-group#customergroup">`CustomerGroup`</DocsLink>`, CustomerGroupInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`CustomerGroup`](/reference/typescript-api/entities/customer-group#customergroup)`, CustomerGroupInputTypes>`
 
 
 
@@ -404,14 +404,14 @@ class CustomerGroupEvent extends VendureEntityEvent<CustomerGroup, CustomerGroup
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/facet-event.ts" sourceLine="18" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/facet#facet">Facet</DocsLink> is added, updated or deleted.
+This event is fired whenever a [Facet](/reference/typescript-api/entities/facet#facet) is added, updated or deleted.
 
 ```ts title="Signature"
 class FacetEvent extends VendureEntityEvent<Facet, FacetInputTypes> {
     constructor(ctx: RequestContext, entity: Facet, type: 'created' | 'updated' | 'deleted', input?: FacetInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/facet#facet">`Facet`</DocsLink>`, FacetInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Facet`](/reference/typescript-api/entities/facet#facet)`, FacetInputTypes>`
 
 
 
@@ -427,14 +427,14 @@ class FacetEvent extends VendureEntityEvent<Facet, FacetInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/facet-value-event.ts" sourceLine="26" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/facet-value#facetvalue">FacetValue</DocsLink> is added, updated or deleted.
+This event is fired whenever a [FacetValue](/reference/typescript-api/entities/facet-value#facetvalue) is added, updated or deleted.
 
 ```ts title="Signature"
 class FacetValueEvent extends VendureEntityEvent<FacetValue, FacetValueInputTypes> {
     constructor(ctx: RequestContext, entity: FacetValue, type: 'created' | 'updated' | 'deleted', input?: FacetValueInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/facet-value#facetvalue">`FacetValue`</DocsLink>`, FacetValueInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`FacetValue`](/reference/typescript-api/entities/facet-value#facetvalue)`, FacetValueInputTypes>`
 
 
 
@@ -450,14 +450,14 @@ class FacetValueEvent extends VendureEntityEvent<FacetValue, FacetValueInputType
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/fulfillment-event.ts" sourceLine="27" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/fulfillment#fulfillment">Fulfillment</DocsLink> is added. The type is always `created`.
+This event is fired whenever a [Fulfillment](/reference/typescript-api/entities/fulfillment#fulfillment) is added. The type is always `created`.
 
 ```ts title="Signature"
 class FulfillmentEvent extends VendureEntityEvent<Fulfillment, CreateFulfillmentInput> {
     constructor(ctx: RequestContext, entity: Fulfillment, input?: CreateFulfillmentInput)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/fulfillment#fulfillment">`Fulfillment`</DocsLink>`, CreateFulfillmentInput>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Fulfillment`](/reference/typescript-api/entities/fulfillment#fulfillment)`, CreateFulfillmentInput>`
 
 
 
@@ -473,14 +473,14 @@ class FulfillmentEvent extends VendureEntityEvent<Fulfillment, CreateFulfillment
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/fulfillment-state-transition-event.ts" sourceLine="13" packageName="@vendure/core" />
 
-This event is fired whenever an <DocsLink href="/reference/typescript-api/entities/fulfillment#fulfillment">Fulfillment</DocsLink> transitions from one <DocsLink href="/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate">FulfillmentState</DocsLink> to another.
+This event is fired whenever an [Fulfillment](/reference/typescript-api/entities/fulfillment#fulfillment) transitions from one [FulfillmentState](/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate) to another.
 
 ```ts title="Signature"
 class FulfillmentStateTransitionEvent extends VendureEvent {
     constructor(fromState: FulfillmentState, toState: FulfillmentState, ctx: RequestContext, fulfillment: Fulfillment)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -496,7 +496,7 @@ class FulfillmentStateTransitionEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/global-settings-event.ts" sourceLine="16" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/global-settings#globalsettings">GlobalSettings</DocsLink> is added. The type is always `updated`, because it's
+This event is fired whenever a [GlobalSettings](/reference/typescript-api/entities/global-settings#globalsettings) is added. The type is always `updated`, because it's
 only created once and never deleted.
 
 ```ts title="Signature"
@@ -504,7 +504,7 @@ class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGloba
     constructor(ctx: RequestContext, entity: GlobalSettings, input?: UpdateGlobalSettingsInput)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/global-settings#globalsettings">`GlobalSettings`</DocsLink>`, UpdateGlobalSettingsInput>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`GlobalSettings`](/reference/typescript-api/entities/global-settings#globalsettings)`, UpdateGlobalSettingsInput>`
 
 
 
@@ -520,7 +520,7 @@ class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGloba
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/history-entry-event.ts" sourceLine="23" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever one <DocsLink href="/reference/typescript-api/entities/history-entry#historyentry">HistoryEntry</DocsLink> is added, updated or deleted.
+This event is fired whenever one [HistoryEntry](/reference/typescript-api/entities/history-entry#historyentry) is added, updated or deleted.
 
 ```ts title="Signature"
 class HistoryEntryEvent extends VendureEntityEvent<HistoryEntry, HistoryInput> {
@@ -528,7 +528,7 @@ class HistoryEntryEvent extends VendureEntityEvent<HistoryEntry, HistoryInput> {
     constructor(ctx: RequestContext, entity: HistoryEntry, type: 'created' | 'updated' | 'deleted', historyType: 'order' | 'customer' | string, input?: HistoryInput)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/history-entry#historyentry">`HistoryEntry`</DocsLink>`, HistoryInput>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`HistoryEntry`](/reference/typescript-api/entities/history-entry#historyentry)`, HistoryInput>`
 
 
 
@@ -557,7 +557,7 @@ class IdentifierChangeEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User, oldIdentifier: string)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -581,7 +581,7 @@ class IdentifierChangeRequestEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -597,14 +597,14 @@ class IdentifierChangeRequestEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/initializer-event.ts" sourceLine="11" packageName="@vendure/core" since="1.7.0" />
 
-This event is fired when vendure finished initializing its services inside the <DocsLink href="/reference/typescript-api/services/initializer-service#initializerservice">InitializerService</DocsLink>
+This event is fired when vendure finished initializing its services inside the [InitializerService](/reference/typescript-api/services/initializer-service#initializerservice)
 
 ```ts title="Signature"
 class InitializerEvent extends VendureEvent {
     constructor()
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -627,7 +627,7 @@ class LoginEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -650,7 +650,7 @@ class LogoutEvent extends VendureEvent {
     constructor(ctx: RequestContext)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -666,7 +666,7 @@ class LogoutEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/order-event.ts" sourceLine="17" packageName="@vendure/core" />
 
-This event is fired whenever an <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink> is added, updated
+This event is fired whenever an [Order](/reference/typescript-api/entities/order#order) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -675,7 +675,7 @@ class OrderEvent extends VendureEntityEvent<Order, OrderInputTypes> {
     order: Order
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/order#order">`Order`</DocsLink>`, OrderInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Order`](/reference/typescript-api/entities/order#order)`, OrderInputTypes>`
 
 
 
@@ -696,7 +696,7 @@ class OrderEvent extends VendureEntityEvent<Order, OrderInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/order-line-event.ts" sourceLine="13" packageName="@vendure/core" />
 
-This event is fired whenever an <DocsLink href="/reference/typescript-api/entities/order-line#orderline">OrderLine</DocsLink> is added, updated
+This event is fired whenever an [OrderLine](/reference/typescript-api/entities/order-line#orderline) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -704,7 +704,7 @@ class OrderLineEvent extends VendureEvent {
     constructor(ctx: RequestContext, order: Order, orderLine: OrderLine, type: 'created' | 'updated' | 'deleted' | 'cancelled')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -720,18 +720,18 @@ class OrderLineEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/order-placed-event.ts" sourceLine="17" packageName="@vendure/core" />
 
-This event is fired whenever an <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink> is set as "placed", which by default is
+This event is fired whenever an [Order](/reference/typescript-api/entities/order#order) is set as "placed", which by default is
 when it transitions from 'ArrangingPayment' to either 'PaymentAuthorized' or 'PaymentSettled'.
 
 Note that the exact point that it is set as "placed" can be configured according to the
-<DocsLink href="/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy">OrderPlacedStrategy</DocsLink>.
+[OrderPlacedStrategy](/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy).
 
 ```ts title="Signature"
 class OrderPlacedEvent extends VendureEvent {
     constructor(fromState: OrderState, toState: OrderState, ctx: RequestContext, order: Order)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -747,14 +747,14 @@ class OrderPlacedEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/order-state-transition-event.ts" sourceLine="13" packageName="@vendure/core" />
 
-This event is fired whenever an <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink> transitions from one <DocsLink href="/reference/typescript-api/orders/order-process#orderstate">OrderState</DocsLink> to another.
+This event is fired whenever an [Order](/reference/typescript-api/entities/order#order) transitions from one [OrderState](/reference/typescript-api/orders/order-process#orderstate) to another.
 
 ```ts title="Signature"
 class OrderStateTransitionEvent extends VendureEvent {
     constructor(fromState: OrderState, toState: OrderState, ctx: RequestContext, order: Order)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -777,7 +777,7 @@ class PasswordResetEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -800,7 +800,7 @@ class PasswordResetVerifiedEvent extends VendureEvent {
     constructor(ctx: RequestContext, user: User)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -816,7 +816,7 @@ class PasswordResetVerifiedEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/payment-method-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/payment-method#paymentmethod">PaymentMethod</DocsLink> is added, updated
+This event is fired whenever a [PaymentMethod](/reference/typescript-api/entities/payment-method#paymentmethod) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -824,7 +824,7 @@ class PaymentMethodEvent extends VendureEntityEvent<PaymentMethod, PaymentMethod
     constructor(ctx: RequestContext, entity: PaymentMethod, type: 'created' | 'updated' | 'deleted', input?: PaymentMethodInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/payment-method#paymentmethod">`PaymentMethod`</DocsLink>`, PaymentMethodInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`PaymentMethod`](/reference/typescript-api/entities/payment-method#paymentmethod)`, PaymentMethodInputTypes>`
 
 
 
@@ -840,7 +840,7 @@ class PaymentMethodEvent extends VendureEntityEvent<PaymentMethod, PaymentMethod
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/payment-state-transition-event.ts" sourceLine="15" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/payment#payment">Payment</DocsLink> transitions from one <DocsLink href="/reference/typescript-api/payment/payment-state#paymentstate">PaymentState</DocsLink> to another, e.g.
+This event is fired whenever a [Payment](/reference/typescript-api/entities/payment#payment) transitions from one [PaymentState](/reference/typescript-api/payment/payment-state#paymentstate) to another, e.g.
 a Payment is authorized by the payment provider.
 
 ```ts title="Signature"
@@ -848,7 +848,7 @@ class PaymentStateTransitionEvent extends VendureEvent {
     constructor(fromState: PaymentState, toState: PaymentState, ctx: RequestContext, payment: Payment, order: Order)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -864,7 +864,7 @@ class PaymentStateTransitionEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/product-channel-event.ts" sourceLine="15" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/product#product">Product</DocsLink> is added, updated
+This event is fired whenever a [Product](/reference/typescript-api/entities/product#product) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -872,7 +872,7 @@ class ProductChannelEvent extends VendureEvent {
     constructor(ctx: RequestContext, product: Product, channelId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -888,7 +888,7 @@ class ProductChannelEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/product-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/product#product">Product</DocsLink> is added, updated
+This event is fired whenever a [Product](/reference/typescript-api/entities/product#product) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -897,7 +897,7 @@ class ProductEvent extends VendureEntityEvent<Product, ProductInputTypes> {
     product: Product
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/product#product">`Product`</DocsLink>`, ProductInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Product`](/reference/typescript-api/entities/product#product)`, ProductInputTypes>`
 
 
 
@@ -918,14 +918,14 @@ class ProductEvent extends VendureEntityEvent<Product, ProductInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/product-option-event.ts" sourceLine="26" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/product-option#productoption">ProductOption</DocsLink> is added or updated.
+This event is fired whenever a [ProductOption](/reference/typescript-api/entities/product-option#productoption) is added or updated.
 
 ```ts title="Signature"
 class ProductOptionEvent extends VendureEntityEvent<ProductOption, ProductOptionInputTypes> {
     constructor(ctx: RequestContext, entity: ProductOption, type: 'created' | 'updated' | 'deleted', input?: ProductOptionInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/product-option#productoption">`ProductOption`</DocsLink>`, ProductOptionInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`ProductOption`](/reference/typescript-api/entities/product-option#productoption)`, ProductOptionInputTypes>`
 
 
 
@@ -941,14 +941,14 @@ class ProductOptionEvent extends VendureEntityEvent<ProductOption, ProductOption
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/product-option-group-change-event.ts" sourceLine="15" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/product-option-group#productoptiongroup">ProductOptionGroup</DocsLink> is assigned or removed from a <DocsLink href="/reference/typescript-api/entities/product#product">Product</DocsLink>.
+This event is fired whenever a [ProductOptionGroup](/reference/typescript-api/entities/product-option-group#productoptiongroup) is assigned or removed from a [Product](/reference/typescript-api/entities/product#product).
 
 ```ts title="Signature"
 class ProductOptionGroupChangeEvent extends VendureEvent {
     constructor(ctx: RequestContext, product: Product, optionGroupId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -964,7 +964,7 @@ class ProductOptionGroupChangeEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/product-option-group-event.ts" sourceLine="24" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/product-option-group#productoptiongroup">ProductOptionGroup</DocsLink> is added or updated.
+This event is fired whenever a [ProductOptionGroup](/reference/typescript-api/entities/product-option-group#productoptiongroup) is added or updated.
 
 ```ts title="Signature"
 class ProductOptionGroupEvent extends VendureEntityEvent<
@@ -974,7 +974,7 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductOptionGroup, type: 'created' | 'updated' | 'deleted', input?: ProductOptionGroupInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<     `<DocsLink href="/reference/typescript-api/entities/product-option-group#productoptiongroup">`ProductOptionGroup`</DocsLink>`,     ProductOptionGroupInputTypes >`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<     `[`ProductOptionGroup`](/reference/typescript-api/entities/product-option-group#productoptiongroup)`,     ProductOptionGroupInputTypes >`
 
 
 
@@ -990,14 +990,14 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/product-variant-channel-event.ts" sourceLine="14" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> is assigned or removed from a <DocsLink href="/reference/typescript-api/entities/channel#channel">Channel</DocsLink>.
+This event is fired whenever a [ProductVariant](/reference/typescript-api/entities/product-variant#productvariant) is assigned or removed from a [Channel](/reference/typescript-api/entities/channel#channel).
 
 ```ts title="Signature"
 class ProductVariantChannelEvent extends VendureEvent {
     constructor(ctx: RequestContext, productVariant: ProductVariant, channelId: ID, type: 'assigned' | 'removed')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -1013,7 +1013,7 @@ class ProductVariantChannelEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/product-variant-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">ProductVariant</DocsLink> is added, updated
+This event is fired whenever a [ProductVariant](/reference/typescript-api/entities/product-variant#productvariant) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -1022,7 +1022,7 @@ class ProductVariantEvent extends VendureEntityEvent<ProductVariant[], ProductVa
     variants: ProductVariant[]
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/product-variant#productvariant">`ProductVariant`</DocsLink>`[], ProductVariantInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`ProductVariant`](/reference/typescript-api/entities/product-variant#productvariant)`[], ProductVariantInputTypes>`
 
 
 
@@ -1043,7 +1043,7 @@ class ProductVariantEvent extends VendureEntityEvent<ProductVariant[], ProductVa
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/product-variant-price-event.ts" sourceLine="17" packageName="@vendure/core" since="2.2.0" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/product-variant-price#productvariantprice">ProductVariantPrice</DocsLink> is added, updated or deleted.
+This event is fired whenever a [ProductVariantPrice](/reference/typescript-api/entities/product-variant-price#productvariantprice) is added, updated or deleted.
 
 ```ts title="Signature"
 class ProductVariantPriceEvent extends VendureEntityEvent<
@@ -1053,7 +1053,7 @@ class ProductVariantPriceEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductVariantPrice[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<     `<DocsLink href="/reference/typescript-api/entities/product-variant-price#productvariantprice">`ProductVariantPrice`</DocsLink>`[],     ProductVariantInputTypes >`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<     `[`ProductVariantPrice`](/reference/typescript-api/entities/product-variant-price#productvariantprice)`[],     ProductVariantInputTypes >`
 
 
 
@@ -1069,7 +1069,7 @@ class ProductVariantPriceEvent extends VendureEntityEvent<
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/promotion-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/promotion#promotion">Promotion</DocsLink> is added, updated
+This event is fired whenever a [Promotion](/reference/typescript-api/entities/promotion#promotion) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -1077,7 +1077,7 @@ class PromotionEvent extends VendureEntityEvent<Promotion, PromotionInputTypes> 
     constructor(ctx: RequestContext, entity: Promotion, type: 'created' | 'updated' | 'deleted', input?: PromotionInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/promotion#promotion">`Promotion`</DocsLink>`, PromotionInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Promotion`](/reference/typescript-api/entities/promotion#promotion)`, PromotionInputTypes>`
 
 
 
@@ -1093,14 +1093,14 @@ class PromotionEvent extends VendureEntityEvent<Promotion, PromotionInputTypes> 
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/province-event.ts" sourceLine="18" packageName="@vendure/core" since="2.0" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/province#province">Province</DocsLink> is added, updated or deleted.
+This event is fired whenever a [Province](/reference/typescript-api/entities/province#province) is added, updated or deleted.
 
 ```ts title="Signature"
 class ProvinceEvent extends VendureEntityEvent<Province, ProvinceInputTypes> {
     constructor(ctx: RequestContext, entity: Province, type: 'created' | 'updated' | 'deleted', input?: ProvinceInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/province#province">`Province`</DocsLink>`, ProvinceInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Province`](/reference/typescript-api/entities/province#province)`, ProvinceInputTypes>`
 
 
 
@@ -1116,14 +1116,14 @@ class ProvinceEvent extends VendureEntityEvent<Province, ProvinceInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/refund-event.ts" sourceLine="12" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/refund#refund">Refund</DocsLink> is created
+This event is fired whenever a [Refund](/reference/typescript-api/entities/refund#refund) is created
 
 ```ts title="Signature"
 class RefundEvent extends VendureEvent {
     constructor(ctx: RequestContext, order: Order, refund: Refund, type: 'created')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -1139,14 +1139,14 @@ class RefundEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/refund-state-transition-event.ts" sourceLine="14" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/refund#refund">Refund</DocsLink> transitions from one <DocsLink href="/reference/typescript-api/payment/refund-state#refundstate">RefundState</DocsLink> to another.
+This event is fired whenever a [Refund](/reference/typescript-api/entities/refund#refund) transitions from one [RefundState](/reference/typescript-api/payment/refund-state#refundstate) to another.
 
 ```ts title="Signature"
 class RefundStateTransitionEvent extends VendureEvent {
     constructor(fromState: RefundState, toState: RefundState, ctx: RequestContext, refund: Refund, order: Order)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -1162,7 +1162,7 @@ class RefundStateTransitionEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/role-change-event.ts" sourceLine="16" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever one <DocsLink href="/reference/typescript-api/entities/role#role">Role</DocsLink> is assigned or removed from a user.
+This event is fired whenever one [Role](/reference/typescript-api/entities/role#role) is assigned or removed from a user.
 The property `roleIds` only contains the removed or assigned role ids.
 
 ```ts title="Signature"
@@ -1170,7 +1170,7 @@ class RoleChangeEvent extends VendureEvent {
     constructor(ctx: RequestContext, admin: Administrator, roleIds: ID[], type: 'assigned' | 'removed')
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -1186,14 +1186,14 @@ class RoleChangeEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/role-event.ts" sourceLine="18" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever one <DocsLink href="/reference/typescript-api/entities/role#role">Role</DocsLink> is added, updated or deleted.
+This event is fired whenever one [Role](/reference/typescript-api/entities/role#role) is added, updated or deleted.
 
 ```ts title="Signature"
 class RoleEvent extends VendureEntityEvent<Role, RoleInputTypes> {
     constructor(ctx: RequestContext, entity: Role, type: 'created' | 'updated' | 'deleted', input?: RoleInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/role#role">`Role`</DocsLink>`, RoleInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Role`](/reference/typescript-api/entities/role#role)`, RoleInputTypes>`
 
 
 
@@ -1216,7 +1216,7 @@ class SearchEvent extends VendureEvent {
     constructor(ctx: RequestContext, input: ExtendedSearchInput)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -1232,14 +1232,14 @@ class SearchEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/seller-event.ts" sourceLine="19" packageName="@vendure/core" since="2.0.1" />
 
-This event is fired whenever one <DocsLink href="/reference/typescript-api/entities/seller#seller">Seller</DocsLink> is added, updated or deleted.
+This event is fired whenever one [Seller](/reference/typescript-api/entities/seller#seller) is added, updated or deleted.
 
 ```ts title="Signature"
 class SellerEvent extends VendureEntityEvent<Seller, SellerInputTypes> {
     constructor(ctx: RequestContext, entity: Seller, type: 'created' | 'updated' | 'deleted', input?: SellerInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/seller#seller">`Seller`</DocsLink>`, SellerInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Seller`](/reference/typescript-api/entities/seller#seller)`, SellerInputTypes>`
 
 
 
@@ -1255,7 +1255,7 @@ class SellerEvent extends VendureEntityEvent<Seller, SellerInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/shipping-method-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/shipping-method#shippingmethod">ShippingMethod</DocsLink> is added, updated
+This event is fired whenever a [ShippingMethod](/reference/typescript-api/entities/shipping-method#shippingmethod) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -1263,7 +1263,7 @@ class ShippingMethodEvent extends VendureEntityEvent<ShippingMethod, ShippingMet
     constructor(ctx: RequestContext, entity: ShippingMethod, type: 'created' | 'updated' | 'deleted', input?: ShippingMethodInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/shipping-method#shippingmethod">`ShippingMethod`</DocsLink>`, ShippingMethodInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`ShippingMethod`](/reference/typescript-api/entities/shipping-method#shippingmethod)`, ShippingMethodInputTypes>`
 
 
 
@@ -1279,7 +1279,7 @@ class ShippingMethodEvent extends VendureEntityEvent<ShippingMethod, ShippingMet
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/stock-location-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/stock-location#stocklocation">StockLocation</DocsLink> is added, updated
+This event is fired whenever a [StockLocation](/reference/typescript-api/entities/stock-location#stocklocation) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -1287,7 +1287,7 @@ class StockLocationEvent extends VendureEntityEvent<StockLocation, StockLocation
     constructor(ctx: RequestContext, entity: StockLocation, type: 'created' | 'updated' | 'deleted', input?: StockLocationInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/stock-location#stocklocation">`StockLocation`</DocsLink>`, StockLocationInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`StockLocation`](/reference/typescript-api/entities/stock-location#stocklocation)`, StockLocationInputTypes>`
 
 
 
@@ -1303,7 +1303,7 @@ class StockLocationEvent extends VendureEntityEvent<StockLocation, StockLocation
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/stock-movement-event.ts" sourceLine="16" packageName="@vendure/core" since="1.1.0" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/stock-movement#stockmovement">StockMovement</DocsLink> entity is created, which occurs when the saleable
+This event is fired whenever a [StockMovement](/reference/typescript-api/entities/stock-movement#stockmovement) entity is created, which occurs when the saleable
 stock level of a ProductVariant is altered due to things like sales, manual adjustments, and cancellations.
 
 ```ts title="Signature"
@@ -1312,7 +1312,7 @@ class StockMovementEvent extends VendureEvent {
     constructor(ctx: RequestContext, stockMovements: StockMovement[])
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -1333,7 +1333,7 @@ class StockMovementEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/tax-category-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/tax-category#taxcategory">TaxCategory</DocsLink> is added, updated
+This event is fired whenever a [TaxCategory](/reference/typescript-api/entities/tax-category#taxcategory) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -1341,7 +1341,7 @@ class TaxCategoryEvent extends VendureEntityEvent<TaxCategory, TaxCategoryInputT
     constructor(ctx: RequestContext, entity: TaxCategory, type: 'created' | 'updated' | 'deleted', input?: TaxCategoryInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/tax-category#taxcategory">`TaxCategory`</DocsLink>`, TaxCategoryInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`TaxCategory`](/reference/typescript-api/entities/tax-category#taxcategory)`, TaxCategoryInputTypes>`
 
 
 
@@ -1357,7 +1357,7 @@ class TaxCategoryEvent extends VendureEntityEvent<TaxCategory, TaxCategoryInputT
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/tax-rate-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/tax-rate#taxrate">TaxRate</DocsLink> is added, updated
+This event is fired whenever a [TaxRate](/reference/typescript-api/entities/tax-rate#taxrate) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -1365,7 +1365,7 @@ class TaxRateEvent extends VendureEntityEvent<TaxRate, TaxRateInputTypes> {
     constructor(ctx: RequestContext, entity: TaxRate, type: 'created' | 'updated' | 'deleted', input?: TaxRateInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/tax-rate#taxrate">`TaxRate`</DocsLink>`, TaxRateInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`TaxRate`](/reference/typescript-api/entities/tax-rate#taxrate)`, TaxRateInputTypes>`
 
 
 
@@ -1388,7 +1388,7 @@ class TaxRateModificationEvent extends VendureEvent {
     constructor(ctx: RequestContext, taxRate: TaxRate)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 
@@ -1404,7 +1404,7 @@ class TaxRateModificationEvent extends VendureEvent {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/zone-event.ts" sourceLine="18" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/zone#zone">Zone</DocsLink> is added, updated
+This event is fired whenever a [Zone](/reference/typescript-api/entities/zone#zone) is added, updated
 or deleted.
 
 ```ts title="Signature"
@@ -1412,7 +1412,7 @@ class ZoneEvent extends VendureEntityEvent<Zone, ZoneInputTypes> {
     constructor(ctx: RequestContext, entity: Zone, type: 'created' | 'updated' | 'deleted', input?: ZoneInputTypes)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-entity-event#vendureentityevent">`VendureEntityEvent`</DocsLink>`<`<DocsLink href="/reference/typescript-api/entities/zone#zone">`Zone`</DocsLink>`, ZoneInputTypes>`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<`[`Zone`](/reference/typescript-api/entities/zone#zone)`, ZoneInputTypes>`
 
 
 
@@ -1428,7 +1428,7 @@ class ZoneEvent extends VendureEntityEvent<Zone, ZoneInputTypes> {
 </div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/zone-members-event.ts" sourceLine="15" packageName="@vendure/core" />
 
-This event is fired whenever a <DocsLink href="/reference/typescript-api/entities/zone#zone">Zone</DocsLink> gets <DocsLink href="/reference/typescript-api/entities/country#country">Country</DocsLink> members assigned or removed
+This event is fired whenever a [Zone](/reference/typescript-api/entities/zone#zone) gets [Country](/reference/typescript-api/entities/country#country) members assigned or removed
 The `entity` property contains the zone with the already updated member field.
 
 ```ts title="Signature"
@@ -1436,7 +1436,7 @@ class ZoneMembersEvent extends VendureEvent {
     constructor(ctx: RequestContext, entity: Zone, type: 'assigned' | 'removed', memberIds: ID[])
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/events/vendure-event#vendureevent">`VendureEvent`</DocsLink>
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
 
 
 

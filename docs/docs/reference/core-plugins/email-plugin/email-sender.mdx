@@ -6,7 +6,7 @@ generated: true
 
 An EmailSender is responsible for sending the email, e.g. via an SMTP connection
 or using some other mail-sending API. By default, the EmailPlugin uses the
-<DocsLink href="/reference/core-plugins/email-plugin/email-sender#nodemaileremailsender">NodemailerEmailSender</DocsLink>, but it is also possible to supply a custom implementation:
+[NodemailerEmailSender](/reference/core-plugins/email-plugin/email-sender#nodemaileremailsender), but it is also possible to supply a custom implementation:
 
 *Example*
 
@@ -44,7 +44,7 @@ interface EmailSender extends InjectableStrategy {
     send: (email: EmailDetails, options: EmailTransportOptions) => void | Promise<void>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -67,7 +67,7 @@ class NodemailerEmailSender implements EmailSender {
     send(email: EmailDetails, options: EmailTransportOptions) => ;
 }
 ```
-* Implements: <DocsLink href="/reference/core-plugins/email-plugin/email-sender#emailsender">`EmailSender`</DocsLink>
+* Implements: [`EmailSender`](/reference/core-plugins/email-plugin/email-sender#emailsender)
 
 
 

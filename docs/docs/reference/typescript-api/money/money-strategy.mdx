@@ -5,7 +5,7 @@ generated: true
 <GenerationInfo sourceFile="packages/core/src/config/entity/money-strategy.ts" sourceLine="63" packageName="@vendure/core" since="2.0.0" />
 
 The MoneyStrategy defines how monetary values are stored and manipulated. The MoneyStrategy
-is defined in <DocsLink href="/reference/typescript-api/configuration/entity-options#entityoptions">EntityOptions</DocsLink>:
+is defined in [EntityOptions](/reference/typescript-api/configuration/entity-options#entityoptions):
 
 *Example*
 
@@ -19,11 +19,11 @@ const config: VendureConfig = {
 
 ## Range
 
-The <DocsLink href="/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy">DefaultMoneyStrategy</DocsLink> uses an `int` field in the database, which puts an
+The [DefaultMoneyStrategy](/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy) uses an `int` field in the database, which puts an
 effective limit of ~21.4 million on any stored value. For certain use cases
 (e.g. business sales with very high amounts, or currencies with very large
 denominations), this may cause issues. In this case, you can use the
-<DocsLink href="/reference/typescript-api/money/big-int-money-strategy#bigintmoneystrategy">BigIntMoneyStrategy</DocsLink> which will use the `bigint` type to store monetary values,
+[BigIntMoneyStrategy](/reference/typescript-api/money/big-int-money-strategy#bigintmoneystrategy) which will use the `bigint` type to store monetary values,
 giving an effective upper limit of over 9 quadrillion.
 
 ## Precision
@@ -66,7 +66,7 @@ interface MoneyStrategy extends InjectableStrategy {
     round(value: number, quantity?: number): number;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -94,7 +94,7 @@ UI as to how many decimal places to display.
 <MemberInfo kind="method" type={`(value: number, quantity?: number) => number`}   />
 
 Defines the logic used to round monetary values. For instance, the default behavior
-in the <DocsLink href="/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy">DefaultMoneyStrategy</DocsLink> is to round the value, then multiply.
+in the [DefaultMoneyStrategy](/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy) is to round the value, then multiply.
 
 ```ts
 return Math.round(value * quantity);

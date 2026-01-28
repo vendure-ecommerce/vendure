@@ -5,7 +5,7 @@ generated: true
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-eligibility-checker.ts" sourceLine="47" packageName="@vendure/core" />
 
 The PaymentMethodEligibilityChecker class is used to check whether an order qualifies for a
-given <DocsLink href="/reference/typescript-api/entities/payment-method#paymentmethod">PaymentMethod</DocsLink>.
+given [PaymentMethod](/reference/typescript-api/entities/payment-method#paymentmethod).
 
 *Example*
 
@@ -27,7 +27,7 @@ class PaymentMethodEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends
     constructor(config: PaymentMethodEligibilityCheckerConfig<T>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/#configurableoperationdef">`ConfigurableOperationDef`</DocsLink>`<T>`
+* Extends: [`ConfigurableOperationDef`](/reference/typescript-api/configurable-operation-def/#configurableoperationdef)`<T>`
 
 
 
@@ -43,7 +43,7 @@ class PaymentMethodEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-eligibility-checker.ts" sourceLine="20" packageName="@vendure/core" />
 
-Configuration passed into the constructor of a <DocsLink href="/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker">PaymentMethodEligibilityChecker</DocsLink> to
+Configuration passed into the constructor of a [PaymentMethodEligibilityChecker](/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker) to
 configure its behavior.
 
 ```ts title="Signature"
@@ -51,7 +51,7 @@ interface PaymentMethodEligibilityCheckerConfig<T extends ConfigArgs> extends Co
     check: CheckPaymentMethodEligibilityCheckerFn<T>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions">`ConfigurableOperationDefOptions`</DocsLink>`<T>`
+* Extends: [`ConfigurableOperationDefOptions`](/reference/typescript-api/configurable-operation-def/configurable-operation-def-options#configurableoperationdefoptions)`<T>`
 
 
 
@@ -67,7 +67,7 @@ interface PaymentMethodEligibilityCheckerConfig<T extends ConfigArgs> extends Co
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-eligibility-checker.ts" sourceLine="83" packageName="@vendure/core" />
 
-A function which implements logic to determine whether a given <DocsLink href="/reference/typescript-api/entities/order#order">Order</DocsLink> is eligible for
+A function which implements logic to determine whether a given [Order](/reference/typescript-api/entities/order#order) is eligible for
 a particular payment method. If the function resolves to `false` or a string, the check is
 considered to have failed. A string result can be used to provide information about the
 reason for ineligibility, if desired.

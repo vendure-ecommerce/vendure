@@ -5,7 +5,7 @@ generated: true
 <GenerationInfo sourceFile="packages/core/src/service/helpers/product-price-applicator/product-price-applicator.ts" sourceLine="41" packageName="@vendure/core" />
 
 This helper is used to apply the correct price to a ProductVariant based on the current context
-including active Channel, any current Order, etc. If you use the <DocsLink href="/reference/typescript-api/data-access/transactional-connection#transactionalconnection">TransactionalConnection</DocsLink> to
+including active Channel, any current Order, etc. If you use the [TransactionalConnection](/reference/typescript-api/data-access/transactional-connection#transactionalconnection) to
 directly query ProductVariants, you will find that the `price` and `priceWithTax` properties will
 always be `0` until you use the `applyChannelPriceAndTax()` method:
 

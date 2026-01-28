@@ -17,7 +17,7 @@ interface EmailGenerator<T extends string = any, E extends VendureEvent = any> e
     ): Pick<EmailDetails, 'from' | 'subject' | 'body'>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -48,7 +48,7 @@ class HandlebarsMjmlGenerator implements EmailGenerator {
     generate(from: string, subject: string, template: string, templateVars: any) => ;
 }
 ```
-* Implements: <DocsLink href="/reference/core-plugins/email-plugin/email-generator#emailgenerator">`EmailGenerator`</DocsLink>
+* Implements: [`EmailGenerator`](/reference/core-plugins/email-plugin/email-generator#emailgenerator)
 
 
 

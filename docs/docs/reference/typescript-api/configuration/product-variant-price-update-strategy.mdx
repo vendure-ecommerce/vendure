@@ -46,7 +46,7 @@ interface ProductVariantPriceUpdateStrategy extends InjectableStrategy {
     ): UpdatedProductVariantPrice[] | Promise<UpdatedProductVariantPrice[]>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -84,7 +84,7 @@ the prices of the specific ProductVariantPrices.
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-update-strategy.ts" sourceLine="14" packageName="@vendure/core" since="2.2.0" />
 
-The options available to the <DocsLink href="/reference/typescript-api/configuration/product-variant-price-update-strategy#defaultproductvariantpriceupdatestrategy">DefaultProductVariantPriceUpdateStrategy</DocsLink>.
+The options available to the [DefaultProductVariantPriceUpdateStrategy](/reference/typescript-api/configuration/product-variant-price-update-strategy#defaultproductvariantpriceupdatestrategy).
 
 ```ts title="Signature"
 interface DefaultProductVariantPriceUpdateStrategyOptions {
@@ -107,7 +107,7 @@ case, a custom strategy should be implemented.
 </div>
 <GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-update-strategy.ts" sourceLine="56" packageName="@vendure/core" since="2.2.0" />
 
-The default <DocsLink href="/reference/typescript-api/configuration/product-variant-price-update-strategy#productvariantpriceupdatestrategy">ProductVariantPriceUpdateStrategy</DocsLink> which by default will not update any other
+The default [ProductVariantPriceUpdateStrategy](/reference/typescript-api/configuration/product-variant-price-update-strategy#productvariantpriceupdatestrategy) which by default will not update any other
 prices when a price is created, updated or deleted.
 
 If the `syncPricesAcrossChannels` option is set to `true`, then when a price is updated in one Channel,
@@ -141,7 +141,7 @@ class DefaultProductVariantPriceUpdateStrategy implements ProductVariantPriceUpd
     onPriceDeleted(ctx: RequestContext, deletedPrice: ProductVariantPrice, prices: ProductVariantPrice[]) => ;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/configuration/product-variant-price-update-strategy#productvariantpriceupdatestrategy">`ProductVariantPriceUpdateStrategy`</DocsLink>
+* Implements: [`ProductVariantPriceUpdateStrategy`](/reference/typescript-api/configuration/product-variant-price-update-strategy#productvariantpriceupdatestrategy)
 
 
 

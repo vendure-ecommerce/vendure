@@ -25,7 +25,7 @@ class StockMovement extends VendureEntity implements HasCustomFields {
     customFields: CustomStockMovementFields;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/vendure-entity#vendureentity">`VendureEntity`</DocsLink>
+* Extends: [`VendureEntity`](/reference/typescript-api/entities/vendure-entity#vendureentity)
 
 
 * Implements: HasCustomFields
@@ -70,7 +70,7 @@ class StockMovement extends VendureEntity implements HasCustomFields {
 <GenerationInfo sourceFile="packages/core/src/entity/stock-movement/allocation.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
 An Allocation is created for each ProductVariant in an Order when the checkout is completed
-(as configured by the <DocsLink href="/reference/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy">StockAllocationStrategy</DocsLink>. This prevents stock being sold twice.
+(as configured by the [StockAllocationStrategy](/reference/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy). This prevents stock being sold twice.
 
 ```ts title="Signature"
 class Allocation extends StockMovement {
@@ -81,7 +81,7 @@ class Allocation extends StockMovement {
     orderLine: OrderLine;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/stock-movement#stockmovement">`StockMovement`</DocsLink>
+* Extends: [`StockMovement`](/reference/typescript-api/entities/stock-movement#stockmovement)
 
 
 
@@ -117,7 +117,7 @@ class Cancellation extends StockMovement {
     orderLine: OrderLine;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/stock-movement#stockmovement">`StockMovement`</DocsLink>
+* Extends: [`StockMovement`](/reference/typescript-api/entities/stock-movement#stockmovement)
 
 
 
@@ -154,7 +154,7 @@ class Release extends StockMovement {
     orderLine: OrderLine;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/stock-movement#stockmovement">`StockMovement`</DocsLink>
+* Extends: [`StockMovement`](/reference/typescript-api/entities/stock-movement#stockmovement)
 
 
 
@@ -190,7 +190,7 @@ class Sale extends StockMovement {
     orderLine: OrderLine;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/stock-movement#stockmovement">`StockMovement`</DocsLink>
+* Extends: [`StockMovement`](/reference/typescript-api/entities/stock-movement#stockmovement)
 
 
 
@@ -224,7 +224,7 @@ class StockAdjustment extends StockMovement {
     constructor(input: DeepPartial<StockAdjustment>)
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/stock-movement#stockmovement">`StockMovement`</DocsLink>
+* Extends: [`StockMovement`](/reference/typescript-api/entities/stock-movement#stockmovement)
 
 
 

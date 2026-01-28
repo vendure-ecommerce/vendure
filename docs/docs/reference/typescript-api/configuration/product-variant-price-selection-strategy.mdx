@@ -21,7 +21,7 @@ interface ProductVariantPriceSelectionStrategy extends InjectableStrategy {
     ): ProductVariantPrice | undefined | Promise<ProductVariantPrice | undefined>;
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/common/injectable-strategy#injectablestrategy">`InjectableStrategy`</DocsLink>
+* Extends: [`InjectableStrategy`](/reference/typescript-api/common/injectable-strategy#injectablestrategy)
 
 
 
@@ -46,7 +46,7 @@ class DefaultProductVariantPriceSelectionStrategy implements ProductVariantPrice
     selectPrice(ctx: RequestContext, prices: ProductVariantPrice[]) => ;
 }
 ```
-* Implements: <DocsLink href="/reference/typescript-api/configuration/product-variant-price-selection-strategy#productvariantpriceselectionstrategy">`ProductVariantPriceSelectionStrategy`</DocsLink>
+* Implements: [`ProductVariantPriceSelectionStrategy`](/reference/typescript-api/configuration/product-variant-price-selection-strategy#productvariantpriceselectionstrategy)
 
 
 

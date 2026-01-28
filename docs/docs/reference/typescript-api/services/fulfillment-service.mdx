@@ -4,7 +4,7 @@ generated: true
 ---
 <GenerationInfo sourceFile="packages/core/src/service/services/fulfillment.service.ts" sourceLine="34" packageName="@vendure/core" />
 
-Contains methods relating to <DocsLink href="/reference/typescript-api/entities/fulfillment#fulfillment">Fulfillment</DocsLink> entities.
+Contains methods relating to [Fulfillment](/reference/typescript-api/entities/fulfillment#fulfillment) entities.
 
 ```ts title="Signature"
 class FulfillmentService {
@@ -37,7 +37,7 @@ class FulfillmentService {
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orders: <a href='/reference/typescript-api/entities/order#order'>Order</a>[], lines: OrderLineInput[], handler: ConfigurableOperationInput) => Promise<<a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a> | InvalidFulfillmentHandlerError | CreateFulfillmentError>`}   />
 
 Creates a new Fulfillment for the given Orders and OrderItems, using the specified
-<DocsLink href="/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler">FulfillmentHandler</DocsLink>.
+[FulfillmentHandler](/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler).
 ### getFulfillmentLines
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, id: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise<<a href='/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]>`}   />
@@ -53,7 +53,7 @@ Creates a new Fulfillment for the given Orders and OrderItems, using the specifi
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fulfillmentId: <a href='/reference/typescript-api/common/id#id'>ID</a>, state: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>) => Promise<         | {               fulfillment: <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>;               orders: <a href='/reference/typescript-api/entities/order#order'>Order</a>[];               fromState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;               toState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;           }         | FulfillmentStateTransitionError     >`}   />
 
 Transitions the specified Fulfillment to a new state and upon successful transition
-publishes a <DocsLink href="/reference/typescript-api/events/event-types#fulfillmentstatetransitionevent">FulfillmentStateTransitionEvent</DocsLink>.
+publishes a [FulfillmentStateTransitionEvent](/reference/typescript-api/events/event-types#fulfillmentstatetransitionevent).
 ### getNextStates
 
 <MemberInfo kind="method" type={`(fulfillment: <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>) => readonly <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>[]`}   />

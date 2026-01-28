@@ -8,7 +8,7 @@ The EmailPlugin creates and sends transactional emails based on Vendure events. 
 email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
 
 ## High-level description
-Vendure has an internal events system (see <DocsLink href="/reference/typescript-api/events/event-bus#eventbus">EventBus</DocsLink>) that allows plugins to subscribe to events. The EmailPlugin is configured with <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink>s
+Vendure has an internal events system (see [EventBus](/reference/typescript-api/events/event-bus#eventbus)) that allows plugins to subscribe to events. The EmailPlugin is configured with [EmailEventHandler](/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler)s
 that listen for a specific event and when it is published, the handler defines which template to use to generate the resulting email.
 
 The plugin comes with a set of default handler for the following events:
@@ -17,7 +17,7 @@ The plugin comes with a set of default handler for the following events:
 - Password reset request
 - Email address change request
 
-You can also create your own handler and register them with the plugin - see the <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink> docs for more details.
+You can also create your own handler and register them with the plugin - see the [EmailEventHandler](/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler) docs for more details.
 
 ## Installation
 
@@ -188,7 +188,7 @@ EmailPlugin.init({
 }),
 ```
 
-For all available methods of extending a handler, see the <DocsLink href="/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler">EmailEventHandler</DocsLink> documentation.
+For all available methods of extending a handler, see the [EmailEventHandler](/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler) documentation.
 
 ## Dynamic SMTP settings
 
@@ -224,7 +224,7 @@ const config: VendureConfig = {
 ## Dev mode
 
 For development, the `transport` option can be replaced by `devMode: true`. Doing so configures Vendure to use the
-file transport (See <DocsLink href="/reference/core-plugins/email-plugin/transport-options#filetransportoptions">FileTransportOptions</DocsLink>) and outputs emails as rendered HTML files in the directory specified by the
+file transport (See [FileTransportOptions](/reference/core-plugins/email-plugin/transport-options#filetransportoptions)) and outputs emails as rendered HTML files in the directory specified by the
 `outputPath` property.
 
 ```ts

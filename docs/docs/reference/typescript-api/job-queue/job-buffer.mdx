@@ -7,7 +7,7 @@ generated: true
 A JobBuffer is used to temporarily prevent jobs from being sent to the job queue for processing.
 Instead, it collects certain jobs (as specified by the `collect()` method), and stores them.
 
-How these buffered jobs are stored is determined by the configured <DocsLink href="/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy">JobBufferStorageStrategy</DocsLink>.
+How these buffered jobs are stored is determined by the configured [JobBufferStorageStrategy](/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy).
 
 The JobBuffer can be thought of as a kind of "interceptor" of jobs. That is, when a JobBuffer is active,
 it sits in between calls to `JobQueue.add()` and the actual adding of the job to the queue.
@@ -58,7 +58,7 @@ export class CollectionJobBuffer implements JobBuffer<ApplyCollectionFiltersJobD
 }
 ```
 
-A JobBuffer is used by adding it to the <DocsLink href="/reference/typescript-api/job-queue/job-queue-service#jobqueueservice">JobQueueService</DocsLink>, at which point it will become active
+A JobBuffer is used by adding it to the [JobQueueService](/reference/typescript-api/job-queue/job-queue-service#jobqueueservice), at which point it will become active
 and start collecting jobs.
 
 At some later point, the buffer can be flushed, causing the buffered jobs to be passed through the

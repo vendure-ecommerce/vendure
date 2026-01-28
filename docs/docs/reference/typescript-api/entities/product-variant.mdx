@@ -5,7 +5,7 @@ generated: true
 <GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="38" packageName="@vendure/core" />
 
 A ProductVariant represents a single stock keeping unit (SKU) in the store's inventory.
-Whereas a <DocsLink href="/reference/typescript-api/entities/product#product">Product</DocsLink> is a "container" of variants, the variant itself holds the
+Whereas a [Product](/reference/typescript-api/entities/product#product) is a "container" of variants, the variant itself holds the
 data on price, tax category etc. When one adds items to their cart, they are adding
 ProductVariants, not Products.
 
@@ -75,10 +75,10 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     lines: OrderLine[];
 }
 ```
-* Extends: <DocsLink href="/reference/typescript-api/entities/vendure-entity#vendureentity">`VendureEntity`</DocsLink>
+* Extends: [`VendureEntity`](/reference/typescript-api/entities/vendure-entity#vendureentity)
 
 
-* Implements: <DocsLink href="/reference/typescript-api/entities/interfaces#translatable">`Translatable`</DocsLink>, HasCustomFields, <DocsLink href="/reference/typescript-api/entities/interfaces#softdeletable">`SoftDeletable`</DocsLink>, <DocsLink href="/reference/typescript-api/entities/interfaces#channelaware">`ChannelAware`</DocsLink>
+* Implements: [`Translatable`](/reference/typescript-api/entities/interfaces#translatable), HasCustomFields, [`SoftDeletable`](/reference/typescript-api/entities/interfaces#softdeletable), [`ChannelAware`](/reference/typescript-api/entities/interfaces#channelaware)
 
 
 

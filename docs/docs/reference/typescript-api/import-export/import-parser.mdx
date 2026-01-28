@@ -5,7 +5,7 @@ generated: true
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="152" packageName="@vendure/core" />
 
 Validates and parses CSV files into a data structure which can then be used to created new entities.
-This is used internally by the <DocsLink href="/reference/typescript-api/import-export/importer#importer">Importer</DocsLink>.
+This is used internally by the [Importer](/reference/typescript-api/import-export/importer#importer).
 
 ```ts title="Signature"
 class ImportParser {
@@ -20,14 +20,14 @@ class ImportParser {
 <MemberInfo kind="method" type={`(input: string | Stream, mainLanguage: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a> = this.configService.defaultLanguageCode) => Promise<<a href='/reference/typescript-api/import-export/import-parser#parseresult'>ParseResult</a><<a href='/reference/typescript-api/import-export/import-parser#parsedproductwithvariants'>ParsedProductWithVariants</a>>>`}   />
 
 Parses the contents of the [product import CSV file](/developer-guide/importing-data/#product-import-format) and
-returns a data structure which can then be used to populate Vendure using the <DocsLink href="/reference/typescript-api/import-export/fast-importer-service#fastimporterservice">FastImporterService</DocsLink>.
+returns a data structure which can then be used to populate Vendure using the [FastImporterService](/reference/typescript-api/import-export/fast-importer-service#fastimporterservice).
 
 
 </div>
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="45" packageName="@vendure/core" />
 
 The intermediate representation of an OptionGroup after it has been parsed
-by the <DocsLink href="/reference/typescript-api/import-export/import-parser#importparser">ImportParser</DocsLink>.
+by the [ImportParser](/reference/typescript-api/import-export/import-parser#importparser).
 
 ```ts title="Signature"
 interface ParsedOptionGroup {
@@ -52,7 +52,7 @@ interface ParsedOptionGroup {
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="61" packageName="@vendure/core" />
 
 The intermediate representation of a Facet after it has been parsed
-by the <DocsLink href="/reference/typescript-api/import-export/import-parser#importparser">ImportParser</DocsLink>.
+by the [ImportParser](/reference/typescript-api/import-export/import-parser#importparser).
 
 ```ts title="Signature"
 interface ParsedFacet {
@@ -77,7 +77,7 @@ interface ParsedFacet {
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="77" packageName="@vendure/core" />
 
 The intermediate representation of a ProductVariant after it has been parsed
-by the <DocsLink href="/reference/typescript-api/import-export/import-parser#importparser">ImportParser</DocsLink>.
+by the [ImportParser](/reference/typescript-api/import-export/import-parser#importparser).
 
 ```ts title="Signature"
 interface ParsedProductVariant {
@@ -146,7 +146,7 @@ interface ParsedProductVariant {
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="102" packageName="@vendure/core" />
 
 The intermediate representation of a Product after it has been parsed
-by the <DocsLink href="/reference/typescript-api/import-export/import-parser#importparser">ImportParser</DocsLink>.
+by the [ImportParser](/reference/typescript-api/import-export/import-parser#importparser).
 
 ```ts title="Signature"
 interface ParsedProduct {
@@ -193,7 +193,7 @@ interface ParsedProduct {
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="125" packageName="@vendure/core" />
 
 The data structure into which an import CSV file is parsed by the
-<DocsLink href="/reference/typescript-api/import-export/import-parser#importparser">ImportParser</DocsLink> `parseProducts()` method.
+[ImportParser](/reference/typescript-api/import-export/import-parser#importparser) `parseProducts()` method.
 
 ```ts title="Signature"
 interface ParsedProductWithVariants {
@@ -219,7 +219,7 @@ interface ParsedProductWithVariants {
 </div>
 <GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="137" packageName="@vendure/core" />
 
-The result returned by the <DocsLink href="/reference/typescript-api/import-export/import-parser#importparser">ImportParser</DocsLink> `parseProducts()` method.
+The result returned by the [ImportParser](/reference/typescript-api/import-export/import-parser#importparser) `parseProducts()` method.
 
 ```ts title="Signature"
 interface ParseResult<T> {
