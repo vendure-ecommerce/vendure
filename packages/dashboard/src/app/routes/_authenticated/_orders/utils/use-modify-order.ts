@@ -85,7 +85,7 @@ export function useModifyOrder(order: Order | null | undefined): UseModifyOrderR
                         const newQuantity = existingAdjustment.quantity + 1;
 
                         // If back to original quantity, remove from adjustments
-                        if (newQuantity === existingLine.quantity) {
+                        if (newQuantity === Number(existingLine.quantity)) {
                             return {
                                 ...prev,
                                 adjustOrderLines: (prev.adjustOrderLines ?? []).filter(
