@@ -1,41 +1,35 @@
-# Website
+# @vendure/docs
 
-This website is built using [Docusaurus 3](https://docusaurus.io/), a modern static website generator.
+This package contains the official documentation for [Vendure](https://www.vendure.io/), the open-source headless e-commerce framework.
 
-### Installation
+## Overview
 
-```
-$ npm run
-```
+The `@vendure/docs` package provides:
 
-### Local Development
+- **Guides**: Getting started, core concepts, developer guides, and how-to tutorials
+- **Reference Documentation**: TypeScript API, GraphQL API (Admin & Shop), and plugin documentation
+- **User Guide**: End-user documentation for the Admin UI
 
-```
-$ npm run start
-```
+## Usage
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+This package is designed to be consumed by the Vendure documentation platform. It exports a manifest that describes the structure and location of all documentation files.
 
-### Build
-
-```
-$ npm run build
+```typescript
+import { manifest } from '@vendure/docs/manifest';
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+## Structure
 
-### Deployment
+- `docs/` - MDX documentation files organized by category
+- `dist/` - Compiled TypeScript exports
+- `src/manifest.ts` - Documentation manifest defining navigation structure
 
-Using SSH:
+## Links
 
-```
-$ USE_SSH=true npm run deploy
-```
+- [Vendure Documentation](https://docs.vendure.io/)
+- [Vendure GitHub](https://github.com/vendure-ecommerce/vendure)
+- [Vendure Website](https://www.vendure.io/)
 
-Not using SSH:
+## License
 
-```
-$ GIT_USER=<Your GitHub username> npm run deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+This package is part of the Vendure project and is licensed under the GPL v3 license.
