@@ -9,7 +9,7 @@ import { User } from '../../entity/user/user.entity';
  * An AuthenticationStrategy defines how a User (which can be a Customer in the Shop API or
  * and Administrator in the Admin API) may be authenticated.
  *
- * Real-world examples can be found in the [Authentication guide](/guides/core-concepts/auth/).
+ * Real-world examples can be found in the [Authentication guide](/core-concepts/auth/).
  *
  * :::info
  *

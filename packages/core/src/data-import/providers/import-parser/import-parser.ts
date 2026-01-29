@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GlobalFlag, LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { unique } from '@vendure/common/lib/unique';
-import { parse, Options } from 'csv-parse';
+import { Options, parse } from 'csv-parse';
 import { Stream } from 'stream';
 
 import { InternalServerError } from '../../../common/error/errors';
@@ -156,7 +156,7 @@ export class ImportParser {
 
     /**
      * @description
-     * Parses the contents of the [product import CSV file](/guides/developer-guide/importing-data/#product-import-format) and
+     * Parses the contents of the [product import CSV file](/developer-guide/importing-data/#product-import-format) and
      * returns a data structure which can then be used to populate Vendure using the {@link FastImporterService}.
      */
     async parseProducts(
@@ -488,8 +488,8 @@ export class ImportParser {
                 r.trackInventory == null || r.trackInventory === ''
                     ? GlobalFlag.INHERIT
                     : parseBoolean(r.trackInventory)
-                    ? GlobalFlag.TRUE
-                    : GlobalFlag.FALSE,
+                      ? GlobalFlag.TRUE
+                      : GlobalFlag.FALSE,
             assetPaths: parseStringArray(r.variantAssets),
             facets,
             translations,

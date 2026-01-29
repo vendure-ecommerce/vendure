@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { differenceInDays, subDays } from 'date-fns';
 import { useMemo } from 'react';
 import { DashboardBaseWidget } from '../base-widget.js';
-import { useWidgetFilters } from '../widget-filters-context.js';
+import { useWidgetFilters } from '@/vdb/hooks/use-widget-filters.js';
 import { orderSummaryQuery } from './order-summary-widget.graphql.js';
 
 const WIDGET_ID = 'orders-summary-widget';
