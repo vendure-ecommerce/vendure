@@ -36,11 +36,18 @@ export function useDynamicTranslations() {
         return translatedDisplay !== stateTranslationId ? translatedDisplay : camelCaseToTitleCase(state);
     };
 
+    const getTranslatedRefundReason = (reason: string) => {
+        const reasonTranslationId = `refundReason.${reason}`;
+        const translatedDisplay = i18n.t(reasonTranslationId);
+        return translatedDisplay !== reasonTranslationId ? translatedDisplay : camelCaseToTitleCase(reason);
+    };
+
     return {
         getTranslatedFieldName,
         getTranslatedOrderState,
         getTranslatedFulfillmentState,
         getTranslatedPaymentState,
         getTranslatedRefundState,
+        getTranslatedRefundReason,
     };
 }
