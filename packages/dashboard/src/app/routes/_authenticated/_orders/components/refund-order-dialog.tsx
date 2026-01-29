@@ -31,8 +31,8 @@ import { Order } from '../utils/order-types.js';
 import { getMaxRefundableQuantity, lineCanBeRefunded } from '../utils/order-utils.js';
 
 interface RefundOrderDialogProps {
-    order: Order;
-    onSuccess?: () => void;
+    readonly order: Order;
+    readonly onSuccess?: () => void;
 }
 
 export interface RefundOrderDialogRef {
