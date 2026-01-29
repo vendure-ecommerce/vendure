@@ -21,7 +21,7 @@ export function getRefundablePayments(payments: Payment[] | undefined | null): R
     return settledPayments.map((payment, index) => {
         const successfulRefunds = payment.refunds.filter(r => r.state !== 'Failed');
         const refundedTotal = successfulRefunds.reduce((sum, refund) => sum + (refund.total || 0), 0);
-        const refundableAmount = payment.amount - refundedTotal;
+        const refundableAmount = Math.max(0, payment.amount - refundedTotal);
         return {
             ...payment,
             refundableAmount,

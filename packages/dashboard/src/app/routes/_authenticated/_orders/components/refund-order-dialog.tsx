@@ -128,7 +128,7 @@ export const RefundOrderDialog = forwardRef<RefundOrderDialogRef, RefundOrderDia
                                                             {line.productVariant.name}
                                                         </div>
                                                         <div className="text-muted-foreground text-xs">
-                                                            SKU: {line.productVariant.sku}
+                                                            <Trans>SKU:</Trans> {line.productVariant.sku}
                                                         </div>
                                                     </td>
                                                     <td className="p-2 text-right">
@@ -141,7 +141,7 @@ export const RefundOrderDialog = forwardRef<RefundOrderDialogRef, RefundOrderDia
                                                         {line.orderPlacedQuantity}
                                                         {maxRefundable < line.orderPlacedQuantity && (
                                                             <div className="text-xs text-muted-foreground">
-                                                                ({maxRefundable} refundable)
+                                                                <Trans>({maxRefundable} refundable)</Trans>
                                                             </div>
                                                         )}
                                                     </td>
@@ -274,7 +274,7 @@ export const RefundOrderDialog = forwardRef<RefundOrderDialogRef, RefundOrderDia
                                 />
                                 <span className="text-muted-foreground">{order.currencyCode}</span>
                                 <span className="text-muted-foreground text-sm">
-                                    (max: {formatCurrency(refund.totalRefundableAmount, order.currencyCode)})
+                                    <Trans>(max: {formatCurrency(refund.totalRefundableAmount, order.currencyCode)})</Trans>
                                 </span>
                             </div>
                         </div>
