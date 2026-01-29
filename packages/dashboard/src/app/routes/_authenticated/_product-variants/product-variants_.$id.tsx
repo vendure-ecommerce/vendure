@@ -85,7 +85,9 @@ function ProductVariantDetailPage() {
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
-        queryDocument: productVariantDetailDocument,
+        queryDocument: addCustomFields(productVariantDetailDocument, {
+            includeNestedFragments: ['ProductVariantPrice'],
+        }),
         createDocument: createProductVariantDocument,
         updateDocument: updateProductVariantDocument,
         setValuesForUpdate: entity => {
