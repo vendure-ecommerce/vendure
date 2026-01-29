@@ -29,7 +29,7 @@ function useChannel(): void
 
 ## ChannelContext
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/providers/channel-provider.tsx" sourceLine="65" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/providers/channel-provider.tsx" sourceLine="71" packageName="@vendure/dashboard" since="3.3.0" />
 
 Provides information about the active channel, and the means to set a new
 active channel.

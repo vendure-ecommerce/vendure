@@ -206,7 +206,7 @@ describe('AssetServerPlugin', () => {
             return fetch(`${asset.preview}?h=10.5`);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/security/advisories/GHSA-r9mq-3c9r-fmjq
+        // https://github.com/vendurehq/vendure/security/advisories/GHSA-r9mq-3c9r-fmjq
         describe('path traversal', () => {
             function curlWithPathAsIs(url: string) {
                 return new Promise<string>((resolve, reject) => {
@@ -311,7 +311,7 @@ describe('AssetServerPlugin', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1563
+    // https://github.com/vendurehq/vendure/issues/1563
     it('falls back to binary preview if image file cannot be processed', async () => {
         const filesToUpload = [path.join(__dirname, 'fixtures/assets/bad-image.jpg')];
         const { createAssets } = await adminClient.fileUploadMutation({

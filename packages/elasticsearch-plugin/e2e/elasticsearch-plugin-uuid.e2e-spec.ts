@@ -15,7 +15,7 @@ import { graphql as shopGraphql } from './graphql/graphql-shop';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
-// https://github.com/vendure-ecommerce/vendure/issues/494
+// https://github.com/vendurehq/vendure/issues/494
 describe('Elasticsearch plugin with UuidIdStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {

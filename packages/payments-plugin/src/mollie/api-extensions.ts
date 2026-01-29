@@ -28,6 +28,7 @@ const commonSchemaExtensions = gql`
         Set this to false when you expect that order fulfillment takes longer than 24 hours.
         If set to false, you will need to settle the "Authorized" payment in Vendure manually!
         If you fail to do so, the Authorized payment will expire after 28 days.
+        This setting can be overridden on the plugin level via the plugin options.
         """
         immediateCapture: Boolean
         """
@@ -50,6 +51,12 @@ const commonSchemaExtensions = gql`
 
     extend type Mutation {
         createMolliePaymentIntent(input: MolliePaymentIntentInput!): MolliePaymentIntentResult!
+        """
+        Fetch the payment status from Mollie and update the order status in Vendure accordingly.
+        Use this mutation when the Mollie webhook is delayed and you want to manually force update the order status.
+        Throws a ForbiddenError for unauthenticated calls when the order is not yet settled.
+        """
+        syncMolliePaymentStatus(orderCode: String!): Order
     }
 `;
 

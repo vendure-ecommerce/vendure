@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageActionBar
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="322" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="351" packageName="@vendure/dashboard" since="3.3.0" />
 
 *
 A component for displaying the main actions for a page. This should be used inside the <a href='/reference/dashboard/page-layout/page#page'>Page</a> component.
@@ -31,7 +31,7 @@ Parameters
 
 ## PageActionBarLeft
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="344" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="373" packageName="@vendure/dashboard" since="3.3.0" />
 
 The PageActionBarLeft component should be used to display the left content of the action bar.
 
@@ -48,7 +48,7 @@ Parameters
 
 ## PageActionBarRight
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="437" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/layout-engine/page-layout.tsx" sourceLine="466" packageName="@vendure/dashboard" since="3.3.0" />
 
 The PageActionBarRight component should be used to display the right content of the action bar.
 

@@ -1,13 +1,12 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import {
-    ActionBarItem,
-    Page,
+import {    Page,
     PageActionBar,
     PageBlock,
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';

@@ -1,6 +1,7 @@
 import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
 import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
@@ -13,8 +14,9 @@ import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import {
-    ActionBarItem,
     CustomFieldsPageBlock,
     DetailFormGrid,
     Page,
@@ -27,7 +29,6 @@ import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-lo
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
-import { addCustomFields, CustomFieldsForm } from '@/vdb/index.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
@@ -57,7 +58,7 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
                 return [
-                    { path: '/product', label: <Trans>Products</Trans> },
+                    { path: '/products', label: <Trans>Products</Trans> },
                     { path: `/products/${entity?.product.id}`, label: entity?.product.name ?? '' },
                     entity?.name,
                 ];

@@ -1,18 +1,27 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
 import {
+    ConfigurableFieldDef,
     DashboardFormComponent,
     DashboardFormComponentProps,
-    StringCustomFieldConfig,
+    StringStructField,
+    StructField,
 } from '@/vdb/framework/form-engine/form-engine-types.js';
-import { isReadonlyField, isStringFieldWithOptions } from '@/vdb/framework/form-engine/utils.js';
+import {
+    extractFieldOptions,
+    isReadonlyField,
+    isStringFieldWithOptions,
+    isStringStructFieldWithOptions,
+} from '@/vdb/framework/form-engine/utils.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@lingui/react/macro';
 import React from 'react';
 import { MultiSelect } from '../shared/multi-select.js';
 
-export interface SelectWithOptionsProps extends DashboardFormComponentProps {
+export interface SelectWithOptionsProps extends Omit<DashboardFormComponentProps, 'fieldDef'> {
     placeholder?: React.ReactNode;
     isListField?: boolean;
+    /** Field definition - can be a regular custom field or a struct field with options */
+    fieldDef?: ConfigurableFieldDef | StructField;
 }
 
 /**
@@ -30,7 +39,9 @@ export function SelectWithOptions({
     isListField = false,
     disabled,
 }: Readonly<SelectWithOptionsProps>) {
-    const readOnly = disabled || isReadonlyField(fieldDef);
+    // Note: struct fields don't have 'readonly', so isReadonlyField will return false for them
+    // which is correct since struct fields are controlled by the parent struct's readonly state
+    const readOnly = disabled || isReadonlyField(fieldDef as ConfigurableFieldDef);
     const {
         settings: { displayLanguage },
     } = useUserSettings();
@@ -40,11 +51,16 @@ export function SelectWithOptions({
         const translation = label.find(t => t.languageCode === displayLanguage);
         return translation?.value ?? label[0]?.value ?? '';
     };
-    if (!fieldDef || !isStringFieldWithOptions(fieldDef)) {
+
+    // Support both regular custom fields and struct fields with options
+    const isCustomField = fieldDef && isStringFieldWithOptions(fieldDef as ConfigurableFieldDef);
+    const isStructField = fieldDef && isStringStructFieldWithOptions(fieldDef as StringStructField);
+
+    if (!fieldDef || (!isCustomField && !isStructField)) {
         return null;
     }
-    const options: NonNullable<StringCustomFieldConfig['options']> =
-        fieldDef.options ?? fieldDef.ui.options ?? [];
+
+    const options = extractFieldOptions(fieldDef);
 
     // Convert options to MultiSelect format
     const multiSelectItems = options.map(option => ({

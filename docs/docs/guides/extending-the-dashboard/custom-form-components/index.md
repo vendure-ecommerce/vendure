@@ -5,8 +5,8 @@ title: 'Custom Form Elements'
 The dashboard allows you to create custom form elements that provide complete control over how data is rendered and how users
 interact with forms. This includes:
 
-- **Custom Field Components** - Globally-registered components that can be used to render **custom fields** and **configurable operation arguments**
-- **Detail Form Components** - Form input components that target specific fields of detail pages.
+- **[Custom Field Components](#custom-field-components)** — Globally-registered components that can be used to render **custom fields** and **configurable operation arguments**
+- **[Detail Form Components](#detail-form-components)** — Form input components that target specific fields of detail pages
 
 ## Anatomy of a Form Component
 

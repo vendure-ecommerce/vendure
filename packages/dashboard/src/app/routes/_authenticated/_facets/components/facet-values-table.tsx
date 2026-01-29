@@ -128,7 +128,7 @@ export function FacetValuesTable({ facetId, registerRefresher }: Readonly<FacetV
             />
             <div className="mt-4">
                 <Button asChild variant="outline">
-                    <Link to="./values/new">
+                    <Link to={`/facets/${facetId}/values/new`}>
                         <PlusIcon />
                         <Trans>Add facet value</Trans>
                     </Link>

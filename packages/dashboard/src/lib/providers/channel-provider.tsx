@@ -51,7 +51,13 @@ const channelsDocument = graphql(
 
 // Define the type for a channel
 type ActiveChannel = ResultOf<typeof activeChannelDocument>['activeChannel'];
-type Channel = ResultOf<typeof channelFragment>;
+export type Channel = ResultOf<typeof channelFragment>;
+
+/**
+ * Simplified channel type with only the basic fields (id, code, token)
+ * Used in components that don't need the full channel information
+ */
+export type SimpleChannel = Pick<Channel, 'id' | 'code' | 'token'>;
 
 /**
  * @description
@@ -88,6 +94,19 @@ export interface ChannelContext {
      * The function to refresh the channels.
      */
     refreshChannels: () => void;
+}
+
+/**
+ * Retrieves the channel token from localStorage.
+ * Returns null if localStorage is unavailable or an error occurs.
+ */
+function getChannelTokenFromLocalStorage(): string | null {
+    try {
+        return localStorage.getItem(LS_KEY_SELECTED_CHANNEL_TOKEN);
+    } catch (e) {
+        console.error('Failed to retrieve channel token from localStorage', e);
+        return null;
+    }
 }
 
 /**
@@ -177,27 +196,39 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
         // If selected channel is not valid for this user, reset it
         if (selectedChannelId && validChannelIds.length && !validChannelIds.includes(selectedChannelId)) {
             setSelectedChannelId(undefined);
-        }
-
-        // If no selected channel is set, use the first available channel
-        if (!selectedChannelId && channels.length > 0) {
+        } else if (selectedChannelId && channels.length > 0) {
+            // Ensure channel token in localStorage stays in sync with selected channel.
+            // This handles the case where activeChannelId persists but the token was cleared (e.g., after logout).
+            const selectedChannel = channels.find(c => c.id === selectedChannelId);
+            if (selectedChannel) {
+                const currentToken = getChannelTokenFromLocalStorage();
+                if (currentToken !== selectedChannel.token) {
+                    setChannelTokenInLocalStorage(selectedChannel.token);
+                    // Invalidate queries to refetch with the corrected token
+                    queryClient.invalidateQueries({
+                        queryKey: ['activeChannel', isAuthenticated],
+                    });
+                }
+            }
+        } else if (channels.length > 0) {
+            // If no selected channel is set, use the first available channel
             const defaultChannel = channels[0];
             setSelectedChannelId(defaultChannel.id);
             setChannelTokenInLocalStorage(defaultChannel.token);
         }
-    }, [selectedChannelId, channels]);
+    }, [selectedChannelId, channels, queryClient, isAuthenticated]);
 
     const isLoading = isActiveChannelLoading;
 
     // Find the selected channel from the list of channels
     const selectedChannel = activeChannelData?.activeChannel;
 
-    const refreshChannels = () => {
+    const refreshChannels = React.useCallback(() => {
         refreshCurrentUser();
         queryClient.invalidateQueries({
             queryKey: ['channels', isAuthenticated],
         });
-    };
+    }, [refreshCurrentUser, queryClient, isAuthenticated]);
 
     const contextValue: ChannelContext = React.useMemo(
         () => ({

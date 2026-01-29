@@ -621,7 +621,7 @@ export class IndexerController {
 
     /**
      * Prevent postgres errors from too-long indices
-     * https://github.com/vendure-ecommerce/vendure/issues/745
+     * https://github.com/vendurehq/vendure/issues/745
      */
     private constrainDescription(description: string): string {
         const { type } = this.connection.rawConnection.options;

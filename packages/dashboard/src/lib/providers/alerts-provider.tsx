@@ -1,9 +1,9 @@
 import { getAlertRegistry } from '@/vdb/framework/alert/alert-extensions.js';
 import { DashboardAlertDefinition } from '@/vdb/framework/extension-api/types/alerts.js';
 import { useQueries, UseQueryOptions } from '@tanstack/react-query';
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 
-interface AlertsContextValue {
+export interface AlertsContextValue {
     alertDefs: DashboardAlertDefinition[];
     rawResults: any[];
     dismissedAlerts: Map<string, number>;
@@ -11,7 +11,7 @@ interface AlertsContextValue {
     enabledQueries: boolean;
 }
 
-const AlertsContext = createContext<AlertsContextValue | undefined>(undefined);
+export const AlertsContext = createContext<AlertsContextValue | undefined>(undefined);
 
 export function AlertsProvider({ children }: { children: ReactNode }) {
     const initialDelayMs = 5_000;
@@ -49,12 +49,4 @@ export function AlertsProvider({ children }: { children: ReactNode }) {
             {children}
         </AlertsContext.Provider>
     );
-}
-
-export function useAlertsContext() {
-    const context = useContext(AlertsContext);
-    if (!context) {
-        throw new Error('useAlertsContext must be used within AlertsProvider');
-    }
-    return context;
 }

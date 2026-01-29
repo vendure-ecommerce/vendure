@@ -25,7 +25,7 @@ export default function MemberInfo(props: {
                 <span>{props.packageName}</span>
             </a>
             <a
-                href={`https://github.com/vendure-ecommerce/vendure/blob/master/${props.sourceFile}#L${props.sourceLine}`}
+                href={`https://github.com/vendurehq/vendure/blob/master/${props.sourceFile}#L${props.sourceLine}`}
                 target="_blank"
                 className={styles.label}
             >

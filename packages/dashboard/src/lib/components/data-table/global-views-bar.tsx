@@ -12,7 +12,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '../ui/dropdown-menu.js';
-import { useDataTableContext } from './data-table-context.js';
+import { useDataTableContext } from '@/vdb/hooks/use-data-table-context.js';
 import { ManageGlobalViewsButton } from './manage-global-views-button.js';
 
 export const GlobalViewsBar: React.FC = () => {
@@ -28,7 +28,7 @@ export const GlobalViewsBar: React.FC = () => {
     );
 
     const handleViewClick = (view: SavedView) => {
-        handleApplyView(view.filters, view.searchTerm);
+        handleApplyView(view.filters, view.columnConfig, view.searchTerm);
     };
 
     const isViewActive = (view: SavedView) => {

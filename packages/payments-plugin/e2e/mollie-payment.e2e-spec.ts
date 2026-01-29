@@ -23,7 +23,7 @@ import {
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'node:path';
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
@@ -41,6 +41,7 @@ import { FragmentOf, ResultOf } from './graphql/graphql-admin';
 import {
     createMolliePaymentIntentDocument,
     getMolliePaymentMethodsDocument,
+    syncMolliePaymentStatusDocument,
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
@@ -122,7 +123,6 @@ describe('Mollie payments', () => {
                     arguments: [
                         { name: 'redirectUrl', value: mollieMockData.redirectUrl },
                         { name: 'apiKey', value: mollieMockData.apiKey },
-                        { name: 'autoCapture', value: 'false' },
                     ],
                 },
                 translations: [
@@ -346,7 +346,7 @@ describe('Mollie payments', () => {
 
         it('Should get available paymentMethods', async () => {
             nock('https://api.mollie.com/')
-                .get('/v2/methods?resource=orders')
+                .get('/v2/methods?resource=payments')
                 .reply(200, mollieMockData.molliePaymentMethodsResponse);
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { molliePaymentMethods } = await shopClient.query(getMolliePaymentMethodsDocument, {
@@ -560,6 +560,55 @@ describe('Mollie payments', () => {
             expect(mollieRequest.captureMode).toBe('manual');
         });
 
+        it('Should not allow setting immediateCapture=false via client input, when it is already set on the plugin level to true', async () => {
+            const originalImmediateCapture = MolliePlugin.options.immediateCapture;
+            MolliePlugin.options.immediateCapture = true;
+            const logSpy = vi.spyOn(Logger, 'warn');
+            onTestFinished(() => {
+                // Revert back to plugin setting for next test
+                MolliePlugin.options.immediateCapture = originalImmediateCapture;
+                logSpy.mockClear();
+            });
+            let mollieRequest: any;
+            nock('https://api.mollie.com/')
+                .post('/v2/payments', body => {
+                    mollieRequest = body;
+                    return true;
+                })
+                .reply(200, mollieMockData.molliePaymentResponse);
+            await shopClient.query(createMolliePaymentIntentDocument, {
+                input: {
+                    immediateCapture: false,
+                },
+            });
+            expect(logSpy.mock.calls?.[0]?.[0]).toContain(
+                `'immediateCapture' is overridden by the plugin options to 'true'`,
+            );
+            expect(mollieRequest.captureMode).toBe('automatic');
+        });
+
+        it('Should not allow setting immediateCapture=true via client input, when it is already set on the plugin level to false', async () => {
+            MolliePlugin.options.immediateCapture = false;
+            const logSpy = vi.spyOn(Logger, 'warn');
+            let mollieRequest: any;
+            nock('https://api.mollie.com/')
+                .post('/v2/payments', body => {
+                    mollieRequest = body;
+                    return true;
+                })
+                .reply(200, mollieMockData.molliePaymentResponse);
+            await shopClient.query(createMolliePaymentIntentDocument, {
+                input: {
+                    immediateCapture: true,
+                },
+            });
+            MolliePlugin.options.immediateCapture = undefined; // Reset again for next test
+            expect(logSpy.mock.calls?.[0]?.[0]).toContain(
+                `'immediateCapture' is overridden by the plugin options to 'false'`,
+            );
+            expect(mollieRequest.captureMode).toBe('manual');
+        });
+
         it('Should authorize payment with immediateCapture = false', async () => {
             nock('https://api.mollie.com/')
                 .get(`/v2/payments/${mollieMockData.molliePaymentResponse.id}`)
@@ -612,6 +661,64 @@ describe('Mollie payments', () => {
             order = orderByCode!;
             expect(createCaptureRequest.amount.value).toBe('3127.60'); // Full amount
             expect(order.state).toBe('PaymentSettled');
+        });
+    });
+
+    describe('Force status update when no webhook is received', () => {
+        it('Should prepare a new order', async () => {
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+            const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+            order = addItemToOrder as FragmentOf<typeof testOrderFragment>;
+            await setShipping(shopClient);
+            expect(order.totalWithTax).toBe(311760);
+            expect(order.code).toBeDefined();
+            expect(order.state).toBe('AddingItems');
+        });
+
+        // Instead of receiving a webhook, we make Vendure fetch payments from Mollie manually and update the order status accordingly
+        it('Syncs status based on Mollie payment', async () => {
+            // Mock the payments list endpoint (used by iterator to find payments for the order)
+            nock('https://api.mollie.com/')
+                .get('/v2/payments')
+                .query(true)
+                .reply(200, {
+                    count: 1,
+                    _embedded: {
+                        payments: [
+                            {
+                                ...mollieMockData.molliePaymentResponse,
+                                id: 'tr_syncTestPayment',
+                                description: order.code,
+                                status: OrderStatus.paid,
+                            },
+                        ],
+                    },
+                    _links: {
+                        self: {
+                            href: 'https://api.mollie.com/v2/payments',
+                            type: 'application/hal+json',
+                        },
+                    },
+                });
+            // Mock the individual payment GET endpoint (used by handleMolliePaymentStatus to get the payment details)
+            nock('https://api.mollie.com/')
+                .get('/v2/payments/tr_syncTestPayment')
+                .reply(200, {
+                    ...mollieMockData.molliePaymentResponse,
+                    id: 'tr_syncTestPayment',
+                    description: order.code,
+                    status: OrderStatus.paid,
+                    amount: { value: '3127.60', currency: 'EUR' },
+                });
+            // Call the sync mutation
+            const { syncMolliePaymentStatus } = await shopClient.query<any>(syncMolliePaymentStatusDocument, {
+                orderCode: order.code,
+            });
+            expect(syncMolliePaymentStatus.state).toBe('PaymentSettled');
+            expect(syncMolliePaymentStatus.code).toBe(order.code);
         });
     });
 });
