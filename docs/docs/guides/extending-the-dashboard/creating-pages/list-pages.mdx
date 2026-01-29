@@ -14,12 +14,12 @@ For example, the `articles` query of our `CmsPlugin` looks like this:
 
 ```graphql
 type ArticleList implements PaginatedList {
-  items: [Article!]!
-  totalItems: Int!
+    items: [Article!]!
+    totalItems: Int!
 }
 
 extend type Query {
-  articles(options: ArticleListOptions): ArticleList!
+    articles(options: ArticleListOptions): ArticleList!
 }
 ```
 
@@ -135,6 +135,7 @@ files to be picked up by Vite:
 q # to stop the running dev server
 npx vite # to restart
 ```
+
 :::
 
 ## The ListPage Component
@@ -158,46 +159,54 @@ more control over how the column data is rendered.
 
 ```tsx
 <ListPage
-  pageId="collection-list"
-  listQuery={collectionListDocument}
-  customizeColumns={{
-      // The key "name" matches one of the top-level fields of the
-      // list query type (Collection, in this example)
-      name: {
-          meta: {
-              // The Dashboard optimizes the list query `collectionListDocument` to
-              // only select field that are actually visible in the ListPage table.
-              // However, sometimes you want to render data from other fields, i.e.
-              // this column has a data dependency on the "children" and "breadcrumbs"
-              // fields in order to correctly render the "name" field.
-              // In this case, we can declare those data dependencies which means whenever
-              // the "name" column is visible, it will ensure the "children" and "breadcrumbs"
-              // fields are also selected in the query.
-              dependencies: ['children', 'breadcrumbs'],
-          },
-          header: 'Collection Name',
-          cell: ({ row }) => {
-              const isExpanded = row.getIsExpanded();
-              const hasChildren = !!row.original.children?.length;
-              return (
-                  <div
-                      style={{ marginLeft: (row.original.breadcrumbs?.length - 2) * 20 + 'px' }}
-                      className="flex gap-2 items-center"
-                  >
-                      <Button
-                          size="icon"
-                          variant="secondary"
-                          onClick={row.getToggleExpandedHandler()}
-                          disabled={!hasChildren}
-                          className={!hasChildren ? 'opacity-20' : ''}
-                      >
-                          {isExpanded ? <FolderOpen /> : <Folder />}
-                      </Button>
-                      <DetailPageButton id={row.original.id} label={row.original.name} />
-                  </div>
-              );
-          },
-      },
-  }}
+    pageId="collection-list"
+    listQuery={collectionListDocument}
+    customizeColumns={{
+        // Use `meta.disabled` to completely exclude a column from the table,
+        // including the column visibility toggle. This is useful when you need
+        // to fetch certain fields for use in custom cell renderers, but don't
+        // want those fields to appear as their own columns.
+        productVariantCount: {
+            meta: { disabled: true },
+        },
+        // The key "name" matches one of the top-level fields of the
+        // list query type (Collection, in this example)
+        name: {
+            meta: {
+                // The Dashboard optimizes the list query `collectionListDocument` to
+                // only select field that are actually visible in the ListPage table.
+                // However, sometimes you want to render data from other fields, i.e.
+                // this column has a data dependency on the "children" and "breadcrumbs"
+                // fields in order to correctly render the "name" field.
+                // In this case, we can declare those data dependencies which means whenever
+                // the "name" column is visible, it will ensure the "children" and "breadcrumbs"
+                // fields are also selected in the query.
+                dependencies: ['children', 'breadcrumbs'],
+            },
+
+            header: 'Collection Name',
+            cell: ({ row }) => {
+                const isExpanded = row.getIsExpanded();
+                const hasChildren = !!row.original.children?.length;
+                return (
+                    <div
+                        style={{ marginLeft: (row.original.breadcrumbs?.length - 2) * 20 + 'px' }}
+                        className="flex gap-2 items-center"
+                    >
+                        <Button
+                            size="icon"
+                            variant="secondary"
+                            onClick={row.getToggleExpandedHandler()}
+                            disabled={!hasChildren}
+                            className={!hasChildren ? 'opacity-20' : ''}
+                        >
+                            {isExpanded ? <FolderOpen /> : <Folder />}
+                        </Button>
+                        <DetailPageButton id={row.original.id} label={row.original.name} />
+                    </div>
+                );
+            },
+        },
+    }}
 />
 ```
