@@ -10,6 +10,13 @@ export const activeAdministratorDocument = graphql(`
             lastName
             emailAddress
             customFields
+            user {
+                authenticationMethods {
+                    id
+                    strategy
+                    createdAt
+                }
+            }
         }
     }
 `);
