@@ -27,6 +27,7 @@ import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-lo
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { addCustomFields, CustomFieldsForm } from '@/vdb/index.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
@@ -49,7 +50,10 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
     component: ProductVariantDetailPage,
     loader: detailPageRouteLoader({
         pageId,
-        queryDocument: productVariantDetailDocument,
+        queryDocument: () =>
+            addCustomFields(productVariantDetailDocument, {
+                includeNestedFragments: ['ProductVariantPrice'],
+            }),
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
                 return [
@@ -96,7 +100,7 @@ function ProductVariantDetailPage() {
                 prices: entity.prices,
                 trackInventory: entity.trackInventory,
                 outOfStockThreshold: entity.outOfStockThreshold,
-                useGlobalOutOfStockThreshold : entity.useGlobalOutOfStockThreshold,
+                useGlobalOutOfStockThreshold: entity.useGlobalOutOfStockThreshold,
                 stockLevels: entity.stockLevels.map(stockLevel => ({
                     stockOnHand: stockLevel.stockOnHand,
                     stockLocationId: stockLevel.stockLocation.id,
@@ -271,37 +275,45 @@ function ProductVariantDetailPage() {
                             </div>
                         );
                         return (
-                            <DetailFormGrid key={price.currencyCode}>
-                                <div className="flex gap-1 items-end">
-                                    <FormFieldWrapper
-                                        control={form.control}
-                                        name={`prices.${actualIndex}.price`}
-                                        label={priceLabel}
-                                        render={({ field }) => (
-                                            <MoneyInput {...field} currency={price.currencyCode} />
+                            <div key={price.currencyCode} className="space-y-6">
+                                <DetailFormGrid key={price.currencyCode}>
+                                    <div className="flex gap-1 items-end">
+                                        <FormFieldWrapper
+                                            control={form.control}
+                                            name={`prices.${actualIndex}.price`}
+                                            label={priceLabel}
+                                            render={({ field }) => (
+                                                <MoneyInput {...field} currency={price.currencyCode} />
+                                            )}
+                                        />
+                                        {activePrices.length > 1 && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleRemoveCurrency(actualIndex)}
+                                                className="h-6 w-6 p-0 mb-2 hover:text-destructive hover:bg-destructive-100"
+                                            >
+                                                <Trash className="size-4" />
+                                            </Button>
                                         )}
+                                    </div>
+                                    <VariantPriceDetail
+                                        priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
+                                        price={price.price}
+                                        currencyCode={
+                                            price.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
+                                        }
+                                        taxCategoryId={taxCategoryId}
                                     />
-                                    {activePrices.length > 1 && (
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => handleRemoveCurrency(actualIndex)}
-                                            className="h-6 w-6 p-0 mb-2 hover:text-destructive hover:bg-destructive-100"
-                                        >
-                                            <Trash className="size-4" />
-                                        </Button>
-                                    )}
-                                </div>
-                                <VariantPriceDetail
-                                    priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
-                                    price={price.price}
-                                    currencyCode={
-                                        price.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
-                                    }
-                                    taxCategoryId={taxCategoryId}
+                                </DetailFormGrid>
+                                {/* Custom fields for ProductVariantPrice */}
+                                <CustomFieldsForm
+                                    entityType="ProductVariantPrice"
+                                    control={form.control}
+                                    formPathPrefix={`prices.${actualIndex}`}
                                 />
-                            </DetailFormGrid>
+                            </div>
                         );
                     })}
                     {unusedCurrencies.length ? (
