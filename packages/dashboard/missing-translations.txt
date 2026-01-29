@@ -24,679 +24,192 @@ msgid_text|translated_text
 
 ## Missing Translations:
 
-ar
-Draft order status
-Order draft is ready to be completed
-Order draft isn't ready to be completed
----
 bg
-Type and press Enter or comma to add...
-Active
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to delete this global view? This action cannot be undone and will affect all users.
-Are you sure you want to delete this item? This action cannot be undone.
-Are you sure you want to delete this view? This action cannot be undone.
-Are you sure you want to navigate away from this page? Any unsaved changes will be lost.
-Are you sure you want to remove {0} {1} from this zone?
-Are you sure you want to remove {0} {entityType} from the current channel?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
-Current
-Dark
 Draft order status
-Enter the transaction ID for this refund settlement
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Last 30 days
-Last 7 days
-Last month
-Light
-Month to date
-No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-System
-Tax description
-This month
-This week
-Today
-Yesterday
 ---
 cs
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 de
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 es
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 fa
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 fr
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 he
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 hr
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 it
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 ja
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 nb
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 ne
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 pl
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 pt_BR
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 pt_PT
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 ru
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 sv
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 tr
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 uk
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 zh_Hans
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
 zh_Hant
-Type and press Enter or comma to add...
 Add at least one item to the order
-Add channel
-Add surcharge
-Adding {0} surcharge(s)
-Alerts
-Are you sure you want to remove {0} {1} from this zone?
-Cannot move a collection into its own descendant
-Cannot remove from active channel
-Collection moved to new parent
-Collection position updated
-Content:
 Draft order status
-Failed to assign {entityIdsLength} {entityType} to channel
-Failed to remove countries from zone
-Failed to remove product from channel
-Failed to reorder items
-Failed to update collection position
-Includes tax at {taxRate}%
-Note
 Only draft orders can be completed
 Order draft is ready to be completed
 Order draft isn't ready to be completed
-Remove from zone
-Removed {0} {1} from zone
 Select a customer to continue
 Set a shipping address and select a shipping method
-Successfully removed product from channel
-Tax description
 ---
