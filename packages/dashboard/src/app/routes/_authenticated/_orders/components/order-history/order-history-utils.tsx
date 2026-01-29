@@ -96,8 +96,14 @@ export function orderHistoryUtils(order: OrderHistoryOrderDetail) {
                 return <Trans>Order modified</Trans>;
             case 'ORDER_CUSTOMER_UPDATED':
                 return <Trans>Customer updated</Trans>;
-            case 'ORDER_CANCELLATION':
+            case 'ORDER_CANCELLATION': {
+                const lines = entry.data.lines as Array<{ orderLineId: string; quantity: number }> | undefined;
+                const hasPartialCancellation = lines && lines.length > 0;
+                if (hasPartialCancellation || entry.data.reason) {
+                    return <Trans>Items refunded</Trans>;
+                }
                 return <Trans>Order cancelled</Trans>;
+            }
             default:
                 return <Trans>{entry.type.replace(/_/g, ' ').toLowerCase()}</Trans>;
         }
