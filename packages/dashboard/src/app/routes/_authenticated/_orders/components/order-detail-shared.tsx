@@ -106,6 +106,14 @@ export function OrderDetailShared({
     const customFieldConfig = useCustomFieldConfig('Order');
     const refundDialogRef = useRef<RefundOrderDialogRef>(null);
 
+    const refreshOrderAndHistory = useCallback(async () => {
+        if (entity) {
+            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
+            await queryClient.invalidateQueries({ queryKey });
+            void queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
+        }
+    }, [entity, queryClient]);
+
     const stateTransitionActions = useMemo(() => {
         if (!entity) {
             return [];
@@ -120,17 +128,14 @@ export function OrderDetailShared({
                         description: transitionError,
                     });
                 } else {
-                    refreshOrderAndHistory();
+                    void refreshOrderAndHistory();
                 }
             },
         }));
-    }, [entity, transitionToState, t]);
+    }, [entity, transitionToState, t, refreshOrderAndHistory]);
 
-    if (!entity) {
-        return null;
-    }
-
-    const handleModifyClick = async () => {
+    const handleModifyClick = useCallback(async () => {
+        if (!entity) return;
         try {
             await transitionOrderToStateMutation.mutateAsync({
                 id: entity.id,
@@ -144,20 +149,7 @@ export function OrderDetailShared({
                 description: error instanceof Error ? error.message : 'Unknown error',
             });
         }
-    };
-
-    const nextStates = entity.nextStates;
-    const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
-    const showFulfillButton = canAddFulfillment(entity);
-    const showRefundOption = canRefundOrder(entity);
-
-    async function refreshOrderAndHistory() {
-        if (entity) {
-            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
-            await queryClient.invalidateQueries({ queryKey });
-            queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
-        }
-    }
+    }, [entity, transitionOrderToStateMutation, queryClient, navigate, t]);
 
     const ModifyMenuItem = useCallback(
         () => (
@@ -180,6 +172,15 @@ export function OrderDetailShared({
         ),
         [],
     );
+
+    if (!entity) {
+        return null;
+    }
+
+    const nextStates = entity.nextStates;
+    const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
+    const showFulfillButton = canAddFulfillment(entity);
+    const showRefundOption = canRefundOrder(entity);
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
@@ -206,7 +207,7 @@ export function OrderDetailShared({
                             <FulfillOrderDialog
                                 order={entity}
                                 onSuccess={() => {
-                                    refreshOrderAndHistory();
+                                    void refreshOrderAndHistory();
                                 }}
                             />
                         </PermissionGuard>
@@ -218,7 +219,7 @@ export function OrderDetailShared({
                     ref={refundDialogRef}
                     order={entity}
                     onSuccess={() => {
-                        refreshOrderAndHistory();
+                        void refreshOrderAndHistory();
                     }}
                 />
             )}
@@ -314,7 +315,7 @@ export function OrderDetailShared({
                                     fulfillment={fulfillment}
                                     onSuccess={() => {
                                         refreshEntity();
-                                        queryClient.refetchQueries({
+                                        void queryClient.refetchQueries({
                                             queryKey: orderHistoryQueryKey(entity.id),
                                         });
                                     }}
