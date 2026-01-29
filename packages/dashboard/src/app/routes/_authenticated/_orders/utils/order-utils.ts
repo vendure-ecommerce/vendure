@@ -1,10 +1,10 @@
 import { DEFAULT_CHANNEL_CODE } from '@/vdb/constants.js';
 import { VariablesOf } from 'gql.tada';
 
-import { ProductVariantInfo } from '../hooks/use-modify-order.js';
 import { modifyOrderDocument } from '../orders.graphql.js';
 
 import { Fulfillment, Order, Payment } from './order-types.js';
+import { ProductVariantInfo } from './use-modify-order.js';
 
 type ModifyOrderInput = VariablesOf<typeof modifyOrderDocument>['input'];
 
