@@ -203,6 +203,10 @@ export class ChannelService {
             id => !assignedChannels.some(ec => idsAreEqual(ec.channelId, id)),
         );
 
+        if (!newChannelIds.length) {
+            return entity;
+        }
+
         await this.connection
             .getRepository(ctx, entityType)
             .createQueryBuilder()
@@ -210,7 +214,9 @@ export class ChannelService {
             .of(entity.id)
             .add(newChannelIds);
 
-        await this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'assigned', entityType));
+        await this.eventBus.publish(
+            new ChangeChannelEvent(ctx, entity, newChannelIds, 'assigned', entityType),
+        );
         return entity;
     }
 
@@ -249,7 +255,9 @@ export class ChannelService {
             .relation('channels')
             .of(entity.id)
             .remove(existingChannelIds);
-        await this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
+        await this.eventBus.publish(
+            new ChangeChannelEvent(ctx, entity, existingChannelIds, 'removed', entityType),
+        );
         return entity;
     }
 
