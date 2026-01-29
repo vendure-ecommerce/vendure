@@ -20,17 +20,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
 import { Pencil, RotateCcw, User } from 'lucide-react';
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
+
 import {
     orderDetailDocument,
     setOrderCustomFieldsDocument,
     transitionOrderToStateDocument,
 } from '../orders.graphql.js';
 import { canAddFulfillment, canRefundOrder, shouldShowAddManualPaymentButton } from '../utils/order-utils.js';
+
 import { AddManualPaymentDialog } from './add-manual-payment-dialog.js';
 import { FulfillOrderDialog } from './fulfill-order-dialog.js';
-import { RefundOrderDialog, RefundOrderDialogRef } from './refund-order-dialog.js';
 import { FulfillmentDetails } from './fulfillment-details.js';
 import { OrderAddress } from './order-address.js';
 import { OrderHistoryContainer } from './order-history/order-history-container.js';
@@ -38,6 +39,7 @@ import { orderHistoryQueryKey } from './order-history/use-order-history.js';
 import { OrderTable } from './order-table.js';
 import { OrderTaxSummary } from './order-tax-summary.js';
 import { PaymentDetails } from './payment-details.js';
+import { RefundOrderDialog, RefundOrderDialogRef } from './refund-order-dialog.js';
 import { getTypeForState, StateTransitionControl } from './state-transition-control.js';
 import { useTransitionOrderToState } from './use-transition-order-to-state.js';
 
@@ -157,38 +159,36 @@ export function OrderDetailShared({
         }
     }
 
+    const ModifyMenuItem = useCallback(
+        () => (
+            <DropdownMenuItem onClick={handleModifyClick}>
+                <Pencil className="w-4 h-4" />
+                <Trans>Modify</Trans>
+            </DropdownMenuItem>
+        ),
+        [handleModifyClick],
+    );
+
+    const RefundMenuItem = useCallback(
+        () => (
+            <PermissionGuard requires={['UpdateOrder']}>
+                <DropdownMenuItem onClick={() => refundDialogRef.current?.open()}>
+                    <RotateCcw className="w-4 h-4" />
+                    <Trans>Refund & Cancel</Trans>
+                </DropdownMenuItem>
+            </PermissionGuard>
+        ),
+        [],
+    );
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{titleSlot?.(entity) || <DefaultOrderTitle entity={entity} />}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight
                     dropdownMenuItems={[
-                        ...(nextStates.includes('Modifying')
-                            ? [
-                                  {
-                                      component: () => (
-                                          <DropdownMenuItem onClick={handleModifyClick}>
-                                              <Pencil className="w-4 h-4" />
-                                              <Trans>Modify</Trans>
-                                          </DropdownMenuItem>
-                                      ),
-                                  },
-                              ]
-                            : []),
-                        ...(showRefundOption
-                            ? [
-                                  {
-                                      component: () => (
-                                          <PermissionGuard requires={['UpdateOrder']}>
-                                              <DropdownMenuItem onClick={() => refundDialogRef.current?.open()}>
-                                                  <RotateCcw className="w-4 h-4" />
-                                                  <Trans>Refund & Cancel</Trans>
-                                              </DropdownMenuItem>
-                                          </PermissionGuard>
-                                      ),
-                                  },
-                              ]
-                            : []),
+                        ...(nextStates.includes('Modifying') ? [{ component: ModifyMenuItem }] : []),
+                        ...(showRefundOption ? [{ component: RefundMenuItem }] : []),
                     ]}
                 >
                     {showAddPaymentButton && (

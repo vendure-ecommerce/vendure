@@ -106,12 +106,12 @@ export function useRefundOrder(order: Order, onSuccess?: () => void): UseRefundO
     }, [order.lines, order.shippingLines, lineSelections, refundShippingLineIds]);
 
     const updateRefundTotal = useCallback(() => {
-        if (!manuallySetRefundTotal) {
+        if (manuallySetRefundTotal) {
+            setRefundablePayments(prev => allocateRefundsToPayments(prev, refundTotal));
+        } else {
             const calculatedTotal = recalculateRefundTotal();
             setRefundTotal(calculatedTotal);
             setRefundablePayments(prev => allocateRefundsToPayments(prev, calculatedTotal));
-        } else {
-            setRefundablePayments(prev => allocateRefundsToPayments(prev, refundTotal));
         }
     }, [manuallySetRefundTotal, recalculateRefundTotal, refundTotal]);
 

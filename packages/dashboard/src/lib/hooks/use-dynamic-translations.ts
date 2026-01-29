@@ -39,7 +39,7 @@ export function useDynamicTranslations() {
     const getTranslatedRefundReason = (reason: string) => {
         const reasonTranslationId = `refundReason.${reason}`;
         const translatedDisplay = i18n.t(reasonTranslationId);
-        return translatedDisplay !== reasonTranslationId ? translatedDisplay : camelCaseToTitleCase(reason);
+        return translatedDisplay === reasonTranslationId ? camelCaseToTitleCase(reason) : translatedDisplay;
     };
 
     return {

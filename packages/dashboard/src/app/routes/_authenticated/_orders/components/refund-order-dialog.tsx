@@ -154,7 +154,7 @@ export const RefundOrderDialog = forwardRef<RefundOrderDialogRef, RefundOrderDia
                                                             placeholder="0"
                                                             onChange={e => {
                                                                 const value = Math.min(
-                                                                    Math.max(0, parseInt(e.target.value, 10) || 0),
+                                                                    Math.max(0, Number.parseInt(e.target.value, 10) || 0),
                                                                     maxRefundable,
                                                                 );
                                                                 refund.onRefundQuantityChange(line.id, value);
@@ -266,7 +266,7 @@ export const RefundOrderDialog = forwardRef<RefundOrderDialogRef, RefundOrderDia
                                     value={toMajorUnits(refund.refundTotal)}
                                     onChange={e =>
                                         refund.onManualRefundTotalChange(
-                                            toMinorUnits(parseFloat(e.target.value) || 0),
+                                            toMinorUnits(Number.parseFloat(e.target.value) || 0),
                                         )
                                     }
                                     disabled={!refund.manuallySetRefundTotal}
@@ -318,7 +318,7 @@ export const RefundOrderDialog = forwardRef<RefundOrderDialogRef, RefundOrderDia
                                                         onChange={e =>
                                                             refund.onPaymentAmountChange(
                                                                 payment.id,
-                                                                toMinorUnits(parseFloat(e.target.value) || 0),
+                                                                toMinorUnits(Number.parseFloat(e.target.value) || 0),
                                                             )
                                                         }
                                                         className="w-24"
@@ -338,8 +338,8 @@ export const RefundOrderDialog = forwardRef<RefundOrderDialogRef, RefundOrderDia
                         {/* Validation Errors */}
                         {refund.validationErrors.length > 0 && (
                             <div className="space-y-2">
-                                {refund.validationErrors.map((error, index) => (
-                                    <Alert key={index} variant="destructive">
+                                {refund.validationErrors.map(error => (
+                                    <Alert key={error} variant="destructive">
                                         <AlertCircle className="h-4 w-4" />
                                         <AlertDescription>{error}</AlertDescription>
                                     </Alert>
