@@ -216,6 +216,7 @@ export class AssetService {
                 .createQueryBuilder('entity')
                 .leftJoinAndSelect('entity.assets', 'orderable_asset')
                 .leftJoinAndSelect('orderable_asset.asset', 'asset')
+                .leftJoinAndSelect('asset.translations', 'asset_translations')
                 .leftJoinAndSelect('asset.channels', 'asset_channel')
                 .where('entity.id = :id', { id: entity.id })
                 .andWhere('asset_channel.id = :channelId', { channelId: ctx.channelId })
