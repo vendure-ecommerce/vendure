@@ -144,9 +144,19 @@ function translateLeaf(
 ): any {
     if (object && object[property]) {
         if (Array.isArray(object[property])) {
-            return object[property].map((nested2: any) => translateEntity(nested2, languageCode));
+            return object[property].map((nested2: any) => {
+                try {
+                    return translateEntity(nested2, languageCode);
+                } catch (e: any) {
+                    return nested2;
+                }
+            });
         } else if (object[property]) {
-            return translateEntity(object[property], languageCode);
+            try {
+                return translateEntity(object[property], languageCode);
+            } catch (e: any) {
+                return object[property];
+            }
         }
     }
 }

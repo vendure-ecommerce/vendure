@@ -168,7 +168,7 @@ export class ApiKeyService {
             },
         });
 
-        await this.customFieldRelationService.updateRelations(ctx, ApiKey, input, newEntity);
+        await this.customFieldRelationService.updateRelations(ctx, ApiKey, input as any, newEntity);
 
         // Important: The hash becomes the session token, this is what allows us to authorize on a per-request basis
         // Important: The User of the session may be new User to allow configuring separate permissions
@@ -220,7 +220,7 @@ export class ApiKeyService {
                 }
             },
         });
-        await this.customFieldRelationService.updateRelations(ctx, ApiKey, input, apiKey);
+        await this.customFieldRelationService.updateRelations(ctx, ApiKey, input as any, apiKey);
 
         Logger.verbose(`Updated ApiKey (${apiKey.id}) by User (${String(ctx.activeUserId)})`);
         await this.eventBus.publish(new ApiKeyEvent(ctx, apiKey, 'updated', input));

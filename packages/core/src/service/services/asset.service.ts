@@ -590,28 +590,7 @@ export class AssetService {
         const type = getAssetType(mimetype);
         const { width, height } = this.getDimensions(type === AssetType.IMAGE ? sourceFile : preview);
 
-        // Prepare translations
-        const defaultName = path.basename(sourceFileName);
-        let assetTranslations: AssetTranslation[];
-        if (translations && translations.length > 0) {
-            assetTranslations = translations.map(
-                t =>
-                    new AssetTranslation({
-                        languageCode: t.languageCode,
-                        name: t.name ?? defaultName,
-                        customFields: t.customFields,
-                    }),
-            );
-        } else {
-            // Create default translation using context language
-            assetTranslations = [
-                new AssetTranslation({
-                    languageCode: ctx.languageCode,
-                    name: defaultName,
-                }),
-            ];
-        }
-
+        // Save asset first
         const asset = new Asset({
             type,
             width,
@@ -622,10 +601,43 @@ export class AssetService {
             preview: previewFileIdentifier,
             focalPoint: null,
             customFields,
-            translations: assetTranslations,
         });
         await this.channelService.assignToCurrentChannel(asset, ctx);
-        return this.connection.getRepository(ctx, Asset).save(asset);
+        const savedAsset = await this.connection.getRepository(ctx, Asset).save(asset);
+
+        // Create and save translations with the base relationship set
+        // Use the original filename for the default translation name
+        const defaultName = filename;
+        let assetTranslations: AssetTranslation[];
+        if (translations && translations.length > 0) {
+            assetTranslations = translations.map(
+                t =>
+                    new AssetTranslation({
+                        languageCode: t.languageCode,
+                        name: t.name ?? defaultName,
+                        customFields: t.customFields,
+                        base: savedAsset,
+                    }),
+            );
+        } else {
+            // Create default translation using context language
+            assetTranslations = [
+                new AssetTranslation({
+                    languageCode: ctx.languageCode,
+                    name: defaultName,
+                    base: savedAsset,
+                }),
+            ];
+        }
+
+        // Save translations
+        const savedTranslations = await this.connection
+            .getRepository(ctx, AssetTranslation)
+            .save(assetTranslations);
+
+        // Return the asset with translations eagerly loaded
+        savedAsset.translations = savedTranslations;
+        return savedAsset;
     }
 
     private async getSourceFileName(ctx: RequestContext, fileName: string): Promise<string> {

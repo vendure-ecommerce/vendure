@@ -117,6 +117,16 @@ export class EntityHydrator {
                 missingRelations = unique([...missingRelations, ...productVariantPriceRelations]);
             }
 
+            // Add .translations relations for translatable entities
+            // Note: For nested relations through arrays (like assets.asset), we rely on eager loading
+            // on the Asset.translations relation since explicitly loading deeply nested relations
+            // can cause issues with TypeORM's relation loading
+            const translationRelations = this.getTranslationRelationsForTranslatableEntities(
+                target,
+                missingRelations,
+            );
+            missingRelations = unique([...missingRelations, ...translationRelations]);
+
             if (missingRelations.length) {
                 const hydratedQb: SelectQueryBuilder<any> = this.connection
                     .getRepository(ctx, target.constructor)
@@ -306,9 +316,37 @@ export class EntityHydrator {
         return currentMetadata.target as Type<VendureEntity>;
     }
 
+    /**
+     * Returns additional .translations relations for any translatable entities in the relations list.
+     * This ensures that translatable nested relations have their translations loaded.
+     */
+    private getTranslationRelationsForTranslatableEntities<Entity extends VendureEntity>(
+        target: Entity,
+        missingRelations: string[],
+    ): string[] {
+        const translationRelations: string[] = [];
+        for (const relation of missingRelations) {
+            try {
+                const entityType = this.getRelationEntityTypeAtPath(target, relation);
+                // Check if the entity type has a translations property in its metadata
+                const { entityMetadatas } = this.connection.rawConnection;
+                const entityMetadata = entityMetadatas.find(m => m.target === entityType);
+                if (entityMetadata) {
+                    const translationsRelation = entityMetadata.findRelationWithPropertyPath('translations');
+                    if (translationsRelation) {
+                        translationRelations.push(`${relation}.translations`);
+                    }
+                }
+            } catch {
+                // If we can't find the entity type, skip this relation
+            }
+        }
+        return translationRelations;
+    }
+
     private isTranslatable<T extends VendureEntity>(input: T | T[] | undefined): boolean {
         return Array.isArray(input)
-            ? input[0]?.hasOwnProperty('translations') ?? false
-            : input?.hasOwnProperty('translations') ?? false;
+            ? (input[0]?.hasOwnProperty('translations') ?? false)
+            : (input?.hasOwnProperty('translations') ?? false);
     }
 }
