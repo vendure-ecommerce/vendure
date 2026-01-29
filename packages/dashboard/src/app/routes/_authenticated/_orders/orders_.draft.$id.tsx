@@ -3,7 +3,6 @@ import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js'
 import { CustomerSelector } from '@/vdb/components/shared/customer-selector.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
-import { StatusAlert } from '@/vdb/components/shared/status-alert.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
@@ -22,9 +21,10 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
-import { AlertTriangle, Info, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { toast } from 'sonner';
 import { CustomerAddressSelector } from './components/customer-address-selector.js';
+import { DraftOrderStatus } from './components/draft-order-status.js';
 import { EditOrderTable } from './components/edit-order-table.js';
 import { OrderAddress } from './components/order-address.js';
 import {
@@ -297,24 +297,6 @@ function DraftOrderPage() {
 
     const isCompleteDraftDisabled = !hasCustomer || !hasLines || !hasShippingMethod || !isDraftState;
 
-    let completeDraftDisabledReason: string | null = null;
-    if (!hasCustomer) {
-        completeDraftDisabledReason = t`Select a customer to continue`;
-    } else if (!hasLines) {
-        completeDraftDisabledReason = t`Add at least one item to the order`;
-    } else if (!hasShippingMethod) {
-        completeDraftDisabledReason = t`Set a shipping address and select a shipping method`;
-    } else if (!isDraftState) {
-        completeDraftDisabledReason = t`Only draft orders can be completed`;
-    }
-
-    let alertVariant: 'default' | 'destructive' = 'default';
-    let AlertIcon = Info;
-    if (!hasCustomer || !hasLines || !hasShippingMethod) {
-        alertVariant = 'destructive';
-        AlertIcon = AlertTriangle;
-    }
-
     return (
         <Page pageId="draft-order-detail" form={form} entity={entity}>
             <PageTitle>
@@ -348,6 +330,18 @@ function DraftOrderPage() {
             </PageActionBar>
 
             <PageLayout>
+                <PageBlock
+                    column="side"
+                    blockId="draft-order-status"
+                    title={<Trans>Draft order status</Trans>}
+                >
+                    <DraftOrderStatus
+                        hasCustomer={hasCustomer}
+                        hasLines={hasLines}
+                        hasShippingMethod={hasShippingMethod}
+                        isDraftState={isDraftState}
+                    />
+                </PageBlock>
                 <PageBlock column="main" blockId="order-table">
                     <EditOrderTable
                         order={entity}
@@ -422,24 +416,6 @@ function DraftOrderPage() {
                         </div>
                     </Form>
                 </PageBlock>
-                <PageBlock
-                    column="side"
-                    blockId="draft-order-status"
-                    title={<Trans>Draft order status</Trans>}
-                >
-                    <StatusAlert
-                        severity={isCompleteDraftDisabled ? 'error' : 'info'}
-                        title={
-                            isCompleteDraftDisabled ? (
-                                <Trans>Order draft isn't ready to be completed</Trans>
-                            ) : (
-                                <Trans>Order draft is ready to be completed</Trans>
-                            )
-                        }
-                        description={completeDraftDisabledReason}
-                    />
-                </PageBlock>
-
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     {entity?.customer?.id ? (
                         <Button variant="outline" asChild className="mb-4">
