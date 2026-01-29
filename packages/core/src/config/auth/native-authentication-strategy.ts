@@ -18,6 +18,14 @@ export interface NativeAuthenticationData {
 export const NATIVE_AUTH_STRATEGY_NAME = 'native';
 
 /**
+ * A pre-computed bcrypt hash used for dummy password checks to prevent timing attacks.
+ * When a user is not found, we still perform a hash comparison against this dummy value
+ * to ensure consistent response times regardless of whether the user exists.
+ * This mitigates user enumeration via timing analysis.
+ */
+const DUMMY_PASSWORD_HASH = '$2b$12$SFfIOqrqph9N4yvWLtbqteiV5C6GEN/YOumGLryDDbHeMLtSQo4/6';
+
+/**
  * @description
  * This strategy implements a username/password credential-based authentication, with the credentials
  * being stored in the Vendure database. This is the default method of authentication, and it is advised
@@ -53,6 +61,9 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
     async authenticate(ctx: RequestContext, data: NativeAuthenticationData): Promise<User | false> {
         const user = await this.userService.getUserByEmailAddress(ctx, data.username);
         if (!user) {
+            // Perform a dummy password check to prevent timing attacks that could
+            // be used to determine whether a user account exists.
+            await this.passwordCipher.check(data.password, DUMMY_PASSWORD_HASH);
             return false;
         }
         const passwordMatch = await this.verifyUserPassword(ctx, user.id, data.password);
