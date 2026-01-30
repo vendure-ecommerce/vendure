@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "Помилка розширення запиту"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "Сторінка продовжить роботу із запитом за замовчуванням."
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "Не вдалося розширити документ запиту"
@@ -37,18 +49,6 @@ msgstr "Розширення запиту містить недійсний си
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "Помилка розширення запиту:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "Помилка розширення запиту"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "Сторінка продовжить роботу із запитом за замовчуванням."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
@@ -1989,6 +1989,10 @@ msgstr "Увімкнути"
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "Увімкнено"
+
+#: src/lib/components/data-table/data-table-filter-badge.tsx:111
+msgid "end"
+msgstr "кінець"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:187
 msgid "Ends at"
@@ -4432,6 +4436,10 @@ msgstr "Деякі ресурси недоступні"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:138
 msgid "Source"
 msgstr "Джерело"
+
+#: src/lib/components/data-table/data-table-filter-badge.tsx:109
+msgid "start"
+msgstr "початок"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:175
 msgid "Starts at"

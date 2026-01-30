@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "クエリ拡張エラー"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "ページはデフォルトのクエリで続行されます。"
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "クエリドキュメントの拡張に失敗しました"
@@ -37,18 +49,6 @@ msgstr "クエリ拡張に無効なGraphQL構文が含まれています"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "クエリ拡張エラー："
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "クエリ拡張エラー"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "ページはデフォルトのクエリで続行されます。"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
@@ -1989,6 +1989,10 @@ msgstr "有効化"
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "有効"
+
+#: src/lib/components/data-table/data-table-filter-badge.tsx:111
+msgid "end"
+msgstr "終了"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:187
 msgid "Ends at"
@@ -4432,6 +4436,10 @@ msgstr "一部のリソースが停止しています"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:138
 msgid "Source"
 msgstr "ソース"
+
+#: src/lib/components/data-table/data-table-filter-badge.tsx:109
+msgid "start"
+msgstr "開始"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:175
 msgid "Starts at"

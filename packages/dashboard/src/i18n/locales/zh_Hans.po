@@ -14,6 +14,18 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:23
+#: src/lib/hooks/use-extended-list-query.ts:64
+msgid "Query extension error"
+msgstr "查询扩展错误"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-detail-query.ts:25
+#: src/lib/hooks/use-extended-list-query.ts:66
+msgid "The page will continue with the default query."
+msgstr "页面将继续使用默认查询。"
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-list-query.ts:41
 msgid "Failed to extend query document"
 msgstr "扩展查询文档失败"
@@ -37,18 +49,6 @@ msgstr "查询扩展包含无效的 GraphQL 语法"
 #: src/lib/hooks/use-extended-list-query.ts:51
 msgid "Query extension error: "
 msgstr "查询扩展错误："
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:23
-#: src/lib/hooks/use-extended-list-query.ts:64
-msgid "Query extension error"
-msgstr "查询扩展错误"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-detail-query.ts:25
-#: src/lib/hooks/use-extended-list-query.ts:66
-msgid "The page will continue with the default query."
-msgstr "页面将继续使用默认查询。"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
@@ -1989,6 +1989,10 @@ msgstr "启用"
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "已启用"
+
+#: src/lib/components/data-table/data-table-filter-badge.tsx:111
+msgid "end"
+msgstr "结束"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:187
 msgid "Ends at"
@@ -4432,6 +4436,10 @@ msgstr "某些资源已关闭"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:138
 msgid "Source"
 msgstr "来源"
+
+#: src/lib/components/data-table/data-table-filter-badge.tsx:109
+msgid "start"
+msgstr "开始"
 
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:175
 msgid "Starts at"
