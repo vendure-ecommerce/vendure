@@ -231,6 +231,24 @@ function ProductVariantDetailPage() {
                         )}
                     />
                 </PageBlock>
+                {entity?.options && entity.options.length > 0 && (
+                    <PageBlock column="side" blockId="options" title={<Trans>Options</Trans>}>
+                        <div className="flex flex-col gap-2">
+                            {entity.options.map(option => (
+                                <div
+                                    key={option.id}
+                                    title={option.code}
+                                    className="px-3 py-2 bg-background border rounded text-sm"
+                                >
+                                    <span className="font-medium text-foreground">
+                                        {option.group.name}:
+                                    </span>{' '}
+                                    <span className="text-muted-foreground">{option.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </PageBlock>
+                )}
                 <PageBlock column="main" blockId="main-form">
                     <DetailFormGrid>
                         <TranslatableFormFieldWrapper
