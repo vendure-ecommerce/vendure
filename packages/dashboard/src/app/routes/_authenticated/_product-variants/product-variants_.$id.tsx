@@ -12,6 +12,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
@@ -279,10 +280,8 @@ function ProductVariantDetailPage() {
                             </div>
                         );
                         return (
-                            <div
-                                key={price.currencyCode}
-                                className={`space-y-6 ${displayIndex > 0 ? 'mt-6' : ''}`}
-                            >
+                            <div key={price.currencyCode} className="space-y-6">
+                                {displayIndex > 0 && <Separator className="my-4" />}
                                 <DetailFormGrid key={price.currencyCode}>
                                     <div className="flex gap-1 items-end">
                                         <FormFieldWrapper
