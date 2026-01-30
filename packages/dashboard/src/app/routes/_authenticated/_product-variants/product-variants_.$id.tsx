@@ -35,6 +35,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { VariablesOf } from 'gql.tada';
 import { Trash } from 'lucide-react';
 import { toast } from 'sonner';
+
 import { AddCurrencyDropdown } from './components/add-currency-dropdown.js';
 import { AddStockLocationDropdown } from './components/add-stock-location-dropdown.js';
 import { VariantPriceDetail } from './components/variant-price-detail.js';
@@ -278,7 +279,10 @@ function ProductVariantDetailPage() {
                             </div>
                         );
                         return (
-                            <div key={price.currencyCode} className="space-y-6">
+                            <div
+                                key={price.currencyCode}
+                                className={`space-y-6 ${displayIndex > 0 ? 'mt-6' : ''}`}
+                            >
                                 <DetailFormGrid key={price.currencyCode}>
                                     <div className="flex gap-1 items-end">
                                         <FormFieldWrapper
