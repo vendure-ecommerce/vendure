@@ -1,11 +1,11 @@
 import { Button } from '@/vdb/components/ui/button.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
 import { Page, PageActionBar, PageTitle } from '@/vdb/framework/layout-engine/page-layout.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { getApiBaseUrl } from '@/vdb/utils/config-utils.js';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { formatRelative } from 'date-fns';
 import { CheckCircle2Icon, CircleXIcon } from 'lucide-react';
 
 export const Route = createFileRoute('/_authenticated/_system/healthchecks')({
@@ -25,6 +25,7 @@ interface HealthcheckResponse {
 }
 
 function HealthchecksPage() {
+    const { formatRelativeDate } = useLocalFormat();
     const { data, refetch, dataUpdatedAt } = useQuery({
         queryKey: ['healthchecks'],
         queryFn: async () => {
@@ -54,7 +55,7 @@ function HealthchecksPage() {
                                 <Trans>Current status</Trans>
                             </span>
                             <span className="text-sm font-normal text-muted-foreground">
-                                <Trans>Last updated {formatRelative(dataUpdatedAt, new Date())}</Trans>
+                                <Trans>Last updated {formatRelativeDate(new Date(dataUpdatedAt))}</Trans>
                             </span>
                         </CardTitle>
                     </CardHeader>
