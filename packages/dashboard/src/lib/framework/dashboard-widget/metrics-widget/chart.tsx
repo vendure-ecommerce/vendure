@@ -4,9 +4,11 @@ import { useWidgetDimensions } from '@/vdb/hooks/use-widget-dimensions.js';
 export function MetricsChart({
     chartData,
     formatValue,
+    dataLabel,
 }: {
     chartData: any[];
     formatValue: (value: any) => string;
+    dataLabel: string;
 }) {
     const { width, height } = useWidgetDimensions();
 
@@ -30,6 +32,7 @@ export function MetricsChart({
             <Area
                 type="monotone"
                 dataKey="sales"
+                name={dataLabel}
                 stroke="var(--color-brand)"
                 strokeWidth={2}
                 strokeOpacity={0.8}

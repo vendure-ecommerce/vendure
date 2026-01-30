@@ -9,10 +9,10 @@ import {
 import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { formatRelative } from 'date-fns';
 import {
     Ban,
     CheckCircle2Icon,
@@ -77,6 +77,7 @@ const REFRESH_INTERVALS = [
 function JobQueuePage() {
     const refreshRef = useRef<() => void>(() => {});
     const { t } = useLingui();
+    const { formatRelativeDate } = useLocalFormat();
     const [refreshInterval, setRefreshInterval] = useState(10000);
     const isActionMenuOpenRef = useRef(false);
 
@@ -107,7 +108,7 @@ function JobQueuePage() {
                 createdAt: {
                     cell: ({ row }) => (
                         <div title={row.original.createdAt}>
-                            {formatRelative(new Date(row.original.createdAt), new Date())}
+                            {formatRelativeDate(row.original.createdAt)}
                         </div>
                     ),
                 },

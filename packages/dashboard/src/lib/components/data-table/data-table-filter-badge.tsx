@@ -1,4 +1,5 @@
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { Trans } from '@lingui/react/macro';
 import { Filter, XIcon } from 'lucide-react';
 import { Badge } from '../ui/badge.js';
 import { HumanReadableOperator, Operator } from './human-readable-operator.js';
@@ -58,7 +59,9 @@ function FilterValue({
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         return Object.entries(value as Record<string, unknown>).map(([key, value]) => (
             <div key={key} className="flex gap-1 items-center">
-                <span className="text-muted-foreground">{key}: </span>
+                <span className="text-muted-foreground">
+                    <FilterKeyLabel filterKey={key} />:{' '}
+                </span>
                 <FilterValue value={value} dataType={dataType} currencyCode={currencyCode} />
             </div>
         ));
@@ -98,4 +101,15 @@ function FilterValue({
 
 function isDateIsoString(value: string) {
     return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value);
+}
+
+function FilterKeyLabel({ filterKey }: { filterKey: string }) {
+    switch (filterKey) {
+        case 'start':
+            return <Trans>start</Trans>;
+        case 'end':
+            return <Trans>end</Trans>;
+        default:
+            return <>{filterKey}</>;
+    }
 }
