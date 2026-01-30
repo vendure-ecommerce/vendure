@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     Asset,
     CustomFields,
@@ -1223,6 +1223,78 @@ describe('Custom fields', () => {
                 },
             },
         ]);
+    });
+
+    // https://github.com/vendurehq/vendure/issues/3909
+    it('persists custom fields when creating a new ProductVariantPrice', async () => {
+        // First, add EUR to the channel's available currencies
+        await adminClient.query(
+            gql`
+                mutation UpdateChannel($input: UpdateChannelInput!) {
+                    updateChannel(input: $input) {
+                        ... on Channel {
+                            id
+                            availableCurrencyCodes
+                        }
+                    }
+                }
+            `,
+            {
+                input: {
+                    id: 'T_1',
+                    availableCurrencyCodes: [CurrencyCode.USD, CurrencyCode.EUR],
+                },
+            },
+        );
+
+        // Now create a new price in EUR with custom fields
+        const { updateProductVariants } = await adminClient.query(
+            gql`
+                mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
+                    updateProductVariants(input: $input) {
+                        id
+                        prices {
+                            currencyCode
+                            price
+                            customFields {
+                                costPrice
+                            }
+                        }
+                    }
+                }
+            `,
+            {
+                input: [
+                    {
+                        id: 'T_1',
+                        prices: [
+                            {
+                                price: 129900,
+                                currencyCode: 'USD',
+                                customFields: {
+                                    costPrice: 100,
+                                },
+                            },
+                            {
+                                price: 99900,
+                                currencyCode: 'EUR',
+                                customFields: {
+                                    costPrice: 200,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        );
+
+        expect(updateProductVariants[0].prices).toContainEqual({
+            currencyCode: 'EUR',
+            price: 99900,
+            customFields: {
+                costPrice: 200,
+            },
+        });
     });
 
     describe('setting custom fields directly via a service method', () => {
