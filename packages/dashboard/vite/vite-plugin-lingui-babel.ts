@@ -1,6 +1,9 @@
 import * as babel from '@babel/core';
 import type { Plugin } from 'vite';
 
+import { CompileResult } from './utils/compiler.js';
+import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
+
 /**
  * Options for the linguiBabelPlugin.
  */
@@ -42,15 +45,13 @@ export interface LinguiBabelPluginOptions {
  */
 export function linguiBabelPlugin(options?: LinguiBabelPluginOptions): Plugin {
     // Paths of npm packages that should have Lingui macros transformed.
-    // This is populated from plugin discovery in buildStart.
-    const allowedNodeModulesPackages = new Set<string>();
+    // This is populated from plugin discovery when transform is first called.
+    const allowedNodeModulesPackages = new Set<string>(options?.additionalPackagePaths ?? []);
 
-    // Add any manually specified paths (for testing)
-    if (options?.additionalPackagePaths) {
-        for (const pkgPath of options.additionalPackagePaths) {
-            allowedNodeModulesPackages.add(pkgPath);
-        }
-    }
+    // API reference to the config loader plugin (set in configResolved)
+    let configLoaderApi: ConfigLoaderApi | undefined;
+    // Cached result from config loader (set on first transform that needs it)
+    let configResult: CompileResult | undefined;
 
     return {
         name: 'vendure:lingui-babel',
@@ -58,34 +59,13 @@ export function linguiBabelPlugin(options?: LinguiBabelPluginOptions): Plugin {
         // when the react plugin processes the file
         enforce: 'pre',
 
-        configResolved(config) {
-            // Access the configLoaderPlugin API and load discovered plugins
-            // This runs after all plugins are resolved but before build starts
-            const configLoaderPlugin = config.plugins.find(p => p.name === 'vendure:config-loader');
-            if (configLoaderPlugin?.api) {
-                const api = configLoaderPlugin.api as {
-                    getVendureConfig: () => Promise<{
-                        pluginInfo: Array<{ pluginPath: string; sourcePluginPath?: string }>;
-                    }>;
-                };
-                // Queue the config loading - it will be available by the time transform runs
-                api.getVendureConfig()
-                    .then(result => {
-                        for (const plugin of result.pluginInfo) {
-                            // Only add npm packages (those without sourcePluginPath are from node_modules)
-                            if (!plugin.sourcePluginPath && plugin.pluginPath.includes('node_modules')) {
-                                // Extract the package path from the full file path
-                                // e.g., /path/to/node_modules/@vendure-ee/plugin/dist/index.js -> @vendure-ee/plugin
-                                const packagePath = extractPackagePath(plugin.pluginPath);
-                                if (packagePath) {
-                                    allowedNodeModulesPackages.add(packagePath);
-                                }
-                            }
-                        }
-                    })
-                    .catch(() => {
-                        // Config loading failed - continue with only manual paths
-                    });
+        configResolved({ plugins }) {
+            // Get reference to the config loader API.
+            // This doesn't load the config yet - that happens lazily in transform.
+            try {
+                configLoaderApi = getConfigLoaderApi(plugins);
+            } catch {
+                // configLoaderPlugin not available (e.g., plugin used standalone for testing)
             }
         },
 
@@ -110,13 +90,39 @@ export function linguiBabelPlugin(options?: LinguiBabelPluginOptions): Plugin {
                 const isVendureDashboard =
                     cleanId.includes('@vendure/dashboard/src') || cleanId.includes('packages/dashboard/src');
 
-                // Check if this is from a discovered Vendure plugin package
-                const isDiscoveredPlugin = [...allowedNodeModulesPackages].some(pkgPath =>
-                    cleanId.includes(pkgPath),
-                );
+                if (!isVendureDashboard) {
+                    // Load discovered plugins on first need (lazy loading with caching)
+                    if (configLoaderApi && !configResult) {
+                        try {
+                            configResult = await configLoaderApi.getVendureConfig();
+                            // Extract package paths from discovered npm plugins
+                            for (const plugin of configResult.pluginInfo) {
+                                if (!plugin.sourcePluginPath && plugin.pluginPath.includes('node_modules')) {
+                                    const packagePath = extractPackagePath(plugin.pluginPath);
+                                    if (packagePath) {
+                                        allowedNodeModulesPackages.add(packagePath);
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            // Log but continue - will use only manually specified paths
+                            // eslint-disable-next-line no-console
+                            console.warn('[vendure:lingui-babel] Failed to load plugin config:', error);
+                        }
+                    }
 
-                if (!isVendureDashboard && !isDiscoveredPlugin) {
-                    return null;
+                    // Check if this is from a discovered Vendure plugin package
+                    let isDiscoveredPlugin = false;
+                    for (const pkgPath of allowedNodeModulesPackages) {
+                        if (cleanId.includes(pkgPath)) {
+                            isDiscoveredPlugin = true;
+                            break;
+                        }
+                    }
+
+                    if (!isDiscoveredPlugin) {
+                        return null;
+                    }
                 }
             }
 
