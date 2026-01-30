@@ -177,6 +177,7 @@ function ProductVariantDetailPage() {
                 currencyCode,
                 price: 0,
                 delete: false,
+                customFields: {},
             } as PriceInput;
             form.setValue('prices', [...currentPrices, newPrice], {
                 shouldDirty: true,
