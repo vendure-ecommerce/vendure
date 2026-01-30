@@ -754,6 +754,31 @@ msgstr "تم حذف الملاحظة بنجاح"
 msgid "Failed to delete note"
 msgstr "فشل حذف الملاحظة"
 
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:43
+#~ msgid "refundReason.CustomerRequest"
+#~ msgstr "طلب العميل"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:44
+#~ msgid "refundReason.NotAvailable"
+#~ msgstr "غير متاح"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:45
+#~ msgid "refundReason.DamagedInShipping"
+#~ msgstr "تضرر أثناء الشحن"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:46
+#~ msgid "refundReason.WrongItem"
+#~ msgstr "منتج خاطئ"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:47
+#~ msgid "refundReason.Other"
+#~ msgstr "أخرى"
+
 #: src/lib/components/data-table/human-readable-operator.tsx:26
 msgid "!="
 msgstr "!="
@@ -884,6 +909,10 @@ msgstr "إضافة مجموعة خيارات أخرى"
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:132
 msgid "Add asset"
 msgstr "إضافة ملف"
+
+#: src/app/routes/_authenticated/_orders/components/draft-order-status.tsx:25
+msgid "Add at least one item to the order"
+msgstr "أضف عنصرًا واحدًا على الأقل إلى الطلب"
 
 #: src/lib/components/layout/channel-switcher.tsx:212
 msgid "Add channel"
@@ -1827,6 +1856,10 @@ msgstr "اكتمل طلب المسودة"
 msgid "Draft order deleted"
 msgstr "تم حذف طلب المسودة"
 
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:336
+msgid "Draft order status"
+msgstr "حالة طلب المسودة"
+
 #: src/lib/components/data-input/custom-field-list-input.tsx:72
 msgid "Drag to reorder"
 msgstr "اسحب لإعادة الترتيب"
@@ -1893,7 +1926,7 @@ msgstr "تحرير التخطيط"
 msgid "Edit link"
 msgstr "تحرير الرابط"
 
-#: src/app/routes/_authenticated/_zones/zones.tsx:39
+#: src/app/routes/_authenticated/_zones/zones.tsx:40
 msgid "Edit members"
 msgstr "تحرير الأعضاء"
 
@@ -2350,7 +2383,7 @@ msgid "Failed to update global settings"
 msgstr "فشل تحديث الإعدادات العامة"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:92
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:59
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:60
 msgid "Failed to update order"
 msgstr "فشل تحديث الطلب"
 
@@ -3352,6 +3385,10 @@ msgstr "إيقاف"
 msgid "Old email:"
 msgstr "البريد الإلكتروني القديم:"
 
+#: src/app/routes/_authenticated/_orders/components/draft-order-status.tsx:29
+msgid "Only draft orders can be completed"
+msgstr "يمكن إكمال طلبات المسودة فقط"
+
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:269
 msgid "Option"
 msgstr "الخيار"
@@ -3416,6 +3453,14 @@ msgstr "تم تحديث الحقول المخصصة للطلب"
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:90
 msgid "Order delivered"
 msgstr "تم تسليم الطلب"
+
+#: src/app/routes/_authenticated/_orders/components/draft-order-status.tsx:36
+msgid "Order draft is ready to be completed"
+msgstr "طلب المسودة جاهز للإكمال"
+
+#: src/app/routes/_authenticated/_orders/components/draft-order-status.tsx:34
+msgid "Order draft isn't ready to be completed"
+msgstr "طلب المسودة غير جاهز للإكمال"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:75
 msgid "Order fulfilled"
@@ -3851,7 +3896,7 @@ msgstr "الاستردادات ({0})"
 msgid "Regenerate slug from source field"
 msgstr "إعادة إنشاء الرابط المختصر من الحقل المصدر"
 
-#: src/app/routes/_authenticated/_zones/zones.tsx:36
+#: src/app/routes/_authenticated/_zones/zones.tsx:37
 msgid "Regions"
 msgstr "المناطق"
 
@@ -4089,6 +4134,10 @@ msgstr "حدد بلدًا"
 msgid "Select a currency"
 msgstr "حدد عملة"
 
+#: src/app/routes/_authenticated/_orders/components/draft-order-status.tsx:23
+msgid "Select a customer to continue"
+msgstr "اختر عميلاً للمتابعة"
+
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:83
 msgid "Select a destination collection"
 msgstr "حدد مجموعة وجهة"
@@ -4213,7 +4262,11 @@ msgstr "طلبات البائعين"
 msgid "Sellers"
 msgstr "البائعون"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:394
+#: src/app/routes/_authenticated/_orders/components/draft-order-status.tsx:27
+msgid "Set a shipping address and select a shipping method"
+msgstr "قم بتعيين عنوان الشحن واختيار طريقة الشحن"
+
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:414
 msgid "Set custom fields"
 msgstr "تعيين الحقول المخصصة"
 
@@ -4594,7 +4647,7 @@ msgid "Successfully updated global settings"
 msgstr "تم تحديث الإعدادات العامة بنجاح"
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:88
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:55
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:56
 msgid "Successfully updated order"
 msgstr "تم تحديث الطلب بنجاح"
 
