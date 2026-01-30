@@ -1,7 +1,0 @@
-{
-  "name": "fixtures-pnpm-plugin",
-  "version": "1.0.0",
-  "dependencies": {
-    "test-plugin": "1.0.0"
-  }
-}

@@ -135,7 +135,7 @@ export class TypescriptDocsRenderer {
 
                     if (allLinkCards.size > 0) {
                         indexFileContent += '\n';
-                        const sortedCards = Array.from(allLinkCards).sort();
+                        const sortedCards = Array.from(allLinkCards).sort((a, b) => a.localeCompare(b));
                         for (const href of sortedCards) {
                             // Extract child name from href for title
                             const childName = href.split('/').pop() || '';
@@ -190,7 +190,7 @@ export class TypescriptDocsRenderer {
                     let indexFileContent = generateFrontMatter(sectionTitle, true);
 
                     indexFileContent += '\n';
-                    const sortedCards = Array.from(allLinkCards).sort();
+                    const sortedCards = Array.from(allLinkCards).sort((a, b) => a.localeCompare(b));
                     for (const href of sortedCards) {
                         const childName = href.split('/').pop() || '';
                         const title = titleCase(childName.replace(/-/g, ' '));

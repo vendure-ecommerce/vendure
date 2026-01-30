@@ -1,6 +1,7 @@
 import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
 import { NumberInput } from '@/vdb/components/data-input/number-input.js';
 import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
@@ -12,8 +13,10 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
 import { Switch } from '@/vdb/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -34,6 +37,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { VariablesOf } from 'gql.tada';
 import { Trash } from 'lucide-react';
 import { toast } from 'sonner';
+
 import { AddCurrencyDropdown } from './components/add-currency-dropdown.js';
 import { AddStockLocationDropdown } from './components/add-stock-location-dropdown.js';
 import { VariantPriceDetail } from './components/variant-price-detail.js';
@@ -50,7 +54,10 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
     component: ProductVariantDetailPage,
     loader: detailPageRouteLoader({
         pageId,
-        queryDocument: productVariantDetailDocument,
+        queryDocument: () =>
+            addCustomFields(productVariantDetailDocument, {
+                includeNestedFragments: ['ProductVariantPrice'],
+            }),
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
                 return [
@@ -81,7 +88,9 @@ function ProductVariantDetailPage() {
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
-        queryDocument: productVariantDetailDocument,
+        queryDocument: addCustomFields(productVariantDetailDocument, {
+            includeNestedFragments: ['ProductVariantPrice'],
+        }),
         createDocument: createProductVariantDocument,
         updateDocument: updateProductVariantDocument,
         setValuesForUpdate: entity => {
@@ -169,6 +178,7 @@ function ProductVariantDetailPage() {
                 currencyCode,
                 price: 0,
                 delete: false,
+                customFields: {},
             } as PriceInput;
             form.setValue('prices', [...currentPrices, newPrice], {
                 shouldDirty: true,
@@ -274,37 +284,46 @@ function ProductVariantDetailPage() {
                             </div>
                         );
                         return (
-                            <DetailFormGrid key={price.currencyCode}>
-                                <div className="flex gap-1 items-end">
-                                    <FormFieldWrapper
-                                        control={form.control}
-                                        name={`prices.${actualIndex}.price`}
-                                        label={priceLabel}
-                                        render={({ field }) => (
-                                            <MoneyInput {...field} currency={price.currencyCode} />
+                            <div key={price.currencyCode} className="space-y-6">
+                                {displayIndex > 0 && <Separator className="my-4" />}
+                                <DetailFormGrid key={price.currencyCode}>
+                                    <div className="flex gap-1 items-end">
+                                        <FormFieldWrapper
+                                            control={form.control}
+                                            name={`prices.${actualIndex}.price`}
+                                            label={priceLabel}
+                                            render={({ field }) => (
+                                                <MoneyInput {...field} currency={price.currencyCode} />
+                                            )}
+                                        />
+                                        {activePrices.length > 1 && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleRemoveCurrency(actualIndex)}
+                                                className="h-6 w-6 p-0 mb-2 hover:text-destructive hover:bg-destructive-100"
+                                            >
+                                                <Trash className="size-4" />
+                                            </Button>
                                         )}
+                                    </div>
+                                    <VariantPriceDetail
+                                        priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
+                                        price={price.price}
+                                        currencyCode={
+                                            price.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
+                                        }
+                                        taxCategoryId={taxCategoryId}
                                     />
-                                    {activePrices.length > 1 && (
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => handleRemoveCurrency(actualIndex)}
-                                            className="h-6 w-6 p-0 mb-2 hover:text-destructive hover:bg-destructive-100"
-                                        >
-                                            <Trash className="size-4" />
-                                        </Button>
-                                    )}
-                                </div>
-                                <VariantPriceDetail
-                                    priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
-                                    price={price.price}
-                                    currencyCode={
-                                        price.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
-                                    }
-                                    taxCategoryId={taxCategoryId}
+                                </DetailFormGrid>
+                                {/* Custom fields for ProductVariantPrice */}
+                                <CustomFieldsForm
+                                    entityType="ProductVariantPrice"
+                                    control={form.control}
+                                    formPathPrefix={`prices.${actualIndex}`}
                                 />
-                            </DetailFormGrid>
+                            </div>
                         );
                     })}
                     {unusedCurrencies.length ? (

@@ -603,8 +603,17 @@ export class ProductVariantService {
                     price,
                     variant: new ProductVariant({ id: productVariantId }),
                     currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
+                    customFields,
                 }),
             );
+            if (customFields) {
+                await this.customFieldRelationService.updateRelations(
+                    ctx,
+                    ProductVariantPrice,
+                    customFields,
+                    createdPrice,
+                );
+            }
             await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [createdPrice], 'created'));
             additionalPricesToUpdate = await productVariantPriceUpdateStrategy.onPriceCreated(
                 ctx,

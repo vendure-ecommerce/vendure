@@ -79,6 +79,7 @@ function ShippingMethodDetailPage() {
                     languageCode: translation.languageCode,
                     name: translation.name,
                     description: translation.description,
+                    customFields: (translation as any).customFields,
                 })),
                 customFields: entity.customFields,
             };
