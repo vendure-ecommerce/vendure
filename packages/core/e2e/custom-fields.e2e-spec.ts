@@ -1084,7 +1084,7 @@ describe('Custom fields', () => {
     it('persists custom fields when creating a new ProductVariantPrice', async () => {
         // First, add EUR to the channel's available currencies
         await adminClient.query(
-            gql`
+            graphql(`
                 mutation UpdateChannel($input: UpdateChannelInput!) {
                     updateChannel(input: $input) {
                         ... on Channel {
@@ -1093,7 +1093,7 @@ describe('Custom fields', () => {
                         }
                     }
                 }
-            `,
+            `),
             {
                 input: {
                     id: 'T_1',
@@ -1104,7 +1104,7 @@ describe('Custom fields', () => {
 
         // Now create a new price in EUR with custom fields
         const { updateProductVariants } = await adminClient.query(
-            gql`
+            graphql(`
                 mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
                     updateProductVariants(input: $input) {
                         id
@@ -1117,7 +1117,7 @@ describe('Custom fields', () => {
                         }
                     }
                 }
-            `,
+            `),
             {
                 input: [
                     {
