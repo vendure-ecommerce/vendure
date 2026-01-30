@@ -146,6 +146,7 @@ describe('Custom field relations', () => {
             'id',
             'createdAt',
             'updatedAt',
+            'languageCode',
             'name',
             'type',
             'fileSize',

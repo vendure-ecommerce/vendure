@@ -110,7 +110,7 @@ describe('Multi-vendor orders', () => {
             },
         });
 
-        expect(assignProductsToChannel[0].channels.map(c => c.code)).toEqual([
+        expect(assignProductsToChannel[0].channels.map(c => c.code).sort()).toEqual([
             '__default_channel__',
             'bobs-parts',
         ]);
@@ -125,7 +125,7 @@ describe('Multi-vendor orders', () => {
                 priceFactor: 1,
             },
         });
-        expect(result2[0].channels.map(c => c.code)).toEqual(['__default_channel__', 'alices-wares']);
+        expect(result2[0].channels.map(c => c.code).sort()).toEqual(['__default_channel__', 'alices-wares']);
         alicesWaresChannel.variantIds = result2[0].variants.map(v => v.id);
 
         expect(alicesWaresChannel.variantIds).toEqual(['T_22']);

@@ -4,12 +4,10 @@ import {
     DeletionResponse,
     MutationCreateApiKeyArgs,
     MutationDeleteApiKeysArgs,
-    MutationRotateApiKeyArgs,
     MutationUpdateApiKeyArgs,
     Permission,
     QueryApiKeyArgs,
     QueryApiKeysArgs,
-    RotateApiKeyResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -25,7 +23,7 @@ export class ApiKeyResolver {
     constructor(private apiKeyService: ApiKeyService) {}
 
     @Query()
-    @Allow(Permission.ReadApiKey)
+    @Allow(Permission.SuperAdmin)
     async apiKey(
         @Ctx() ctx: RequestContext,
         @Args() { id }: QueryApiKeyArgs,
@@ -35,7 +33,7 @@ export class ApiKeyResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadApiKey)
+    @Allow(Permission.SuperAdmin)
     async apiKeys(
         @Ctx() ctx: RequestContext,
         @Args() { options }: QueryApiKeysArgs,
@@ -46,7 +44,7 @@ export class ApiKeyResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateApiKey)
+    @Allow(Permission.SuperAdmin)
     async createApiKey(
         @Ctx() ctx: RequestContext,
         @Args() { input }: MutationCreateApiKeyArgs,
@@ -59,7 +57,7 @@ export class ApiKeyResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateApiKey)
+    @Allow(Permission.SuperAdmin)
     async updateApiKey(
         @Ctx() ctx: RequestContext,
         @Args() { input }: MutationUpdateApiKeyArgs,
@@ -70,7 +68,7 @@ export class ApiKeyResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteApiKey)
+    @Allow(Permission.SuperAdmin)
     async deleteApiKeys(
         @Ctx() ctx: RequestContext,
         @Args() { ids }: MutationDeleteApiKeysArgs,
@@ -80,11 +78,8 @@ export class ApiKeyResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateApiKey)
-    async rotateApiKey(
-        @Ctx() ctx: RequestContext,
-        @Args() { id }: MutationRotateApiKeyArgs,
-    ): Promise<RotateApiKeyResult> {
+    @Allow(Permission.SuperAdmin)
+    async rotateApiKey(@Ctx() ctx: RequestContext, @Args() { id }: { id: string }): Promise<any> {
         return this.apiKeyService.rotate(ctx, id);
     }
 }

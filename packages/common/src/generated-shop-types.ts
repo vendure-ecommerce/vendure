@@ -92,11 +92,13 @@ export type Asset = Node & {
     focalPoint?: Maybe<Coordinate>;
     height: Scalars['Int']['output'];
     id: Scalars['ID']['output'];
+    languageCode: LanguageCode;
     mimeType: Scalars['String']['output'];
     name: Scalars['String']['output'];
     preview: Scalars['String']['output'];
     source: Scalars['String']['output'];
     tags: Array<Tag>;
+    translations: Array<AssetTranslation>;
     type: AssetType;
     updatedAt: Scalars['DateTime']['output'];
     width: Scalars['Int']['output'];
@@ -106,6 +108,15 @@ export type AssetList = PaginatedList & {
     __typename?: 'AssetList';
     items: Array<Asset>;
     totalItems: Scalars['Int']['output'];
+};
+
+export type AssetTranslation = {
+    __typename?: 'AssetTranslation';
+    createdAt: Scalars['DateTime']['output'];
+    id: Scalars['ID']['output'];
+    languageCode: LanguageCode;
+    name: Scalars['String']['output'];
+    updatedAt: Scalars['DateTime']['output'];
 };
 
 export enum AssetType {

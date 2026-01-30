@@ -12,10 +12,6 @@ export function AssetProperties({ asset }: Readonly<AssetPropertiesProps>) {
     return (
         <div className="space-y-4">
             <div>
-                <Label>Name</Label>
-                <p className="truncate text-sm text-muted-foreground">{asset.name}</p>
-            </div>
-            <div>
                 <Label>Source File</Label>
                 <a
                     href={asset.source}

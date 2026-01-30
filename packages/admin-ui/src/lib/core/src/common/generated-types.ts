@@ -256,11 +256,13 @@ export type Asset = Node & {
   focalPoint?: Maybe<Coordinate>;
   height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
+  languageCode: LanguageCode;
   mimeType: Scalars['String']['output'];
   name: Scalars['String']['output'];
   preview: Scalars['String']['output'];
   source: Scalars['String']['output'];
   tags: Array<Tag>;
+  translations: Array<AssetTranslation>;
   type: AssetType;
   updatedAt: Scalars['DateTime']['output'];
   width: Scalars['Int']['output'];
@@ -273,6 +275,7 @@ export type AssetFilterParameter = {
   fileSize?: InputMaybe<NumberOperators>;
   height?: InputMaybe<NumberOperators>;
   id?: InputMaybe<IdOperators>;
+  languageCode?: InputMaybe<StringOperators>;
   mimeType?: InputMaybe<StringOperators>;
   name?: InputMaybe<StringOperators>;
   preview?: InputMaybe<StringOperators>;
@@ -314,6 +317,22 @@ export type AssetSortParameter = {
   source?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
   width?: InputMaybe<SortOrder>;
+};
+
+export type AssetTranslation = {
+  __typename?: 'AssetTranslation';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  languageCode: LanguageCode;
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type AssetTranslationInput = {
+  customFields?: InputMaybe<Scalars['JSON']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  languageCode: LanguageCode;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum AssetType {
@@ -863,6 +882,7 @@ export type CreateAssetInput = {
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   file: Scalars['Upload']['input'];
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  translations?: InputMaybe<Array<AssetTranslationInput>>;
 };
 
 export type CreateAssetResult = Asset | MimeTypeError;
@@ -6891,6 +6911,7 @@ export type UpdateAssetInput = {
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
+  translations?: InputMaybe<Array<AssetTranslationInput>>;
 };
 
 export type UpdateChannelInput = {

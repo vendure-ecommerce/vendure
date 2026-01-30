@@ -3,6 +3,7 @@ export class CustomAdministratorFields {}
 export class CustomApiKeyFields {}
 export class CustomApiKeyFieldsTranslation {}
 export class CustomAssetFields {}
+export class CustomAssetFieldsTranslation {}
 export class CustomChannelFields {}
 export class CustomCollectionFields {}
 export class CustomCollectionFieldsTranslation {}

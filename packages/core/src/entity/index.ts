@@ -1,5 +1,6 @@
 export * from './address/address.entity';
 export * from './administrator/administrator.entity';
+export * from './asset/asset-translation.entity';
 export * from './asset/asset.entity';
 export * from './asset/orderable-asset.entity';
 export * from './authentication-method/authentication-method.entity';
