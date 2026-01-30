@@ -20,7 +20,9 @@ import {    CustomFieldsPageBlock,
 import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { useJobQueuePolling } from '@/vdb/hooks/use-job-queue-polling.js';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -52,6 +54,12 @@ function CollectionDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { t } = useLingui();
+    const queryClient = useQueryClient();
+
+    const { isPolling: pendingFilterApplication, startPolling } = useJobQueuePolling(
+        'apply-collection-filters',
+        () => queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] }),
+    );
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId,
@@ -77,6 +85,7 @@ function CollectionDetailPage() {
                     name: translation.name,
                     slug: translation.slug,
                     description: translation.description,
+                    customFields: (translation as any).customFields,
                 })),
                 filters: entity.filters.map(f => ({
                     code: f.code,
@@ -88,12 +97,20 @@ function CollectionDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
+            const filtersWereDirty =
+                form.getFieldState('inheritFilters').isDirty || form.getFieldState('filters').isDirty;
             toast(
                 creatingNewEntity ? t`Successfully created collection` : t`Successfully updated collection`,
             );
             resetForm();
+            if (filtersWereDirty) {
+                startPolling();
+            }
             if (creatingNewEntity) {
-                await navigate({ to: `../$id`, params: { id: data.id } });
+                await navigate({
+                    to: `../$id`,
+                    params: { id: data.id },
+                });
             }
         },
         onError: err => {
@@ -104,7 +121,9 @@ function CollectionDetailPage() {
     });
 
     const shouldPreviewContents =
-        form.getFieldState('inheritFilters').isDirty || form.getFieldState('filters').isDirty;
+        form.getFieldState('inheritFilters').isDirty ||
+        form.getFieldState('filters').isDirty ||
+        pendingFilterApplication;
 
     const currentFiltersValue = form.watch('filters');
     const currentInheritFiltersValue = form.watch('inheritFilters');
@@ -216,7 +235,7 @@ function CollectionDetailPage() {
                     </FormItem>
                 </PageBlock>
                 <PageBlock column="main" blockId="contents" title={<Trans>Contents</Trans>}>
-                    {shouldPreviewContents || creatingNewEntity ? (
+                    {pendingFilterApplication || shouldPreviewContents || creatingNewEntity ? (
                         <CollectionContentsPreviewTable
                             parentId={entity?.parent?.id}
                             filters={currentFiltersValue ?? []}

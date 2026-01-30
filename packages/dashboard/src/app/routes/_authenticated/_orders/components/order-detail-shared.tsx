@@ -1,8 +1,10 @@
 import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { DropdownMenuItem } from '@/vdb/components/ui/dropdown-menu.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
-import {    Page,
+import {
+    Page,
     PageActionBar,
     PageBlock,
     PageLayout,
@@ -17,15 +19,17 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
-import { Pencil, User } from 'lucide-react';
-import { useMemo } from 'react';
+import { Pencil, RotateCcw, User } from 'lucide-react';
+import { useCallback, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
+
 import {
     orderDetailDocument,
     setOrderCustomFieldsDocument,
     transitionOrderToStateDocument,
 } from '../orders.graphql.js';
-import { canAddFulfillment, shouldShowAddManualPaymentButton } from '../utils/order-utils.js';
+import { canAddFulfillment, canRefundOrder, shouldShowAddManualPaymentButton } from '../utils/order-utils.js';
+
 import { AddManualPaymentDialog } from './add-manual-payment-dialog.js';
 import { FulfillOrderDialog } from './fulfill-order-dialog.js';
 import { FulfillmentDetails } from './fulfillment-details.js';
@@ -35,6 +39,7 @@ import { orderHistoryQueryKey } from './order-history/use-order-history.js';
 import { OrderTable } from './order-table.js';
 import { OrderTaxSummary } from './order-tax-summary.js';
 import { PaymentDetails } from './payment-details.js';
+import { RefundOrderDialog, RefundOrderDialogRef } from './refund-order-dialog.js';
 import { getTypeForState, StateTransitionControl } from './state-transition-control.js';
 import { useTransitionOrderToState } from './use-transition-order-to-state.js';
 
@@ -99,6 +104,15 @@ export function OrderDetailShared({
     });
 
     const customFieldConfig = useCustomFieldConfig('Order');
+    const refundDialogRef = useRef<RefundOrderDialogRef>(null);
+
+    const refreshOrderAndHistory = useCallback(async () => {
+        if (entity) {
+            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
+            await queryClient.invalidateQueries({ queryKey });
+            void queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
+        }
+    }, [entity, queryClient]);
 
     const stateTransitionActions = useMemo(() => {
         if (!entity) {
@@ -114,17 +128,14 @@ export function OrderDetailShared({
                         description: transitionError,
                     });
                 } else {
-                    refreshOrderAndHistory();
+                    void refreshOrderAndHistory();
                 }
             },
         }));
-    }, [entity, transitionToState, t]);
+    }, [entity, transitionToState, t, refreshOrderAndHistory]);
 
-    if (!entity) {
-        return null;
-    }
-
-    const handleModifyClick = async () => {
+    const handleModifyClick = useCallback(async () => {
+        if (!entity) return;
         try {
             await transitionOrderToStateMutation.mutateAsync({
                 id: entity.id,
@@ -138,39 +149,48 @@ export function OrderDetailShared({
                 description: error instanceof Error ? error.message : 'Unknown error',
             });
         }
-    };
+    }, [entity, transitionOrderToStateMutation, queryClient, navigate, t]);
+
+    const ModifyMenuItem = useCallback(
+        () => (
+            <DropdownMenuItem onClick={handleModifyClick}>
+                <Pencil className="w-4 h-4" />
+                <Trans>Modify</Trans>
+            </DropdownMenuItem>
+        ),
+        [handleModifyClick],
+    );
+
+    const RefundMenuItem = useCallback(
+        () => (
+            <PermissionGuard requires={['UpdateOrder']}>
+                <DropdownMenuItem onClick={() => refundDialogRef.current?.open()}>
+                    <RotateCcw className="w-4 h-4" />
+                    <Trans>Refund & Cancel</Trans>
+                </DropdownMenuItem>
+            </PermissionGuard>
+        ),
+        [],
+    );
+
+    if (!entity) {
+        return null;
+    }
 
     const nextStates = entity.nextStates;
     const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
     const showFulfillButton = canAddFulfillment(entity);
-
-    async function refreshOrderAndHistory() {
-        if (entity) {
-            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
-            await queryClient.invalidateQueries({ queryKey });
-            queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
-        }
-    }
+    const showRefundOption = canRefundOrder(entity);
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{titleSlot?.(entity) || <DefaultOrderTitle entity={entity} />}</PageTitle>
             <PageActionBar
-                dropdownMenuItems={[
-                    ...(nextStates.includes('Modifying')
-                        ? [
-                              {
-                                  component: () => (
-                                      <DropdownMenuItem onClick={handleModifyClick}>
-                                          <Pencil className="w-4 h-4" />
-                                          <Trans>Modify</Trans>
-                                      </DropdownMenuItem>
-                                  ),
-                              },
-                          ]
-                        : []),
-                ]}
-            >
+                    dropdownMenuItems={[
+                        ...(nextStates.includes('Modifying') ? [{ component: ModifyMenuItem }] : []),
+                        ...(showRefundOption ? [{ component: RefundMenuItem }] : []),
+                    ]}
+                >
                 {showAddPaymentButton && (
                     <ActionBarItem itemId="add-payment-button" requiresPermission={['UpdateOrder']}>
                         <AddManualPaymentDialog
@@ -190,6 +210,15 @@ export function OrderDetailShared({
                             }}
                         />
                     </ActionBarItem>
+                )}
+                {showRefundOption && (
+                    <RefundOrderDialog
+                        ref={refundDialogRef}
+                        order={entity}
+                        onSuccess={() => {
+                            void refreshOrderAndHistory();
+                        }}
+                    />
                 )}
             </PageActionBar>
             <PageLayout>
@@ -284,7 +313,7 @@ export function OrderDetailShared({
                                     fulfillment={fulfillment}
                                     onSuccess={() => {
                                         refreshEntity();
-                                        queryClient.refetchQueries({
+                                        void queryClient.refetchQueries({
                                             queryKey: orderHistoryQueryKey(entity.id),
                                         });
                                     }}

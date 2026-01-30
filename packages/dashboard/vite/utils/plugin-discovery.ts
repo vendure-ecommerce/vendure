@@ -420,9 +420,9 @@ export async function findVendurePluginFiles({
     const globStart = Date.now();
     const files = await glob(patterns, {
         ignore: [
-            // Skip nested node_modules (transitive deps) but not .pnpm directory.
-            // [!.] ensures .pnpm paths are kept since pnpm stores all packages there.
-            '**/node_modules/[!.pnpm]*/**/node_modules/**',
+            // Skip nested node_modules (transitive deps) but not .pnpm or .bun directories.
+            // [!.] excludes paths starting with . since pnpm and bun store packages there.
+            '**/node_modules/[!.]*/**/node_modules/**',
             '**/*.spec.js',
             '**/*.test.js',
         ],

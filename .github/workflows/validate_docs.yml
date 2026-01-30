@@ -1,0 +1,32 @@
+name: Validate Docs
+
+on:
+  pull_request:
+    branches:
+      - master
+      - minor
+      - major
+    paths:
+      - 'docs/**'
+
+jobs:
+  validate:
+    name: Validate MDX
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate MDX files
+        run: npm run test:mdx

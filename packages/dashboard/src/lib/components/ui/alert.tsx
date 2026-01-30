@@ -19,6 +19,8 @@ const alertVariants = cva(
     },
 );
 
+export type AlertVariants = NonNullable<VariantProps<typeof alertVariants>>['variant'];
+
 function Alert({
     className,
     variant,
