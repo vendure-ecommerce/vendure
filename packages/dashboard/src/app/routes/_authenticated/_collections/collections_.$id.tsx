@@ -87,6 +87,7 @@ function CollectionDetailPage() {
                     name: translation.name,
                     slug: translation.slug,
                     description: translation.description,
+                    customFields: (translation as any).customFields,
                 })),
                 filters: entity.filters.map(f => ({
                     code: f.code,
