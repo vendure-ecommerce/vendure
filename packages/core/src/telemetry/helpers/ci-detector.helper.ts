@@ -1,8 +1,9 @@
 /**
  * CI environment variables to check for.
  * These are standard environment variables set by popular CI/CD systems.
+ * Exported for testing purposes.
  */
-const CI_ENV_VARS = [
+export const CI_ENV_VARS = [
     'CI',
     'GITHUB_ACTIONS',
     'GITLAB_CI',

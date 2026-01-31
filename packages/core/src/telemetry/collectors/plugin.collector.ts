@@ -5,25 +5,9 @@ import { isDynamicModule } from '../../plugin/plugin-metadata';
 import { TelemetryPluginInfo } from '../telemetry.types';
 
 /**
- * Plugin class names that map to known npm packages.
- */
-const PLUGIN_CLASS_TO_PACKAGE: Record<string, string> = {
-    AdminUiPlugin: '@vendure/admin-ui-plugin',
-    AssetServerPlugin: '@vendure/asset-server-plugin',
-    ElasticsearchPlugin: '@vendure/elasticsearch-plugin',
-    EmailPlugin: '@vendure/email-plugin',
-    BullMQJobQueuePlugin: '@vendure/job-queue-plugin',
-    StripePlugin: '@vendure/payments-plugin',
-    MolliePlugin: '@vendure/payments-plugin',
-    HardenPlugin: '@vendure/harden-plugin',
-    SentryPlugin: '@vendure/sentry-plugin',
-    GraphiQLPlugin: '@vendure/graphiql-plugin',
-    StellatePlugin: '@vendure/stellate-plugin',
-};
-
-/**
  * Collects information about plugins used in the Vendure installation.
- * Only collects names of known official plugins; custom plugin names are NOT collected.
+ * Detects npm packages by checking if the plugin originates from node_modules.
+ * Custom plugin names are NOT collected for privacy.
  */
 @Injectable()
 export class PluginCollector {
@@ -35,8 +19,7 @@ export class PluginCollector {
         let customCount = 0;
 
         for (const plugin of plugins) {
-            const pluginName = this.getPluginName(plugin);
-            const npmPackage = this.identifyNpmPackage(plugin, pluginName);
+            const npmPackage = this.findNpmPackage(plugin);
 
             if (npmPackage) {
                 npmPlugins.add(npmPackage);
@@ -51,20 +34,48 @@ export class PluginCollector {
         };
     }
 
-    private getPluginName(plugin: Type<any> | DynamicModule): string {
-        if (isDynamicModule(plugin)) {
-            return plugin.module.name;
-        }
-        return plugin.name;
-    }
+    /**
+     * Finds the npm package name for a plugin by checking the require cache.
+     */
+    private findNpmPackage(plugin: Type<any> | DynamicModule): string | undefined {
+        const pluginClass = isDynamicModule(plugin) ? plugin.module : plugin;
 
-    private identifyNpmPackage(plugin: Type<any> | DynamicModule, pluginName: string): string | undefined {
-        // Look up by class name
-        const knownPackage = PLUGIN_CLASS_TO_PACKAGE[pluginName];
-        if (knownPackage) {
-            return knownPackage;
+        // Search require cache for the module that exports this plugin class
+        for (const [modulePath, moduleObj] of Object.entries(require.cache)) {
+            if (!moduleObj?.exports || !modulePath.includes('node_modules')) {
+                continue;
+            }
+
+            const exports = moduleObj.exports;
+            if (
+                exports === pluginClass ||
+                exports.default === pluginClass ||
+                (typeof exports === 'object' && Object.values(exports).includes(pluginClass))
+            ) {
+                return this.extractPackageName(modulePath);
+            }
         }
 
         return undefined;
+    }
+
+    /**
+     * Extracts the npm package name from a node_modules path.
+     * Handles both scoped (@scope/package) and unscoped packages.
+     */
+    private extractPackageName(modulePath: string): string | undefined {
+        const nodeModulesIndex = modulePath.lastIndexOf('node_modules');
+        if (nodeModulesIndex === -1) {
+            return undefined;
+        }
+
+        const pathAfterNodeModules = modulePath.slice(nodeModulesIndex + 'node_modules/'.length);
+        const parts = pathAfterNodeModules.split(/[/\\]/);
+
+        if (parts[0].startsWith('@')) {
+            // Scoped package: @scope/package
+            return `${parts[0]}/${parts[1]}`;
+        }
+        return parts[0];
     }
 }

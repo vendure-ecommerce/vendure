@@ -7,8 +7,9 @@ import { TelemetryDeployment } from '../telemetry.types';
 
 /**
  * Cloud provider detection based on environment variables.
+ * Exported for testing purposes.
  */
-const CLOUD_PROVIDERS: Array<{ name: string; envVars: string[] }> = [
+export const CLOUD_PROVIDERS: Array<{ name: string; envVars: string[] }> = [
     { name: 'aws', envVars: ['AWS_REGION', 'AWS_LAMBDA_FUNCTION_NAME', 'AWS_EXECUTION_ENV'] },
     { name: 'gcp', envVars: ['GOOGLE_CLOUD_PROJECT', 'GCLOUD_PROJECT', 'GCP_PROJECT'] },
     { name: 'azure', envVars: ['AZURE_FUNCTIONS_ENVIRONMENT', 'WEBSITE_SITE_NAME'] },
@@ -23,8 +24,9 @@ const CLOUD_PROVIDERS: Array<{ name: string; envVars: string[] }> = [
 
 /**
  * Serverless environment detection.
+ * Exported for testing purposes.
  */
-const SERVERLESS_ENV_VARS = [
+export const SERVERLESS_ENV_VARS = [
     'AWS_LAMBDA_FUNCTION_NAME',
     'FUNCTION_NAME', // GCP Cloud Functions
     'AZURE_FUNCTIONS_ENVIRONMENT',
