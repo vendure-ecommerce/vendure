@@ -16,6 +16,7 @@ describe('DatabaseCollector', () => {
         mockRepository = { count: vi.fn().mockResolvedValue(50) };
         mockConnection = {
             rawConnection: {
+                isInitialized: true,
                 getRepository: vi.fn().mockReturnValue(mockRepository),
             } as any,
         };

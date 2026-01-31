@@ -23,7 +23,13 @@ export class DatabaseCollector {
 
     async collect(): Promise<DatabaseInfo> {
         const databaseType = this.getDatabaseType();
-        const metrics = await this.collectEntityMetrics();
+        let metrics: TelemetryEntityMetrics;
+
+        try {
+            metrics = await this.collectEntityMetrics();
+        } catch {
+            metrics = { entities: {}, custom: { entityCount: 0 } };
+        }
 
         return {
             databaseType,
@@ -43,6 +49,12 @@ export class DatabaseCollector {
     }
 
     private async collectEntityMetrics(): Promise<TelemetryEntityMetrics> {
+        // Check if connection is ready before attempting to collect metrics
+        const rawConnection = this.connection.rawConnection;
+        if (!rawConnection?.isInitialized) {
+            return { entities: {}, custom: { entityCount: 0 } };
+        }
+
         const coreEntityEntries = Object.entries(coreEntitiesMap);
         const counts = await Promise.all(coreEntityEntries.map(([, entity]) => this.safeCount(entity)));
 
@@ -73,7 +85,11 @@ export class DatabaseCollector {
     // eslint-disable-next-line @typescript-eslint/ban-types
     private async safeCount(entity: Function): Promise<number> {
         try {
-            return await this.connection.rawConnection.getRepository(entity).count();
+            const rawConnection = this.connection.rawConnection;
+            if (!rawConnection?.isInitialized) {
+                return 0;
+            }
+            return await rawConnection.getRepository(entity).count();
         } catch {
             return 0;
         }
