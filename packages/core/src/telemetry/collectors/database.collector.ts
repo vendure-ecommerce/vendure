@@ -2,16 +2,12 @@ import { Injectable } from '@nestjs/common';
 
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Customer } from '../../entity/customer/customer.entity';
 import { coreEntitiesMap } from '../../entity/entities';
-import { Order } from '../../entity/order/order.entity';
-import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
-import { Product } from '../../entity/product/product.entity';
 import { toRangeBucket } from '../helpers/range-bucket.helper';
-import { TelemetryEntityMetrics } from '../telemetry.types';
+import { RangeBucket, SupportedDatabaseType, TelemetryEntityMetrics } from '../telemetry.types';
 
 export interface DatabaseInfo {
-    databaseType: 'postgres' | 'mysql' | 'mariadb' | 'sqlite';
+    databaseType: SupportedDatabaseType;
     metrics: TelemetryEntityMetrics;
 }
 
@@ -35,32 +31,25 @@ export class DatabaseCollector {
         };
     }
 
-    private getDatabaseType(): 'postgres' | 'mysql' | 'mariadb' | 'sqlite' {
+    private getDatabaseType(): SupportedDatabaseType {
         const dbType = this.configService.dbConnectionOptions.type;
-
-        switch (dbType) {
-            case 'postgres':
-                return 'postgres';
-            case 'mysql':
-                return 'mysql';
-            case 'mariadb':
-                return 'mariadb';
-            case 'better-sqlite3':
-            case 'sqlite':
-                return 'sqlite';
-            default:
-                // Default to postgres for unknown types
-                return 'postgres';
+        if (dbType === 'better-sqlite3' || dbType === 'sqlite') {
+            return 'sqlite';
         }
+        if (dbType === 'postgres' || dbType === 'mysql' || dbType === 'mariadb') {
+            return dbType;
+        }
+        return 'postgres';
     }
 
     private async collectEntityMetrics(): Promise<TelemetryEntityMetrics> {
-        const [productCount, orderCount, customerCount, variantCount] = await Promise.all([
-            this.safeCount(Product),
-            this.safeCount(Order),
-            this.safeCount(Customer),
-            this.safeCount(ProductVariant),
-        ]);
+        const coreEntityEntries = Object.entries(coreEntitiesMap);
+        const counts = await Promise.all(coreEntityEntries.map(([, entity]) => this.safeCount(entity)));
+
+        const entities: Partial<Record<string, RangeBucket>> = {};
+        coreEntityEntries.forEach(([name], index) => {
+            entities[name] = toRangeBucket(counts[index]);
+        });
 
         const customEntities = this.getCustomEntities();
         const customEntityCount = customEntities.length;
@@ -68,17 +57,12 @@ export class DatabaseCollector {
         // Only count custom entity records if there are custom entities
         let totalCustomRecords: number | undefined;
         if (customEntityCount > 0) {
-            const counts = await Promise.all(customEntities.map(entity => this.safeCount(entity)));
-            totalCustomRecords = counts.reduce((sum, count) => sum + count, 0);
+            const customCounts = await Promise.all(customEntities.map(entity => this.safeCount(entity)));
+            totalCustomRecords = customCounts.reduce((sum, count) => sum + count, 0);
         }
 
         return {
-            entities: {
-                product: toRangeBucket(productCount),
-                order: toRangeBucket(orderCount),
-                customer: toRangeBucket(customerCount),
-                productVariant: toRangeBucket(variantCount),
-            },
+            entities,
             custom: {
                 entityCount: customEntityCount,
                 ...(totalCustomRecords !== undefined && { totalRecords: toRangeBucket(totalCustomRecords) }),
@@ -86,7 +70,8 @@ export class DatabaseCollector {
         };
     }
 
-    private async safeCount(entity: new (...args: any[]) => any): Promise<number> {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    private async safeCount(entity: Function): Promise<number> {
         try {
             return await this.connection.rawConnection.getRepository(entity).count();
         } catch {
@@ -94,20 +79,22 @@ export class DatabaseCollector {
         }
     }
 
-    private getCustomEntities(): Array<new (...args: any[]) => any> {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    private getCustomEntities(): Function[] {
         const entities = this.configService.dbConnectionOptions.entities;
         if (!Array.isArray(entities)) {
             return [];
         }
 
         const coreEntityNames = new Set(Object.keys(coreEntitiesMap));
-        const customEntities: Array<new (...args: any[]) => any> = [];
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        const customEntities: Function[] = [];
 
         for (const entity of entities) {
             if (typeof entity === 'function') {
                 const entityName = entity.name;
                 if (!coreEntityNames.has(entityName)) {
-                    customEntities.push(entity as new (...args: any[]) => any);
+                    customEntities.push(entity);
                 }
             }
         }

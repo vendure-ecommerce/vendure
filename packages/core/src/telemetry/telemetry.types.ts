@@ -1,7 +1,19 @@
+import { DataSourceOptions } from 'typeorm';
+
 /**
  * Range buckets for anonymizing entity counts
  */
 export type RangeBucket = '0' | '1-100' | '101-1k' | '1k-10k' | '10k-100k' | '100k+';
+
+/**
+ * Supported database types for Vendure telemetry.
+ * Derived from TypeORM's DataSourceOptions for type safety.
+ * Note: 'better-sqlite3' is normalized to 'sqlite' in the collector.
+ */
+export type SupportedDatabaseType = Extract<
+    DataSourceOptions['type'],
+    'postgres' | 'mysql' | 'mariadb' | 'sqlite'
+>;
 
 /**
  * Information about plugins used in the Vendure installation
@@ -17,12 +29,7 @@ export interface TelemetryPluginInfo {
  * Entity count metrics using range buckets for privacy
  */
 export interface TelemetryEntityMetrics {
-    entities: {
-        product?: RangeBucket;
-        order?: RangeBucket;
-        customer?: RangeBucket;
-        productVariant?: RangeBucket;
-    };
+    entities: Partial<Record<string, RangeBucket>>;
     custom: {
         entityCount: number;
         totalRecords?: RangeBucket;
@@ -61,7 +68,7 @@ export interface TelemetryPayload {
     timestamp: string;
     vendureVersion: string;
     nodeVersion: string;
-    databaseType: 'postgres' | 'mysql' | 'mariadb' | 'sqlite';
+    databaseType: SupportedDatabaseType;
 
     // Optional fields
     environment?: string;
