@@ -309,7 +309,10 @@ export function createFormSchemaFromFields(
                 customFieldConfigs && customFieldConfigs.length > 0
                     ? processCustomFieldsSchema(customFieldConfigs, isTranslationContext)
                     : {};
-            schemaConfig[field.name] = z.object(customFieldsSchema).optional();
+            // Use .passthrough() to preserve custom field values that aren't in the schema
+            // This is essential for nested entities (e.g., ProductVariantPrice) whose custom
+            // field configs aren't passed to the parent form schema builder
+            schemaConfig[field.name] = z.object(customFieldsSchema).passthrough().optional();
         } else if (field.typeInfo) {
             const isNestedTranslationContext = field.name === 'translations' || isTranslationContext;
             let nestedType: ZodType = createFormSchemaFromFields(
