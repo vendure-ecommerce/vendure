@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 
 /**
  * Manages a persistent installation ID for telemetry purposes.

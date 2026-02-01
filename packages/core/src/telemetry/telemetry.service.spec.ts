@@ -43,6 +43,7 @@ describe('TelemetryService', () => {
 
     beforeEach(async () => {
         vi.resetAllMocks();
+        vi.useFakeTimers();
 
         // Setup fetch mock
         mockFetch = vi.fn().mockResolvedValue({ ok: true });
@@ -280,8 +281,6 @@ describe('TelemetryService', () => {
             });
 
             it('aborts request after 5 seconds', async () => {
-                vi.useFakeTimers();
-
                 let abortSignal: AbortSignal | undefined;
                 mockFetch.mockImplementation((_url: string, options: { signal: AbortSignal }) => {
                     abortSignal = options.signal;
@@ -292,7 +291,10 @@ describe('TelemetryService', () => {
 
                 service.onApplicationBootstrap();
 
-                // Fast-forward past the timeout
+                // First, advance past the initial 5-second delay to trigger sendTelemetry
+                await vi.advanceTimersByTimeAsync(5000);
+
+                // Then advance past the 5-second abort timeout
                 await vi.advanceTimersByTimeAsync(5000);
 
                 expect(abortSignal?.aborted).toBe(true);
@@ -329,5 +331,8 @@ describe('TelemetryService', () => {
 });
 
 async function flushPromises() {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    // Advance timers to trigger the 5-second telemetry delay
+    await vi.advanceTimersByTimeAsync(5000);
+    // Flush microtasks
+    await vi.runAllTimersAsync();
 }

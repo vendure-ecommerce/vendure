@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import os from 'os';
+import os from 'node:os';
 
 export interface SystemInfo {
     nodeVersion: string;

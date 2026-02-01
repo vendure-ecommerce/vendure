@@ -40,13 +40,13 @@ const TELEMETRY_TIMEOUT_MS = 5000;
 @Injectable()
 export class TelemetryService implements OnApplicationBootstrap {
     constructor(
-        private processContext: ProcessContext,
-        private installationIdCollector: InstallationIdCollector,
-        private systemInfoCollector: SystemInfoCollector,
-        private databaseCollector: DatabaseCollector,
-        private pluginCollector: PluginCollector,
-        private configCollector: ConfigCollector,
-        private deploymentCollector: DeploymentCollector,
+        private readonly processContext: ProcessContext,
+        private readonly installationIdCollector: InstallationIdCollector,
+        private readonly systemInfoCollector: SystemInfoCollector,
+        private readonly databaseCollector: DatabaseCollector,
+        private readonly pluginCollector: PluginCollector,
+        private readonly configCollector: ConfigCollector,
+        private readonly deploymentCollector: DeploymentCollector,
     ) {}
 
     onApplicationBootstrap() {

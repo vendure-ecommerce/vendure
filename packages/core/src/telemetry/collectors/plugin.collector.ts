@@ -44,7 +44,7 @@ const KNOWN_VENDURE_PLUGINS: Record<string, string> = {
  */
 @Injectable()
 export class PluginCollector {
-    constructor(private configService: ConfigService) {}
+    constructor(private readonly configService: ConfigService) {}
 
     collect(): TelemetryPluginInfo {
         try {
@@ -67,7 +67,7 @@ export class PluginCollector {
             }
 
             return {
-                npm: Array.from(npmPlugins).sort(),
+                npm: Array.from(npmPlugins).sort((a, b) => a.localeCompare(b)),
                 customCount,
             };
         } catch {

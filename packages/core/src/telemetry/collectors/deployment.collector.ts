@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import fs from 'fs';
+import fs from 'node:fs';
 
 import { ConfigService } from '../../config/config.service';
 import { InMemoryJobQueueStrategy } from '../../job-queue/in-memory-job-queue-strategy';
@@ -43,9 +43,9 @@ export const SERVERLESS_ENV_VARS = [
 @Injectable()
 export class DeploymentCollector {
     constructor(
-        private processContext: ProcessContext,
-        private configService: ConfigService,
-        private jobQueueService: JobQueueService,
+        private readonly processContext: ProcessContext,
+        private readonly configService: ConfigService,
+        private readonly jobQueueService: JobQueueService,
     ) {}
 
     collect(): TelemetryDeployment {

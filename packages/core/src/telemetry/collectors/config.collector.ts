@@ -9,7 +9,7 @@ import { TelemetryConfig } from '../telemetry.types';
  */
 @Injectable()
 export class ConfigCollector {
-    constructor(private configService: ConfigService) {}
+    constructor(private readonly configService: ConfigService) {}
 
     collect(): TelemetryConfig {
         return {
@@ -81,7 +81,7 @@ export class ConfigCollector {
                 methods.add(strategy.constructor.name);
             }
 
-            return Array.from(methods).sort();
+            return Array.from(methods).sort((a, b) => a.localeCompare(b));
         } catch {
             return [];
         }

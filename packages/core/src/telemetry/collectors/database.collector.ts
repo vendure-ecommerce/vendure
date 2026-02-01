@@ -17,8 +17,8 @@ export interface DatabaseInfo {
 @Injectable()
 export class DatabaseCollector {
     constructor(
-        private configService: ConfigService,
-        private connection: TransactionalConnection,
+        private readonly configService: ConfigService,
+        private readonly connection: TransactionalConnection,
     ) {}
 
     async collect(): Promise<DatabaseInfo> {
