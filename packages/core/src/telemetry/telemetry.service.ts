@@ -60,10 +60,14 @@ export class TelemetryService implements OnApplicationBootstrap {
             return;
         }
 
-        // Fire and forget - don't await, don't block bootstrap
-        this.sendTelemetry().catch(() => {
-            // Silently ignore all errors
-        });
+        // Delay telemetry collection to allow user bootstrap code to complete
+        // This ensures JobQueueService.start() has been called (if it will be)
+        // before we check worker mode
+        setTimeout(() => {
+            this.sendTelemetry().catch(() => {
+                // Silently ignore all errors
+            });
+        }, 5000);
     }
 
     /**

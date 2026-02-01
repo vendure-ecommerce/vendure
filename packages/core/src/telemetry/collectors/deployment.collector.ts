@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import fs from 'fs';
 
+import { ConfigService } from '../../config/config.service';
+import { InMemoryJobQueueStrategy } from '../../job-queue/in-memory-job-queue-strategy';
+import { JobQueueService } from '../../job-queue/job-queue.service';
 import { ProcessContext } from '../../process-context/process-context';
 import { isCI } from '../helpers/ci-detector.helper';
 import { TelemetryDeployment } from '../telemetry.types';
@@ -39,7 +42,11 @@ export const SERVERLESS_ENV_VARS = [
  */
 @Injectable()
 export class DeploymentCollector {
-    constructor(private processContext: ProcessContext) {}
+    constructor(
+        private processContext: ProcessContext,
+        private configService: ConfigService,
+        private jobQueueService: JobQueueService,
+    ) {}
 
     collect(): TelemetryDeployment {
         return {
@@ -97,12 +104,21 @@ export class DeploymentCollector {
     }
 
     private getWorkerMode(): 'integrated' | 'separate' {
-        // If we're in the server process and detecting telemetry,
-        // we check if there's a separate worker based on ProcessContext
-        // The presence of ProcessContext.isWorker being false means we're in server
-        // but we can't know if there's a separate worker without additional config
-        // So we report based on current process context
-        return this.processContext.isWorker ? 'separate' : 'integrated';
+        // If we're in a worker process, definitely separate
+        if (this.processContext.isWorker) {
+            return 'separate';
+        }
+
+        // Check JobQueueStrategy type - InMemoryJobQueueStrategy CANNOT work with separate workers
+        const strategy = this.configService.jobQueueOptions.jobQueueStrategy;
+        if (strategy instanceof InMemoryJobQueueStrategy) {
+            return 'integrated';
+        }
+
+        // For external queue strategies, check if job queue was started in this server process
+        // If started here → integrated mode (server is processing jobs)
+        // If not started here → separate mode (a separate worker process handles jobs)
+        return this.jobQueueService.started ? 'integrated' : 'separate';
     }
 
     private isServerless(): boolean {

@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { ConfigService } from '../../config/config.service';
+import { InMemoryJobQueueStrategy } from '../../job-queue/in-memory-job-queue-strategy';
+import { JobQueueService } from '../../job-queue/job-queue.service';
 import { ProcessContext } from '../../process-context/process-context';
 
 import { CLOUD_PROVIDERS, DeploymentCollector, SERVERLESS_ENV_VARS } from './deployment.collector';
@@ -12,6 +15,8 @@ vi.mock('../helpers/ci-detector.helper', () => ({
 describe('DeploymentCollector', () => {
     let collector: DeploymentCollector;
     let mockProcessContext: Partial<ProcessContext>;
+    let mockConfigService: Partial<ConfigService>;
+    let mockJobQueueService: Partial<JobQueueService>;
     let mockFs: typeof import('fs');
     let mockIsCI: ReturnType<typeof vi.fn>;
 
@@ -39,12 +44,27 @@ describe('DeploymentCollector', () => {
             isWorker: false,
         };
 
+        mockConfigService = {
+            jobQueueOptions: {
+                jobQueueStrategy: new InMemoryJobQueueStrategy(),
+                activeQueues: [],
+            },
+        };
+
+        mockJobQueueService = {
+            started: false,
+        };
+
         mockFs = await import('fs');
         const ciModule = await import('../helpers/ci-detector.helper');
         mockIsCI = vi.mocked(ciModule.isCI);
         mockIsCI.mockReturnValue(false);
 
-        collector = new DeploymentCollector(mockProcessContext as ProcessContext);
+        collector = new DeploymentCollector(
+            mockProcessContext as ProcessContext,
+            mockConfigService as ConfigService,
+            mockJobQueueService as JobQueueService,
+        );
     });
 
     afterEach(() => {
@@ -196,9 +216,31 @@ describe('DeploymentCollector', () => {
     });
 
     describe('worker mode', () => {
-        it('returns "integrated" when not worker process', () => {
+        it('returns "separate" when worker process', () => {
+            mockProcessContext.isWorker = true;
+            collector = new DeploymentCollector(
+                mockProcessContext as ProcessContext,
+                mockConfigService as ConfigService,
+                mockJobQueueService as JobQueueService,
+            );
+            vi.mocked(mockFs.existsSync).mockReturnValue(false);
+
+            const result = collector.collect();
+
+            expect(result.workerMode).toBe('separate');
+        });
+
+        it('returns "integrated" when using InMemoryJobQueueStrategy', () => {
             mockProcessContext.isWorker = false;
-            collector = new DeploymentCollector(mockProcessContext as ProcessContext);
+            mockConfigService.jobQueueOptions = {
+                jobQueueStrategy: new InMemoryJobQueueStrategy(),
+                activeQueues: [],
+            };
+            collector = new DeploymentCollector(
+                mockProcessContext as ProcessContext,
+                mockConfigService as ConfigService,
+                mockJobQueueService as JobQueueService,
+            );
             vi.mocked(mockFs.existsSync).mockReturnValue(false);
 
             const result = collector.collect();
@@ -206,9 +248,37 @@ describe('DeploymentCollector', () => {
             expect(result.workerMode).toBe('integrated');
         });
 
-        it('returns "separate" when worker process', () => {
-            mockProcessContext.isWorker = true;
-            collector = new DeploymentCollector(mockProcessContext as ProcessContext);
+        it('returns "integrated" when external strategy and job queue started', () => {
+            mockProcessContext.isWorker = false;
+            mockConfigService.jobQueueOptions = {
+                jobQueueStrategy: {}, // Non-InMemory strategy
+                activeQueues: [],
+            };
+            mockJobQueueService.started = true;
+            collector = new DeploymentCollector(
+                mockProcessContext as ProcessContext,
+                mockConfigService as ConfigService,
+                mockJobQueueService as JobQueueService,
+            );
+            vi.mocked(mockFs.existsSync).mockReturnValue(false);
+
+            const result = collector.collect();
+
+            expect(result.workerMode).toBe('integrated');
+        });
+
+        it('returns "separate" when external strategy and job queue not started', () => {
+            mockProcessContext.isWorker = false;
+            mockConfigService.jobQueueOptions = {
+                jobQueueStrategy: {}, // Non-InMemory strategy
+                activeQueues: [],
+            };
+            mockJobQueueService.started = false;
+            collector = new DeploymentCollector(
+                mockProcessContext as ProcessContext,
+                mockConfigService as ConfigService,
+                mockJobQueueService as JobQueueService,
+            );
             vi.mocked(mockFs.existsSync).mockReturnValue(false);
 
             const result = collector.collect();
