@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '../config/config.module';
 import { ConnectionModule } from '../connection/connection.module';
+import { JobQueueModule } from '../job-queue/job-queue.module';
 import { ProcessContextModule } from '../process-context/process-context.module';
 
 import { ConfigCollector } from './collectors/config.collector';
@@ -30,7 +31,7 @@ import { TelemetryService } from './telemetry.service';
  * @since 3.2.0
  */
 @Module({
-    imports: [ProcessContextModule, ConfigModule, ConnectionModule],
+    imports: [ProcessContextModule, ConfigModule, ConnectionModule, JobQueueModule],
     providers: [
         TelemetryService,
         InstallationIdCollector,
