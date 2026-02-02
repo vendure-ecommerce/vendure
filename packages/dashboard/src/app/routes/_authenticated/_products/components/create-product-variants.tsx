@@ -266,16 +266,12 @@ export function CreateProductVariants({
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    {variants.length > 1 && (
-                                        <TableHead>
-                                            <Trans>Create</Trans>
-                                        </TableHead>
-                                    )}
-                                    {variants.length > 1 && (
-                                        <TableHead>
-                                            <Trans>Variant</Trans>
-                                        </TableHead>
-                                    )}
+                                    <TableHead>
+                                        <Trans>Create</Trans>
+                                    </TableHead>
+                                    <TableHead>
+                                        <Trans>Variant</Trans>
+                                    </TableHead>
                                     <TableHead>
                                         <Trans>SKU</Trans>
                                     </TableHead>
@@ -288,101 +284,23 @@ export function CreateProductVariants({
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {/* Global price row */}
-                                <TableRow className="bg-muted/50">
-                                    {variants.length > 1 && <TableCell />}
-                                    {variants.length > 1 && (
+                                {/* Global setting row */}
+                                {variants.length > 1 && (
+                                    <TableRow className="bg-muted/50">
+                                        <TableCell />
                                         <TableCell className="font-medium">
                                             <Trans>All variants</Trans>
                                         </TableCell>
-                                    )}
-                                    <TableCell />
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            <FormField
-                                                control={form.control}
-                                                name="useGlobalPrice"
-                                                render={({ field }) => (
-                                                    <FormItem className="flex items-center">
-                                                        <FormControl>
-                                                            <Checkbox
-                                                                checked={field.value}
-                                                                onCheckedChange={field.onChange}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="globalPrice"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <MoneyInput
-                                                                {...field}
-                                                                value={Number(field.value) || 0}
-                                                                onChange={value =>
-                                                                    field.onChange(value.toString())
-                                                                }
-                                                                currency={activeChannel?.defaultCurrencyCode}
-                                                                disabled={!useGlobalPrice}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            <FormField
-                                                control={form.control}
-                                                name="useGlobalStock"
-                                                render={({ field }) => (
-                                                    <FormItem className="flex items-center">
-                                                        <FormControl>
-                                                            <Checkbox
-                                                                checked={field.value}
-                                                                onCheckedChange={field.onChange}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <FormField
-                                                control={form.control}
-                                                name="globalStock"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <Input
-                                                                {...field}
-                                                                type="number"
-                                                                min="0"
-                                                                step="1"
-                                                                className="w-24"
-                                                                disabled={!useGlobalStock}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                                {variants.map(variant => (
-                                    <TableRow key={variant.id}>
-                                        {variants.length > 1 && (
-                                            <TableCell>
+                                        <TableCell />
+                                        <TableCell>
+                                            <div className="flex items-center gap-2">
                                                 <FormField
                                                     control={form.control}
-                                                    name={`variants.${variant.id}.enabled`}
+                                                    name="useGlobalPrice"
                                                     render={({ field }) => (
-                                                        <FormItem className="flex items-center space-x-2">
+                                                        <FormItem className="flex items-center">
                                                             <FormControl>
                                                                 <Checkbox
-                                                                    defaultChecked={true}
                                                                     checked={field.value}
                                                                     onCheckedChange={field.onChange}
                                                                 />
@@ -390,12 +308,86 @@ export function CreateProductVariants({
                                                         </FormItem>
                                                     )}
                                                 />
-                                            </TableCell>
-                                        )}
+                                                <FormField
+                                                    control={form.control}
+                                                    name="globalPrice"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormControl>
+                                                                <MoneyInput
+                                                                    {...field}
+                                                                    value={Number(field.value) || 0}
+                                                                    onChange={value =>
+                                                                        field.onChange(value.toString())
+                                                                    }
+                                                                    currency={activeChannel?.defaultCurrencyCode}
+                                                                    disabled={!useGlobalPrice}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-2">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="useGlobalStock"
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex items-center">
+                                                            <FormControl>
+                                                                <Checkbox
+                                                                    checked={field.value}
+                                                                    onCheckedChange={field.onChange}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="globalStock"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormControl>
+                                                                <Input
+                                                                    {...field}
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="1"
+                                                                    className="w-24"
+                                                                    disabled={!useGlobalStock}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                                {variants.map(variant => (
+                                    <TableRow key={variant.id}>
+                                        <TableCell>
+                                            <FormField
+                                                control={form.control}
+                                                name={`variants.${variant.id}.enabled`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex items-center space-x-2">
+                                                        <FormControl>
+                                                            <Checkbox
+                                                                defaultChecked={true}
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </TableCell>
 
-                                        {variants.length > 1 && (
-                                            <TableCell>{variant.values.join(' ')}</TableCell>
-                                        )}
+                                        <TableCell>{variant.values.join(' ')}</TableCell>
 
                                         <TableCell>
                                             <FormField
