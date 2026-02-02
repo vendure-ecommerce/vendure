@@ -22,6 +22,7 @@ import {
     createProductVariantsDocument,
 } from '../products.graphql.js';
 import { CreateProductVariants, ExistingOptionGroup, ExistingVariant, VariantConfiguration } from './create-product-variants.js';
+import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 
 interface VariantDataWithExisting {
     data: VariantConfiguration;
@@ -245,14 +246,14 @@ export function CreateProductVariantsDialog({
                             <Trans>Create variants for your product</Trans>
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="mt-4">
+                    <ScrollArea className="mt-4 max-h-[60vh]">
                         <CreateProductVariants
                             onChange={handleOnChange}
                             currencyCode={activeChannel?.defaultCurrencyCode}
                             existingOptionGroups={existingOptionGroups}
                             existingVariants={existingVariants}
                         />
-                    </div>
+                    </ScrollArea>
                     <DialogFooter>
                         <Button
                             type="button"
