@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_products/products_/$id_/o
             breadcrumb: [
                 { path: '/products', label: <Trans>Products</Trans> },
                 { path: `/products/${params.id}`, label: result.product?.name },
-                <Trans>Manage Options</Trans>,
+                { label: <Trans>Manage Options</Trans> },
             ],
         };
     },

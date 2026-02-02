@@ -163,7 +163,7 @@ export function OptionGroupsEditor({ onChange, initialGroups = [] }: Readonly<Op
         <Form {...form}>
             <div className="space-y-4">
                 {optionGroups.map((group, index) => {
-                    const isExisting = !!(group as any).existingId;
+                    const isExisting = !!group.existingId;
                     return (
                         <div key={group.id} className="flex items-start">
                             <SingleOptionGroupEditor

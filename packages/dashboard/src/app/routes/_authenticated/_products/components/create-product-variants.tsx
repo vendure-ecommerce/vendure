@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { OptionGroupConfiguration, optionGroupSchema, OptionGroupsEditor } from './option-groups-editor.js';
+import { OptionGroupConfiguration, OptionGroupsEditor } from './option-groups-editor.js';
 import { MoneyInput } from '@/vdb/components/data-input/index.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 
@@ -171,10 +171,10 @@ export function CreateProductVariants({
     // Generate variants and filter out existing ones
     const variants = useMemo(() => {
         const existingCombos = new Set(
-            existingVariants.map(v => v.options.map(o => o.id).sort().join(',')),
+            existingVariants.map(v => v.options.map(o => o.id).sort((a, b) => a.localeCompare(b)).join(',')),
         );
         return generateVariants(optionGroups).filter(
-            variant => !existingCombos.has(variant.options.map(o => o.id).sort().join(',')),
+            variant => !existingCombos.has(variant.options.map(o => o.id).sort((a, b) => a.localeCompare(b)).join(',')),
         );
     }, [optionGroups, existingVariants]);
 
