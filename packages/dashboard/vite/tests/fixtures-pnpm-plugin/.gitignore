@@ -1,2 +1,0 @@
-# Force include pnpm structure for testing plugin discovery
-!fake_node_modules/.pnpm/**/node_modules/

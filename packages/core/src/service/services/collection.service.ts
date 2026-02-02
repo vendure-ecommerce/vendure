@@ -377,7 +377,11 @@ export class CollectionService implements OnModuleInit {
                 ctx,
             );
         }
-        return [pickProps(rootCollection), ...ancestors.map(pickProps).reverse(), pickProps(collection)];
+        return [
+            pickProps(rootCollection),
+            ...ancestors.map(a => pickProps(a)).reverse(),
+            pickProps(collection),
+        ];
     }
 
     /**

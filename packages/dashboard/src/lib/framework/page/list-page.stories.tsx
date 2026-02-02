@@ -5,6 +5,7 @@ import { ListPage, ListPageProps } from '@/vdb/framework/page/list-page.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import type { Meta, StoryObj } from '@storybook/react';
 import { PlusIcon } from 'lucide-react';
+import { expect } from 'storybook/test';
 
 import { DemoRouterProvider } from '../../../../.storybook/providers.js';
 
@@ -72,8 +73,9 @@ const meta = {
             description: 'GraphQL mutation document for deleting items',
         },
         customizeColumns: {
-            control: false,
-            description: 'Customize column rendering and behavior',
+            control: 'object',
+            description:
+                'Customize column rendering and behavior. Use `meta.disabled: true` to exclude columns from the table.',
         },
         defaultVisibility: {
             control: 'object',
@@ -98,6 +100,11 @@ export const BasicList: Story = {
             name: true,
             code: true,
             enabled: true,
+        },
+        customizeColumns: {
+            updatedAt: {
+                meta: { disabled: true },
+            },
         },
     },
 };
@@ -161,6 +168,38 @@ export const WithSearch: Story = {
         customizeColumns: {
             name: {
                 cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
+            },
+        },
+    },
+};
+
+/**
+ * ListPage with disabled columns.
+ * Shows how to use `meta.disabled` to completely exclude columns from the table
+ * and the column visibility toggle. The disabled columns' data can still be
+ * accessed in other column renderers.
+ */
+export const WithDisabledColumns: Story = {
+    args: {
+        pageId: 'country-list-disabled',
+        listQuery: countriesListQuery,
+        title: 'Countries',
+        defaultVisibility: {
+            name: true,
+            code: true,
+            enabled: true,
+        },
+        customizeColumns: {
+            name: {
+                cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
+            },
+            // The createdAt and updatedAt columns are disabled and won't appear
+            // in the table or in the column visibility toggle
+            updatedAt: {
+                meta: { disabled: true },
+            },
+            createdAt: {
+                meta: { disabled: true },
             },
         },
     },

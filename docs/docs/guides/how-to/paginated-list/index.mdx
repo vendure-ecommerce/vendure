@@ -2,15 +2,12 @@
 title: "Paginated lists"
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 Vendure's list queries follow a set pattern which allows for pagination, filtering & sorting. This guide will demonstrate how
 to implement your own paginated list queries.
 
 ## API definition
 
-Let's start with defining the GraphQL schema for our query. In this example, we'll image that we have defined a [custom entity](/guides/developer-guide/database-entity/) to
+Let's start with defining the GraphQL schema for our query. In this example, we'll image that we have defined a [custom entity](/developer-guide/database-entity/) to
 represent a `ProductReview`. We want to be able to query a list of reviews in the Admin API. Here's how the schema definition
 would look:
 
