@@ -52,9 +52,16 @@ function ManageProductOptions() {
 
     const deleteOptionMutation = useMutation({
         mutationFn: api.mutate(deleteProductOptionDocument),
-        onSuccess: () => {
-            toast.success(t`Successfully deleted option`);
-            refetch();
+        onSuccess: data => {
+            const result = data.deleteProductOption;
+            if (result.result === 'DELETED') {
+                toast.success(t`Successfully deleted option`);
+                refetch();
+            } else {
+                toast.error(t`Failed to delete option`, {
+                    description: result.message,
+                });
+            }
         },
         onError: error => {
             toast.error(t`Failed to delete option`, {
@@ -65,9 +72,16 @@ function ManageProductOptions() {
 
     const removeOptionGroupMutation = useMutation({
         mutationFn: api.mutate(removeOptionGroupFromProductDocument),
-        onSuccess: () => {
-            toast.success(t`Option group removed`);
-            refetch();
+        onSuccess: data => {
+            const result = data.removeOptionGroupFromProduct;
+            if ('errorCode' in result) {
+                toast.error(t`Failed to remove option group`, {
+                    description: result.message,
+                });
+            } else {
+                toast.success(t`Option group removed`);
+                refetch();
+            }
         },
         onError: error => {
             toast.error(t`Failed to remove option group`, {
