@@ -109,8 +109,7 @@ export const config: VendureConfig = {
     catalogOptions: {
         collectionFilters: [
             ...defaultCollectionFilters,
-            // highlight-next-line
-            skuCollectionFilter
+            skuCollectionFilter // [!code highlight]
         ],
     },
 };

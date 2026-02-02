@@ -116,13 +116,11 @@ Let's register this route (and we can also remove the test page) in our `index.t
 ```tsx title="src/plugins/cms/dashboard/index.tsx"
 import { defineDashboardExtension } from '@vendure/dashboard';
 
-// highlight-next-line
-import { articleList } from './article-list';
+import { articleList } from './article-list'; // [!code highlight]
 
 defineDashboardExtension({
     routes: [
-        // highlight-next-line
-        articleList,
+        articleList, // [!code highlight]
     ],
 });
 ```

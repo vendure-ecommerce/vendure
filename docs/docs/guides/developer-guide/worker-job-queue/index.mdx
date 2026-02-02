@@ -338,8 +338,7 @@ import { JobQueue, JobQueueService, Product, TransactionalConnection,
 @Injectable()
 class ProductExportService implements OnModuleInit {
 
-    // highlight-next-line
-    private jobQueue: JobQueue<{ ctx: SerializedRequestContext; }>;
+    private jobQueue: JobQueue<{ ctx: SerializedRequestContext; }>; // [!code highlight]
 
     constructor(private jobQueueService: JobQueueService,
                 private connection: TransactionalConnection) {
@@ -349,8 +348,7 @@ class ProductExportService implements OnModuleInit {
         this.jobQueue = await this.jobQueueService.createQueue({
             name: 'export-products',
             process: async job => {
-                // highlight-next-line
-                const ctx = RequestContext.deserialize(job.data.ctx);
+                const ctx = RequestContext.deserialize(job.data.ctx); // [!code highlight]
                 const allProducts = await this.connection.getRepository(ctx, Product).find();
                 // ... logic to export the product omitted for brevity
             },
@@ -358,8 +356,7 @@ class ProductExportService implements OnModuleInit {
     }
 
     exportAllProducts(ctx: RequestContext) {
-        // highlight-next-line
-        return this.jobQueue.add({ ctx: ctx.serialize() });
+        return this.jobQueue.add({ ctx: ctx.serialize() }); // [!code highlight]
     }
 }
 ```
@@ -382,8 +379,7 @@ import { JobQueue, JobQueueService,
 @Injectable()
 class ProductExportService implements OnModuleInit {
 
-    // highlight-next-line
-    private jobQueue: JobQueue<{ channelToken: string; languageCode: LanguageCode; }>;
+    private jobQueue: JobQueue<{ channelToken: string; languageCode: LanguageCode; }>; // [!code highlight]
 
     constructor(private jobQueueService: JobQueueService,
                 private requestContextService: RequestContextService) {
@@ -393,26 +389,22 @@ class ProductExportService implements OnModuleInit {
         this.jobQueue = await this.jobQueueService.createQueue({
             name: 'export-products',
             process: async job => {
-                // highlight-start
-                // Reconstruct the RequestContext from the passed data
-                const ctx = await this.requestContextService.create({
-                    channelOrToken: job.data.channelToken,
-                    languageCode: job.data.languageCode,
-                })
-                // highlight-end
+                // Reconstruct the RequestContext from the passed data // [!code highlight]
+                const ctx = await this.requestContextService.create({ // [!code highlight]
+                    channelOrToken: job.data.channelToken, // [!code highlight]
+                    languageCode: job.data.languageCode, // [!code highlight]
+                }) // [!code highlight]
                 // ... logic to export the product omitted for brevity
             },
         });
     }
 
     exportAllProducts(ctx: RequestContext) {
-        // highlight-start
-        // Pass only the necessary data
-        return this.jobQueue.add({
-            channelId: ctx.channel.token,
-            languageCode: ctx.languageCode
-        });
-        // highlight-end
+        // Pass only the necessary data // [!code highlight]
+        return this.jobQueue.add({ // [!code highlight]
+            channelId: ctx.channel.token, // [!code highlight]
+            languageCode: ctx.languageCode // [!code highlight]
+        }); // [!code highlight]
     }
 }
 ```
@@ -453,13 +445,11 @@ class ProductExportService implements OnModuleInit {
                 });
                 let successfulExportCount = 0;
                 for (const product of allProducts) {
-                    // highlight-start
-                    if (job.state === JobState.CANCELLED) {
-                        // If the job has been cancelled, stop processing
-                        // to prevent unnecessary work.
-                        throw new Error('Job was cancelled');
-                    }
-                    // highlight-end
+                    if (job.state === JobState.CANCELLED) { // [!code highlight]
+                        // If the job has been cancelled, stop processing // [!code highlight]
+                        // to prevent unnecessary work. // [!code highlight]
+                        throw new Error('Job was cancelled'); // [!code highlight]
+                    } // [!code highlight]
 
                     // ... logic to export the product omitted for brevity
                     successfulExportCount++;

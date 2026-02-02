@@ -145,10 +145,8 @@ export const config: VendureConfig = {
                 outputPath: path.join(__dirname, '../admin-ui'),
                 extensions: [{
                     id: 'common',
-                    // highlight-start
-                    extensionPath: path.join(__dirname, 'plugins/common/ui'),
-                    providers: ['providers.ts'],
-                    // highlight-end
+                    extensionPath: path.join(__dirname, 'plugins/common/ui'), // [!code highlight]
+                    providers: ['providers.ts'], // [!code highlight]
                 }],
             }),
         }),
@@ -165,8 +163,7 @@ customFields: {
     Product: [
         {
             name: 'intensity', type: 'int', min: 0, max: 100, defaultValue: 0,
-            // highlight-next-line
-            ui: {component: 'slider-form-input'}
+            ui: {component: 'slider-form-input'} // [!code highlight]
         },
     ],
 }
@@ -265,11 +262,9 @@ export const orderFixedDiscount = new PromotionOrderAction({
     args: {
         discount: {
             type: 'int',
-            // highlight-start
-            ui: {
-                component: 'currency-form-input',
-            },
-            // highlight-end
+            ui: { // [!code highlight]
+                component: 'currency-form-input', // [!code highlight]
+            }, // [!code highlight]
         },
     },
     execute(ctx, order, args) {

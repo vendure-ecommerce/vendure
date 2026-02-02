@@ -92,14 +92,12 @@ export const config: VendureConfig = {
     plugins: [
         EmailPlugin.init({
             // ...
-            // highlight-start
-            globalTemplateVars: {
-                fromAddress: '"MyShop" <noreply@myshop.com>',
-                verifyEmailAddressUrl: 'https://www.myshop.com/verify',
-                passwordResetUrl: 'https://www.myshop.com/password-reset',
-                changeEmailAddressUrl: 'https://www.myshop.com/verify-email-address-change'
-            },
-            // highlight-end
+            globalTemplateVars: { // [!code highlight]
+                fromAddress: '"MyShop" <noreply@myshop.com>', // [!code highlight]
+                verifyEmailAddressUrl: 'https://www.myshop.com/verify', // [!code highlight]
+                passwordResetUrl: 'https://www.myshop.com/password-reset', // [!code highlight]
+                changeEmailAddressUrl: 'https://www.myshop.com/verify-email-address-change' // [!code highlight]
+            }, // [!code highlight]
         }),
     ],
 };

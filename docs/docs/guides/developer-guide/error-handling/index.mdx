@@ -88,24 +88,22 @@ export function query(document: string, variables: Record<string, any> = {}) {
             window.alert(err.message);
         })
         .then((result) => {
-            // highlight-start
-            // We check for any GraphQL errors which would be in the
-            // `errors` array of the response body:
-            if (Array.isArray(result.errors)) {
-                // It looks like we have an unexpected error.
-                // At this point you could take actions like:
-                // - logging the error to a remote service
-                // - displaying an error popup to the user
-                // - inspecting the `error.extensions.code` to determine the
-                //   type of error and take appropriate action. E.g. a
-                //   in response to a FORBIDDEN_ERROR you can redirect the
-                //   user to a login page.
+            // We check for any GraphQL errors which would be in the // [!code highlight]
+            // `errors` array of the response body: // [!code highlight]
+            if (Array.isArray(result.errors)) { // [!code highlight]
+                // It looks like we have an unexpected error. // [!code highlight]
+                // At this point you could take actions like: // [!code highlight]
+                // - logging the error to a remote service // [!code highlight]
+                // - displaying an error popup to the user // [!code highlight]
+                // - inspecting the `error.extensions.code` to determine the // [!code highlight]
+                //   type of error and take appropriate action. E.g. a // [!code highlight]
+                //   in response to a FORBIDDEN_ERROR you can redirect the // [!code highlight]
+                //   user to a login page. // [!code highlight]
 
-                // In this example we just display an alert:
-                const errorMessage = result.errors.map((e) => e.message).join('\n');
-                window.alert(`Unexpected error caught:\n\n${errorMessage}`);
-            }
-            // highlight-end
+                // In this example we just display an alert: // [!code highlight]
+                const errorMessage = result.errors.map((e) => e.message).join('\n'); // [!code highlight]
+                window.alert(`Unexpected error caught:\n\n${errorMessage}`); // [!code highlight]
+            } // [!code highlight]
             return result;
         });
 }
@@ -196,8 +194,7 @@ Here's how a response would look in both the success and error result cases:
 {
   "data": {
     "applyCouponCode": {
-      // highlight-next-line
-      "__typename": "Order",
+      "__typename": "Order", // [!code highlight]
       "id": "123",
       "couponCodes": ["VALID-CODE"],
       "totalWithTax": 12599,
@@ -213,12 +210,10 @@ Here's how a response would look in both the success and error result cases:
 {
   "data": {
     "applyCouponCode": {
-      // highlight-next-line
-      "__typename": "CouponCodeLimitError",
+      "__typename": "CouponCodeLimitError", // [!code highlight]
       "errorCode": "COUPON_CODE_LIMIT_ERROR",
       "message": "Coupon code cannot be used more than once per customer",
-      // highlight-next-line
-      "limit": 1
+      "limit": 1 // [!code highlight]
     }
   }
 }
@@ -304,12 +299,10 @@ switch (result.applyCouponCode.__typename) {
         // handle limit error
         break;
     default:
-        // highlight-start
-        // this line will cause a TypeScript error if there are any
-        // ErrorResults which we have not handled in the switch cases
-        // above.
-        const _exhaustiveCheck: never = result.applyCouponCode;
-        // highlight-end
+        // this line will cause a TypeScript error if there are any // [!code highlight]
+        // ErrorResults which we have not handled in the switch cases // [!code highlight]
+        // above. // [!code highlight]
+        const _exhaustiveCheck: never = result.applyCouponCode; // [!code highlight]
 }
 ```
 

@@ -280,11 +280,9 @@ export const buy1Get1FreeAction = new PromotionItemAction({
         value: 'Buy 1, get 1 free',
     }],
     args: {},
-    // highlight-next-line
-    conditions: [buyXGetYFreeCondition],
+    conditions: [buyXGetYFreeCondition], // [!code highlight]
     execute(ctx, orderLine, args, state) {
-        // highlight-next-line
-        const freeItemIds = state.buy_x_get_y_free.freeItemIds;
+        const freeItemIds = state.buy_x_get_y_free.freeItemIds; // [!code highlight]
         if (idsContainsItem(freeItemIds, orderLine)) {
             const unitPrice = ctx.channel.pricesIncludeTax ? orderLine.unitPriceWithTax : orderLine.unitPrice;
             return -unitPrice;
@@ -313,8 +311,7 @@ export const buyXGetYFreeCondition = new PromotionCondition({
         if (freeItemIds.length === 0) {
             return false;
         }
-        // highlight-next-line
-        return {freeItemIds};
+        return {freeItemIds}; // [!code highlight]
     },
 });
 ```

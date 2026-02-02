@@ -31,8 +31,7 @@ You can see the current state of an order via `state` field on the `Order` type:
 query ActiveOrder {
     activeOrder {
         id
-        // highlight-next-line
-        state
+        state # [!code highlight]
     }
 }
 ```
@@ -45,8 +44,7 @@ query ActiveOrder {
   "data": {
     "activeOrder": {
       "id": "4",
-      // highlight-next-line
-      "state": "AddingItems"
+      "state": "AddingItems" // [!code highlight]
     }
   }
 }
@@ -290,14 +288,12 @@ As an example, let's say we want to add a Surcharge to the order. The following 
 export const myOrderProcess: OrderProcess<OrderState> = {
     async onTransitionEnd(fromState, toState, data) {
         if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
-            // highlight-start
-            // WARNING: This will not work!  
-            await orderService.addSurchargeToOrder(ctx, order.id, {
-                description: 'Test',
-                listPrice: 42,
-                listPriceIncludesTax: false,
-            });
-            // highlight-end
+            // WARNING: This will not work! // [!code highlight]
+            await orderService.addSurchargeToOrder(ctx, order.id, { // [!code highlight]
+                description: 'Test', // [!code highlight]
+                listPrice: 42, // [!code highlight]
+                listPriceIncludesTax: false, // [!code highlight]
+            }); // [!code highlight]
         }
     }
 };
@@ -309,15 +305,13 @@ Instead, you need to ensure you **mutate the `order` object**:
 export const myOrderProcess: OrderProcess<OrderState> = {
     async onTransitionEnd(fromState, toState, data) {
         if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
-            // highlight-start
-            const {surcharges} = await orderService.addSurchargeToOrder(ctx, order.id, {
-                description: 'Test',
-                listPrice: 42,
-                listPriceIncludesTax: false,
-            });
-            // Important: mutate the order object
-            order.surcharges = surcharges;
-            // highlight-end
+            const {surcharges} = await orderService.addSurchargeToOrder(ctx, order.id, { // [!code highlight]
+                description: 'Test', // [!code highlight]
+                listPrice: 42, // [!code highlight]
+                listPriceIncludesTax: false, // [!code highlight]
+            }); // [!code highlight]
+            // Important: mutate the order object // [!code highlight]
+            order.surcharges = surcharges; // [!code highlight]
         }
     },
 }

@@ -48,8 +48,7 @@ Without this setting, ES2022 class field semantics cause entity fields to be ove
 {
     "compilerOptions": {
         "target": "ES2022",
-        // highlight-next-line
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false // [!code highlight]
     }
 }
 ```
@@ -80,8 +79,7 @@ import { VendurePlugin } from '@vendure/core';
 import { ProductReview } from './entities/product-review.entity';
 
 @VendurePlugin({
-    // highlight-next-line
-    entities: [ProductReview],
+    entities: [ProductReview], // [!code highlight]
 })
 export class ReviewsPlugin {}
 ```
@@ -106,14 +104,12 @@ export class ReviewService {
 
     async createReview(ctx: RequestContext, productId: string, rating: number, text: string) {
         const product = await this.connection.getEntityOrThrow(ctx, Product, productId);
-        // highlight-start
-        const review = new ProductReview({
-            product,
-            rating,
-            text,
-        });
-        return this.connection.getRepository(ctx, ProductReview).save(review);
-        // highlight-end
+        const review = new ProductReview({ // [!code highlight]
+            product, // [!code highlight]
+            rating, // [!code highlight]
+            text, // [!code highlight]
+        }); // [!code highlight]
+        return this.connection.getRepository(ctx, ProductReview).save(review); // [!code highlight]
     }
 }
 ```

@@ -113,18 +113,16 @@ Given the above parts of the plugin, we can now query the list of reviews in the
 query {
   productReviews(
     options: {
-      // highlight-start
-      skip: 0
-      take: 10
-      sort: {
-        createdAt: DESC
-      }
-      filter: {
-        rating: {
-          between: { start: 3, end: 5 }
-        }
-      }
-      // highlight-end
+      skip: 0 # [!code highlight]
+      take: 10 # [!code highlight]
+      sort: { # [!code highlight]
+        createdAt: DESC # [!code highlight]
+      } # [!code highlight]
+      filter: { # [!code highlight]
+        rating: { # [!code highlight]
+          between: { start: 3, end: 5 } # [!code highlight]
+        } # [!code highlight]
+      } # [!code highlight]
     }) {
     totalItems
     items {
@@ -202,19 +200,17 @@ query {
     options: {
     skip: 0
     take: 10
-    // highlight-start
-    filter: {
-      _and: [
-        { text: { startsWith: "phone" } },
-        {
-          _or: [
-            { rating: { gte: 4 } },
-            { rating: { eq: 0 } }
-          ]
-        }
-      ]
-    }
-    // highlight-end
+    filter: { # [!code highlight]
+      _and: [ # [!code highlight]
+        { text: { startsWith: "phone" } }, # [!code highlight]
+        { # [!code highlight]
+          _or: [ # [!code highlight]
+            { rating: { gte: 4 } }, # [!code highlight]
+            { rating: { eq: 0 } } # [!code highlight]
+          ] # [!code highlight]
+        } # [!code highlight]
+      ] # [!code highlight]
+    } # [!code highlight]
     }) {
     totalItems
     items {
@@ -284,11 +280,9 @@ import gql from 'graphql-tag';
 export const adminApiExtensions = gql`
 # ... existing definitions from earlier example omitted
 
-// highlight-start
-input ProductReviewFilterParameter {
-  productName: StringOperators
-}
-// highlight-end
+input ProductReviewFilterParameter { # [!code highlight]
+  productName: StringOperators # [!code highlight]
+} # [!code highlight]
 `;
 ```
 
@@ -311,14 +305,11 @@ export class ProductReviewService {
     findAll(ctx: RequestContext, options?: ListQueryOptions<ProductReview>): Promise<PaginatedList<ProductReview>> {
         return this.listQueryBuilder
             .build(ProductReview, options, {
-                // highlight-next-line
-                relations: ['product'],
+                relations: ['product'], // [!code highlight]
                 ctx,
-                // highlight-start
-                customPropertyMap: {
-                    productName: 'product.name',
-                }
-                // highlight-end
+                customPropertyMap: { // [!code highlight]
+                    productName: 'product.name', // [!code highlight]
+                } // [!code highlight]
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
@@ -334,13 +325,11 @@ query {
     options: {
       skip: 0
       take: 10
-      // highlight-start
-      filter: {
-        productName: {
-          contains: "phone"
-        }
-      }
-      // highlight-end
+      filter: { # [!code highlight]
+        productName: { # [!code highlight]
+          contains: "phone" # [!code highlight]
+        } # [!code highlight]
+      } # [!code highlight]
   }) {
     totalItems
     items {

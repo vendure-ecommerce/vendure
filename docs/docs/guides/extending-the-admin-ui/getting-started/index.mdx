@@ -97,22 +97,19 @@ static property on your plugin class:
 ```ts title="src/plugins/my-plugin/my.plugin.ts"
 import * as path from 'path';
 import { PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
-// highlight-next-line
-import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
+import { AdminUiExtension } from '@vendure/ui-devkit/compiler'; // [!code highlight]
 
 @VendurePlugin({
     imports: [PluginCommonModule],
     compatibility: '^3.0.0',
 })
 export class MyPlugin {
-    // highlight-start
-    static ui: AdminUiExtension = {
-        id: 'my-plugin-ui',
-        extensionPath: path.join(__dirname, 'ui'),
-        routes: [{ route: 'my-plugin', filePath: 'routes.ts' }],
-        providers: ['providers.ts'],
-    };
-    // highlight-end
+    static ui: AdminUiExtension = { // [!code highlight]
+        id: 'my-plugin-ui', // [!code highlight]
+        extensionPath: path.join(__dirname, 'ui'), // [!code highlight]
+        routes: [{ route: 'my-plugin', filePath: 'routes.ts' }], // [!code highlight]
+        providers: ['providers.ts'], // [!code highlight]
+    }; // [!code highlight]
 }
 ```
 
@@ -121,8 +118,7 @@ You can then use the [`compileUiExtensions` function](/reference/admin-ui-api/ui
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-// highlight-next-line
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler'; // [!code highlight]
 import { MyPlugin } from './plugins/greeter/my.plugin';
 
 export const config: VendureConfig = {
@@ -130,13 +126,11 @@ export const config: VendureConfig = {
     plugins: [
         AdminUiPlugin.init({
             port: 3002,
-            // highlight-start
-            app: compileUiExtensions({
-                outputPath: path.join(__dirname, '../admin-ui'),
-                extensions: [MyPlugin.ui],
-                devMode: true,
-            }),
-            // highlight-end
+            app: compileUiExtensions({ // [!code highlight]
+                outputPath: path.join(__dirname, '../admin-ui'), // [!code highlight]
+                extensions: [MyPlugin.ui], // [!code highlight]
+                devMode: true, // [!code highlight]
+            }), // [!code highlight]
             adminUiConfig: {
                 apiPort: 3000,
             },
@@ -161,10 +155,8 @@ You can exclude them in your main `tsconfig.json` by adding a line to the "exclu
     "exclude": [
         "node_modules",
         "migration.ts",
-        // highlight-start
-        "src/plugins/**/ui/*",
-        "admin-ui"
-        // highlight-end
+        "src/plugins/**/ui/*", // [!code highlight]
+        "admin-ui" // [!code highlight]
     ]
 }
 ```
@@ -226,8 +218,7 @@ compileUiExtensions({
         {
             id: 'test-extension',
             extensionPath: path.join(__dirname, 'plugins/my-plugin/ui'),
-            // highlight-next-line
-            providers: ['providers.ts'],
+            providers: ['providers.ts'], // [!code highlight]
         },
     ],
     devMode: true,
@@ -248,14 +239,12 @@ In addition to the specialized UI extension providers listed above, the provider
 import { Injectable } from '@angular/core';
 import { addActionBarItem } from '@vendure/admin-ui/core';
 
-// highlight-start
-@Injectable()
-class MyService {
-    greet() {
-        return 'Hello!';
-    }
-}
-// highlight-end
+@Injectable() // [!code highlight]
+class MyService { // [!code highlight]
+    greet() { // [!code highlight]
+        return 'Hello!'; // [!code highlight]
+    } // [!code highlight]
+} // [!code highlight]
 
 export default [
     MyService,
@@ -264,11 +253,9 @@ export default [
         label: 'Print invoice',
         locationId: 'order-detail',
         onClick: (event, context) => {
-            // highlight-start
-            const myService = context.injector.get(MyService);
-            console.log(myService.greet());
-            // logs "Hello!"
-            // highlight-end
+            const myService = context.injector.get(MyService); // [!code highlight]
+            console.log(myService.greet()); // [!code highlight]
+            // logs "Hello!" // [!code highlight]
         },
     }),
 ];
@@ -534,16 +521,14 @@ export const config: VendureConfig = {
                 extensions: [
                     {
                         extensionPath: path.join(__dirname, 'plugins/greeter/ui'),
-                        // highlight-start
-                        ngModules: [
-                            {
-                                type: 'lazy',
-                                route: 'greet',
-                                ngModuleFileName: 'greeter.module.ts',
-                                ngModuleName: 'GreeterModule',
-                            },
-                        ],
-                        // highlight-end
+                        ngModules: [ // [!code highlight]
+                            { // [!code highlight]
+                                type: 'lazy', // [!code highlight]
+                                route: 'greet', // [!code highlight]
+                                ngModuleFileName: 'greeter.module.ts', // [!code highlight]
+                                ngModuleName: 'GreeterModule', // [!code highlight]
+                            }, // [!code highlight]
+                        ], // [!code highlight]
                     },
                 ],
             }),
@@ -594,15 +579,13 @@ export const config: VendureConfig = {
                 extensions: [
                     {
                         extensionPath: path.join(__dirname, 'plugins/invoices/ui'),
-                        // highlight-start
-                        ngModules: [
-                            {
-                                type: 'shared',
-                                ngModuleFileName: 'invoice-shared.module.ts',
-                                ngModuleName: 'InvoiceSharedModule',
-                            },
-                        ],
-                        // highlight-end
+                        ngModules: [ // [!code highlight]
+                            { // [!code highlight]
+                                type: 'shared', // [!code highlight]
+                                ngModuleFileName: 'invoice-shared.module.ts', // [!code highlight]
+                                ngModuleName: 'InvoiceSharedModule', // [!code highlight]
+                            }, // [!code highlight]
+                        ], // [!code highlight]
                     },
                 ],
             }),
@@ -619,18 +602,15 @@ If you have existing UI extensions written using the legacy API, you can migrate
 
 ```ts
 import { Component } from '@angular/core';
-// highlight-next-line
-import { SharedModule } from '@vendure/admin-ui/core';
+import { SharedModule } from '@vendure/admin-ui/core'; // [!code highlight]
 
 @Component({
     selector: 'greeter',
     template: `<vdr-page-block
         ><h1>{{ greeting }}</h1></vdr-page-block
     >`,
-    // highlight-start
-    standalone: true,
-    imports: [SharedModule],
-    // highlight-end
+    standalone: true, // [!code highlight]
+    imports: [SharedModule], // [!code highlight]
 })
 export class GreeterComponent {
     greeting = 'Hello!';
@@ -640,14 +620,11 @@ export class GreeterComponent {
 2. In templates for page components, remove the `<vdr-page-header>` and `<vdr-page-body>` components, as they are included by default now when using
    the `registeRouteComponent()` function:
     ```html
-    // highlight-start
-    <vdr-page-header>
-        <vdr-page-title></vdr-page-title>
-    </vdr-page-header>
-    <vdr-page-body>
-        // highlight-end
+    <vdr-page-header> <!-- [!code highlight] -->
+        <vdr-page-title></vdr-page-title> <!-- [!code highlight] -->
+    </vdr-page-header> <!-- [!code highlight] -->
+    <vdr-page-body> <!-- [!code highlight] -->
         <vdr-page-block>This content should remain</vdr-page-block>
-        // highlight-next-line
-    </vdr-page-body>
+    </vdr-page-body> <!-- [!code highlight] -->
     ```
 3. Remove any `NgModule` files, and replace lazy modules with `routes.ts`, and shared modules with `providers.ts` (see above).

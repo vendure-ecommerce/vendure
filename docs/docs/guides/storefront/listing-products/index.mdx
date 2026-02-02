@@ -81,8 +81,7 @@ Next, we can use the `search` query to fetch the products in the collection:
 query GetCollectionProducts($slug: String!, $skip: Int, $take: Int) {
   search(
     input: {
-      // highlight-next-line
-      collectionSlug: $slug,
+      collectionSlug: $slug, # [!code highlight]
       groupByProduct: true,
       skip: $skip,
       take: $take }
@@ -189,8 +188,7 @@ The `search` query can also be used to perform a full-text search of the product
 query SearchProducts($term: String!, $skip: Int, $take: Int) {
   search(
     input: {
-      // highlight-next-line
-      term: $term,
+      term: $term, # [!code highlight]
       groupByProduct: true,
       skip: $skip,
       take: $take }
@@ -302,19 +300,17 @@ query SearchProducts($term: String!, $skip: Int, $take: Int) {
       take: $take }
   ) {
     totalItems
-    // highlight-start
-    facetValues {
-      count
-      facetValue {
-        id
-        name
-        facet {
-          id
-          name
-        }
-      }
-    }
-    // highlight-end
+    facetValues { # [!code highlight]
+      count # [!code highlight]
+      facetValue { # [!code highlight]
+        id # [!code highlight]
+        name # [!code highlight]
+        facet { # [!code highlight]
+          id # [!code highlight]
+          name # [!code highlight]
+        } # [!code highlight]
+      } # [!code highlight]
+    } # [!code highlight]
     items {
       productName
       slug
@@ -358,98 +354,96 @@ query SearchProducts($term: String!, $skip: Int, $take: Int) {
   "data": {
     "search": {
       "totalItems": 8,
-      // highlight-start
-      "facetValues": [
-        {
-          "facetValue": {
-            "id": "1",
-            "name": "Electronics",
-            "facet": {
-              "id": "1",
-              "name": "category"
-            }
-          },
-          "count": 8
-        },
-        {
-          "facetValue": {
-            "id": "9",
-            "name": "Photo",
-            "facet": {
-              "id": "1",
-              "name": "category"
-            }
-          },
-          "count": 8
-        },
-        {
-          "facetValue": {
-            "id": "10",
-            "name": "Polaroid",
-            "facet": {
-              "id": "2",
-              "name": "brand"
-            }
-          },
-          "count": 1
-        },
-        {
-          "facetValue": {
-            "id": "11",
-            "name": "Nikkon",
-            "facet": {
-              "id": "2",
-              "name": "brand"
-            }
-          },
-          "count": 2
-        },
-        {
-          "facetValue": {
-            "id": "12",
-            "name": "Agfa",
-            "facet": {
-              "id": "2",
-              "name": "brand"
-            }
-          },
-          "count": 1
-        },
-        {
-          "facetValue": {
-            "id": "14",
-            "name": "Kodak",
-            "facet": {
-              "id": "2",
-              "name": "brand"
-            }
-          },
-          "count": 1
-        },
-        {
-          "facetValue": {
-            "id": "15",
-            "name": "Sony",
-            "facet": {
-              "id": "2",
-              "name": "brand"
-            }
-          },
-          "count": 1
-        },
-        {
-          "facetValue": {
-            "id": "16",
-            "name": "Rolleiflex",
-            "facet": {
-              "id": "2",
-              "name": "brand"
-            }
-          },
-          "count": 1
-        }
-      ],
-      // highlight-end
+      "facetValues": [ // [!code highlight]
+        { // [!code highlight]
+          "facetValue": { // [!code highlight]
+            "id": "1", // [!code highlight]
+            "name": "Electronics", // [!code highlight]
+            "facet": { // [!code highlight]
+              "id": "1", // [!code highlight]
+              "name": "category" // [!code highlight]
+            } // [!code highlight]
+          }, // [!code highlight]
+          "count": 8 // [!code highlight]
+        }, // [!code highlight]
+        { // [!code highlight]
+          "facetValue": { // [!code highlight]
+            "id": "9", // [!code highlight]
+            "name": "Photo", // [!code highlight]
+            "facet": { // [!code highlight]
+              "id": "1", // [!code highlight]
+              "name": "category" // [!code highlight]
+            } // [!code highlight]
+          }, // [!code highlight]
+          "count": 8 // [!code highlight]
+        }, // [!code highlight]
+        { // [!code highlight]
+          "facetValue": { // [!code highlight]
+            "id": "10", // [!code highlight]
+            "name": "Polaroid", // [!code highlight]
+            "facet": { // [!code highlight]
+              "id": "2", // [!code highlight]
+              "name": "brand" // [!code highlight]
+            } // [!code highlight]
+          }, // [!code highlight]
+          "count": 1 // [!code highlight]
+        }, // [!code highlight]
+        { // [!code highlight]
+          "facetValue": { // [!code highlight]
+            "id": "11", // [!code highlight]
+            "name": "Nikkon", // [!code highlight]
+            "facet": { // [!code highlight]
+              "id": "2", // [!code highlight]
+              "name": "brand" // [!code highlight]
+            } // [!code highlight]
+          }, // [!code highlight]
+          "count": 2 // [!code highlight]
+        }, // [!code highlight]
+        { // [!code highlight]
+          "facetValue": { // [!code highlight]
+            "id": "12", // [!code highlight]
+            "name": "Agfa", // [!code highlight]
+            "facet": { // [!code highlight]
+              "id": "2", // [!code highlight]
+              "name": "brand" // [!code highlight]
+            } // [!code highlight]
+          }, // [!code highlight]
+          "count": 1 // [!code highlight]
+        }, // [!code highlight]
+        { // [!code highlight]
+          "facetValue": { // [!code highlight]
+            "id": "14", // [!code highlight]
+            "name": "Kodak", // [!code highlight]
+            "facet": { // [!code highlight]
+              "id": "2", // [!code highlight]
+              "name": "brand" // [!code highlight]
+            } // [!code highlight]
+          }, // [!code highlight]
+          "count": 1 // [!code highlight]
+        }, // [!code highlight]
+        { // [!code highlight]
+          "facetValue": { // [!code highlight]
+            "id": "15", // [!code highlight]
+            "name": "Sony", // [!code highlight]
+            "facet": { // [!code highlight]
+              "id": "2", // [!code highlight]
+              "name": "brand" // [!code highlight]
+            } // [!code highlight]
+          }, // [!code highlight]
+          "count": 1 // [!code highlight]
+        }, // [!code highlight]
+        { // [!code highlight]
+          "facetValue": { // [!code highlight]
+            "id": "16", // [!code highlight]
+            "name": "Rolleiflex", // [!code highlight]
+            "facet": { // [!code highlight]
+              "id": "2", // [!code highlight]
+              "name": "brand" // [!code highlight]
+            } // [!code highlight]
+          }, // [!code highlight]
+          "count": 1 // [!code highlight]
+        } // [!code highlight]
+      ], // [!code highlight]
       "items": [
         {
           "productName": "Instant Camera",
@@ -507,16 +501,14 @@ request we know that there should be 2 such products, and that the `facetValue.i
 ```json
 {
   "facetValue": {
-    // highlight-next-line
-    "id": "11",
+    "id": "11", // [!code highlight]
     "name": "Nikkon",
     "facet": {
       "id": "2",
       "name": "brand"
     }
   },
-  // highlight-next-line
-  "count": 2
+  "count": 2 // [!code highlight]
 }
 ```
 
@@ -535,8 +527,7 @@ change the query itself.
 
 ```graphql
 query SearchProducts($input: SearchInput!) {
-  // highlight-next-line
-  search(input: $input) {
+  search(input: $input) { # [!code highlight]
     totalItems
     facetValues {
       count
@@ -581,11 +572,9 @@ query SearchProducts($input: SearchInput!) {
     "skip": 0,
     "take": 10,
     "groupByProduct": true,
-    // highlight-start
-    "facetValueFilters": [
-      { "and": "11" }
-    ]
-    // highlight-end
+    "facetValueFilters": [ // [!code highlight]
+      { "and": "11" } // [!code highlight]
+    ] // [!code highlight]
   }
 }
 ```

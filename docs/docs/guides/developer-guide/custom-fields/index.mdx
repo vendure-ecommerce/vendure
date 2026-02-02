@@ -55,26 +55,21 @@ The values of the custom fields can then be set and queried via the GraphQL APIs
 mutation {
     updateProduct(input: {
         id: 1
-        // highlight-start
-        customFields: {
-        infoUrl: "https://some-url.com",
-        downloadable: true,
-        }
-        // highlight-end
+        customFields: { # [!code highlight]
+        infoUrl: "https://some-url.com", # [!code highlight]
+        downloadable: true, # [!code highlight]
+        } # [!code highlight]
         translations: [
-        // highlight-next-line
-        { languageCode: en, customFields: { shortName: "foo" } }
+        { languageCode: en, customFields: { shortName: "foo" } } # [!code highlight]
         ]
         }) {
         id
         name
-        // highlight-start
-        customFields {
-            infoUrl
-            downloadable
-            shortName
-        }
-        // highlight-end
+        customFields { # [!code highlight]
+            infoUrl # [!code highlight]
+            downloadable # [!code highlight]
+            shortName # [!code highlight]
+        } # [!code highlight]
     }
 }
 ```
@@ -106,26 +101,22 @@ The custom fields will also extend the filter and sort options available to the 
 ```graphql
 query {
     products(options: {
-        // highlight-start
-    filter: {
-        infoUrl: { contains: "new" },
-        downloadable: { eq: true }
-        },
-        sort: {
-            infoUrl: ASC
-        }
-        // highlight-end
+    filter: { # [!code highlight]
+        infoUrl: { contains: "new" }, # [!code highlight]
+        downloadable: { eq: true } # [!code highlight]
+        }, # [!code highlight]
+        sort: { # [!code highlight]
+            infoUrl: ASC # [!code highlight]
+        } # [!code highlight]
         }) {
         items {
             id
             name
-            // highlight-start
-            customFields {
-                infoUrl
-                downloadable
-                shortName
-            }
-            // highlight-end
+            customFields { # [!code highlight]
+                infoUrl # [!code highlight]
+                downloadable # [!code highlight]
+                shortName # [!code highlight]
+            } # [!code highlight]
         }
     }
 }
@@ -161,10 +152,8 @@ const config = {
         Customer: [
             {
                 name: 'avatar',
-                // highlight-start
-                type: 'relation',
-                entity: Asset,
-                // highlight-end
+                type: 'relation', // [!code highlight]
+                entity: Asset, // [!code highlight]
             },
         ],
     },
@@ -288,8 +277,7 @@ const config = {
     customFields: {
         Product: [
             {
-                // highlight-next-line
-                name: 'infoUrl',
+                name: 'infoUrl', // [!code highlight]
                 type: 'string'
             },
         ]
@@ -317,8 +305,7 @@ const config = {
             {
                 name: 'infoUrls',
                 type: 'string',
-                // highlight-next-line
-                list: true,
+                list: true, // [!code highlight]
             },
         ]
     }
@@ -347,13 +334,11 @@ const config = {
             {
                 name: 'infoUrl',
                 type: 'string',
-                // highlight-start
-                label: [
-                    { languageCode: LanguageCode.en, value: 'Info URL' },
-                    { languageCode: LanguageCode.de, value: 'Info-URL' },
-                    { languageCode: LanguageCode.es, value: 'URL de información' },
-                ],
-                // highlight-end
+                label: [ // [!code highlight]
+                    { languageCode: LanguageCode.en, value: 'Info URL' }, // [!code highlight]
+                    { languageCode: LanguageCode.de, value: 'Info-URL' }, // [!code highlight]
+                    { languageCode: LanguageCode.es, value: 'URL de información' }, // [!code highlight]
+                ], // [!code highlight]
             },
         ]
     }
@@ -376,13 +361,11 @@ const config = {
             {
                 name: 'infoUrl',
                 type: 'string',
-                // highlight-start
-                description: [
-                    { languageCode: LanguageCode.en, value: 'A URL to more information about the product' },
-                    { languageCode: LanguageCode.de, value: 'Eine URL zu weiteren Informationen über das Produkt' },
-                    { languageCode: LanguageCode.es, value: 'Una URL con más información sobre el producto' },
-                ],
-                // highlight-end
+                description: [ // [!code highlight]
+                    { languageCode: LanguageCode.en, value: 'A URL to more information about the product' }, // [!code highlight]
+                    { languageCode: LanguageCode.de, value: 'Eine URL zu weiteren Informationen über das Produkt' }, // [!code highlight]
+                    { languageCode: LanguageCode.es, value: 'Una URL con más información sobre el producto' }, // [!code highlight]
+                ], // [!code highlight]
             },
         ]
     }
@@ -403,8 +386,7 @@ const config = {
             {
                 name: 'profitMargin',
                 type: 'int',
-                // highlight-next-line
-                public: false,
+                public: false, // [!code highlight]
             },
         ]
     }
@@ -426,8 +408,7 @@ const config = {
             {
                 name: 'profitMargin',
                 type: 'int',
-                // highlight-next-line
-                readonly: true,
+                readonly: true, // [!code highlight]
             },
         ]
     }
@@ -450,8 +431,7 @@ const config = {
             {
                 name: 'referralId',
                 type: 'string',
-                // highlight-next-line
-                internal: true,
+                internal: true, // [!code highlight]
             },
         ]
     }
@@ -473,8 +453,7 @@ const config = {
             {
                 name: 'reviewRating',
                 type: 'float',
-                // highlight-next-line
-                defaultValue: 0,
+                defaultValue: 0, // [!code highlight]
             },
         ]
     }
@@ -495,10 +474,8 @@ const config = {
             {
                 name: 'reviewRating',
                 type: 'float',
-                // highlight-start
-                nullable: false,
-                defaultValue: 0,
-                // highlight-end
+                nullable: false, // [!code highlight]
+                defaultValue: 0, // [!code highlight]
             },
         ]
     }
@@ -520,8 +497,7 @@ const config = {
             {
                 name: 'externalId',
                 type: 'string',
-                // highlight-next-line
-                unique: true,
+                unique: true, // [!code highlight]
             },
         ]
     }
@@ -546,21 +522,19 @@ const config = {
             {
                 name: 'infoUrl',
                 type: 'string',
-                // highlight-start
-                validate: (value: any) => {
-                    if (!value.startsWith('http')) {
-                        // If a localized error message is not required, a simple string can be returned.
-                        // return 'The URL must start with "http"';
-
-                        // If a localized error message is required, return an array of LocalizedString objects.
-                        return [
-                            { languageCode: LanguageCode.en, value: 'The URL must start with "http"' },
-                            { languageCode: LanguageCode.de, value: 'Die URL muss mit "http" beginnen' },
-                            { languageCode: LanguageCode.es, value: 'La URL debe comenzar con "http"' },
-                        ];
-                    }
-                },
-                // highlight-end
+                validate: (value: any) => { // [!code highlight]
+                    if (!value.startsWith('http')) { // [!code highlight]
+                        // If a localized error message is not required, a simple string can be returned. // [!code highlight]
+                        // return 'The URL must start with "http"'; // [!code highlight]
+ // [!code highlight]
+                        // If a localized error message is required, return an array of LocalizedString objects. // [!code highlight]
+                        return [ // [!code highlight]
+                            { languageCode: LanguageCode.en, value: 'The URL must start with "http"' }, // [!code highlight]
+                            { languageCode: LanguageCode.de, value: 'Die URL muss mit "http" beginnen' }, // [!code highlight]
+                            { languageCode: LanguageCode.es, value: 'La URL debe comenzar con "http"' }, // [!code highlight]
+                        ]; // [!code highlight]
+                    } // [!code highlight]
+                }, // [!code highlight]
             },
         ]
     }
@@ -577,15 +551,13 @@ const config = {
             {
                 name: 'partCode',
                 type: 'string',
-                // highlight-start
-                validate: async (value, injector, ctx) => {
-                    const partCodeService = injector.get(PartCodeService);
-                    const isValid = await partCodeService.validateCode(value);
-                    if (!isValid) {
-                        return `Part code ${value} is not valid`;
-                    }
-                },
-                // highlight-end
+                validate: async (value, injector, ctx) => { // [!code highlight]
+                    const partCodeService = injector.get(PartCodeService); // [!code highlight]
+                    const isValid = await partCodeService.validateCode(value); // [!code highlight]
+                    if (!isValid) { // [!code highlight]
+                        return `Part code ${value} is not valid`; // [!code highlight]
+                    } // [!code highlight]
+                }, // [!code highlight]
             },
         ]
     }
@@ -616,22 +588,18 @@ const config = {
             {
                 name: 'internalNotes',
                 type: 'text',
-                // highlight-start
-                requiresPermission: Permission.SuperAdmin,
-                // highlight-end
+                requiresPermission: Permission.SuperAdmin, // [!code highlight]
             },
             {
                 name: 'shippingType',
                 type: 'string',
-                // highlight-start
-                // You can also use an array of permissions, 
-                // and the user must have at least one of the permissions
-                // to access the field.
-                requiresPermission: [
-                    Permission.SuperAdmin,
-                    Permission.ReadShippingMethod,
-                ],
-                // highlight-end
+                // You can also use an array of permissions,  // [!code highlight]
+                // and the user must have at least one of the permissions // [!code highlight]
+                // to access the field. // [!code highlight]
+                requiresPermission: [ // [!code highlight]
+                    Permission.SuperAdmin, // [!code highlight]
+                    Permission.ReadShippingMethod, // [!code highlight]
+                ], // [!code highlight]
             },
         ]
     }
@@ -664,14 +632,12 @@ const config = {
             {
                 name: 'oldField',
                 type: 'string',
-                // highlight-next-line
-                deprecated: true,
+                deprecated: true, // [!code highlight]
             },
             {
                 name: 'legacyUrl',
                 type: 'string',
-                // highlight-next-line
-                deprecated: 'Use the new infoUrl field instead',
+                deprecated: 'Use the new infoUrl field instead', // [!code highlight]
             },
         ]
     }
@@ -710,8 +676,7 @@ const config = {
             {
                 name: 'gtin',
                 type: 'string',
-                // highlight-next-line
-                pattern: '^\d{8}(?:\d{4,6})?$',
+                pattern: '^\d{8}(?:\d{4,6})?$', // [!code highlight]
             },
         ]
     }
@@ -734,12 +699,10 @@ const config = {
             {
                 name: 'condition',
                 type: 'string',
-                // highlight-start
-                options: [
-                    { value: 'new', label: [{ languageCode: LanguageCode.en, value: 'New' }] },
-                    { value: 'used', label: [{ languageCode: LanguageCode.en, value: 'Used' }] },
-                ],
-                // highlight-end
+                options: [ // [!code highlight]
+                    { value: 'new', label: [{ languageCode: LanguageCode.en, value: 'New' }] }, // [!code highlight]
+                    { value: 'used', label: [{ languageCode: LanguageCode.en, value: 'Used' }] }, // [!code highlight]
+                ], // [!code highlight]
             },
         ]
     }
@@ -762,8 +725,7 @@ const config = {
             {
                 name: 'partCode',
                 type: 'string',
-                // highlight-next-line
-                length: 20,
+                length: 20, // [!code highlight]
             },
         ]
     }
@@ -811,8 +773,7 @@ const config = {
             {
                 name: 'reviewRating',
                 type: 'int',
-                // highlight-next-line
-                min: 0,
+                min: 0, // [!code highlight]
             },
         ]
     }
@@ -833,8 +794,7 @@ const config = {
             {
                 name: 'reviewRating',
                 type: 'int',
-                // highlight-next-line
-                max: 5,
+                max: 5, // [!code highlight]
             },
         ]
     }
@@ -855,8 +815,7 @@ const config = {
             {
                 name: 'reviewRating',
                 type: 'int',
-                // highlight-next-line
-                step: 0.5,
+                step: 0.5, // [!code highlight]
             },
         ]
     }
@@ -887,8 +846,7 @@ const config = {
             {
                 name: 'releaseDate',
                 type: 'datetime',
-                // highlight-next-line
-                min: '2019-01-01T00:00:00.000Z',
+                min: '2019-01-01T00:00:00.000Z', // [!code highlight]
             },
         ]
     }
@@ -909,8 +867,7 @@ const config = {
             {
                 name: 'releaseDate',
                 type: 'datetime',
-                // highlight-next-line
-                max: '2019-12-31T23:59:59.999Z',
+                max: '2019-12-31T23:59:59.999Z', // [!code highlight]
             },
         ]
     }
@@ -947,13 +904,11 @@ const config = {
             {
                 name: 'dimensions',
                 type: 'struct',
-                // highlight-start
-                fields: [
-                    { name: 'length', type: 'int' },
-                    { name: 'width', type: 'int' },
-                    { name: 'height', type: 'int' },
-                ],
-                // highlight-end
+                fields: [ // [!code highlight]
+                    { name: 'length', type: 'int' }, // [!code highlight]
+                    { name: 'width', type: 'int' }, // [!code highlight]
+                    { name: 'height', type: 'int' }, // [!code highlight]
+                ], // [!code highlight]
             },
         ]
     }
@@ -997,29 +952,24 @@ const config = {
                     {
                         name: 'color',
                         type: 'string',
-                        // highlight-start
-                        options: [
-                            { value: 'red', label: [{ languageCode: LanguageCode.en, value: 'Red' }] },
-                            { value: 'blue', label: [{ languageCode: LanguageCode.en, value: 'Blue' }] },
-                        ],
-                        // highlight-end
+                        options: [ // [!code highlight]
+                            { value: 'red', label: [{ languageCode: LanguageCode.en, value: 'Red' }] }, // [!code highlight]
+                            { value: 'blue', label: [{ languageCode: LanguageCode.en, value: 'Blue' }] }, // [!code highlight]
+                        ], // [!code highlight]
                     },
                     {
                         name: 'engraving',
                         type: 'string',
-                        // highlight-start
-                        validate: (value: any) => {
-                            if (value.length > 20) {
-                                return 'Engraving text must be 20 characters or fewer';
-                            }
-                        },
+                        validate: (value: any) => { // [!code highlight]
+                            if (value.length > 20) { // [!code highlight]
+                                return 'Engraving text must be 20 characters or fewer'; // [!code highlight]
+                            } // [!code highlight]
+                        }, // [!code highlight]
                     },
                     {
                         name: 'notifyEmailAddresses',
                         type: 'string',
-                        // highlight-start
-                        list: true,
-                        // highlight-end
+                        list: true, // [!code highlight]
                     }
                 ],
             },
@@ -1054,10 +1004,8 @@ const config = {
             {
                 name: 'relatedProducts',
                 list: true,
-                // highlight-next-line
-                type: 'relation',
-                // highlight-next-line
-                entity: Product,
+                type: 'relation', // [!code highlight]
+                entity: Product, // [!code highlight]
             },
         ]
     }
@@ -1082,8 +1030,7 @@ const config = {
                 list: true,
                 type: 'relation',
                 entity: Product,
-                // highlight-next-line
-                eager: true,
+                eager: true, // [!code highlight]
             },
         ]
     }
@@ -1108,8 +1055,7 @@ const config = {
                 list: true,
                 type: 'relation',
                 entity: CmsArticle,
-                // highlight-next-line
-                graphQLType: 'BlogPost',
+                graphQLType: 'BlogPost', // [!code highlight]
             },
         ]
     }
@@ -1138,9 +1084,7 @@ const config = {
                 list: true,
                 type: 'relation',
                 entity: ProductReview,
-                // highlight-start
-                inverseSide: (review: ProductReview) => review.product,
-                // highlight-end
+                inverseSide: (review: ProductReview) => review.product, // [!code highlight]
             },
         ]
     }
@@ -1210,8 +1154,7 @@ const config = {
             {
                 name: 'rrp',
                 type: 'int',
-                // highlight-next-line
-                ui: { component: 'currency-form-input' },
+                ui: { component: 'currency-form-input' }, // [!code highlight]
             },
         ]
     }

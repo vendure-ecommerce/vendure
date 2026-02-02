@@ -21,20 +21,16 @@ import {
 } from '@vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-// highlight-next-line
-export class CustomProductReviewFields {}
+export class CustomProductReviewFields {} // [!code highlight]
 
 @Entity()
-// highlight-next-line
-export class ProductReview extends VendureEntity implements HasCustomFields {
+export class ProductReview extends VendureEntity implements HasCustomFields { // [!code highlight]
     constructor(input?: DeepPartial<ProductReview>) {
         super(input);
     }
 
-    // highlight-start
-    @Column(() => CustomProductReviewFields)
-    customFields: CustomProductReviewFields;
-    // highlight-end
+    @Column(() => CustomProductReviewFields) // [!code highlight]
+    customFields: CustomProductReviewFields; // [!code highlight]
     
     @ManyToOne(() => Product)
     product: Product;
@@ -100,20 +96,17 @@ Following this caveat, codegen will now produce correct types including `customF
 
 ```ts
 export type ProductReview = Node & {
-  // highlight-next-line
-  customFields?: Maybe<Scalars['JSON']['output']>;
+  customFields?: Maybe<Scalars['JSON']['output']>; // [!code highlight]
   // Note: Other fields omitted for brevity
 }
 
 export type CreateProductReviewInput = {
-  // highlight-next-line
-  customFields?: InputMaybe<Scalars['JSON']['input']>;
+  customFields?: InputMaybe<Scalars['JSON']['input']>; // [!code highlight]
   // Note: Other fields omitted for brevity
 }
 
 export type UpdateProductReviewInput = {
-  // highlight-next-line
-  customFields?: InputMaybe<Scalars['JSON']['input']>;
+  customFields?: InputMaybe<Scalars['JSON']['input']>; // [!code highlight]
   // Note: Other fields omitted for brevity
 }
 ```
@@ -132,19 +125,16 @@ import { ProductReview } from '../entities/product-review.entity';
 export class ReviewService {
     constructor(
       private connection: TransactionalConnection,
-      // highlight-next-line
-      private customFieldRelationService: CustomFieldRelationService,
+      private customFieldRelationService: CustomFieldRelationService, // [!code highlight]
     ) {}
 
     async create(ctx: RequestContext, input: CreateProductReviewInput) {
         const product = await this.connection.getEntityOrThrow(ctx, Product, input.productId);
         // You'll probably want to do more validation/logic here in a real world scenario
         
-        // highlight-start
-        const review = new ProductReview({ ...input, product });
-        const savedEntity = await this.connection.getRepository(ctx, ProductReview).save(review);
-        await this.customFieldRelationService.updateRelations(ctx, ProductReview, input, savedEntity);
-        // highlight-end
+        const review = new ProductReview({ ...input, product }); // [!code highlight]
+        const savedEntity = await this.connection.getRepository(ctx, ProductReview).save(review); // [!code highlight]
+        await this.customFieldRelationService.updateRelations(ctx, ProductReview, input, savedEntity); // [!code highlight]
 
         return savedEntity;
     }

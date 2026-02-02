@@ -228,8 +228,7 @@ EmailPlugin.init({
     outputPath: path.join(__dirname, '../static/email/output'),
     globalTemplateVars: {
         fromAddress: '"Vendure Demo Store" <noreply@vendure.io>',
-        // highlight-next-line
-        verifyEmailAddressUrl: 'https://demo.vendure.io/storefront/account/verify',
+        verifyEmailAddressUrl: 'https://demo.vendure.io/storefront/account/verify', // [!code highlight]
         passwordResetUrl: 'https://demo.vendure.io/storefront/account/reset-password',
         changeEmailAddressUrl: 'https://demo.vendure.io/storefront/account/change-email-address'
     },

@@ -1,11 +1,14 @@
 ## <small>3.5.3 (2026-01-30)</small>
 
+#### Security
+
+* **core** Prevent account enumeration via timing attack in NativeAuthenticationStrategy ([7f0c555](https://github.com/vendurehq/vendure/commit/7f0c5556ecddb44a5d5208677a45fdd5923b0cc9)) [CVE-2026-25050] ([security advisory](https://github.com/vendurehq/vendure/security/advisories/GHSA-6f65-4fv2-wwch)). Responsibly disclosed by [Christbowel](https://github.com/Christbowel).
 
 #### Fixes
 
+* **admin-ui** Fix admin-ui publish dir in npm publish workflow (#4131) ([78a606b](https://github.com/vendurehq/vendure/commit/78a606b)), closes [#4131](https://github.com/vendurehq/vendure/issues/4131)
 * **core** Correctly publish ChangeChannelEvent with new channel IDs. (#4176) ([4f31ba3](https://github.com/vendurehq/vendure/commit/4f31ba3)), closes [#4176](https://github.com/vendurehq/vendure/issues/4176)
 * **core** Exclude seller orders when counting promotion usage (#4070) ([fe72cdb](https://github.com/vendurehq/vendure/commit/fe72cdb)), closes [#4070](https://github.com/vendurehq/vendure/issues/4070)
-* **core** Fix admin-ui publish dir in npm publish workflow (#4131) ([78a606b](https://github.com/vendurehq/vendure/commit/78a606b)), closes [#4131](https://github.com/vendurehq/vendure/issues/4131)
 * **core** Fix SubscribableJob.updates() completing after single emission (#4120) ([45c2e66](https://github.com/vendurehq/vendure/commit/45c2e66)), closes [#4120](https://github.com/vendurehq/vendure/issues/4120)
 * **core** Persist custom fields when creating new ProductVariantPrice (#4184) ([6f63965](https://github.com/vendurehq/vendure/commit/6f63965)), closes [#4184](https://github.com/vendurehq/vendure/issues/4184)
 * **core** Use previously unused relations filter in findByCustomerId (#4118) ([8859797](https://github.com/vendurehq/vendure/commit/8859797)), closes [#4118](https://github.com/vendurehq/vendure/issues/4118)
