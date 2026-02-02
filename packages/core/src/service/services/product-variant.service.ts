@@ -603,8 +603,17 @@ export class ProductVariantService {
                     price,
                     variant: new ProductVariant({ id: productVariantId }),
                     currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
+                    customFields,
                 }),
             );
+            if (customFields) {
+                await this.customFieldRelationService.updateRelations(
+                    ctx,
+                    ProductVariantPrice,
+                    customFields,
+                    createdPrice,
+                );
+            }
             await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [createdPrice], 'created'));
             additionalPricesToUpdate = await productVariantPriceUpdateStrategy.onPriceCreated(
                 ctx,
@@ -908,7 +917,7 @@ export class ProductVariantService {
         isUpdateOperation?: boolean,
     ) {
         // this could be done with fewer queries but depending on the data, node will crash
-        // https://github.com/vendure-ecommerce/vendure/issues/328
+        // https://github.com/vendurehq/vendure/issues/328
         const optionGroups = (
             await this.connection.getEntityOrThrow(ctx, Product, productId, {
                 channelId: ctx.channelId,

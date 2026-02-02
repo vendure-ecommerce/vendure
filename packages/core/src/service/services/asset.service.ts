@@ -289,7 +289,7 @@ export class AssetService {
      * using the [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec),
      * e.g. using the [apollo-upload-client](https://github.com/jaydenseric/apollo-upload-client) npm package.
      *
-     * See the [Uploading Files docs](/guides/developer-guide/uploading-files) for an example of usage.
+     * See the [Uploading Files docs](/developer-guide/uploading-files) for an example of usage.
      */
     async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
         const { createReadStream, filename, mimetype } = await input.file;

@@ -4,6 +4,7 @@ export * from './customer-group-input.js';
 export * from './datetime-input.js';
 export * from './facet-value-input.js';
 export * from './money-input.js';
+export * from './number-input.js';
 export * from './rich-text-input.js';
 export * from './select-with-options.js';
 

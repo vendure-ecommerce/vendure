@@ -2,8 +2,6 @@
 title: "Managing the Active Order"
 ---
 
-import Stackblitz from '@site/src/components/Stackblitz';
-
 The "active order" is what is also known as the "cart" - it is the order that is currently being worked on by the customer.
 
 An order remains active until it is completed, and during this time it can be modified by the customer in various ways:
@@ -77,12 +75,10 @@ import { ACTIVE_ORDER_FRAGMENT } from './fragments';
 export const GET_ACTIVE_ORDER = /*GraphQL*/`
   query GetActiveOrder {
     activeOrder {
-      // highlight-next-line
-      ...ActiveOrder
+      ...ActiveOrder # [!code highlight]
     }
   }
-  // highlight-next-line
-  ${ACTIVE_ORDER_FRAGMENT}
+  ${ACTIVE_ORDER_FRAGMENT} # [!code highlight]
 `;
 ```
 
@@ -102,7 +98,7 @@ query GetActiveOrder {
 
 ## Add an item
 
-To add an item to the active order, we use the [`addItemToOrder` mutation](/reference/graphql-api/shop/mutations/#additemtoorder), as we have seen in the [Product Detail Page guide](/guides/storefront/product-detail/).
+To add an item to the active order, we use the [`addItemToOrder` mutation](/reference/graphql-api/shop/mutations/#additemtoorder), as we have seen in the [Product Detail Page guide](/storefront/product-detail/).
 
 ```graphql
 mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
@@ -124,7 +120,7 @@ mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
 
 :::info
 If you have defined any custom fields on the `OrderLine` entity, you will be able to pass them as a `customFields` argument to the `addItemToOrder` mutation.
-See the [Configurable Products guide](/guides/how-to/configurable-products/) for more information.
+See the [Configurable Products guide](/how-to/configurable-products/) for more information.
 :::
 
 ## Remove an item
@@ -162,12 +158,12 @@ mutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!) {
 
 :::info
 If you have defined any custom fields on the `OrderLine` entity, you will be able to update their values by passing a `customFields` argument to the `adjustOrderLine` mutation.
-See the [Configurable Products guide](/guides/how-to/configurable-products/) for more information.
+See the [Configurable Products guide](/how-to/configurable-products/) for more information.
 :::
 
 ## Applying a coupon code
 
-If you have defined any [Promotions](/guides/core-concepts/promotions/) which use coupon codes, you can apply the a coupon code to the active order
+If you have defined any [Promotions](/core-concepts/promotions/) which use coupon codes, you can apply the a coupon code to the active order
 using the [`applyCouponCode` mutation](/reference/graphql-api/shop/mutations/#applycouponcode).
 
 ```graphql

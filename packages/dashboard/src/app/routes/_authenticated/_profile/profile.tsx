@@ -1,5 +1,6 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import {
@@ -14,6 +15,7 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -35,8 +37,9 @@ export const Route = createFileRoute('/_authenticated/_profile/profile')({
 
 function ProfilePage() {
     const { t } = useLingui();
+    const { formatDate } = useLocalFormat();
 
-    const { form, submitHandler, isPending } = useDetailPage({
+    const { form, submitHandler, isPending, entity } = useDetailPage({
         queryDocument: activeAdministratorDocument,
         entityField: 'activeAdministrator',
         updateDocument: updateAdministratorDocument,
@@ -111,6 +114,27 @@ function ProfilePage() {
                             render={({ field }) => <Input type="password" {...field} />}
                         />
                     </DetailFormGrid>
+                </PageBlock>
+                <PageBlock
+                    column="side"
+                    blockId="auth-methods"
+                    title={<Trans>Authentication methods</Trans>}
+                >
+                    <div className="space-y-2">
+                        {entity?.user?.authenticationMethods.map(method => (
+                            <div
+                                key={method.id}
+                                className="flex items-center justify-between py-2 border-b last:border-b-0"
+                            >
+                                <Badge variant="secondary">
+                                    {method.strategy === 'native' ? t`Password` : method.strategy}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">
+                                    <Trans>Added</Trans> {formatDate(method.createdAt)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 </PageBlock>
                 <CustomFieldsPageBlock column="main" entityType="Administrator" control={form.control} />
             </PageLayout>

@@ -20,10 +20,8 @@ For example, here's the response from a query for a product's variant prices:
           "id": "74",
           "name": "Bonsai Tree",
           "currencyCode": "USD",
-          // highlight-start
-          "price": 1999,
-          "priceWithTax": 2399,
-          // highlight-end
+          "price": 1999, // [!code highlight]
+          "priceWithTax": 2399, // [!code highlight]
         }
       ]
     }
@@ -89,7 +87,7 @@ export function MyComponent({ variant }: MyComponentProps) {
 ## Support for multiple currencies
 
 Vendure supports multiple currencies out-of-the-box. The available currencies must first be set at the Channel level
-(see the [Channels, Currencies & Prices section](/guides/core-concepts/channels/#channels-currencies--prices)), and then
+(see the [Channels, Currencies & Prices section](/core-concepts/channels/#channels-currencies--prices)), and then
 a price may be set on a `ProductVariant` in each of the available currencies.
 
 When using multiple currencies, the [ProductVariantPriceSelectionStrategy](/reference/typescript-api/configuration/product-variant-price-selection-strategy/)
@@ -113,23 +111,21 @@ Here's how the `Money` scalar is used in the `ShippingLine` type:
 type ShippingLine {
     id: ID!
     shippingMethod: ShippingMethod!
-    // highlight-start
-    price: Money!
-    priceWithTax: Money!
-    discountedPrice: Money!
-    discountedPriceWithTax: Money!
-    // highlight-end
+    price: Money! # [!code highlight]
+    priceWithTax: Money! # [!code highlight]
+    discountedPrice: Money! # [!code highlight]
+    discountedPriceWithTax: Money! # [!code highlight]
     discounts: [Discount!]!
 }
 ```
 
-If you are defining custom GraphQL types, or adding fields to existing types (see the [Extending the GraphQL API doc](/guides/developer-guide/extend-graphql-api/)),
+If you are defining custom GraphQL types, or adding fields to existing types (see the [Extending the GraphQL API doc](/developer-guide/extend-graphql-api/)),
 then you should also use the `Money` scalar for any monetary values.
 
 
 ## The `@Money()` decorator
 
-When [defining new database entities](/guides/developer-guide/database-entity), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
+When [defining new database entities](/developer-guide/database-entity), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
 decorator, you should use Vendure's [`@Money()` decorator](/reference/typescript-api/money/money-decorator).
 
 Using this decorator allows Vendure to correctly store the value in the database according to the configured `MoneyStrategy` (see below).
@@ -154,10 +150,8 @@ class Quote extends VendureEntity {
     @Column()
     text: string;
 
-    // highlight-start
-    @Money()
-    value: number;
-    // highlight-end
+    @Money() // [!code highlight]
+    value: number; // [!code highlight]
 
     // Whenever you store a monetary value, it's a good idea to also
     // explicitly store the currency code too. This makes it possible
@@ -210,8 +204,7 @@ For example, you want to be able to sell a product for `$1.234` per unit. To do 
 import { DefaultMoneyStrategy, VendureConfig } from '@vendure/core';
 
 export class ThreeDecimalPlacesMoneyStrategy extends DefaultMoneyStrategy {
-    // highlight-next-line
-    readonly precision = 3;
+    readonly precision = 3; // [!code highlight]
 }
 
 export const config: VendureConfig = {
@@ -227,20 +220,16 @@ export const config: VendureConfig = {
 
 ```ts title="src/utils/format-currency.ts"
 export function formatCurrency(value: number, currencyCode: string, locale?: string) {
-    // highlight-next-line
-    const majorUnits = value / 1000;
+    const majorUnits = value / 1000; // [!code highlight]
     try {
         return new Intl.NumberFormat(locale, {
             style: 'currency',
             currency: currencyCode,
-            // highlight-start
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3,
-            // highlight-end
+            minimumFractionDigits: 3, // [!code highlight]
+            maximumFractionDigits: 3, // [!code highlight]
         }).format(majorUnits);
     } catch (e: any) {
-         // highlight-next-line
-        return majorUnits.toFixed(3);
+        return majorUnits.toFixed(3); // [!code highlight]
     }
 }
 ```

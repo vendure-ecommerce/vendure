@@ -1,11 +1,11 @@
 {
     "name": "@vendure/common",
-    "version": "3.5.2",
+    "version": "3.5.3",
     "main": "index.js",
     "license": "GPL-3.0-or-later",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vendure-ecommerce/vendure"
+        "url": "https://github.com/vendurehq/vendure"
     },
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json -w",

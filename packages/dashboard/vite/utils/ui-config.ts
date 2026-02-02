@@ -45,8 +45,24 @@ export function getUiConfig(config: VendureConfig, pluginOptions: UiConfigPlugin
                 : defaultAvailableLocales,
     };
 
+    // Merge orders configuration with defaults
+    // Default labels are identifiers that get translated via getTranslatedRefundReason()
+    const orders = {
+        refundReasons:
+            pluginOptions.orders?.refundReasons && pluginOptions.orders.refundReasons.length > 0
+                ? pluginOptions.orders.refundReasons
+                : [
+                      { value: 'customer-request', label: 'CustomerRequest' },
+                      { value: 'not-available', label: 'NotAvailable' },
+                      { value: 'damaged-shipping', label: 'DamagedInShipping' },
+                      { value: 'wrong-item', label: 'WrongItem' },
+                      { value: 'other', label: 'Other' },
+                  ],
+    };
+
     return {
         api,
         i18n,
+        orders,
     };
 }

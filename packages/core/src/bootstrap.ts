@@ -203,7 +203,7 @@ export async function bootstrap(
  * NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as convenience
  * methods for starting the job queue and health check server.
  *
- * Read more about the [Vendure Worker](/guides/developer-guide/worker-job-queue/).
+ * Read more about the [Vendure Worker](/developer-guide/worker-job-queue/).
  *
  * @example
  * ```ts
@@ -418,7 +418,7 @@ function arrangeCliGreetingsInColumns(lines: Array<readonly [string, string]>): 
 
 /**
  * Fix race condition when modifying DB
- * See: https://github.com/vendure-ecommerce/vendure/issues/152
+ * See: https://github.com/vendurehq/vendure/issues/152
  */
 function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonly<RuntimeVendureConfig> {
     const config = {

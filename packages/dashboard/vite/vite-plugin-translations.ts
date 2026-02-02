@@ -133,8 +133,8 @@ async function getPluginTranslations(pluginInfo: PluginInfo[]): Promise<PluginTr
         const poPatterns = path.join(dashboardPath, '**/*.po');
         const translations = await glob(poPatterns, {
             ignore: [
-                // Standard test & doc files
-                '**/node_modules/**/node_modules/**',
+                // Skip nested node_modules (transitive deps) but not .pnpm or .bun directories.
+                '**/node_modules/[!.]*/**/node_modules/**',
                 '**/*.spec.js',
                 '**/*.test.js',
             ],

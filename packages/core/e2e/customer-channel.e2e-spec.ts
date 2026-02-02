@@ -4,7 +4,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CurrencyCode, LanguageCode } from './graphql/generated-e2e-admin-types';
@@ -300,7 +300,7 @@ describe('ChannelAware Customers', () => {
             expect(customers.items.map(customer => customer.emailAddress)).toContain('john.doe.2@test.com');
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/834
+        // https://github.com/vendurehq/vendure/issues/834
         it('handles concurrent assignments to a new channel', async () => {
             const THIRD_CHANNEL_TOKEN = 'third_channel_token';
             await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(

@@ -41,7 +41,7 @@ import {
  * entities that contain methods and/or properties which potentially reference
  * non-serializable objects.
  *
- * See https://github.com/vendure-ecommerce/vendure/issues/3277
+ * See https://github.com/vendurehq/vendure/issues/3277
  */
 describe('Entity serialization', () => {
     type OrderSuccessResult =

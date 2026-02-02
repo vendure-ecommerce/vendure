@@ -6,6 +6,7 @@ import {
     CheckIcon,
     CreditCardIcon,
     Edit3,
+    RotateCcw,
     SquarePen,
     Truck,
     UserX,
@@ -40,8 +41,14 @@ export function orderHistoryUtils(order: OrderHistoryOrderDetail) {
                 return <Edit3 className="h-4 w-4" />;
             case 'ORDER_CUSTOMER_UPDATED':
                 return <UserX className="h-4 w-4" />;
-            case 'ORDER_CANCELLATION':
+            case 'ORDER_CANCELLATION': {
+                const lines = entry.data.lines as Array<{ orderLineId: string; quantity: number }> | undefined;
+                const hasRefundData = (lines && lines.length > 0) || entry.data.reason;
+                if (hasRefundData) {
+                    return <RotateCcw className="h-4 w-4" />;
+                }
                 return <Ban className="h-4 w-4" />;
+            }
             default:
                 return <CheckIcon className="h-4 w-4" />;
         }
@@ -96,8 +103,14 @@ export function orderHistoryUtils(order: OrderHistoryOrderDetail) {
                 return <Trans>Order modified</Trans>;
             case 'ORDER_CUSTOMER_UPDATED':
                 return <Trans>Customer updated</Trans>;
-            case 'ORDER_CANCELLATION':
+            case 'ORDER_CANCELLATION': {
+                const lines = entry.data.lines as Array<{ orderLineId: string; quantity: number }> | undefined;
+                const hasPartialCancellation = lines && lines.length > 0;
+                if (hasPartialCancellation || entry.data.reason) {
+                    return <Trans>Items refunded</Trans>;
+                }
                 return <Trans>Order cancelled</Trans>;
+            }
             default:
                 return <Trans>{entry.type.replace(/_/g, ' ').toLowerCase()}</Trans>;
         }
@@ -106,6 +119,7 @@ export function orderHistoryUtils(order: OrderHistoryOrderDetail) {
     const getIconColor = ({ type, data }: HistoryEntryItem) => {
         const success = 'bg-success text-success-foreground';
         const destructive = 'bg-destructive text-destructive-foreground';
+        const warning = 'bg-yellow-400 text-yellow-950 dark:bg-yellow-600 dark:text-yellow-50';
         const regular = 'bg-muted text-muted-foreground';
 
         if (type === 'ORDER_PAYMENT_TRANSITION' && data.to === 'Settled') {
@@ -118,7 +132,9 @@ export function orderHistoryUtils(order: OrderHistoryOrderDetail) {
             return success;
         }
         if (type === 'ORDER_CANCELLATION') {
-            return destructive;
+            const lines = data.lines as Array<{ orderLineId: string; quantity: number }> | undefined;
+            const hasRefundData = (lines && lines.length > 0) || data.reason;
+            return hasRefundData ? warning : destructive;
         }
         if (type === 'ORDER_STATE_TRANSITION' && data.to === 'Cancelled') {
             return destructive;

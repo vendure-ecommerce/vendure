@@ -2,9 +2,6 @@
 title: "Customer Accounts"
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 Customers can register accounts and thereby gain the ability to:
 
 - View past orders
@@ -140,7 +137,7 @@ mutation LogOut {
 The `login` mutation, as well as the following mutations related to registration & password recovery only
 apply when using the built-in [`NativeAuthenticationStrategy`](/reference/typescript-api/auth/native-authentication-strategy/).
 
-If you are using alternative authentication strategies in your storefront, you would use the [`authenticate` mutation](/reference/graphql-api/shop/mutations/#authenticate) as covered in the [External Authentication guide](/guides/core-concepts/auth/#external-authentication).
+If you are using alternative authentication strategies in your storefront, you would use the [`authenticate` mutation](/reference/graphql-api/shop/mutations/#authenticate) as covered in the [External Authentication guide](/core-concepts/auth/#external-authentication).
 :::
 
 ## Registering a customer account
@@ -231,8 +228,7 @@ EmailPlugin.init({
     outputPath: path.join(__dirname, '../static/email/output'),
     globalTemplateVars: {
         fromAddress: '"Vendure Demo Store" <noreply@vendure.io>',
-        // highlight-next-line
-        verifyEmailAddressUrl: 'https://demo.vendure.io/storefront/account/verify',
+        verifyEmailAddressUrl: 'https://demo.vendure.io/storefront/account/verify', // [!code highlight]
         passwordResetUrl: 'https://demo.vendure.io/storefront/account/reset-password',
         changeEmailAddressUrl: 'https://demo.vendure.io/storefront/account/change-email-address'
     },

@@ -1,24 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
 import { DashboardBaseWidgetProps } from '@/vdb/framework/extension-api/types/index.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { Trans, useLingui } from '@lingui/react/macro';
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { Trans } from '@lingui/react/macro';
+import { createContext, useEffect, useRef, useState } from 'react';
 
-type WidgetDimensions = {
+export type WidgetDimensions = {
     width: number;
     height: number;
 };
 
 export const WidgetContentContext = createContext<WidgetDimensions>({ width: 0, height: 0 });
-
-export const useWidgetDimensions = () => {
-    const { t } = useLingui();
-    const context = useContext(WidgetContentContext);
-    if (!context) {
-        throw new Error(t`useWidgetDimensions must be used within a DashboardBaseWidget`);
-    }
-    return context;
-};
 
 /**
  * @description

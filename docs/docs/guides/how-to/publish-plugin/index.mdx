@@ -2,10 +2,7 @@
 title: "Publishing a Plugin"
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
-Vendure's [plugin-based architecture](/guides/developer-guide/plugins/) means you'll be writing a lot of plugins.
+Vendure's [plugin-based architecture](/developer-guide/plugins/) means you'll be writing a lot of plugins.
 Some of those plugins may be useful to others, and you may want to share them with the community.
 
 We have created [Vendure Hub](https://vendure.io/hub) as a central listing for high-quality Vendure plugins.
@@ -24,7 +21,7 @@ and to share common code such as utility functions & dev tooling.
 
 Even if you only have a single plugin at the moment, it's a good idea to set up your project in this way from the start.
 
-To that end, we provide a [monorepo plugin starter template](https://github.com/vendure-ecommerce/plugin-template)
+To that end, we provide a [monorepo plugin starter template](https://github.com/vendurehq/plugin-template)
 which you can use as a starting point for your plugin development.
 
 This starter template includes support for:
@@ -47,14 +44,14 @@ a must. The same goes for any of the transitive dependencies of Vendure core suc
 that these dependencies will be available in the Vendure project that uses your plugin.
 
 As for version compatibility, you should use the
-[compatibility property](/guides/developer-guide/plugins/#step-7-specify-compatibility) in your plugin definition to ensure that the Vendure project
+[compatibility property](/developer-guide/plugins/#step-7-specify-compatibility) in your plugin definition to ensure that the Vendure project
 is using a compatible version of Vendure.
 
 ### License
 
 You are free to license your plugin as you wish. Although Vendure itself is licensed under the GPLv3, there is
 a special exception for plugins which allows you to distribute them under a different license. See the
-[plugin exception](https://github.com/vendure-ecommerce/vendure/blob/master/license/plugin-exception.txt) for more details.
+[plugin exception](https://github.com/vendurehq/vendure/blob/master/license/plugin-exception.txt) for more details.
 
 ## Publishing to npm
 
@@ -93,8 +90,7 @@ package by specifying it in the `files` field of your `package.json` file.
  "files": [
     "dist",
     "README.md",
-    // highlight-next-line
-    "CHANGELOG.md"
+    "CHANGELOG.md" // [!code highlight]
   ]
 }
 ```
@@ -383,7 +379,7 @@ export class LoyaltyPointsTransactionEvent extends VendureEvent {
 Testing is an important part of ensuring the quality of your plugin, as well as preventing regressions when you make
 changes.
 
-For plugins of any complexity, you should aim to have a suite of end-to-end tests as covered in the [testing docs](/guides/developer-guide/testing/).
+For plugins of any complexity, you should aim to have a suite of end-to-end tests as covered in the [testing docs](/developer-guide/testing/).
 
 In future we may use the test results to help determine the quality of a plugin.
 

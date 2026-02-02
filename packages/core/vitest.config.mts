@@ -9,7 +9,7 @@ export default defineConfig({
         swc.vite({
             jsc: {
                 transform: {
-                    // See https://github.com/vendure-ecommerce/vendure/issues/2099
+                    // See https://github.com/vendurehq/vendure/issues/2099
                     useDefineForClassFields: false,
                 },
             },

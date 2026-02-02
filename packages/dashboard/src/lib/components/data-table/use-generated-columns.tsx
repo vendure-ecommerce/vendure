@@ -13,6 +13,7 @@ import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
+import { usePaginatedList } from '@/vdb/hooks/use-paginated-list.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
@@ -33,7 +34,6 @@ import {
     FacetedFilterConfig,
     PaginatedListItemFields,
     RowAction,
-    usePaginatedList,
 } from '../shared/paginated-list-data-table.js';
 import {
     AlertDialog,
@@ -120,6 +120,13 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
 
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
             const customConfig = customizeColumns?.[fieldInfo.name as unknown as AllItemFieldKeys<T>] ?? {};
+
+            const disabled = customConfig.meta?.disabled ?? false;
+
+            if (disabled) {
+                return null;
+            }
+
             const { header, meta, cell: customCell, ...customConfigRest } = customConfig;
             const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
             const displayComponentId =
@@ -161,7 +168,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
             });
         });
 
-        let finalColumns = [...queryBasedColumns];
+        let finalColumns = queryBasedColumns.filter(column => column !== null);
 
         for (const [id, column] of Object.entries(additionalColumns ?? {})) {
             if (!id) {

@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     Asset,
     CustomFields,
@@ -203,7 +203,7 @@ const customConfig = mergeConfig(testConfig(), {
             },
         ],
         // Single readonly Address custom field to test
-        // https://github.com/vendure-ecommerce/vendure/issues/3326
+        // https://github.com/vendurehq/vendure/issues/3326
         Address: [
             {
                 name: 'hereId',
@@ -788,7 +788,7 @@ describe('Custom fields', () => {
             }, 'async error'),
         );
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1000
+        // https://github.com/vendurehq/vendure/issues/1000
         it(
             'supports validation of relation types',
             assertThrowsWithMessage(async () => {
@@ -805,7 +805,7 @@ describe('Custom fields', () => {
             }, 'relation error'),
         );
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1091
+        // https://github.com/vendurehq/vendure/issues/1091
         it('handles well graphql internal fields', async () => {
             // throws "Cannot read property 'args' of undefined" if broken
             await adminClient.query(gql`
@@ -823,7 +823,7 @@ describe('Custom fields', () => {
             `);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1953
+        // https://github.com/vendurehq/vendure/issues/1953
         describe('validation of OrderLine custom fields', () => {
             it('addItemToOrder', async () => {
                 try {
@@ -971,7 +971,7 @@ describe('Custom fields', () => {
             }, 'Cannot query field "internalString" on type "ProductCustomFields"'),
         );
 
-        // https://github.com/vendure-ecommerce/vendure/issues/3049
+        // https://github.com/vendurehq/vendure/issues/3049
         it('does not leak private fields via JSON type', async () => {
             const { collection } = await shopClient.query(gql`
                 query {
@@ -999,7 +999,7 @@ describe('Custom fields', () => {
             expect(products.totalItems).toBe(1);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/1581
+        // https://github.com/vendurehq/vendure/issues/1581
         it('can sort by localeString custom fields', async () => {
             const { products } = await adminClient.query(gql`
                 query {
@@ -1223,6 +1223,78 @@ describe('Custom fields', () => {
                 },
             },
         ]);
+    });
+
+    // https://github.com/vendurehq/vendure/issues/3909
+    it('persists custom fields when creating a new ProductVariantPrice', async () => {
+        // First, add EUR to the channel's available currencies
+        await adminClient.query(
+            gql`
+                mutation UpdateChannel($input: UpdateChannelInput!) {
+                    updateChannel(input: $input) {
+                        ... on Channel {
+                            id
+                            availableCurrencyCodes
+                        }
+                    }
+                }
+            `,
+            {
+                input: {
+                    id: 'T_1',
+                    availableCurrencyCodes: [CurrencyCode.USD, CurrencyCode.EUR],
+                },
+            },
+        );
+
+        // Now create a new price in EUR with custom fields
+        const { updateProductVariants } = await adminClient.query(
+            gql`
+                mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
+                    updateProductVariants(input: $input) {
+                        id
+                        prices {
+                            currencyCode
+                            price
+                            customFields {
+                                costPrice
+                            }
+                        }
+                    }
+                }
+            `,
+            {
+                input: [
+                    {
+                        id: 'T_1',
+                        prices: [
+                            {
+                                price: 129900,
+                                currencyCode: 'USD',
+                                customFields: {
+                                    costPrice: 100,
+                                },
+                            },
+                            {
+                                price: 99900,
+                                currencyCode: 'EUR',
+                                customFields: {
+                                    costPrice: 200,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        );
+
+        expect(updateProductVariants[0].prices).toContainEqual({
+            currencyCode: 'EUR',
+            price: 99900,
+            customFields: {
+                costPrice: 200,
+            },
+        });
     });
 
     describe('setting custom fields directly via a service method', () => {

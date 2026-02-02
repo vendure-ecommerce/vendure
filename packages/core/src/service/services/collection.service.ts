@@ -319,6 +319,45 @@ export class CollectionService implements OnModuleInit {
 
     /**
      * @description
+     * Returns a Map of collection IDs to their product variant counts.
+     * This performs a single bulk query to get counts for all provided collection IDs,
+     * avoiding N+1 query issues when resolving productVariantCount on multiple collections.
+     */
+    async getProductVariantCounts(ctx: RequestContext, collectionIds: ID[]): Promise<Map<ID, number>> {
+        if (collectionIds.length === 0) {
+            return new Map();
+        }
+        const results = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('productvariant')
+            .select('collection.id', 'collectionId')
+            .addSelect('COUNT(DISTINCT productvariant.id)', 'count')
+            .innerJoin('productvariant.channels', 'channel', 'channel.id = :channelId', {
+                channelId: ctx.channelId,
+            })
+            .innerJoin('productvariant.collections', 'collection', 'collection.id IN (:...collectionIds)', {
+                collectionIds,
+            })
+            .innerJoin('productvariant.product', 'product')
+            .andWhere('product.deletedAt IS NULL')
+            .andWhere('productvariant.deletedAt IS NULL')
+            .groupBy('collection.id')
+            .getRawMany<{ collectionId: string; count: string }>();
+
+        const countMap = new Map<ID, number>();
+        // Normalize IDs to strings to ensure consistent Map key types,
+        // since raw query results return collectionId as string
+        for (const id of collectionIds) {
+            countMap.set(String(id), 0);
+        }
+        for (const result of results) {
+            countMap.set(String(result.collectionId), Number(result.count));
+        }
+        return countMap;
+    }
+
+    /**
+     * @description
      * Returns an array of name/id pairs representing all ancestor Collections up
      * to the Root Collection.
      */
@@ -338,7 +377,11 @@ export class CollectionService implements OnModuleInit {
                 ctx,
             );
         }
-        return [pickProps(rootCollection), ...ancestors.map(pickProps).reverse(), pickProps(collection)];
+        return [
+            pickProps(rootCollection),
+            ...ancestors.map(a => pickProps(a)).reverse(),
+            pickProps(collection),
+        ];
     }
 
     /**

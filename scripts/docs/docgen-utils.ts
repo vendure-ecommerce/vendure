@@ -4,18 +4,13 @@ import { basename } from 'path';
 /* eslint-disable no-console */
 
 /**
- * Generates the Hugo front matter with the title of the document
+ * Generates the front matter with the title of the document
  */
 export function generateFrontMatter(title: string, isDefaultIndex = false): string {
     return `---
 title: "${titleCase(title.replace(/-/g, ' '))}"
-isDefaultIndex: ${isDefaultIndex ? 'true' : 'false'}
 generated: true
 ---
-<!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
-import MemberInfo from '@site/src/components/MemberInfo';
-import GenerationInfo from '@site/src/components/GenerationInfo';
-import MemberDescription from '@site/src/components/MemberDescription';
 `;
 }
 

@@ -12,7 +12,6 @@ import {
     AddFulfillmentToOrderResult,
     AddManualPaymentToOrderResult,
     AddNoteToOrderInput,
-    AdjustmentType,
     CancelOrderInput,
     CancelOrderResult,
     CancelPaymentResult,
@@ -335,7 +334,7 @@ export class OrderService {
         );
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: relations ?? ['lines', 'customer', 'channels', 'shippingLines'],
+                relations: effectiveRelations,
                 channelId: ctx.channelId,
                 ctx,
             })
@@ -1028,14 +1027,6 @@ export class OrderService {
     async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {
-            // When removing a couponCode which has triggered an Order-level discount
-            // we need to make sure we persist the changes to the adjustments array of
-            // any affected OrderLines.
-            const affectedOrderLines = order.lines.filter(
-                line =>
-                    line.adjustments.filter(a => a.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
-                        .length,
-            );
             order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
             await this.historyService.createHistoryEntryForOrder({
                 ctx,
@@ -1044,9 +1035,7 @@ export class OrderService {
                 data: { couponCode },
             });
             await this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'removed'));
-            const result = await this.applyPriceAdjustments(ctx, order);
-            await this.connection.getRepository(ctx, OrderLine).save(affectedOrderLines);
-            return result;
+            return this.applyPriceAdjustments(ctx, order);
         } else {
             return order;
         }
@@ -1854,7 +1843,7 @@ export class OrderService {
                       .getRepository(ctx, Order)
                       .findOneOrFail({ where: { id: orderOrId }, relations: ['lines', 'shippingLines'] });
         // If there is a Session referencing the Order to be deleted, we must first remove that
-        // reference in order to avoid a foreign key error. See https://github.com/vendure-ecommerce/vendure/issues/1454
+        // reference in order to avoid a foreign key error. See https://github.com/vendurehq/vendure/issues/1454
         const sessions = await this.connection
             .getRepository(ctx, Session)
             .find({ where: { activeOrderId: orderToDelete.id } });
@@ -1883,7 +1872,7 @@ export class OrderService {
     ): Promise<Order | undefined> {
         if (guestOrder && guestOrder.customer) {
             // In this case the "guest order" is actually an order of an existing Customer,
-            // so we do not want to merge at all. See https://github.com/vendure-ecommerce/vendure/issues/263
+            // so we do not want to merge at all. See https://github.com/vendurehq/vendure/issues/263
             return existingOrder;
         }
         const mergeResult = this.orderMerger.merge(ctx, guestOrder, existingOrder);
