@@ -72,19 +72,15 @@ from your build, and reference a new `tsconfig.dashboard.json` that will have co
         "migration.ts",
         "src/plugins/**/ui/*",
         "admin-ui",
-        // highlight-start
-        "src/plugins/**/dashboard/*",
-        "src/gql/*",
-        "vite.*.*ts"
-        // highlight-end
+        "src/plugins/**/dashboard/*", // [!code highlight]
+        "src/gql/*", // [!code highlight]
+        "vite.*.*ts" // [!code highlight]
     ],
-    // highlight-start
-    "references": [
-        {
-            "path": "./tsconfig.dashboard.json"
-        }
-    ]
-    // highlight-end
+    "references": [ // [!code highlight]
+        { // [!code highlight]
+            "path": "./tsconfig.dashboard.json" // [!code highlight]
+        } // [!code highlight]
+    ] // [!code highlight]
 }
 ```
 
@@ -147,16 +143,14 @@ import { DashboardPlugin } from '@vendure/dashboard/plugin';
 const config: VendureConfig = {
     plugins: [
         // ... existing plugins
-        // highlight-start  
-        DashboardPlugin.init({
-            // The route should correspond to the `base` setting
-            // in the vite.config.mts file
-            route: 'dashboard',
-            // This appDir should correspond to the `build.outDir`
-            // setting in the vite.config.mts file
-            appDir: './dist/dashboard',
-        }),
-        // highlight-end  
+        DashboardPlugin.init({ // [!code highlight]
+            // The route should correspond to the `base` setting // [!code highlight]
+            // in the vite.config.mts file // [!code highlight]
+            route: 'dashboard', // [!code highlight]
+            // This appDir should correspond to the `build.outDir` // [!code highlight]
+            // setting in the vite.config.mts file // [!code highlight]
+            appDir: './dist/dashboard', // [!code highlight]
+        }), // [!code highlight]  
     ],
 };
 ```

@@ -31,8 +31,7 @@ If you have Docker Desktop installed, it will create and configure a Postgres da
 ┌  Let's create a Vendure App ✨
 │
 ◆  How should we proceed?
-// highlight-next-line
-│  ● Quick Start (Get up and running in a single step)
+│  ● Quick Start (Get up and running in a single step) // [!code highlight]
 │  ○ Manual Configuration
 └
 ```
@@ -50,12 +49,10 @@ quickly see a working storefront connected to your Vendure server.
 │
 ◇  Docker is running
 │
-// highlight-start
-◆  Would you like to include the Next.js storefront?
-│  ○ No
-│  ● Yes
-└
-// highlight-end
+◆  Would you like to include the Next.js storefront? // [!code highlight]
+│  ○ No // [!code highlight]
+│  ● Yes // [!code highlight]
+└ // [!code highlight]
 ```
 
 And that's it! After a minute or two, you'll have a **fully-functional Vendure server** installed locally.
@@ -90,8 +87,7 @@ Vendure supports a number of different databases. The `@vendure/create` tool wil
 │  ○ MySQL
 │  ○ MariaDB
 │  ○ Postgres
-// highlight-next-line
-│  ● SQLite
+│  ● SQLite // [!code highlight]
 └
 ```
 
@@ -123,8 +119,7 @@ The final prompt will ask whether to populate your new Vendure server with some 
 // ...
 │
 ◆  Populate with some sample product data?
-// highlight-next-line
-│  ● yes
+│  ● yes // [!code highlight]
 │  ○ no
 └
 ```

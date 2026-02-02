@@ -26,8 +26,7 @@ import { Instrument } from '@vendure/core';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-// highlight-next-line
-@Instrument()
+@Instrument() // [!code highlight]
 export class MyService {
 
   // Calls to this method will be instrumented

@@ -23,15 +23,13 @@ import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 @VendurePlugin({
     imports: [PluginCommonModule],
     configuration: config => {
-        // highlight-start
-        config.customFields.ProductVariant.push({
-            type: 'boolean',
-            name: 'isDigital',
-            defaultValue: false,
-            label: [{ languageCode: LanguageCode.en, value: 'This product is digital' }],
-            public: true,
-        });
-        // highlight-end
+        config.customFields.ProductVariant.push({ // [!code highlight]
+            type: 'boolean', // [!code highlight]
+            name: 'isDigital', // [!code highlight]
+            defaultValue: false, // [!code highlight]
+            label: [{ languageCode: LanguageCode.en, value: 'This product is digital' }], // [!code highlight]
+            public: true, // [!code highlight]
+        }); // [!code highlight]
         return config;
     },
 })
@@ -52,15 +50,13 @@ import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
     imports: [PluginCommonModule],
     configuration: config => {
         // config.customFields.ProductVariant.push({ ... omitted
-        // highlight-start
-        config.customFields.ShippingMethod.push({
-            type: 'boolean',
-            name: 'digitalFulfilmentOnly',
-            defaultValue: false,
-            label: [{ languageCode: LanguageCode.en, value: 'Digital fulfilment only' }],
-            public: true,
-        });
-        // highlight-end
+        config.customFields.ShippingMethod.push({ // [!code highlight]
+            type: 'boolean', // [!code highlight]
+            name: 'digitalFulfilmentOnly', // [!code highlight]
+            defaultValue: false, // [!code highlight]
+            label: [{ languageCode: LanguageCode.en, value: 'Digital fulfilment only' }], // [!code highlight]
+            public: true, // [!code highlight]
+        }); // [!code highlight]
         return config;
     },
 })
@@ -77,16 +73,14 @@ import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
     configuration: config => {
         // config.customFields.ProductVariant.push({ ... omitted
         // config.customFields.ShippingMethod.push({ ... omitted
-        // highlight-start
-        config.customFields.Fulfillment.push({
-            type: 'string',
-            name: 'downloadUrls',
-            nullable: true,
-            list: true,
-            label: [{ languageCode: LanguageCode.en, value: 'Urls of any digital purchases' }],
-            public: true,
-        });
-        // highlight-end
+        config.customFields.Fulfillment.push({ // [!code highlight]
+            type: 'string', // [!code highlight]
+            name: 'downloadUrls', // [!code highlight]
+            nullable: true, // [!code highlight]
+            list: true, // [!code highlight]
+            label: [{ languageCode: LanguageCode.en, value: 'Urls of any digital purchases' }], // [!code highlight]
+            public: true, // [!code highlight]
+        }); // [!code highlight]
         return config;
     },
 })
@@ -172,9 +166,7 @@ import { digitalFulfillmentHandler } from './config/digital-fulfillment-handler'
         // config.customFields.ProductVariant.push({ ... omitted
         // config.customFields.ShippingMethod.push({ ... omitted
         // config.customFields.Fulfillment.push({ ... omitted
-        // highlight-start
-        config.shippingOptions.fulfillmentHandlers.push(digitalFulfillmentHandler);
-        // highlight-end
+        config.shippingOptions.fulfillmentHandlers.push(digitalFulfillmentHandler); // [!code highlight]
         return config;
     },
 })
@@ -291,8 +283,7 @@ const config: VendureConfig = {
     // ... other config omitted
     plugins: [
         // ... other plugins omitted
-        // highlight-next-line
-        DigitalProductsPlugin,
+        DigitalProductsPlugin, // [!code highlight]
     ],
 };
 ```
@@ -340,17 +331,15 @@ query {
 {
   "data": {
     "eligibleShippingMethods": [
-      // highlight-start
-      {
-        "id": "3",
-        "name": "Digital Download",
-        "price": 0,
-        "priceWithTax": 0,
-        "customFields": {
-          "isDigital": true
-        }
-      },
-      // highlight-end
+      { // [!code highlight]
+        "id": "3", // [!code highlight]
+        "name": "Digital Download", // [!code highlight]
+        "price": 0, // [!code highlight]
+        "priceWithTax": 0, // [!code highlight]
+        "customFields": { // [!code highlight]
+          "isDigital": true // [!code highlight]
+        } // [!code highlight]
+      }, // [!code highlight]
       {
         "id": "1",
         "name": "Standard Shipping",
@@ -386,8 +375,7 @@ required by any physical products in the order.
 ```graphql
 mutation SetShippingMethod {
   setOrderShippingMethod(
-      // highlight-next-line
-      shippingMethodId: ["3", "1"]
+      shippingMethodId: ["3", "1"] # [!code highlight]
     ) {
     ... on Order {
       id
@@ -436,8 +424,7 @@ mutation SetShippingMethod {
             "name": "Jeff Buckley Grace mp3 download",
             "sku": "1231241241231",
             "customFields": {
-              // highlight-next-line
-              "isDigital": true
+              "isDigital": true // [!code highlight]
             }
           }
         },
@@ -455,15 +442,13 @@ mutation SetShippingMethod {
         }
       ],
       "shippingLines": [
-        // highlight-start
-        {
-          "id": "13",
-          "shippingMethod": {
-            "name": "Digital Download"
-          },
-          "priceWithTax": 0
-        },
-        // highlight-end
+        { // [!code highlight]
+          "id": "13", // [!code highlight]
+          "shippingMethod": { // [!code highlight]
+            "name": "Digital Download" // [!code highlight]
+          }, // [!code highlight]
+          "priceWithTax": 0 // [!code highlight]
+        }, // [!code highlight]
         {
           "id": "14",
           "shippingMethod": {

@@ -29,15 +29,13 @@ AdminUiPlugin.init({
     adminUiConfig: {
         apiPort: serverPort,
     },
-    // highlight-start
-    app: compileUiExtensions({
-        outputPath: path.join(__dirname, '../admin-ui'),
-        extensions: [
-            GreeterPlugin.ui,
-        ],
-        devMode: true,
-    }),
-    // highlight-end
+    app: compileUiExtensions({ // [!code highlight]
+        outputPath: path.join(__dirname, '../admin-ui'), // [!code highlight]
+        extensions: [ // [!code highlight]
+            GreeterPlugin.ui, // [!code highlight]
+        ], // [!code highlight]
+        devMode: true, // [!code highlight]
+    }), // [!code highlight]
 }),
 ```
 
@@ -153,14 +151,12 @@ export class GreeterPlugin {
         return GreeterPlugin;
     }
 
-    // highlight-start
-    static ui: AdminUiExtension = {
-        id: 'greeter-ui',
-        extensionPath: path.join(__dirname, 'ui'),
-        routes: [{ route: 'greeter', filePath: 'routes.ts' }],
-        providers: ['providers.ts'],
-    };
-    // highlight-end
+    static ui: AdminUiExtension = { // [!code highlight]
+        id: 'greeter-ui', // [!code highlight]
+        extensionPath: path.join(__dirname, 'ui'), // [!code highlight]
+        routes: [{ route: 'greeter', filePath: 'routes.ts' }], // [!code highlight]
+        providers: ['providers.ts'], // [!code highlight]
+    }; // [!code highlight]
 }
 
 ```
@@ -233,8 +229,7 @@ import { TestComponent } from './components/test/test.component';
 export default [
     registerRouteComponent({
         component: TestComponent,
-        // highlight-next-line
-        path: ':id',
+        path: ':id', // [!code highlight]
         title: 'Test',
         breadcrumb: 'Test',
     }),
@@ -251,8 +246,7 @@ import { Test } from './components/Test';
 export default [
     registerReactRouteComponent({
         component: Test,
-        // highlight-next-line
-        path: ':id',
+        path: ':id', // [!code highlight]
         title: 'Test',
         breadcrumb: 'Test',
     }),
@@ -276,8 +270,7 @@ import { ActivatedRoute } from '@angular/router';
     selector: 'test',
     template: `
         <vdr-page-block>
-            // highlight-next-line
-            <p>id: {{ id }}</p>
+            <p>id: {{ id }}</p> {/* [!code highlight] */}
         </vdr-page-block>`,
     standalone: true,
     imports: [SharedModule],
@@ -286,8 +279,7 @@ export class TestComponent {
     id: string;
 
     constructor(private route: ActivatedRoute) {
-        // highlight-next-line
-        this.id = this.route.snapshot.paramMap.get('id');
+        this.id = this.route.snapshot.paramMap.get('id'); // [!code highlight]
     }
 }
 ```
@@ -300,12 +292,10 @@ import React from 'react';
 import { useRouteParams } from '@vendure/admin-ui/react';
 
 export function Test() {
-    // highlight-next-line
-    const { params } = useRouteParams();
+    const { params } = useRouteParams(); // [!code highlight]
     return (
         <div className="page-block">
-            // highlight-next-line
-            <p>id: {params.id}</p>
+            <p>id: {params.id}</p> {/* [!code highlight] */}
         </div>
     );
 }
@@ -342,12 +332,10 @@ import { Component } from '@angular/core';
     imports: [SharedModule],
 })
 export class TestComponent {
-    // highlight-next-line
-    constructor(private notificationService: NotificationService) {}
+    constructor(private notificationService: NotificationService) {} // [!code highlight]
     
     showNotification() {
-        // highlight-next-line
-        this.notificationService.success('Hello!');
+        this.notificationService.success('Hello!'); // [!code highlight]
     }
 }
 ```
@@ -359,17 +347,14 @@ In React, we use the [`useInjector()`](/reference/admin-ui-api/react-hooks/use-i
 
 ```tsx title="src/plugins/my-plugin/ui/components/Test.tsx"
 import { NotificationService } from '@vendure/admin-ui/core';
-// highlight-next-line
-import { useInjector } from '@vendure/admin-ui/react';
+import { useInjector } from '@vendure/admin-ui/react'; // [!code highlight]
 import React from 'react';
 
 export function Test() {
-    // highlight-next-line
-    const notificationService = useInjector(NotificationService);
+    const notificationService = useInjector(NotificationService); // [!code highlight]
     
     function showNotification() {
-        // highlight-next-line
-        notificationService.success('Hello!');
+        notificationService.success('Hello!'); // [!code highlight]
     }
     return (
         <div className="page-block">
@@ -400,8 +385,7 @@ import { TestComponent } from './components/test/test.component';
 export default [
     registerRouteComponent({
         component: TestComponent,
-        // highlight-next-line
-        title: 'Test',
+        title: 'Test', // [!code highlight]
         breadcrumb: 'Test',
     }),
 ];
@@ -417,8 +401,7 @@ import { Test } from './components/Test';
 export default [
     registerReactRouteComponent({
         component: Test,
-        // highlight-next-line
-        title: 'Test',
+        title: 'Test', // [!code highlight]
         breadcrumb: 'Test',
     }),
 ];
@@ -443,20 +426,17 @@ import { Component } from '@angular/core';
     template: `
         <vdr-page-block>
             <vdr-card>
-                // highlight-next-line
-                <button class="button primary" (click)="handleClick()">Update title</button>
+                <button class="button primary" (click)="handleClick()">Update title</button> {/* [!code highlight] */}
             </vdr-card>
         </vdr-page-block>`,
     standalone: true,
     imports: [SharedModule],
 })
 export class TestComponent {
-    // highlight-next-line
-    constructor(private pageMetadataService: PageMetadataService) {}
+    constructor(private pageMetadataService: PageMetadataService) {} // [!code highlight]
 
     handleClick() {
-        // highlight-next-line
-        pageMetadataService.setTitle('New title');
+        pageMetadataService.setTitle('New title'); // [!code highlight]
     }
 }
 ```
@@ -469,12 +449,10 @@ import { Card, usePageMetadata } from '@vendure/admin-ui/react';
 import React from 'react';
 
 export function Test() {
-    // highlight-next-line
-    const { setTitle } = usePageMetadata();
+    const { setTitle } = usePageMetadata(); // [!code highlight]
 
     function handleClick() {
-        // highlight-next-line
-        setTitle('New title');
+        setTitle('New title'); // [!code highlight]
     }
     return (
         <div className="page-block">
@@ -510,8 +488,7 @@ export default [
         component: TestComponent,
         title: 'Test',
         locationId: 'my-location-id'
-        // highlight-next-line
-        breadcrumb: 'Test',
+        breadcrumb: 'Test', // [!code highlight]
     }),
 ];
 ```
@@ -527,8 +504,7 @@ export default [
     registerReactRouteComponent({
         component: Test,
         title: 'Test',
-        // highlight-next-line
-        breadcrumb: 'Test',
+        breadcrumb: 'Test', // [!code highlight]
     }),
 ];
 ```
@@ -547,20 +523,16 @@ export default [
         component: TestComponent,
         path: 'test-1',
         title: 'Test 1',
-        // highlight-start
-        breadcrumb: { label: 'Test', link: '/extensions/test' },
-        // highlight-end
+        breadcrumb: { label: 'Test', link: '/extensions/test' }, // [!code highlight]
     }),
     registerRouteComponent({
         component: TestComponent,
         path: 'test-2',
         title: 'Test 2',
-        // highlight-start
-        breadcrumb: [
-            { label: 'Parent', link: '/extensions/test' },
-            { label: 'Child', link: '/extensions/test/test-2' },
-        ],
-        // highlight-end
+        breadcrumb: [ // [!code highlight]
+            { label: 'Parent', link: '/extensions/test' }, // [!code highlight]
+            { label: 'Child', link: '/extensions/test/test-2' }, // [!code highlight]
+        ], // [!code highlight]
     }),
 ];
 ```
@@ -583,20 +555,17 @@ import { Component } from '@angular/core';
     template: `
         <vdr-page-block>
             <vdr-card>
-                // highlight-next-line
-                <button class="button primary" (click)="handleClick()">Update breadcrumb</button>
+                <button class="button primary" (click)="handleClick()">Update breadcrumb</button> {/* [!code highlight] */}
             </vdr-card>
         </vdr-page-block>`,
     standalone: true,
     imports: [SharedModule],
 })
 export class TestComponent {
-    // highlight-next-line
-    constructor(private pageMetadataService: PageMetadataService) {}
+    constructor(private pageMetadataService: PageMetadataService) {} // [!code highlight]
 
     handleClick() {
-        // highlight-next-line
-        pageMetadataService.setBreadcrumb('New breadcrumb');
+        pageMetadataService.setBreadcrumb('New breadcrumb'); // [!code highlight]
     }
 }
 ```
@@ -609,12 +578,10 @@ import { Card, usePageMetadata } from '@vendure/admin-ui/react';
 import React from 'react';
 
 export function Test() {
-    // highlight-next-line
-    const { setBreadcrumb } = usePageMetadata();
+    const { setBreadcrumb } = usePageMetadata(); // [!code highlight]
 
     function handleClick() {
-        // highlight-next-line
-        setBreadcrumb('New breadcrumb');
+        setBreadcrumb('New breadcrumb'); // [!code highlight]
     }
     return (
         <div className="page-block">
@@ -754,14 +721,12 @@ export default [
         path: ':id',
         title: 'Test',
         breadcrumb: 'Test',
-        // highlight-start
-        routeConfig: {
-            pathMatch: 'full',
-            canActivate: [(route: ActivatedRouteSnapshot) => {
-                return inject(PermissionsService).canActivate(route.params.id);
-            }],
-        },
-        // highlight-end
+        routeConfig: { // [!code highlight]
+            pathMatch: 'full', // [!code highlight]
+            canActivate: [(route: ActivatedRouteSnapshot) => { // [!code highlight]
+                return inject(PermissionsService).canActivate(route.params.id); // [!code highlight]
+            }], // [!code highlight]
+        }, // [!code highlight]
     }),
 ];
 ```

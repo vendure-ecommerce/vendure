@@ -110,8 +110,7 @@ declare ui extensions anywhere except on the plugin itself.
         schema: adminApiExtensions,
         resolvers: [ArticleAdminResolver],
     },
-    // highlight-next-line
-    dashboard: './dashboard/index.tsx',
+    dashboard: './dashboard/index.tsx', // [!code highlight]
 })
 export class CmsPlugin {
     // ...

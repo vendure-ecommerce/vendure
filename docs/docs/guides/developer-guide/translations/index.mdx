@@ -33,16 +33,13 @@ To understand how translatable entities are implemented, let's take a look at a 
 @Entity()
 export class Facet extends VendureEntity implements Translatable {
     
-    // highlight-next-line
-    name: LocaleString;
+    name: LocaleString; // [!code highlight]
 
     @Column({ unique: true })
     code: string;
 
-    // highlight-next-line
-    @OneToMany(type => FacetTranslation, translation => translation.base, { eager: true })
-    // highlight-next-line
-    translations: Array<Translation<Facet>>;
+    @OneToMany(type => FacetTranslation, translation => translation.base, { eager: true }) // [!code highlight]
+    translations: Array<Translation<Facet>>; // [!code highlight]
 }
 ```
 
@@ -54,8 +51,7 @@ export class FacetTranslation extends VendureEntity implements Translation<Facet
 
     @Column('varchar') languageCode: LanguageCode;
 
-    // highlight-next-line
-    @Column() name: string;
+    @Column() name: string; // [!code highlight]
 
     @Index()
     @ManyToOne(type => Facet, base => base.translations, { onDelete: 'CASCADE' })
@@ -83,16 +79,13 @@ export class MyService {
     async getFacet(ctx: RequestContext, id: ID): Promise<Facet | undefined> {
         const facet = await this.connection.getRepository(ctx, Facet).findOne(id);
         if (facet) {
-            // highlight-next-line
-            return this.translatorService.translate(facet, ctx);
+            return this.translatorService.translate(facet, ctx); // [!code highlight]
         }
     }
     
     async getFacets(ctx: RequestContext): Promise<Facet[]> {
-        // highlight-next-line
-        const facets = await this.connection.getRepository(ctx, Facet).find();
-        // highlight-next-line
-        return Promise.all(facets.map(facet => this.translatorService.translate(facet, ctx)));
+        const facets = await this.connection.getRepository(ctx, Facet).find(); // [!code highlight]
+        return Promise.all(facets.map(facet => this.translatorService.translate(facet, ctx))); // [!code highlight]
     }
 }
 ```

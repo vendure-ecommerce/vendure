@@ -67,15 +67,13 @@ import { Asset, LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure
 @VendurePlugin({
     imports: [PluginCommonModule],
     configure: config => {
-        // highlight-start
-        config.customFields.Customer.push({
-            name: 'avatar',
-            type: 'relation',
-            label: [{languageCode: LanguageCode.en, value: 'Customer avatar'}],
-            entity: Asset,
-            nullable: true,
-        });
-        // highlight-end
+        config.customFields.Customer.push({ // [!code highlight]
+            name: 'avatar', // [!code highlight]
+            type: 'relation', // [!code highlight]
+            label: [{languageCode: LanguageCode.en, value: 'Customer avatar'}], // [!code highlight]
+            entity: Asset, // [!code highlight]
+            nullable: true, // [!code highlight]
+        }); // [!code highlight]
         return config;
     },
 })

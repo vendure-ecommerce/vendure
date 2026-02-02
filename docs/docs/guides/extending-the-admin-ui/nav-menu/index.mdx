@@ -52,9 +52,7 @@ export const config: VendureConfig = {
                         id: 'greeter',
                         extensionPath: path.join(__dirname, 'plugins/greeter/ui'),
                         routes: [{ route: 'greet', filePath: 'routes.ts' }],
-                        // highlight-start
-                        providers: ['providers.ts']
-                        // highlight-end
+                        providers: ['providers.ts'] // [!code highlight]
                     },
                 ],
             }),
@@ -87,10 +85,8 @@ export default [
         id: 'collections',  // <-- we will override the "collections" menu item
         label: 'Collections',
         routerLink: ['/catalog', 'collections'],
-        // highlight-start
-        // we use an invalid permission which ensures it is hidden from all users
-        requiresPermission: '__disable__'
-        // highlight-end
+        // we use an invalid permission which ensures it is hidden from all users // [!code highlight]
+        requiresPermission: '__disable__' // [!code highlight]
     },
     'catalog'),
 ];

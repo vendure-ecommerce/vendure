@@ -105,11 +105,9 @@ export const MyCustomInput: DashboardFormComponent = props => {
   // implementation omitted
 }
 
-// highlight-start
-MyCustomInput.metadata = {
-  isListInput: true
-}
-// highlight-end
+MyCustomInput.metadata = { // [!code highlight]
+  isListInput: true // [!code highlight]
+} // [!code highlight]
 ```
 
 ```ts title="Signature"

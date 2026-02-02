@@ -69,11 +69,9 @@ mutation {
     addItemToOrder(
         productVariantId: "42"
         quantity: 1
-        // highlight-start
-        customFields: {
-            engravingText: "Thanks for all the fish!"
-        }
-        // highlight-end
+        customFields: { # [!code highlight]
+            engravingText: "Thanks for all the fish!" # [!code highlight]
+        } # [!code highlight]
     ) {
         ...on Order {
             id

@@ -265,8 +265,7 @@ mutation {
     "updateCustomerEmail": {
       "id": "1",
       "name": "John Smith",
-      // highlight-next-line
-      "email": "john.smith@email.com"
+      "email": "john.smith@email.com" // [!code highlight]
     }
   }
 }
@@ -281,8 +280,7 @@ Operations can also have a **name**, which, while not required, is recommended f
 Here's the above query with a name:
 
 ```graphql
-// highlight-next-line
-query GetCustomers {
+query GetCustomers { # [!code highlight]
   customers {
     id
     name
@@ -303,10 +301,8 @@ Here's how we can re-write the above mutation operation to use variables:
 <TabItem value="Mutation" label="Mutation" default>
 
 ```graphql
-// highlight-next-line
-mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
-  // highlight-next-line
-  updateCustomerEmail(input: $input) {
+mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) { # [!code highlight]
+  updateCustomerEmail(input: $input) { # [!code highlight]
     id
     name
     email
@@ -335,8 +331,7 @@ mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
     "updateCustomerEmail": {
       "id": "1",
       "name": "John Smith",
-      // highlight-next-line
-      "email": "john.smith@email.com"
+      "email": "john.smith@email.com" // [!code highlight]
     }
   }
 }
@@ -388,8 +383,7 @@ type Mutation {
   updateCustomerEmail(input: UpdateCustomerEmailInput!): UpdateCustomerEmailResult!
 }
 
-// highlight-next-line
-union UpdateCustomerEmailResult = Customer | EmailAddressInUseError
+union UpdateCustomerEmailResult = Customer | EmailAddressInUseError # [!code highlight]
 
 type EmailAddressInUseError {
   errorCode: String!
@@ -465,8 +459,7 @@ The above operation could also be written to use the `CustomerFields` fragment w
 ```graphql
 mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
   updateCustomerEmail(input: $input) {
-    // highlight-next-line
-    ...CustomerFields
+    ...CustomerFields # [!code highlight]
     ... on EmailAddressInUseError {
       errorCode
       message
@@ -521,11 +514,9 @@ which fields of that object type we want to fetch. For example:
       name
       slug
       variants {
-        // highlight-start
-        # Sub-fields are required for object types
-        sku
-        priceWithTax
-        // highlight-end
+        # Sub-fields are required for object types # [!code highlight]
+        sku # [!code highlight]
+        priceWithTax # [!code highlight]
       }
     }
   }

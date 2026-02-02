@@ -235,13 +235,11 @@ import { registerRouteComponent } from '@vendure/admin-ui/core';
 import { ReviewListComponent } from './components/review-list/review-list.component';
 
 export default [
-    // highlight-start
-    registerRouteComponent({
-        path: '',
-        component: ReviewListComponent,
-        breadcrumb: 'Product reviews',
-    }),
-    // highlight-end
+    registerRouteComponent({ // [!code highlight]
+        path: '', // [!code highlight]
+        component: ReviewListComponent, // [!code highlight]
+        breadcrumb: 'Product reviews', // [!code highlight]
+    }), // [!code highlight]
 ]
 ```
 
@@ -263,8 +261,7 @@ you need to add the following to your list component:
 })
 export class ReviewListComponent extends TypedBaseListComponent<typeof getReviewListDocument, 'reviews'> {
 
-    // highlight-next-line
-    customFields = this.getCustomFieldConfig('ProductReview');
+    customFields = this.getCustomFieldConfig('ProductReview'); // [!code highlight]
 
     readonly filters = this.createFilterCollection()
         .addIdFilter()
@@ -287,8 +284,7 @@ export class ReviewListComponent extends TypedBaseListComponent<typeof getReview
             label: 'Author',
             filterField: 'authorName',
         })
-        // highlight-next-line
-        .addCustomFieldFilters(this.customFields)
+        .addCustomFieldFilters(this.customFields) // [!code highlight]
         .connectToRoute(this.route);
 
     readonly sorts = this.createSortCollection()
@@ -298,8 +294,7 @@ export class ReviewListComponent extends TypedBaseListComponent<typeof getReview
         .addSort({name: 'title'})
         .addSort({name: 'rating'})
         .addSort({name: 'authorName'})
-        // highlight-next-line
-        .addCustomFieldSorts(this.customFields)
+        .addCustomFieldSorts(this.customFields) // [!code highlight]
         .connectToRoute(this.route);
     
     // rest of class omitted for brevity
@@ -320,12 +315,10 @@ and then add the `vdr-dt2-custom-field-column` component to your data table:
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
     <!-- rest of data table omitted for brevity -->
-    // highlight-start
-    <vdr-dt2-custom-field-column
-            *ngFor="let customField of customFields"
-            [customField]="customField"
-            [sorts]="sorts"
-    />
-    // highlight-end
+    <vdr-dt2-custom-field-column <!-- [!code highlight] -->
+            *ngFor="let customField of customFields" <!-- [!code highlight] -->
+            [customField]="customField" <!-- [!code highlight] -->
+            [sorts]="sorts" <!-- [!code highlight] -->
+    /> <!-- [!code highlight] -->
 </vdr-data-table-2>
 ```

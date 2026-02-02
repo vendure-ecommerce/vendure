@@ -75,12 +75,10 @@ import { ACTIVE_ORDER_FRAGMENT } from './fragments';
 export const GET_ACTIVE_ORDER = /*GraphQL*/`
   query GetActiveOrder {
     activeOrder {
-      // highlight-next-line
-      ...ActiveOrder
+      ...ActiveOrder # [!code highlight]
     }
   }
-  // highlight-next-line
-  ${ACTIVE_ORDER_FRAGMENT}
+  ${ACTIVE_ORDER_FRAGMENT} # [!code highlight]
 `;
 ```
 
