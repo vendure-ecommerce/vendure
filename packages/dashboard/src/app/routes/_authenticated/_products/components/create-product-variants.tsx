@@ -72,22 +72,42 @@ const variantSchema = z.object({
     }),
 });
 
-const formSchema = z.object({
-    optionGroups: z.array(optionGroupSchema),
-    variants: z.record(variantSchema),
-});
-
 type VariantForm = z.infer<typeof variantSchema>;
+
+export interface ExistingOptionGroup {
+    id: string;
+    code: string;
+    name: string;
+    options?: Array<{
+        id: string;
+        code: string;
+        name: string;
+    }>;
+}
+
+export interface ExistingVariant {
+    id: string;
+    options: Array<{
+        id: string;
+        code: string;
+        name: string;
+        groupId: string;
+    }>;
+}
 
 interface CreateProductVariantsProps {
     currencyCode?: string;
-    onChange?: ({ data }: { data: VariantConfiguration }) => void;
+    onChange?: ({ data, existingGroupIds }: { data: VariantConfiguration; existingGroupIds: string[] }) => void;
+    existingOptionGroups?: ExistingOptionGroup[];
+    existingVariants?: ExistingVariant[];
 }
 
 export function CreateProductVariants({
-                                          currencyCode = 'USD',
-                                          onChange,
-                                      }: Readonly<CreateProductVariantsProps>) {
+    currencyCode = 'USD',
+    onChange,
+    existingOptionGroups = [],
+    existingVariants = [],
+}: Readonly<CreateProductVariantsProps>) {
     const { data: stockLocationsResult } = useQuery({
         queryKey: ['stockLocations'],
         queryFn: () => api.query(getStockLocationsDocument, { options: { take: 100 } }),
@@ -95,22 +115,70 @@ export function CreateProductVariants({
     const { activeChannel } = useChannel();
     const stockLocations = stockLocationsResult?.stockLocations.items ?? [];
 
-    const [optionGroups, setOptionGroups] = useState<OptionGroupConfiguration['optionGroups']>([]);
+    // Transform existing option groups to the editor format
+    const initialGroups = useMemo(
+        () =>
+            existingOptionGroups.map(group => ({
+                name: group.name,
+                existingId: group.id,
+                values:
+                    group.options?.map(opt => ({
+                        value: opt.name,
+                        id: opt.id,
+                        existingId: opt.id,
+                    })) ?? [],
+            })),
+        [existingOptionGroups],
+    );
 
-    const form = useForm<{ variants: Record<string, VariantForm> }>({
-        resolver: zodResolver(z.object({ variants: z.record(variantSchema) })),
+    // Track which group IDs are existing (not newly created)
+    const existingGroupIds = useMemo(
+        () => existingOptionGroups.map(g => g.id),
+        [existingOptionGroups],
+    );
+
+    const [optionGroups, setOptionGroups] = useState<OptionGroupConfiguration['optionGroups']>(initialGroups);
+
+    const form = useForm<{
+        variants: Record<string, VariantForm>;
+        useGlobalPrice: boolean;
+        globalPrice: string;
+        useGlobalStock: boolean;
+        globalStock: string;
+    }>({
+        resolver: zodResolver(
+            z.object({
+                variants: z.record(variantSchema),
+                useGlobalPrice: z.boolean(),
+                globalPrice: z.string(),
+                useGlobalStock: z.boolean(),
+                globalStock: z.string(),
+            }),
+        ),
         defaultValues: {
             variants: {},
+            useGlobalPrice: false,
+            globalPrice: '0',
+            useGlobalStock: false,
+            globalStock: '0',
         },
         mode: 'onChange',
     });
 
+    const { useGlobalPrice, globalPrice, useGlobalStock, globalStock } = form.watch();
     const { setValue } = form;
 
-    // memoize the variants
-    const variants = useMemo(() => generateVariants(optionGroups), [JSON.stringify(optionGroups)]);
+    // Generate variants and filter out existing ones
+    const variants = useMemo(() => {
+        const existingCombos = new Set(
+            existingVariants.map(v => v.options.map(o => o.id).sort().join(',')),
+        );
+        return generateVariants(optionGroups).filter(
+            variant => !existingCombos.has(variant.options.map(o => o.id).sort().join(',')),
+        );
+    }, [optionGroups, existingVariants]);
 
-    // Use the handleSubmit approach for the entire form
+    // Watch form changes and build variant data
     useEffect(() => {
         const subscription = form.watch(value => {
             const formVariants = value?.variants || {};
@@ -123,8 +191,8 @@ export function CreateProductVariants({
                         activeVariants.push({
                             enabled: formVariant.enabled ?? true,
                             sku: formVariant.sku ?? '',
-                            price: formVariant.price ?? '',
-                            stock: formVariant.stock ?? '',
+                            price: (value?.useGlobalPrice ? value?.globalPrice : formVariant.price) ?? '',
+                            stock: (value?.useGlobalStock ? value?.globalStock : formVariant.stock) ?? '',
                             options: variant.options,
                         });
                     }
@@ -136,11 +204,11 @@ export function CreateProductVariants({
                 variants: activeVariants,
             };
 
-            onChange?.({ data: filteredData });
+            onChange?.({ data: filteredData, existingGroupIds });
         });
 
         return () => subscription.unsubscribe();
-    }, [form, onChange, variants, optionGroups]);
+    }, [form, variants, optionGroups, existingGroupIds, onChange]);
 
     // Initialize variant form values when variants change
     useEffect(() => {
@@ -165,7 +233,10 @@ export function CreateProductVariants({
     return (
         <FormProvider {...form}>
             <div className="mb-6">
-                <OptionGroupsEditor onChange={data => setOptionGroups(data.optionGroups)} />
+                <OptionGroupsEditor
+                    initialGroups={initialGroups}
+                    onChange={data => setOptionGroups(data.optionGroups)}
+                />
             </div>
 
             {stockLocations.length === 0 ? (
@@ -217,6 +288,89 @@ export function CreateProductVariants({
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
+                                {/* Global price row */}
+                                <TableRow className="bg-muted/50">
+                                    {variants.length > 1 && <TableCell />}
+                                    {variants.length > 1 && (
+                                        <TableCell className="font-medium">
+                                            <Trans>All variants</Trans>
+                                        </TableCell>
+                                    )}
+                                    <TableCell />
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <FormField
+                                                control={form.control}
+                                                name="useGlobalPrice"
+                                                render={({ field }) => (
+                                                    <FormItem className="flex items-center">
+                                                        <FormControl>
+                                                            <Checkbox
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="globalPrice"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <MoneyInput
+                                                                {...field}
+                                                                value={Number(field.value) || 0}
+                                                                onChange={value =>
+                                                                    field.onChange(value.toString())
+                                                                }
+                                                                currency={activeChannel?.defaultCurrencyCode}
+                                                                disabled={!useGlobalPrice}
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <FormField
+                                                control={form.control}
+                                                name="useGlobalStock"
+                                                render={({ field }) => (
+                                                    <FormItem className="flex items-center">
+                                                        <FormControl>
+                                                            <Checkbox
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="globalStock"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                type="number"
+                                                                min="0"
+                                                                step="1"
+                                                                className="w-24"
+                                                                disabled={!useGlobalStock}
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
                                 {variants.map(variant => (
                                     <TableRow key={variant.id}>
                                         {variants.length > 1 && (
@@ -265,12 +419,13 @@ export function CreateProductVariants({
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                                <MoneyInput
-                                                                    {...field}
-                                                                    value={Number(field.value) || 0}
-                                                                    onChange={value => field.onChange(value.toString())}
-                                                                    currency={activeChannel?.defaultCurrencyCode}
-                                                                />
+                                                            <MoneyInput
+                                                                {...field}
+                                                                value={useGlobalPrice ? (Number(globalPrice) || 0) : (Number(field.value) || 0)}
+                                                                onChange={value => field.onChange(value.toString())}
+                                                                currency={activeChannel?.defaultCurrencyCode}
+                                                                disabled={useGlobalPrice}
+                                                            />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -287,9 +442,11 @@ export function CreateProductVariants({
                                                         <FormControl>
                                                             <Input
                                                                 {...field}
+                                                                value={useGlobalStock ? globalStock : field.value}
                                                                 type="number"
                                                                 min="0"
                                                                 step="1"
+                                                                disabled={useGlobalStock}
                                                             />
                                                         </FormControl>
                                                         <FormMessage />

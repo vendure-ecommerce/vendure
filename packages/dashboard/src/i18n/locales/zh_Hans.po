@@ -991,8 +991,8 @@ msgid "Add product options first"
 msgstr "请先添加商品选项"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:276
-msgid "Add product variant"
-msgstr "添加商品变体"
+msgid "Manually add product variant"
+msgstr "手动添加商品变体"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:232
 msgid "Add products to create a test order"
@@ -1566,8 +1566,8 @@ msgid "Create variant"
 msgstr "创建变体"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:153
-msgid "Create Variants"
-msgstr "创建变体"
+msgid "Variant Assistant"
+msgstr "变体助手"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:156
 msgid "Create variants for your product"

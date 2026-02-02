@@ -991,8 +991,8 @@ msgid "Add product options first"
 msgstr "पहिले उत्पादन विकल्पहरू थप्नुहोस्"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:276
-msgid "Add product variant"
-msgstr "उत्पादन भेरियन्ट थप्नुहोस्"
+msgid "Manually add product variant"
+msgstr "म्यानुअली उत्पादन भेरियन्ट थप्नुहोस्"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:232
 msgid "Add products to create a test order"
@@ -1566,8 +1566,8 @@ msgid "Create variant"
 msgstr "भेरियन्ट सिर्जना गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:153
-msgid "Create Variants"
-msgstr "भेरियन्टहरू सिर्जना गर्नुहोस्"
+msgid "Variant Assistant"
+msgstr "भेरियन्ट सहायक"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:156
 msgid "Create variants for your product"

@@ -1020,8 +1020,8 @@ msgid "Add product options first"
 msgstr "Add product options first"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:276
-msgid "Add product variant"
-msgstr "Add product variant"
+msgid "Manually add product variant"
+msgstr "Manually add product variant"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:232
 msgid "Add products to create a test order"
@@ -1595,8 +1595,8 @@ msgid "Create variant"
 msgstr "Create variant"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:153
-msgid "Create Variants"
-msgstr "Create Variants"
+msgid "Variant Assistant"
+msgstr "Variant Assistant"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:156
 msgid "Create variants for your product"
