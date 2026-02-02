@@ -148,14 +148,20 @@ function translateLeaf(
                 try {
                     return translateEntity(nested2, languageCode);
                 } catch (e: any) {
-                    return nested2;
+                    if (e instanceof InternalServerError) {
+                        return nested2;
+                    }
+                    throw e;
                 }
             });
         } else if (object[property]) {
             try {
                 return translateEntity(object[property], languageCode);
             } catch (e: any) {
-                return object[property];
+                if (e instanceof InternalServerError) {
+                    return object[property];
+                }
+                throw e;
             }
         }
     }

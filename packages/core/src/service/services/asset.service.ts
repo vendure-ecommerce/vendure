@@ -106,8 +106,8 @@ export class AssetService {
         private channelService: ChannelService,
         private roleService: RoleService,
         private customFieldRelationService: CustomFieldRelationService,
-        private translatableSaver: TranslatableSaver,
-        private translator: TranslatorService,
+        private readonly translatableSaver: TranslatableSaver,
+        private readonly translator: TranslatorService,
     ) {
         this.permittedMimeTypes = this.configService.assetOptions.permittedFileTypes
             .map(val => (/\.[\w]+/.test(val) ? mime.lookup(val) || undefined : val))

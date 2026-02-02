@@ -10,8 +10,8 @@ import { Ctx } from '../../decorators/request-context.decorator';
 @Resolver('Asset')
 export class AssetEntityResolver {
     constructor(
-        private tagService: TagService,
-        private localeStringHydrator: LocaleStringHydrator,
+        private readonly tagService: TagService,
+        private readonly localeStringHydrator: LocaleStringHydrator,
     ) {}
 
     @ResolveField()
