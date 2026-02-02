@@ -27,11 +27,11 @@ npx @vendure/create my-shop
 Next, choose the "Quick Start" option. This is the fastest way to get a Vendure server up and running and will handle all the configuration for you.
 If you have Docker Desktop installed, it will create and configure a Postgres database for you. If not, it will use SQLite.
 
-```text
+```console
 ┌  Let's create a Vendure App ✨
 │
 ◆  How should we proceed?
-│  ● Quick Start (Get up and running in a single step) // [!code highlight]
+│  ● Quick Start (Get up and running in a single step) # [!code highlight]
 │  ○ Manual Configuration
 └
 ```
@@ -39,7 +39,7 @@ If you have Docker Desktop installed, it will create and configure a Postgres da
 Next you'll be prompted to include our official Next.js storefront starter in your project. This is optional, but recommended if you want to
 quickly see a working storefront connected to your Vendure server.
 
-```text
+```console
 ┌  Let's create a Vendure App ✨
 │
 ◇  How should we proceed?
@@ -49,10 +49,10 @@ quickly see a working storefront connected to your Vendure server.
 │
 ◇  Docker is running
 │
-◆  Would you like to include the Next.js storefront? // [!code highlight]
-│  ○ No // [!code highlight]
-│  ● Yes // [!code highlight]
-└ // [!code highlight]
+◆  Would you like to include the Next.js storefront? # [!code highlight]
+│  ○ No # [!code highlight]
+│  ● Yes # [!code highlight]
+└ # [!code highlight]
 ```
 
 And that's it! After a minute or two, you'll have a **fully-functional Vendure server** installed locally.
@@ -75,7 +75,7 @@ Vendure supports a number of different databases. The `@vendure/create` tool wil
 
 **To quickly test out Vendure, we recommend using SQLite**, which requires no external dependencies. You can always switch to a different database later [by changing your configuration file](/developer-guide/configuration/#connecting-to-the-database).
 
-```text
+```console
 ┌  Let's create a Vendure App ✨
 │
 ◇  How should we proceed?
@@ -87,7 +87,7 @@ Vendure supports a number of different databases. The `@vendure/create` tool wil
 │  ○ MySQL
 │  ○ MariaDB
 │  ○ Postgres
-│  ● SQLite // [!code highlight]
+│  ● SQLite # [!code highlight]
 └
 ```
 
@@ -110,16 +110,16 @@ The final prompt will ask whether to populate your new Vendure server with some 
 
 **We recommend you do so**, as it will give you a good starting point for exploring the APIs, which we will cover in the [Try the API section](/getting-started/try-the-api/), as well as providing some data to use when building your own storefront.
 
-```text
+```console
 ┌  Let's create a Vendure App ✨
 │
 ◇  How should we proceed?
 │  Manual Configuration
 │
-// ...
+# ...
 │
 ◆  Populate with some sample product data?
-│  ● yes // [!code highlight]
+│  ● yes # [!code highlight]
 │  ○ no
 └
 ```
@@ -134,7 +134,7 @@ Next, a project scaffold will be created and dependencies installed. This may ta
 
 Once complete, you'll see a message like this:
 
-```text
+```console
 ◇  Setup complete! ─────────────────────────────────────╮
 │                                                       │
 │  Your new Vendure project was created!                │
