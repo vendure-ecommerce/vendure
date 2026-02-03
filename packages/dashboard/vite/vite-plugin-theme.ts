@@ -67,6 +67,7 @@ const defaultVariables: ThemeVariables = {
         'muted-foreground': 'oklch(0.5517 0.0138 285.9385)',
         accent: 'oklch(0.9674 0.0013 286.3752)',
         'accent-foreground': 'oklch(0.2103 0.0059 285.8852)',
+        // L=0.60 ensures WCAG AA contrast ratio (4.5:1) against white backgrounds
         destructive: 'oklch(0.60 0.24 27.325)',
         'destructive-foreground': 'oklch(0.9851 0 0)',
         success: 'hsl(99deg 67.25% 33.2%)',
@@ -111,6 +112,7 @@ const defaultVariables: ThemeVariables = {
         'muted-foreground': 'oklch(0.7118 0.0129 286.0665)',
         accent: 'oklch(0.2739 0.0055 286.0326)',
         'accent-foreground': 'oklch(0.9851 0 0)',
+        // L=0.75 ensures WCAG AA contrast ratio (4.5:1) against dark backgrounds
         destructive: 'oklch(0.75 0.22 25)',
         'destructive-foreground': 'oklch(0.9851 0 0)',
         success: 'hsl(100 76.42% 22.21%)',
@@ -145,6 +147,16 @@ export type ThemeVariablesPluginOptions = {
     theme?: ThemeVariables;
 };
 
+/**
+ * Converts a theme colors object into CSS custom property declarations.
+ */
+function generateCssVariables(theme: ThemeColors): string {
+    return Object.entries(theme)
+        .filter(([_, value]) => value !== undefined)
+        .map(([key, value]) => `--${key}: ${value as string};`)
+        .join('\n');
+}
+
 export function themeVariablesPlugin(options: ThemeVariablesPluginOptions): Plugin {
     const virtualModuleId = 'virtual:admin-theme';
     const resolvedVirtualModuleId = `\0${virtualModuleId}`;
@@ -172,17 +184,11 @@ export function themeVariablesPlugin(options: ThemeVariablesPluginOptions): Plug
 
                 const themeCSS = `
                     :root {
-                        ${Object.entries(mergedLightTheme)
-                            .filter(([key, value]) => value !== undefined)
-                            .map(([key, value]) => `--${key}: ${value as string};`)
-                            .join('\n')}
+                        ${generateCssVariables(mergedLightTheme)}
                     }
 
                     .dark {
-                        ${Object.entries(mergedDarkTheme)
-                            .filter(([key, value]) => value !== undefined)
-                            .map(([key, value]) => `--${key}: ${value as string};`)
-                            .join('\n')}
+                        ${generateCssVariables(mergedDarkTheme)}
                     }
                 `;
 
