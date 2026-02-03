@@ -388,7 +388,7 @@ export function getZodTypeFromField(field: FieldInfo): ZodTypeAny {
         case 'String':
         case 'ID':
         case 'DateTime':
-            zodType = z.string();
+            zodType = field.nullable ? z.string() : z.string().min(1, 'This field is required');
             break;
         case 'Int':
         case 'Float':
