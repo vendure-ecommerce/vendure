@@ -20,6 +20,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { createProductOptionDocument } from '../products.graphql.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 
 const addOptionValueSchema = z.object({
     name: z.string().min(1, 'Option value name is required'),
@@ -36,6 +37,8 @@ export function AddOptionValueDialog({
     groupName: string;
     onSuccess?: () => void;
 }>) {
+    const { activeChannel } = useChannel();
+
     const [open, setOpen] = useState(false);
     const { t } = useLingui();
 
@@ -68,7 +71,7 @@ export function AddOptionValueDialog({
                 code: values.name.toLowerCase().replace(/\s+/g, '-'),
                 translations: [
                     {
-                        languageCode: 'en',
+                        languageCode: activeChannel?.defaultLanguageCode ?? 'en',
                         name: values.name,
                     },
                 ],
