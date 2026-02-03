@@ -6,7 +6,7 @@ import {
 } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import {
     AssignFacetValuesToProductVariantsBulkAction,

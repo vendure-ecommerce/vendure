@@ -4,7 +4,7 @@ import { Button } from '@/vdb/components/ui/button.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
-import { ColumnFiltersState, SortingState, Table, VisibilityState } from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState, VisibilityState } from '@tanstack/react-table';
 import { PlusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { deleteProductOptionDocument } from '../product-option-groups.graphql.js';

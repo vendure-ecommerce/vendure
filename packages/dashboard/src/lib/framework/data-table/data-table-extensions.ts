@@ -8,7 +8,10 @@ import { globalRegistry } from '../registry/global-registry.js';
 
 globalRegistry.register('bulkActionsRegistry', new Map<string, BulkAction[]>());
 globalRegistry.register('listQueryDocumentRegistry', new Map<string, DocumentNode[]>());
-globalRegistry.register('viewOptionDefaultsRegistry', new Map<string, Record<string, boolean>>());
+globalRegistry.register(
+    'viewOptionDefaultsRegistry',
+    new Map<string, DashboardDataTableViewOptionDefaults>(),
+);
 
 export function getBulkActions(pageId: string, blockId = 'list-table'): BulkAction[] {
     const key = createKey(pageId, blockId);

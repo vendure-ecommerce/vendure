@@ -12,8 +12,8 @@ export function useViewOptionDefaults<T extends string | number | symbol>(
     defaultColumnOrder: T[] | undefined,
 ) {
     const { pageId } = usePage();
-    const { blockId } = usePageBlock() ?? {};
-    const viewOptionDefaults = pageId && blockId ? getViewOptionDefaults(pageId, blockId) : {};
+    const pageBlock = usePageBlock({ optional: true });
+    const viewOptionDefaults = pageId ? getViewOptionDefaults(pageId, pageBlock?.blockId) : {};
     return {
         defaultColumnVisibility: {
             ...(defaultColumnVisibility ?? {}),
