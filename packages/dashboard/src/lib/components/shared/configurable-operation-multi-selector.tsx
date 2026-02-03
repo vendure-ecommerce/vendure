@@ -12,6 +12,7 @@ import { Trans } from '@lingui/react/macro';
 import { DefinedInitialDataOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
+import { useCallback, useEffect, useRef } from 'react';
 import { ConfigurableOperationInput } from './configurable-operation-input.js';
 
 /**
@@ -45,6 +46,8 @@ export interface ConfigurableOperationMultiSelectorProps {
      * Simple style is used by collection filters for a cleaner, more compact appearance.
      */
     showEnhancedDropdown?: boolean;
+    /** Callback when validity of required args changes (all operations must be valid) */
+    onValidityChange?: (isValid: boolean) => void;
 }
 
 type QueryData = {
@@ -104,7 +107,37 @@ export function ConfigurableOperationMultiSelector({
     dropdownTitle,
     emptyText = 'No options found',
     showEnhancedDropdown = true,
+    onValidityChange,
 }: Readonly<ConfigurableOperationMultiSelectorProps>) {
+    // Track validity for each operation by index
+    const validityMapRef = useRef<Record<number, boolean>>({});
+
+    const updateOperationValidity = useCallback(
+        (index: number, isValid: boolean) => {
+            validityMapRef.current[index] = isValid;
+            if (onValidityChange) {
+                const allValid = value.every((_, i) => validityMapRef.current[i] !== false);
+                onValidityChange(allValid);
+            }
+        },
+        [onValidityChange, value],
+    );
+
+    // Clean up validity map when operations are removed
+    useEffect(() => {
+        const currentIndices = new Set(value.map((_, i) => i));
+        Object.keys(validityMapRef.current).forEach(key => {
+            if (!currentIndices.has(Number(key))) {
+                delete validityMapRef.current[Number(key)];
+            }
+        });
+        // Re-evaluate overall validity after cleanup
+        if (onValidityChange) {
+            const allValid = value.length === 0 || value.every((_, i) => validityMapRef.current[i] !== false);
+            onValidityChange(allValid);
+        }
+    }, [value.length, onValidityChange]);
+
     const { data } = useQuery<QueryData>(
         queryOptions || {
             queryKey: [queryKey],
@@ -208,6 +241,7 @@ export function ConfigurableOperationMultiSelector({
                                     value={operation}
                                     onChange={value => onOperationValueChange(operation, value)}
                                     onRemove={() => onOperationRemove(index)}
+                                    onValidityChange={isValid => updateOperationValidity(index, isValid)}
                                 />
                             </div>
                         );
