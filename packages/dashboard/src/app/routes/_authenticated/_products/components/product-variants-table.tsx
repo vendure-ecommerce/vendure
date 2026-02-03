@@ -6,7 +6,7 @@ import {
 } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { useState } from 'react';
 import {
     AssignFacetValuesToProductVariantsBulkAction,
@@ -15,6 +15,8 @@ import {
     RemoveProductVariantsFromChannelBulkAction,
 } from '../../_product-variants/components/product-variant-bulk-actions.js';
 import { productVariantListDocument } from '../products.graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
 
 interface ProductVariantsTableProps {
     productId: string;
@@ -27,6 +29,11 @@ export function ProductVariantsTable({
     registerRefresher,
     fromProductDetailPage,
 }: ProductVariantsTableProps) {
+    const { pageId } = usePage();
+
+    const { setTableSettings, settings } = useUserSettings();
+    const tableSettings = pageId ? settings.tableSettings?.[pageId] : undefined;
+
     const { formatCurrencyName } = useLocalFormat();
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -41,7 +48,7 @@ export function ProductVariantsTable({
                 ...variables,
                 productId,
             })}
-            defaultVisibility={{
+            defaultVisibility={tableSettings?.columnVisibility ?? {
                 featuredAsset: true,
                 name: true,
                 enabled: true,
@@ -49,6 +56,7 @@ export function ProductVariantsTable({
                 priceWithTax: true,
                 stockLevels: true,
             }}
+            defaultColumnOrder={tableSettings?.columnOrder}
             bulkActions={[
                 {
                     component: AssignProductVariantsToChannelBulkAction,
@@ -114,6 +122,11 @@ export function ProductVariantsTable({
             }}
             onFilterChange={(_, filters) => {
                 setFilters(filters);
+            }}
+            onColumnVisibilityChange={(_, columnVisibility: any) => {
+                if (pageId) {
+                    setTableSettings(pageId, 'columnVisibility', columnVisibility);
+                }
             }}
         />
     );
