@@ -1,10 +1,14 @@
-import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import {
+    BulkAction,
+    DashboardDataTableViewOptionDefaults,
+} from '@/vdb/framework/extension-api/types/index.js';
 import { DocumentNode } from 'graphql';
 
 import { globalRegistry } from '../registry/global-registry.js';
 
 globalRegistry.register('bulkActionsRegistry', new Map<string, BulkAction[]>());
 globalRegistry.register('listQueryDocumentRegistry', new Map<string, DocumentNode[]>());
+globalRegistry.register('viewOptionDefaultsRegistry', new Map<string, Record<string, boolean>>());
 
 export function getBulkActions(pageId: string, blockId = 'list-table'): BulkAction[] {
     const key = createKey(pageId, blockId);
@@ -28,6 +32,31 @@ export function addListQueryDocument(pageId: string, blockId: string | undefined
     const key = createKey(pageId, blockId);
     const existingDocuments = listQueryDocumentRegistry.get(key) || [];
     listQueryDocumentRegistry.set(key, [...existingDocuments, document]);
+}
+
+export function getViewOptionDefaults(
+    pageId: string,
+    blockId = 'list-table',
+): DashboardDataTableViewOptionDefaults {
+    const key = createKey(pageId, blockId);
+    return globalRegistry.get('viewOptionDefaultsRegistry').get(key) || {};
+}
+
+export function addViewOptionDefaults(
+    pageId: string,
+    blockId: string | undefined,
+    viewOptionDefaults: DashboardDataTableViewOptionDefaults,
+) {
+    const defaultsRegistry = globalRegistry.get('viewOptionDefaultsRegistry');
+    const key = createKey(pageId, blockId);
+    const existingDefaults = defaultsRegistry.get(key) || {};
+    defaultsRegistry.set(key, {
+        columnOrder: [...(existingDefaults?.columnOrder ?? []), ...(viewOptionDefaults.columnOrder ?? [])],
+        columnVisibility: {
+            ...(existingDefaults?.columnVisibility ?? {}),
+            ...(viewOptionDefaults.columnVisibility ?? {}),
+        },
+    });
 }
 
 function createKey(pageId: string, blockId: string | undefined): string {
