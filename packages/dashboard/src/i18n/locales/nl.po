@@ -3499,6 +3499,10 @@ msgstr "Item verwijderen"
 msgid "Remove link"
 msgstr "Link verwijderen"
 
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:181
+msgid "Remove option group"
+msgstr "Optiegroep verwijderen"
+
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:199
 msgid "Removed coupon codes"
 msgstr "Couponcodes verwijderd"

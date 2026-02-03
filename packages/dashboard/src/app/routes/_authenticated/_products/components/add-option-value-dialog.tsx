@@ -79,7 +79,7 @@ export function AddOptionValueDialog({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="icon" variant="ghost">
+                <Button size="icon" variant="ghost" aria-label={t`Add option value`}>
                     <Plus className="h-3 w-3" />
                 </Button>
             </DialogTrigger>

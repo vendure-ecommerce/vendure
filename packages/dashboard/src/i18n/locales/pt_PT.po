@@ -960,7 +960,7 @@ msgstr "Adicionar nova morada"
 msgid "Add option"
 msgstr "Adicionar opção"
 
-#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:192
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:193
 msgid "Add Option"
 msgstr "Adicionar opção"
 
@@ -972,6 +972,7 @@ msgstr "Adicionar grupo de opções"
 msgid "Add option group to product"
 msgstr "Adicionar grupo de opções ao produto"
 
+#: src/app/routes/_authenticated/_products/components/add-option-value-dialog.tsx:82
 #: src/app/routes/_authenticated/_products/components/add-option-value-dialog.tsx:104
 msgid "Add option value"
 msgstr "Adicionar valor de opção"
@@ -1023,7 +1024,7 @@ msgstr "Adicionar linha antes"
 msgid "Add stock level for another location"
 msgstr "Adicionar nível de stock para outra localização"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:253
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:281
 msgid "Add Stock to Location"
 msgstr "Adicionar stock à localização"
 
@@ -1122,7 +1123,7 @@ msgstr "Alertas"
 msgid "All resources are up and running"
 msgstr "Todos os recursos estão operacionais"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:296
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:320
 msgid "All variants"
 msgstr "Todas as variantes"
 
@@ -1197,7 +1198,7 @@ msgstr "Tem a certeza de que deseja eliminar esta vista global? Esta ação não
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "Tem a certeza de que deseja eliminar este item? Esta ação não pode ser revertida."
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:80
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:94
 msgid "Are you sure you want to delete this option?"
 msgstr "Tem a certeza de que pretende eliminar esta opção?"
 
@@ -1224,7 +1225,7 @@ msgstr "Tem a certeza de que pretende remover {0} {1} desta zona?"
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "Tem a certeza de que deseja remover {0} {entityType} do canal atual?"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:86
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:100
 msgid "Are you sure you want to remove this option group from the product?"
 msgstr "Tem a certeza de que pretende remover este grupo de opções do produto?"
 
@@ -1560,7 +1561,7 @@ msgstr "Código de cupão definido para a encomenda"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:131
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:227
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:271
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:298
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:123
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
@@ -1581,7 +1582,7 @@ msgstr "Criar"
 msgid "Create \"{0}\""
 msgstr "Criar \"{0}\""
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:273
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:276
 msgid "Create {createCount} variants"
 msgstr "Criar {createCount} variantes"
 
@@ -1598,7 +1599,7 @@ msgstr "Criar opções de produto"
 msgid "Create variant"
 msgstr "Criar variante"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:245
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:248
 msgid "Create variants for your product"
 msgstr "Crie variantes para o seu produto"
 
@@ -1612,7 +1613,7 @@ msgstr "Criada"
 msgid "Created at"
 msgstr "Criada em"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:271
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:274
 msgid "Creating..."
 msgstr "A criar..."
 
@@ -2248,7 +2249,8 @@ msgstr "Falha ao eliminar recursos: {message}"
 msgid "Failed to delete global view"
 msgstr "Falha ao eliminar vista global"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:60
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:61
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:67
 msgid "Failed to delete option"
 msgstr "Falha ao eliminar opção"
 
@@ -2299,7 +2301,8 @@ msgstr "Falha ao remover cliente do grupo"
 msgid "Failed to remove facet from channel: {message}"
 msgstr "Falha ao remover faceta do canal: {message}"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:73
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:78
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:87
 msgid "Failed to remove option group"
 msgstr "Falha ao remover grupo de opções"
 
@@ -2924,7 +2927,7 @@ msgid "Manage options"
 msgstr "Gerir opções"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:37
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:101
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:115
 msgid "Manage Options"
 msgstr "Gerir opções"
 
@@ -3318,7 +3321,7 @@ msgstr "Não existem mais facetas"
 msgid "No more items"
 msgstr "Não há mais itens"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:108
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:122
 msgid "No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)"
 msgstr "Nenhum grupo de opções definido ainda. Adicione grupos de opções para criar diferentes variantes do seu produto (ex. Tamanho, Cor, Material)"
 
@@ -3357,7 +3360,7 @@ msgstr "Nenhuma morada de envio"
 msgid "No shipping methods available"
 msgstr "Nenhum método de envio disponível"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:245
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:273
 msgid "No stock locations available on current channel"
 msgstr "Nenhuma localização de stock disponível no canal atual"
 
@@ -3417,7 +3420,7 @@ msgstr "E-mail antigo:"
 msgid "Only draft orders can be completed"
 msgstr ""
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:118
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:132
 msgid "Option"
 msgstr "Opção"
 
@@ -3434,11 +3437,11 @@ msgstr "Nome do grupo de opções"
 msgid "Option Group Name"
 msgstr "Nome do grupo de opções"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:69
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:82
 msgid "Option group removed"
 msgstr "Grupo de opções removido"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:104
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:118
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:63
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:81
 msgid "Option Groups"
@@ -3452,7 +3455,7 @@ msgstr "Nome da opção"
 msgid "Option value name"
 msgstr "Nome do valor da opção"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:124
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:138
 msgid "Option values"
 msgstr "Valores de opção"
 
@@ -3719,7 +3722,7 @@ msgstr "Pré-visualizar modificações da encomenda"
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:283
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:283
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:307
 #: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Preço"
@@ -3964,6 +3967,10 @@ msgstr "Remover item"
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
 msgid "Remove link"
 msgstr "Remover ligação"
+
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:181
+msgid "Remove option group"
+msgstr "Remover grupo de opções"
 
 #. placeholder {0}: selection.length
 #. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
@@ -4414,7 +4421,7 @@ msgstr "Inicie sessão para aceder ao painel de administração"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:256
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:280
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:304
 msgid "SKU"
 msgstr "SKU"
 
@@ -4495,7 +4502,7 @@ msgstr "Localizações de stock"
 msgid "Stock on hand"
 msgstr "Stock disponível"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:286
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:310
 msgid "Stock on Hand"
 msgstr "Stock disponível"
 
@@ -4622,7 +4629,7 @@ msgstr "Taxa fiscal criada com sucesso"
 msgid "Successfully created zone"
 msgstr "Zona criada com sucesso"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:56
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:58
 msgid "Successfully deleted option"
 msgstr "Opção eliminada com sucesso"
 
@@ -5031,8 +5038,8 @@ msgstr "Preço unitário"
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:175
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:125
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:210
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:61
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:74
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:68
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:88
 msgid "Unknown error"
 msgstr "Erro desconhecido"
 
@@ -5120,12 +5127,12 @@ msgstr "A usar estratégia de autenticação nativa"
 msgid "Values"
 msgstr "Valores"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:276
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:301
 msgid "Variant"
 msgstr "Variante"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:235
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:242
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:238
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:245
 msgid "Variant Assistant"
 msgstr "Assistente de variantes"
 

@@ -139,6 +139,11 @@ export function CreateProductVariants({
 
     const [optionGroups, setOptionGroups] = useState<OptionGroupConfiguration['optionGroups']>(initialGroups);
 
+    // Sync optionGroups state when initialGroups changes (e.g., async updates to existingOptionGroups)
+    useEffect(() => {
+        setOptionGroups(initialGroups);
+    }, [initialGroups]);
+
     const form = useForm<{
         variants: Record<string, VariantForm>;
         useGlobalPrice: boolean;
@@ -147,13 +152,36 @@ export function CreateProductVariants({
         globalStock: string;
     }>({
         resolver: zodResolver(
-            z.object({
-                variants: z.record(variantSchema),
-                useGlobalPrice: z.boolean(),
-                globalPrice: z.string(),
-                useGlobalStock: z.boolean(),
-                globalStock: z.string(),
-            }),
+            z
+                .object({
+                    variants: z.record(variantSchema),
+                    useGlobalPrice: z.boolean(),
+                    globalPrice: z.string(),
+                    useGlobalStock: z.boolean(),
+                    globalStock: z.string(),
+                })
+                .superRefine((data, ctx) => {
+                    if (data.useGlobalPrice) {
+                        const val = data.globalPrice;
+                        if (isNaN(Number(val)) || Number(val) < 0) {
+                            ctx.addIssue({
+                                code: z.ZodIssueCode.custom,
+                                message: 'Price must be a positive number',
+                                path: ['globalPrice'],
+                            });
+                        }
+                    }
+                    if (data.useGlobalStock) {
+                        const val = data.globalStock;
+                        if (isNaN(Number(val)) || parseInt(val, 10) < 0) {
+                            ctx.addIssue({
+                                code: z.ZodIssueCode.custom,
+                                message: 'Stock must be a non-negative integer',
+                                path: ['globalStock'],
+                            });
+                        }
+                    }
+                }),
         ),
         defaultValues: {
             variants: {},

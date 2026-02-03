@@ -960,7 +960,7 @@ msgstr "Lägg till ny adress"
 msgid "Add option"
 msgstr "Lägg till alternativ"
 
-#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:192
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:193
 msgid "Add Option"
 msgstr "Lägg till alternativ"
 
@@ -972,6 +972,7 @@ msgstr "Lägg till alternativgrupp"
 msgid "Add option group to product"
 msgstr "Lägg till alternativgrupp till produkt"
 
+#: src/app/routes/_authenticated/_products/components/add-option-value-dialog.tsx:82
 #: src/app/routes/_authenticated/_products/components/add-option-value-dialog.tsx:104
 msgid "Add option value"
 msgstr "Lägg till alternativvärde"
@@ -1023,7 +1024,7 @@ msgstr "Lägg till rad före"
 msgid "Add stock level for another location"
 msgstr "Lägg till lagernivå för en annan plats"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:253
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:281
 msgid "Add Stock to Location"
 msgstr "Lägg till lager till plats"
 
@@ -1122,7 +1123,7 @@ msgstr "Varningar"
 msgid "All resources are up and running"
 msgstr "Alla resurser är igång"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:296
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:320
 msgid "All variants"
 msgstr "Alla varianter"
 
@@ -1197,7 +1198,7 @@ msgstr "Är du säker på att du vill ta bort denna globala vy? Denna åtgärd k
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "Är du säker på att du vill ta bort denna artikel? Denna åtgärd kan inte ångras."
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:80
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:94
 msgid "Are you sure you want to delete this option?"
 msgstr "Är du säker på att du vill ta bort detta alternativ?"
 
@@ -1224,7 +1225,7 @@ msgstr "Är du säker på att du vill ta bort {0} {1} från denna zon?"
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "Är du säker på att du vill ta bort {0} {entityType} från nuvarande kanal?"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:86
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:100
 msgid "Are you sure you want to remove this option group from the product?"
 msgstr "Är du säker på att du vill ta bort denna alternativgrupp från produkten?"
 
@@ -1560,7 +1561,7 @@ msgstr "Kupongkod inställd för beställning"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:131
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:227
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:271
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:298
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:123
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
@@ -1581,7 +1582,7 @@ msgstr "Skapa"
 msgid "Create \"{0}\""
 msgstr "Skapa \"{0}\""
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:273
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:276
 msgid "Create {createCount} variants"
 msgstr "Skapa {createCount} varianter"
 
@@ -1598,7 +1599,7 @@ msgstr "Skapa produktalternativ"
 msgid "Create variant"
 msgstr "Skapa variant"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:245
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:248
 msgid "Create variants for your product"
 msgstr "Skapa varianter för din produkt"
 
@@ -1612,7 +1613,7 @@ msgstr "Skapad"
 msgid "Created at"
 msgstr "Skapad den"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:271
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:274
 msgid "Creating..."
 msgstr "Skapar..."
 
@@ -2248,7 +2249,8 @@ msgstr "Misslyckades att ta bort tillgångar: {message}"
 msgid "Failed to delete global view"
 msgstr "Misslyckades att ta bort global vy"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:60
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:61
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:67
 msgid "Failed to delete option"
 msgstr "Kunde inte ta bort alternativet"
 
@@ -2299,7 +2301,8 @@ msgstr "Misslyckades att ta bort kund från grupp"
 msgid "Failed to remove facet from channel: {message}"
 msgstr "Misslyckades att ta bort facett från kanal: {message}"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:73
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:78
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:87
 msgid "Failed to remove option group"
 msgstr "Kunde inte ta bort alternativgruppen"
 
@@ -2924,7 +2927,7 @@ msgid "Manage options"
 msgstr "Hantera alternativ"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:37
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:101
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:115
 msgid "Manage Options"
 msgstr "Hantera alternativ"
 
@@ -3318,7 +3321,7 @@ msgstr "Inga fler fasetter"
 msgid "No more items"
 msgstr "Inga fler artiklar"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:108
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:122
 msgid "No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)"
 msgstr "Inga alternativgrupper definierade ännu. Lägg till alternativgrupper för att skapa olika varianter av din produkt (t.ex. Storlek, Färg, Material)"
 
@@ -3357,7 +3360,7 @@ msgstr "Ingen leveransadress"
 msgid "No shipping methods available"
 msgstr "Inga fraktmetoder tillgängliga"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:245
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:273
 msgid "No stock locations available on current channel"
 msgstr "Inga lagerplatser tillgängliga på nuvarande kanal"
 
@@ -3417,7 +3420,7 @@ msgstr "Gammal e-post:"
 msgid "Only draft orders can be completed"
 msgstr ""
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:118
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:132
 msgid "Option"
 msgstr "Alternativ"
 
@@ -3434,11 +3437,11 @@ msgstr "Alternativgruppsnamn"
 msgid "Option Group Name"
 msgstr "Alternativgruppsnamn"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:69
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:82
 msgid "Option group removed"
 msgstr "Alternativgrupp borttagen"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:104
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:118
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:63
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:81
 msgid "Option Groups"
@@ -3452,7 +3455,7 @@ msgstr "Alternativnamn"
 msgid "Option value name"
 msgstr "Alternativvärdesnamn"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:124
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:138
 msgid "Option values"
 msgstr "Alternativvärden"
 
@@ -3719,7 +3722,7 @@ msgstr "Förhandsgranska beställningsändringar"
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:283
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:283
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:307
 #: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Pris"
@@ -3964,6 +3967,10 @@ msgstr "Ta bort artikel"
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
 msgid "Remove link"
 msgstr "Ta bort länk"
+
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:181
+msgid "Remove option group"
+msgstr "Ta bort alternativgrupp"
 
 #. placeholder {0}: selection.length
 #. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
@@ -4414,7 +4421,7 @@ msgstr "Logga in för att få åtkomst till adminpanelen"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:256
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:280
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:304
 msgid "SKU"
 msgstr "SKU"
 
@@ -4495,7 +4502,7 @@ msgstr "Lagerplatser"
 msgid "Stock on hand"
 msgstr "Lager tillgängligt"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:286
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:310
 msgid "Stock on Hand"
 msgstr "Lager tillgängligt"
 
@@ -4622,7 +4629,7 @@ msgstr "Skattesats skapad"
 msgid "Successfully created zone"
 msgstr "Zon skapad"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:56
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:58
 msgid "Successfully deleted option"
 msgstr "Alternativet har tagits bort"
 
@@ -5031,8 +5038,8 @@ msgstr "Enhetspris"
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:175
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:125
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:210
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:61
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:74
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:68
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:88
 msgid "Unknown error"
 msgstr "Okänt fel"
 
@@ -5120,12 +5127,12 @@ msgstr "Använder inbyggd autentiseringsstrategi"
 msgid "Values"
 msgstr "Värden"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:276
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:301
 msgid "Variant"
 msgstr "Variant"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:235
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:242
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:238
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:245
 msgid "Variant Assistant"
 msgstr "Variantassistent"
 

@@ -960,7 +960,7 @@ msgstr "新しい住所を追加"
 msgid "Add option"
 msgstr "オプションを追加"
 
-#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:192
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:193
 msgid "Add Option"
 msgstr "オプションを追加"
 
@@ -972,6 +972,7 @@ msgstr "オプショングループを追加"
 msgid "Add option group to product"
 msgstr "商品にオプショングループを追加"
 
+#: src/app/routes/_authenticated/_products/components/add-option-value-dialog.tsx:82
 #: src/app/routes/_authenticated/_products/components/add-option-value-dialog.tsx:104
 msgid "Add option value"
 msgstr "オプション値を追加"
@@ -1023,7 +1024,7 @@ msgstr "前に行を追加"
 msgid "Add stock level for another location"
 msgstr "別のロケーションの在庫レベルを追加"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:253
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:281
 msgid "Add Stock to Location"
 msgstr "ロケーションに在庫を追加"
 
@@ -1122,7 +1123,7 @@ msgstr "アラート"
 msgid "All resources are up and running"
 msgstr "すべてのリソースが稼働中です"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:296
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:320
 msgid "All variants"
 msgstr "すべてのバリエーション"
 
@@ -1197,7 +1198,7 @@ msgstr "このグローバルビューを削除してもよろしいですか？
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "このアイテムを削除してもよろしいですか？この操作は取り消せません。"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:80
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:94
 msgid "Are you sure you want to delete this option?"
 msgstr "このオプションを削除してもよろしいですか？"
 
@@ -1224,7 +1225,7 @@ msgstr "このゾーンから{0} {1}を削除してもよろしいですか？"
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "現在のチャネルから{0}{entityType}を削除してもよろしいですか？"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:86
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:100
 msgid "Are you sure you want to remove this option group from the product?"
 msgstr "この商品からオプショングループを削除してもよろしいですか？"
 
@@ -1560,7 +1561,7 @@ msgstr "クーポンコードが注文に設定されました"
 #: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
 #: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:131
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:227
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:271
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:298
 #: src/app/routes/_authenticated/_products/products_.$id.tsx:123
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
@@ -1581,7 +1582,7 @@ msgstr "作成"
 msgid "Create \"{0}\""
 msgstr "「{0}」を作成"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:273
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:276
 msgid "Create {createCount} variants"
 msgstr "{createCount}個のバリエーションを作成"
 
@@ -1598,7 +1599,7 @@ msgstr "商品オプションを作成"
 msgid "Create variant"
 msgstr "バリエーションを作成"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:245
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:248
 msgid "Create variants for your product"
 msgstr "商品のバリエーションを作成"
 
@@ -1612,7 +1613,7 @@ msgstr "作成日時"
 msgid "Created at"
 msgstr "作成日時"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:271
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:274
 msgid "Creating..."
 msgstr "作成中..."
 
@@ -2248,7 +2249,8 @@ msgstr "アセットの削除に失敗しました：{message}"
 msgid "Failed to delete global view"
 msgstr "グローバルビューの削除に失敗しました"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:60
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:61
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:67
 msgid "Failed to delete option"
 msgstr "オプションの削除に失敗しました"
 
@@ -2299,7 +2301,8 @@ msgstr "グループからの顧客の削除に失敗しました"
 msgid "Failed to remove facet from channel: {message}"
 msgstr "チャネルからのファセットの削除に失敗しました：{message}"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:73
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:78
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:87
 msgid "Failed to remove option group"
 msgstr "オプショングループの削除に失敗しました"
 
@@ -2924,7 +2927,7 @@ msgid "Manage options"
 msgstr "オプションを管理"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:37
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:101
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:115
 msgid "Manage Options"
 msgstr "オプションを管理"
 
@@ -3318,7 +3321,7 @@ msgstr "これ以上ファセットはありません"
 msgid "No more items"
 msgstr "これ以上のアイテムはありません"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:108
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:122
 msgid "No option groups defined yet. Add option groups to create different variants of your product (e.g., Size, Color, Material)"
 msgstr "オプショングループがまだ定義されていません。商品の異なるバリエーションを作成するためにオプショングループを追加してください（例：サイズ、色、素材）"
 
@@ -3357,7 +3360,7 @@ msgstr "配送先住所なし"
 msgid "No shipping methods available"
 msgstr "利用可能な配送方法がありません"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:245
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:273
 msgid "No stock locations available on current channel"
 msgstr "現在のチャネルで利用可能な在庫ロケーションがありません"
 
@@ -3417,7 +3420,7 @@ msgstr "古いメールアドレス："
 msgid "Only draft orders can be completed"
 msgstr ""
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:118
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:132
 msgid "Option"
 msgstr "オプション"
 
@@ -3434,11 +3437,11 @@ msgstr "オプショングループ名"
 msgid "Option Group Name"
 msgstr "オプショングループ名"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:69
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:82
 msgid "Option group removed"
 msgstr "オプショングループを削除しました"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:104
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:118
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:63
 #: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:81
 msgid "Option Groups"
@@ -3452,7 +3455,7 @@ msgstr "オプション名"
 msgid "Option value name"
 msgstr "オプション値名"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:124
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:138
 msgid "Option values"
 msgstr "オプション値"
 
@@ -3719,7 +3722,7 @@ msgstr "注文の変更をプレビュー"
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:283
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:283
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:307
 #: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "価格"
@@ -3964,6 +3967,10 @@ msgstr "アイテムを削除"
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
 msgid "Remove link"
 msgstr "リンクを削除"
+
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:181
+msgid "Remove option group"
+msgstr "オプショングループを削除"
 
 #. placeholder {0}: selection.length
 #. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
@@ -4414,7 +4421,7 @@ msgstr "管理ダッシュボードにアクセスするにはログインして
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:256
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:280
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:304
 msgid "SKU"
 msgstr "SKU"
 
@@ -4495,7 +4502,7 @@ msgstr "在庫ロケーション"
 msgid "Stock on hand"
 msgstr "手持ち在庫"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:286
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:310
 msgid "Stock on Hand"
 msgstr "手持ち在庫"
 
@@ -4622,7 +4629,7 @@ msgstr "税率を作成しました"
 msgid "Successfully created zone"
 msgstr "ゾーンを作成しました"
 
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:56
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:58
 msgid "Successfully deleted option"
 msgstr "オプションを削除しました"
 
@@ -5031,8 +5038,8 @@ msgstr "単価"
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:175
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:125
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:210
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:61
-#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:74
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:68
+#: src/app/routes/_authenticated/_products/products_.$id_.options.tsx:88
 msgid "Unknown error"
 msgstr "不明なエラー"
 
@@ -5120,12 +5127,12 @@ msgstr "ネイティブ認証戦略を使用"
 msgid "Values"
 msgstr "値"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:276
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:301
 msgid "Variant"
 msgstr "バリエーション"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:235
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:242
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:238
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:245
 msgid "Variant Assistant"
 msgstr "バリエーションアシスタント"
 

@@ -118,7 +118,9 @@ export function CreateProductVariantsDialog({
             // 3. Build a set of existing option IDs for quick lookup
             const existingOptionIds = new Set<string>();
             existingOptionGroups.forEach(group => {
-                group.options?.forEach(opt => existingOptionIds.add(opt.id));
+                group.options?.forEach(opt => {
+                    existingOptionIds.add(opt.id);
+                });
             });
 
             // 4. Find and create new options that were added to EXISTING groups
