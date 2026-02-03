@@ -65,7 +65,7 @@ export function AddOptionValueDialog({
         createOptionMutation.mutate({
             input: {
                 productOptionGroupId: groupId,
-                code: values.name.toLowerCase().replaceAll(/\s+/g, '-'),
+                code: values.name.toLowerCase().replace(/\s+/g, '-'),
                 translations: [
                     {
                         languageCode: 'en',

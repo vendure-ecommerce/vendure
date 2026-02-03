@@ -16,6 +16,7 @@ import {
     productDetailWithVariantsDocument,
     removeOptionGroupFromProductDocument,
 } from './products.graphql.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
 
 const pageId = 'manage-product-options';
 const getQueryKey = (id: string) => ['DetailPage', 'product', id, 'manage-options'];
@@ -52,7 +53,7 @@ function ManageProductOptions() {
 
     const deleteOptionMutation = useMutation({
         mutationFn: api.mutate(deleteProductOptionDocument),
-        onSuccess: data => {
+        onSuccess: (data: ResultOf<typeof deleteProductOptionDocument>) => {
             const result = data.deleteProductOption;
             if (result.result === 'DELETED') {
                 toast.success(t`Successfully deleted option`);
@@ -72,7 +73,7 @@ function ManageProductOptions() {
 
     const removeOptionGroupMutation = useMutation({
         mutationFn: api.mutate(removeOptionGroupFromProductDocument),
-        onSuccess: data => {
+        onSuccess: (data: ResultOf<typeof removeOptionGroupFromProductDocument>) => {
             const result = data.removeOptionGroupFromProduct;
             if ('errorCode' in result) {
                 toast.error(t`Failed to remove option group`, {

@@ -263,12 +263,14 @@ export function CreateProductVariantsDialog({
                             disabled={
                                 !variantData ||
                                 createOptionGroupMutation.isPending ||
+                                createOptionMutation.isPending ||
                                 addOptionGroupToProductMutation.isPending ||
                                 createProductVariantsMutation.isPending ||
                                 createCount === 0
                             }
                         >
                             {createOptionGroupMutation.isPending ||
+                            createOptionMutation.isPending ||
                             addOptionGroupToProductMutation.isPending ||
                             createProductVariantsMutation.isPending ? (
                                 <Trans>Creating...</Trans>
