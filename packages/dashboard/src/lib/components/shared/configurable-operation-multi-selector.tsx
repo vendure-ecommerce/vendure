@@ -109,34 +109,45 @@ export function ConfigurableOperationMultiSelector({
     showEnhancedDropdown = true,
     onValidityChange,
 }: Readonly<ConfigurableOperationMultiSelectorProps>) {
-    // Track validity for each operation by index
-    const validityMapRef = useRef<Record<number, boolean>>({});
+    // Track validity for each operation by code+index to handle reordering/removal.
+    // When operations change, we clear and let each ConfigurableOperationInput re-report.
+    const validityMapRef = useRef<Record<string, boolean>>({});
+    const prevValueRef = useRef(value);
+
+    // Create stable key for each operation (code + position)
+    const getOperationKey = (operation: ConfigurableOperationInputType, index: number) =>
+        `${operation.code}:${index}`;
 
     const updateOperationValidity = useCallback(
         (index: number, isValid: boolean) => {
-            validityMapRef.current[index] = isValid;
+            const operation = value[index];
+            if (!operation) return;
+            const key = getOperationKey(operation, index);
+            validityMapRef.current[key] = isValid;
             if (onValidityChange) {
-                const allValid = value.every((_, i) => validityMapRef.current[i] !== false);
+                const allValid =
+                    value.length === 0 ||
+                    value.every((op, i) => validityMapRef.current[getOperationKey(op, i)] !== false);
                 onValidityChange(allValid);
             }
         },
         [onValidityChange, value],
     );
 
-    // Clean up validity map when operations are removed
+    // Reset validity map when operations array changes (add/remove/reorder)
     useEffect(() => {
-        const currentIndices = new Set(value.map((_, i) => i));
-        Object.keys(validityMapRef.current).forEach(key => {
-            if (!currentIndices.has(Number(key))) {
-                delete validityMapRef.current[Number(key)];
+        const prevCodes = prevValueRef.current.map(op => op.code).join(',');
+        const currCodes = value.map(op => op.code).join(',');
+        if (prevCodes !== currCodes) {
+            // Operations changed - clear map and let components re-report
+            validityMapRef.current = {};
+            // Temporarily report as valid until components re-validate
+            if (onValidityChange && value.length === 0) {
+                onValidityChange(true);
             }
-        });
-        // Re-evaluate overall validity after cleanup
-        if (onValidityChange) {
-            const allValid = value.length === 0 || value.every((_, i) => validityMapRef.current[i] !== false);
-            onValidityChange(allValid);
         }
-    }, [value.length, onValidityChange]);
+        prevValueRef.current = value;
+    }, [value, onValidityChange]);
 
     const { data } = useQuery<QueryData>(
         queryOptions || {
