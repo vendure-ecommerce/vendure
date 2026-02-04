@@ -76,7 +76,7 @@ jobs:
           event-type: docs-package-update
           client-payload: >-
             {
-              "repository": "vendure-ecommerce/vendure",
+              "repository": "${{ github.repository }}",
               "package": "@vendure/docs@${{ needs.publish.outputs.version }}",
               "sha": "${{ github.sha }}"
             }
