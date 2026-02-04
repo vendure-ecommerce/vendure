@@ -10,7 +10,7 @@ import { VendureEvent } from '../vendure-event';
  *
  * @docsCategory events
  * @docsPage Event Types
- * @since 3.4.4
+ * @since 3.5.4
  */
 export class BootstrappedEvent extends VendureEvent {
     constructor() {
