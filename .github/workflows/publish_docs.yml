@@ -23,6 +23,8 @@ jobs:
     defaults:
       run:
         working-directory: docs
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,5 +43,40 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generate version
+        id: get-version
+        run: |
+          VERSION="0.0.0-$(date +%Y%m%d%H%M)"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Publishing version: ${VERSION}"
+
       - name: Publish to NPM
-        run: npm run publish:local
+        run: |
+          npm version ${{ steps.get-version.outputs.version }} --no-git-tag-version
+          npm publish --tag latest
+
+  trigger-vendure-io-update:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate token for vendure-io repo
+        uses: actions/create-github-app-token@v2
+        id: vendure-io-token
+        with:
+          app-id: ${{ secrets.CI_BOT_APP_ID }}
+          private-key: ${{ secrets.CI_BOT_APP_PRIVATE_KEY }}
+          owner: vendurehq
+          repositories: vendure-io
+
+      - name: Trigger docs update in vendure-io
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.vendure-io-token.outputs.token }}
+          repository: vendurehq/vendure-io
+          event-type: docs-package-update
+          client-payload: >-
+            {
+              "repository": "vendure-ecommerce/vendure",
+              "package": "@vendure/docs@${{ needs.publish.outputs.version }}",
+              "sha": "${{ github.sha }}"
+            }
