@@ -3,10 +3,13 @@ import { AssetPreviewSelector } from '@/vdb/components/shared/asset/asset-previe
 import { PreviewPreset } from '@/vdb/components/shared/asset/asset-preview.js';
 import { AssetProperties } from '@/vdb/components/shared/asset/asset-properties.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
 import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
 import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
 import { Label } from '@/vdb/components/ui/label.js';
-import {    CustomFieldsPageBlock,
+import {
+    CustomFieldsPageBlock,
     Page,
     PageActionBar,
     PageBlock,
@@ -55,10 +58,24 @@ function AssetDetailPage() {
         queryDocument: assetDetailDocument,
         updateDocument: assetUpdateDocument,
         setValuesForUpdate: entity => {
+            // Handle legacy assets without translations
+            const translations =
+                entity.translations && entity.translations.length > 0
+                    ? entity.translations.map(t => ({
+                          id: t.id,
+                          languageCode: t.languageCode,
+                          name: t.name,
+                      }))
+                    : [
+                          {
+                              languageCode: entity.languageCode,
+                              name: entity.name,
+                          },
+                      ];
             return {
                 id: entity.id,
                 focalPoint: entity.focalPoint,
-                name: entity.name,
+                translations,
                 tags: entity.tags?.map(tag => tag.value) ?? [],
                 customFields: entity.customFields,
             };
@@ -128,6 +145,14 @@ function AssetDetailPage() {
                     </div>
                 </PageBlock>
                 <CustomFieldsPageBlock column="main" entityType={'Asset'} control={form.control} />
+                <PageBlock column="side" blockId="asset-name">
+                    <TranslatableFormFieldWrapper
+                        control={form.control}
+                        name="name"
+                        label={<Trans>Name</Trans>}
+                        render={({ field }) => <Input {...field} />}
+                    />
+                </PageBlock>
                 <PageBlock column="side" blockId="asset-properties">
                     <AssetProperties asset={entity} />
                 </PageBlock>
