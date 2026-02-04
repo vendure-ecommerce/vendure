@@ -48,6 +48,20 @@ export interface BullMQPluginOptions {
      * the concurrency limit. This is useful for limiting concurrency on
      * queues which have resource-intensive jobs.
      *
+     * **Important implementation note:** When using a function, workers are grouped
+     * by the _concurrency value_, not by queue name. Because all Vendure job types
+     * are stored in a single BullMQ queue (`QUEUE_NAME`), any worker can process
+     * any job type. This means:
+     *
+     * - Multiple Vendure queues returning the same concurrency value will share a worker
+     * - Jobs from different Vendure queues may be processed by the same worker
+     * - The concurrency limit applies to the total jobs processed by that worker,
+     *   not strictly per Vendure queue
+     *
+     * For strict per-queue concurrency isolation, consider:
+     * - Creating separate BullMQ queues per Vendure queue (requires custom implementation)
+     * - Using [BullMQ Pro Groups](https://docs.bullmq.io/bullmq-pro/groups)
+     *
      * @example
      * ```ts
      * BullMQJobQueuePlugin.init({
