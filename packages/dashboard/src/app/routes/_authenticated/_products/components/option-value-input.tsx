@@ -7,6 +7,7 @@ import { useState } from 'react';
 interface OptionValue {
     value: string;
     id: string;
+    existingId?: string;
 }
 
 interface OptionValueInputProps {
@@ -55,15 +56,17 @@ export function OptionValueInput({
                 {fields.map((field, index) => (
                     <Badge key={field.id} variant="secondary" className="flex items-center gap-1 py-1 px-2">
                         {field.value}
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-4 w-4 p-0 ml-1"
-                            onClick={() => onRemove(index)}
-                        >
-                            <X className="h-3 w-3" />
-                        </Button>
+                        {!field.existingId && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 ml-1"
+                                onClick={() => onRemove(index)}
+                            >
+                                <X className="h-3 w-3" />
+                            </Button>
+                        )}
                     </Badge>
                 ))}
             </div>

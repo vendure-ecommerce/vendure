@@ -25,9 +25,10 @@ import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-lo
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { PlusIcon } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useRef } from 'react';
 import { toast } from 'sonner';
+import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductOptionGroupBadge } from './components/product-option-group-badge.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
@@ -168,34 +169,36 @@ function ProductDetailPage() {
                     />
                 </PageBlock>
                 <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
-                {entity && entity.variantList.totalItems > 0 && (
+                {entity && (
                     <PageBlock column="main" blockId="product-variants-table">
-                        <ProductVariantsTable
-                            productId={params.id}
-                            registerRefresher={refresher => {
-                                refreshRef.current = refresher;
-                            }}
-                            fromProductDetailPage={true}
-                        />
+                        {entity.variantList.totalItems > 0 && (
+                            <ProductVariantsTable
+                                productId={params.id}
+                                registerRefresher={refresher => {
+                                    refreshRef.current = refresher;
+                                }}
+                                fromProductDetailPage={true}
+                            />
+                        )}
                         <div className="mt-4 flex gap-2">
-                            <Button asChild variant="outline">
-                                <Link to="./variants">
-                                    <PlusIcon className="mr-2 h-4 w-4" />
-                                    <Trans>Manage variants</Trans>
-                                </Link>
-                            </Button>
+                            <CreateProductVariantsDialog
+                                productId={entity.id}
+                                productName={entity.name}
+                                existingOptionGroups={entity.optionGroups}
+                                existingVariants={entity.variants}
+                                onSuccess={() => {
+                                    refreshEntity();
+                                    refreshRef.current?.();
+                                }}
+                            />
+                            <AddProductVariantDialog
+                                productId={params.id}
+                                onSuccess={() => {
+                                    refreshEntity();
+                                    refreshRef.current?.();
+                                }}
+                            />
                         </div>
-                    </PageBlock>
-                )}
-                {entity && entity.variantList.totalItems === 0 && (
-                    <PageBlock column="main" blockId="create-product-variants-dialog">
-                        <CreateProductVariantsDialog
-                            productId={entity.id}
-                            productName={entity.name}
-                            onSuccess={() => {
-                                refreshEntity();
-                            }}
-                        />
                     </PageBlock>
                 )}
                 {entity?.optionGroups.length ? (
@@ -205,6 +208,12 @@ function ProductDetailPage() {
                                 <ProductOptionGroupBadge key={g.id} id={g.id} name={g.name} />
                             ))}
                         </div>
+                        <Button asChild variant="outline" size="sm" className="mt-2 w-full">
+                            <Link to="./options">
+                                <Settings className="mr-2 h-4 w-4" />
+                                <Trans>Manage options</Trans>
+                            </Link>
+                        </Button>
                     </PageBlock>
                 ) : null}
                 <PageBlock column="side" blockId="facet-values" title={<Trans>Facet Values</Trans>}>

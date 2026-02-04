@@ -54,6 +54,11 @@ export const productDetailFragment = graphql(
                 id
                 code
                 name
+                options {
+                    id
+                    code
+                    name
+                }
             }
             facetValues {
                 id
@@ -107,6 +112,15 @@ export const productDetailDocument = graphql(
                 ...ProductDetail
                 variantList {
                     totalItems
+                }
+                variants {
+                    id
+                    options {
+                        id
+                        code
+                        name
+                        groupId
+                    }
                 }
             }
         }
