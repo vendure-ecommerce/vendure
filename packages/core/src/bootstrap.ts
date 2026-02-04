@@ -22,6 +22,8 @@ import { runEntityMetadataModifiers } from './entity/run-entity-metadata-modifie
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { setMoneyStrategy } from './entity/set-money-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
+import { EventBus } from './event-bus';
+import { BootstrappedEvent } from './event-bus/events/bootstrapped-event';
 import { getCompatibility, getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getPluginStartupMessages } from './plugin/plugin-utils';
 import { setProcessContext } from './process-context/process-context';
@@ -194,6 +196,7 @@ export async function bootstrap(
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();
     logWelcomeMessage(config);
+    await app.get(EventBus).publish(new BootstrappedEvent());
     return app;
 }
 
@@ -246,6 +249,7 @@ export async function bootstrapWorker(
     workerApp.enableShutdownHooks();
     await validateDbTablesForWorker(workerApp);
     Logger.info('Vendure Worker is ready');
+    await workerApp.get(EventBus).publish(new BootstrappedEvent());
     return new VendureWorker(workerApp);
 }
 
