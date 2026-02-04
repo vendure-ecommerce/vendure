@@ -70,7 +70,7 @@ A function that determines whether the alert should be rendered based on the res
 The interval in milliseconds to recheck the condition.
 ### actions
 
-<MemberInfo kind="property" type={`Array&#60;{         label: string;         onClick: (args: { data: TResponse; dismiss: () =&#62; void }) =&#62; void | Promise&#60;any&#62;;     }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{         label: string;         onClick: (args: { data: TResponse; dismiss: () =&#62; void }) =&#62; void | Promise&#60;any&#62;;     }&#62;`}   />
 
 Optional actions that can be performed when the alert is shown.
 

@@ -57,7 +57,7 @@ log level, and a breakdown of the calculation for each field will be logged at t
 This is very useful for tuning your complexity scores.
 ### customComplexityFactors
 
-<MemberInfo kind="property" type={`{         [path: string]: number;     }`}   />
+<MemberInfo kind="property" type={`{         [path: string]: number;     }`}   />
 
 This object allows you to tune the complexity weight of specific fields. For example,
 if you have a custom `stockLocations` field defined on the `ProductVariant` type, and

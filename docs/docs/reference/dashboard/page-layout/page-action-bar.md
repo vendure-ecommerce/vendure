@@ -62,5 +62,5 @@ Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`Readonly&#60;{     children: React.ReactNode;     dropdownMenuItems?: InlineDropdownItem[]; }&#62;`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;{     children: React.ReactNode;     dropdownMenuItems?: InlineDropdownItem[]; }&#62;`} />
 

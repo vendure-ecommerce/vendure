@@ -34,7 +34,7 @@ class DefaultAssetImportStrategy implements AssetImportStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(options?: {             retryDelayMs: number;             retryCount: number;         }) => DefaultAssetImportStrategy`}   />
+<MemberInfo kind="method" type={`(options?: {             retryDelayMs: number;             retryCount: number;         }) => DefaultAssetImportStrategy`}   />
 
 
 ### init

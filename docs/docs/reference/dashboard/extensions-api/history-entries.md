@@ -67,7 +67,7 @@ The `type` should correspond to a valid `HistoryEntryType`, such as
   how to define custom history entry types.
 ### component
 
-<MemberInfo kind="property" type={`React.ComponentType&#60;{         entry: <a href='/reference/dashboard/extensions-api/history-entries#historyentryitem'>HistoryEntryItem</a>;         entity: OrderHistoryOrderDetail | CustomerHistoryCustomerDetail;     }&#62;`}   />
+<MemberInfo kind="property" type={`React.ComponentType&#60;{         entry: <a href='/reference/dashboard/extensions-api/history-entries#historyentryitem'>HistoryEntryItem</a>;         entity: OrderHistoryOrderDetail | CustomerHistoryCustomerDetail;     }&#62;`}   />
 
 The component which is used to render the timeline entry. It should use the
 <a href='/reference/dashboard/extensions-api/history-entries#historyentry'>HistoryEntry</a> component and pass the appropriate props to configure
@@ -125,7 +125,7 @@ The `HistoryEntryType`, such as `ORDER_STATE_TRANSITION`.
 Whether this entry is visible to customers via the Shop API
 ### administrator
 
-<MemberInfo kind="property" type={`{         id: string;         firstName: string;         lastName: string;     } | null`}   />
+<MemberInfo kind="property" type={`{         id: string;         firstName: string;         lastName: string;     } | null`}   />
 
 If an Administrator created this entry, their details will
 be available here.

@@ -14,7 +14,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/common/calculated-decorator.ts" sourceLine="43" packageName="@vendure/core" />
 
 Used to define calculated entity getters. The decorator simply attaches an array of "calculated"
-property names to the entity's prototype. This array is then used by the <a href='/reference/typescript-api/data-access/calculated-property-subscriber#calculatedpropertysubscriber'>CalculatedPropertySubscriber</a>to transfer the getter function from the prototype to the entity instance.
+property names to the entity's prototype. This array is then used by the <a href='/reference/typescript-api/data-access/calculated-property-subscriber#calculatedpropertysubscriber'>CalculatedPropertySubscriber</a>
+to transfer the getter function from the prototype to the entity instance.
 
 ```ts title="Signature"
 function Calculated(queryInstruction?: CalculatedColumnQueryInstruction): MethodDecorator

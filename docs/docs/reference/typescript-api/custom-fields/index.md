@@ -13,7 +13,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="273" packageName="@vendure/core" />
 
-Most entities can have additional fields added to them by defining an array of <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>objects on against the corresponding key.
+Most entities can have additional fields added to them by defining an array of <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>
+objects on against the corresponding key.
 
 *Example*
 

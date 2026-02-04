@@ -132,7 +132,7 @@ The query document to fetch the entity.
 The field of the query document that contains the entity.
 ### params
 
-<MemberInfo kind="property" type={`{         id: string;     }`}   />
+<MemberInfo kind="property" type={`{         id: string;     }`}   />
 
 The parameters used to identify the entity.
 ### entityName

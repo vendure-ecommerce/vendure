@@ -91,7 +91,7 @@ The time-to-live (ttl) in milliseconds for the cache. After this time, the value
 and will be refreshed the next time it is accessed.
 ### refresh
 
-<MemberInfo kind="property" type={`{         fn: (...args: RefreshArgs) =&#62; Promise&#60;V&#62;;         /**          * Default arguments, passed to refresh function          */         defaultArgs: RefreshArgs;     }`}   />
+<MemberInfo kind="property" type={`{         fn: (...args: RefreshArgs) =&#62; Promise&#60;V&#62;;         /**          * Default arguments, passed to refresh function          */         defaultArgs: RefreshArgs;     }`}   />
 
 The function which is used to refresh the value of the cache.
 This function should return a Promise which resolves to the new value.

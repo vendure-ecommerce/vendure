@@ -106,7 +106,8 @@ should resolve when the job is complete, or be rejected in case of an error.
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="37" packageName="@vendure/core" />
 
-A JSON-serializable data type which provides a <a href='/reference/typescript-api/job-queue/job#job'>Job</a>with the data it needs to be processed.
+A JSON-serializable data type which provides a <a href='/reference/typescript-api/job-queue/job#job'>Job</a>
+with the data it needs to be processed.
 
 ```ts title="Signature"
 type JobData<T> = JsonCompatible<T>

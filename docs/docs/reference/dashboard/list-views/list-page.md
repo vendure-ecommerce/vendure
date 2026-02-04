@@ -369,7 +369,7 @@ defaultSort={[{ id: 'orderPlacedAt', desc: true }]}
 ```
 ### defaultVisibility
 
-<MemberInfo kind="property" type={`Partial&#60;         Record&#60;keyof ListQueryFields&#60;T&#62; | keyof AC | CustomFieldKeysOfItem&#60;ListQueryFields&#60;T&#62;&#62;, boolean&#62;     &#62;`}   />
+<MemberInfo kind="property" type={`Partial&#60;         Record&#60;keyof ListQueryFields&#60;T&#62; | keyof AC | CustomFieldKeysOfItem&#60;ListQueryFields&#60;T&#62;&#62;, boolean&#62;     &#62;`}   />
 
 Allows you to specify the default columns that are visible in the table.
 If you set them to `true`, then only those will show by default. If you set them to `false`,

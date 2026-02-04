@@ -94,12 +94,12 @@ The entity to use to generate the form.
 
 ### setValues
 
-<MemberInfo kind="property" type={`(         entity: NonNullable&#60;E&#62;,     ) =&#62; VarName extends keyof VariablesOf&#60;T&#62; ? VariablesOf&#60;T&#62;[VarName] : VariablesOf&#60;T&#62;`}   />
+<MemberInfo kind="property" type={`(         entity: NonNullable&#60;E&#62;,     ) =&#62; VarName extends keyof VariablesOf&#60;T&#62; ? VariablesOf&#60;T&#62;[VarName] : VariablesOf&#60;T&#62;`}   />
 
 
 ### onSubmit
 
-<MemberInfo kind="property" type={`(         values: VarName extends keyof VariablesOf&#60;T&#62; ? VariablesOf&#60;T&#62;[VarName] : VariablesOf&#60;T&#62;,     ) =&#62; void`}   />
+<MemberInfo kind="property" type={`(         values: VarName extends keyof VariablesOf&#60;T&#62; ? VariablesOf&#60;T&#62;[VarName] : VariablesOf&#60;T&#62;,     ) =&#62; void`}   />
 
 
 

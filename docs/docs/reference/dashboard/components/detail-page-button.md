@@ -49,5 +49,5 @@ Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`Readonly&#60;{     label: string | React.ReactNode;     id?: string;     href?: string;     disabled?: boolean;     search?: Record&#60;string, string&#62;;     className?: string; }&#62;`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;{     label: string | React.ReactNode;     id?: string;     href?: string;     disabled?: boolean;     search?: Record&#60;string, string&#62;;     className?: string; }&#62;`} />
 

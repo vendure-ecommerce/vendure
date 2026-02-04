@@ -907,7 +907,7 @@ class StructFormInputComponent implements FormInputComponent, OnInit, OnDestroy 
 
 ### fields
 
-<MemberInfo kind="property" type={`Array&#60;{         def: StructCustomFieldFragment['fields'][number];         formControl: FormControl;     }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{         def: StructCustomFieldFragment['fields'][number];         formControl: FormControl;     }&#62;`}   />
 
 
 ### constructor

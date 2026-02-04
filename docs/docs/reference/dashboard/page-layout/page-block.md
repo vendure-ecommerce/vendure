@@ -137,5 +137,5 @@ Parameters
 
 ### props
 
-<MemberInfo kind="parameter" type={`Readonly&#60;{     column: 'main' | 'side';     entityType: string;     control: Control&#60;any, any&#62;; }&#62;`} />
+<MemberInfo kind="parameter" type={`Readonly&#60;{     column: 'main' | 'side';     entityType: string;     control: Control&#60;any, any&#62;; }&#62;`} />
 

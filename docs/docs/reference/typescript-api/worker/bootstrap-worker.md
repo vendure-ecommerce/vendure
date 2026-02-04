@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## bootstrapWorker
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="225" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="228" packageName="@vendure/core" />
 
 Bootstraps a Vendure worker. Resolves to a <a href='/reference/typescript-api/worker/vendure-worker#vendureworker'>VendureWorker</a> object containing a reference to the underlying
 NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as convenience
@@ -51,7 +51,7 @@ Parameters
 
 ## BootstrapWorkerOptions
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="83" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="85" packageName="@vendure/core" since="2.2.0" />
 
 Additional options that can be used to configure the bootstrap process of the
 Vendure worker.
