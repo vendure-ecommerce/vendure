@@ -1,6 +1,5 @@
 import { Job } from '@vendure/core';
-import { ConnectionOptions, WorkerOptions, Queue } from 'bullmq';
-import { QueueOptions } from 'bullmq';
+import { ConnectionOptions, Queue, QueueOptions, WorkerOptions } from 'bullmq';
 
 /**
  * @description
@@ -41,6 +40,29 @@ export interface BullMQPluginOptions {
      * See the [BullMQ WorkerOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.workeroptions.md)
      */
     workerOptions?: Omit<WorkerOptions, 'connection'>;
+    /**
+     * @description
+     * How many jobs from a given queue to process concurrently.
+     *
+     * Can be set to a function which receives the queue name and returns
+     * the concurrency limit. This is useful for limiting concurrency on
+     * queues which have resource-intensive jobs.
+     *
+     * @example
+     * ```ts
+     * BullMQJobQueuePlugin.init({
+     *   concurrency: (queueName) => {
+     *     if (queueName === 'apply-collection-filters') {
+     *       return 1;
+     *     }
+     *     return 5;
+     *   }
+     * })
+     * ```
+     *
+     * @default 3
+     */
+    concurrency?: number | ((queueName: string) => number);
     /**
      * @description
      * When a job is added to the JobQueue using `JobQueue.add()`, the calling

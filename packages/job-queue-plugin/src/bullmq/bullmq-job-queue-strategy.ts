@@ -55,6 +55,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private connectionOptions: ConnectionOptions;
     private queue: Queue;
     private worker: Worker;
+    private workers = new Map<number, Worker>();
     private workerProcessor: Processor;
     private options: BullMQPluginOptions;
     private jobListIndexService: JobListIndexService;
@@ -155,7 +156,8 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     async destroy() {
-        await Promise.all([this.queue.close(), this.worker?.close()]);
+        const workerClosePromises = Array.from(this.workers.values()).map(w => w.close());
+        await Promise.all([this.queue.close(), this.worker?.close(), ...workerClosePromises]);
     }
 
     async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
@@ -284,32 +286,71 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         process: (job: Job<Data>) => Promise<any>,
     ): Promise<void> {
         this.queueNameProcessFnMap.set(queueName, process);
-        if (!this.worker) {
-            const options: WorkerOptions = {
-                concurrency: DEFAULT_CONCURRENCY,
-                ...this.options.workerOptions,
-                connection: this.redisConnection,
-            };
-            this.worker = new Worker(QUEUE_NAME, this.workerProcessor, options)
-                .on('error', e => Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack))
-                .on('closing', e => Logger.verbose(`BullMQ Worker closing: ${e}`, loggerCtx))
-                .on('closed', () => Logger.verbose('BullMQ Worker closed', loggerCtx))
-                .on('failed', (job: Bull.Job | undefined, error) => {
-                    Logger.warn(
-                        `Job ${job?.id ?? '(unknown id)'} [${job?.name ?? 'unknown name'}] failed (attempt ${
-                            job?.attemptsMade ?? 'unknown'
-                        } of ${job?.opts.attempts ?? 1})`,
-                        loggerCtx,
-                    );
-                })
-                .on('stalled', (jobId: string) => {
-                    Logger.warn(`BullMQ Worker: job ${jobId} stalled`, loggerCtx);
-                })
-                .on('completed', (job: Bull.Job) => {
-                    Logger.debug(`Job ${job?.id ?? 'unknown id'} [${job.name}] completed`, loggerCtx);
-                });
-            await this.cancellationSub.subscribe(this.CANCEL_JOB_CHANNEL);
-            this.cancellationSub.on('message', this.subscribeToCancellationEvents);
+
+        // If concurrency is a function, we use per-concurrency workers
+        if (typeof this.options.concurrency === 'function') {
+            const concurrency = this.options.concurrency(queueName);
+            if (!this.workers.has(concurrency)) {
+                const options: WorkerOptions = {
+                    concurrency,
+                    ...this.options.workerOptions,
+                    connection: this.redisConnection,
+                };
+                const worker = new Worker(QUEUE_NAME, this.workerProcessor, options)
+                    .on('error', e => Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack))
+                    .on('closing', e => Logger.verbose(`BullMQ Worker closing: ${e}`, loggerCtx))
+                    .on('closed', () => Logger.verbose('BullMQ Worker closed', loggerCtx))
+                    .on('failed', (job: Bull.Job | undefined, error) => {
+                        Logger.warn(
+                            `Job ${job?.id ?? '(unknown id)'} [${job?.name ?? 'unknown name'}] failed (attempt ${
+                                job?.attemptsMade ?? 'unknown'
+                            } of ${job?.opts.attempts ?? 1})`,
+                            loggerCtx,
+                        );
+                    })
+                    .on('stalled', (jobId: string) => {
+                        Logger.warn(`BullMQ Worker: job ${jobId} stalled`, loggerCtx);
+                    })
+                    .on('completed', (job: Bull.Job) => {
+                        Logger.debug(`Job ${job?.id ?? 'unknown id'} [${job.name}] completed`, loggerCtx);
+                    });
+                this.workers.set(concurrency, worker);
+            }
+
+            // Subscribe to cancellation on first worker
+            if (this.workers.size === 1) {
+                await this.cancellationSub.subscribe(this.CANCEL_JOB_CHANNEL);
+                this.cancellationSub.on('message', this.subscribeToCancellationEvents);
+            }
+        } else {
+            // Original behavior: single worker with global concurrency
+            if (!this.worker) {
+                const options: WorkerOptions = {
+                    concurrency: this.options.concurrency ?? DEFAULT_CONCURRENCY,
+                    ...this.options.workerOptions,
+                    connection: this.redisConnection,
+                };
+                this.worker = new Worker(QUEUE_NAME, this.workerProcessor, options)
+                    .on('error', e => Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack))
+                    .on('closing', e => Logger.verbose(`BullMQ Worker closing: ${e}`, loggerCtx))
+                    .on('closed', () => Logger.verbose('BullMQ Worker closed', loggerCtx))
+                    .on('failed', (job: Bull.Job | undefined, error) => {
+                        Logger.warn(
+                            `Job ${job?.id ?? '(unknown id)'} [${job?.name ?? 'unknown name'}] failed (attempt ${
+                                job?.attemptsMade ?? 'unknown'
+                            } of ${job?.opts.attempts ?? 1})`,
+                            loggerCtx,
+                        );
+                    })
+                    .on('stalled', (jobId: string) => {
+                        Logger.warn(`BullMQ Worker: job ${jobId} stalled`, loggerCtx);
+                    })
+                    .on('completed', (job: Bull.Job) => {
+                        Logger.debug(`Job ${job?.id ?? 'unknown id'} [${job.name}] completed`, loggerCtx);
+                    });
+                await this.cancellationSub.subscribe(this.CANCEL_JOB_CHANNEL);
+                this.cancellationSub.on('message', this.subscribeToCancellationEvents);
+            }
         }
     }
 
@@ -328,7 +369,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         if (!this.stopped) {
             this.stopped = true;
             try {
-                Logger.info(`Closing worker`, loggerCtx);
+                Logger.info(`Closing worker(s)`, loggerCtx);
 
                 let timer: NodeJS.Timeout;
                 const checkActive = async () => {
@@ -350,8 +391,15 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                     void checkActive();
                 }, 2000);
 
-                await this.worker.close();
-                Logger.info(`Worker closed`, loggerCtx);
+                // Close the single worker (if using number concurrency)
+                if (this.worker) {
+                    await this.worker.close();
+                }
+                // Close all workers (if using function concurrency)
+                for (const worker of this.workers.values()) {
+                    await worker.close();
+                }
+                Logger.info(`Worker(s) closed`, loggerCtx);
                 await this.queue.close();
                 clearTimeout(timer);
                 Logger.info(`Queue closed`, loggerCtx);
