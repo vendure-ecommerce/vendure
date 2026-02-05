@@ -69,3 +69,17 @@ All hooks in `src/lib/hooks/` must:
 - Never import from `@/vdb/index.js` directly
 
 These rules are also enforced by the same lint script.
+
+## Internationalization (i18n)
+
+See `scripts/translate/README.md` for full documentation.
+
+```bash
+# Extract new strings and update .po files
+npm run i18n:extract --workspace=@vendure/dashboard
+
+# Apply LLM-translated strings
+npm run i18n:apply --workspace=@vendure/dashboard
+```
+
+For locale-aware date/currency formatting, use `useLocalFormat()` hook instead of `date-fns` formatting functions.
