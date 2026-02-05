@@ -26,6 +26,7 @@ export const defaultAvailableLanguages = [
     LanguageCode.nb,
     LanguageCode.tr,
     LanguageCode.bg,
+    LanguageCode.nl,
 ];
 
 export const defaultAvailableLocales = [
