@@ -8,6 +8,8 @@ import { ColumnFiltersState, SortingState, VisibilityState } from '@tanstack/rea
 import { PlusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { deleteProductOptionDocument } from '../product-option-groups.graphql.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 
 export const productOptionListDocument = graphql(`
     query ProductOptionList($options: ProductOptionListOptions, $groupId: ID) {
@@ -33,14 +35,15 @@ export function ProductOptionsTable({
     productOptionGroupId,
     registerRefresher,
 }: Readonly<ProductOptionsTableProps>) {
+    const { pageId } = usePage();
+
+    const { setTableSettings, settings } = useUserSettings();
+    const tableSettings = pageId ? settings.tableSettings?.[pageId] : undefined;
+
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-        name: true,
-        code: true,
-    });
     const refreshRef = useRef<() => void>(() => {});
 
     return (
@@ -59,7 +62,11 @@ export function ProductOptionsTable({
                 onSortChange={(_, sorting) => {
                     setSorting(sorting);
                 }}
-                onColumnVisibilityChange={(_, value) => setColumnVisibility(value)}
+                onColumnVisibilityChange={(_, columnVisibility: any) => {
+                    if (pageId) {
+                        setTableSettings(pageId, 'columnVisibility', columnVisibility);
+                    }
+                }}
                 onFilterChange={(_, filters) => {
                     setFilters(filters);
                 }}
@@ -88,7 +95,11 @@ export function ProductOptionsTable({
                         },
                     };
                 }}
-                defaultVisibility={columnVisibility}
+                defaultVisibility={tableSettings?.columnVisibility ?? {
+                    name: true,
+                    code: true,
+                }}
+                defaultColumnOrder={tableSettings?.columnOrder}
                 customizeColumns={{
                     name: {
                         cell: ({ row }) => (
