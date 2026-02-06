@@ -38,12 +38,12 @@ export const FacetValueInput: DashboardFormComponent = ({ value, onChange, disab
 
     const onValueSelectHandler = (value: FacetValue) => {
         const newIds = new Set([...ids, value.id]);
-        onChange(JSON.stringify(Array.from(newIds)));
+        onChange(Array.from(newIds));
     };
 
     const onValueRemoveHandler = (id: string) => {
         const newIds = new Set(ids.filter(existingId => existingId !== id));
-        onChange(JSON.stringify(Array.from(newIds)));
+        onChange(Array.from(newIds));
     };
 
     return (
