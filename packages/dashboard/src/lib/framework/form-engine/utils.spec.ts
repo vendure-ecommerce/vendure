@@ -1,9 +1,9 @@
 import { graphql, VariablesOf } from 'gql.tada';
 import { describe, expect, it } from 'vitest';
 
-import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
+import { FieldInfo, getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 
-import { removeEmptyIdFields } from './utils.js';
+import { removeEmptyIdFields, transformRelationFields } from './utils.js';
 
 const createProductDocument = graphql(`
     mutation CreateProduct($input: CreateProductInput!) {
@@ -33,5 +33,132 @@ describe('removeEmptyIdFields', () => {
         const fields = getOperationVariablesFields(createProductDocument);
         const result = removeEmptyIdFields(values, fields);
         expect(result).toEqual({ input: { translations: [] } });
+    });
+});
+
+describe('transformRelationFields', () => {
+    const createFieldsWithListRelation = (): FieldInfo[] => [
+        {
+            name: 'customFields',
+            type: 'CustomFields',
+            nullable: true,
+            list: false,
+            isPaginatedList: false,
+            isScalar: false,
+            typeInfo: [
+                {
+                    name: 'featuredProductsIds',
+                    type: 'ID',
+                    nullable: true,
+                    list: true,
+                    isPaginatedList: false,
+                    isScalar: true,
+                },
+            ],
+        },
+    ];
+
+    const createFieldsWithSingleRelation = (): FieldInfo[] => [
+        {
+            name: 'customFields',
+            type: 'CustomFields',
+            nullable: true,
+            list: false,
+            isPaginatedList: false,
+            isScalar: false,
+            typeInfo: [
+                {
+                    name: 'featuredProductId',
+                    type: 'ID',
+                    nullable: true,
+                    list: false,
+                    isPaginatedList: false,
+                    isScalar: true,
+                },
+            ],
+        },
+    ];
+
+    it('should extract IDs from list relation and delete original field', () => {
+        const entity = {
+            customFields: {
+                featuredProducts: [
+                    { id: '1', name: 'Product 1' },
+                    { id: '2', name: 'Product 2' },
+                ],
+            },
+        };
+        const result = transformRelationFields(createFieldsWithListRelation(), entity);
+
+        expect(result.customFields).toEqual({ featuredProductsIds: ['1', '2'] });
+        expect(result.customFields).not.toHaveProperty('featuredProducts');
+    });
+
+    it('should handle empty array for clearing list relations', () => {
+        const entity = { customFields: { featuredProducts: [] } };
+        const result = transformRelationFields(createFieldsWithListRelation(), entity);
+
+        expect(result.customFields).toEqual({ featuredProductsIds: [] });
+    });
+
+    it('should handle undefined/null list relation by deleting field', () => {
+        const undefinedResult = transformRelationFields(createFieldsWithListRelation(), { customFields: {} });
+        const nullResult = transformRelationFields(createFieldsWithListRelation(), {
+            customFields: { featuredProducts: null },
+        });
+
+        expect(undefinedResult.customFields).not.toHaveProperty('featuredProductsIds');
+        expect(nullResult.customFields).not.toHaveProperty('featuredProducts');
+    });
+
+    it('should extract ID from single relation and delete original field', () => {
+        const entity = { customFields: { featuredProduct: { id: '1', name: 'Product 1' } } };
+        const result = transformRelationFields(createFieldsWithSingleRelation(), entity);
+
+        expect(result.customFields).toEqual({ featuredProductId: '1' });
+        expect(result.customFields).not.toHaveProperty('featuredProduct');
+    });
+
+    it('should not mutate the original entity', () => {
+        const entity = { customFields: { featuredProducts: [{ id: '1' }] } };
+        const result = transformRelationFields(createFieldsWithListRelation(), entity);
+
+        expect(entity.customFields.featuredProducts).toEqual([{ id: '1' }]);
+        expect(result).not.toBe(entity);
+    });
+
+    it('should preserve other custom fields while transforming relations', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'customFields',
+                type: 'CustomFields',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: false,
+                typeInfo: [
+                    {
+                        name: 'featuredProductsIds',
+                        type: 'ID',
+                        nullable: true,
+                        list: true,
+                        isPaginatedList: false,
+                        isScalar: true,
+                    },
+                    {
+                        name: 'notes',
+                        type: 'String',
+                        nullable: true,
+                        list: false,
+                        isPaginatedList: false,
+                        isScalar: true,
+                    },
+                ],
+            },
+        ];
+        const entity = { customFields: { featuredProducts: [{ id: '1' }], notes: 'Some notes' } };
+        const result = transformRelationFields(fields, entity);
+
+        expect(result.customFields).toEqual({ featuredProductsIds: ['1'], notes: 'Some notes' });
     });
 });
