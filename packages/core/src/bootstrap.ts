@@ -25,6 +25,7 @@ import { validateCustomFieldsConfig } from './entity/validate-custom-fields-conf
 import { getCompatibility, getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getPluginStartupMessages } from './plugin/plugin-utils';
 import { setProcessContext } from './process-context/process-context';
+import { isCI } from './telemetry/helpers/ci-detector.helper';
 import { VENDURE_VERSION } from './version';
 import { VendureWorker } from './worker/vendure-worker';
 
@@ -409,6 +410,14 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     Logger.info('-'.repeat(maxLineLength).padStart(titlePadLength));
     columnarGreetings.forEach(line => Logger.info(line));
     Logger.info('='.repeat(maxLineLength));
+    const disableEnv = process.env.VENDURE_DISABLE_TELEMETRY;
+    const telemetryDisabled = disableEnv === 'true' || disableEnv === '1' || isCI();
+    if (telemetryDisabled) {
+        Logger.info('Anonymous telemetry is disabled.');
+    } else {
+        Logger.info('Anonymous telemetry is enabled to help us improve Vendure.');
+        Logger.info('To disable, set VENDURE_DISABLE_TELEMETRY=true.');
+    }
 }
 
 function arrangeCliGreetingsInColumns(lines: Array<readonly [string, string]>): string[] {
