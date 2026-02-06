@@ -9,7 +9,7 @@ import { DeploymentCollector } from './collectors/deployment.collector';
 import { InstallationIdCollector } from './collectors/installation-id.collector';
 import { PluginCollector } from './collectors/plugin.collector';
 import { SystemInfoCollector } from './collectors/system-info.collector';
-import { isCI } from './helpers/ci-detector.helper';
+import { isTelemetryDisabled } from './helpers/is-telemetry-disabled.helper';
 import { TelemetryPayload } from './telemetry.types';
 
 const DEFAULT_TELEMETRY_ENDPOINT = 'https://telemetry.vendure.io/api/v1/collect';
@@ -74,16 +74,7 @@ export class TelemetryService implements OnApplicationBootstrap {
      * Checks if telemetry is disabled via environment variable or CI detection.
      */
     private isTelemetryDisabled(): boolean {
-        const disableEnv = process.env.VENDURE_DISABLE_TELEMETRY;
-        if (disableEnv === 'true' || disableEnv === '1') {
-            return true;
-        }
-
-        if (isCI()) {
-            return true;
-        }
-
-        return false;
+        return isTelemetryDisabled();
     }
 
     /**
@@ -98,7 +89,7 @@ export class TelemetryService implements OnApplicationBootstrap {
      * Collects all telemetry data from the various collectors.
      */
     private async collectPayload(): Promise<TelemetryPayload> {
-        const installationId = this.installationIdCollector.collect();
+        const installationId = await this.installationIdCollector.collect();
         const databaseInfo = await this.databaseCollector.collect();
 
         const systemInfo = this.systemInfoCollector.collect();
