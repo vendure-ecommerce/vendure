@@ -68,7 +68,7 @@ export function EditOrderTable({
     displayTotals = true,
 }: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-    
+
     const { t } = useLingui();
     const currencyCode = order.currencyCode;
     const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = useMemo(
@@ -108,71 +108,55 @@ export function EditOrderTable({
                     );
                 },
             },
-           {
-    header: t`Quantity`,
-    accessorKey: 'quantity',
-    cell: ({ row }) => {
-        // Local state for input
-        const [localQty, setLocalQty] = useState(
-            row.original.quantity !== undefined ? String(row.original.quantity) : ''
-        );
+            {
+                header: t`Quantity`,
+                accessorKey: 'quantity',
+                cell: ({ row }) => {
+                    return (
+                        <div className="flex gap-2">
+                            <Input
+                                type="number"
+                                min={0}
+                                defaultValue={row.original.quantity}
+                                placeholder="—"
+                                onKeyDown={e => {
+                                    if (e.key !== 'Enter') return;
+                                    const input = e.currentTarget.value.trim();
+                                    const quantity = Number(input);
 
-        return (
-            <div className="flex gap-2">
-                <Input
-                    type="number"
-                    placeholder="—"
-                    min={0}
-                    value={localQty}
-                    onChange={e => {
-                        setLocalQty(e.target.value); // update input locally only
-                    }}
-                    onKeyDown={e => {
-                        if (e.key !== 'Enter') return;
+                                    onAdjustLine({
+                                        lineId: row.original.id,
+                                        quantity,
+                                        customFields: row.original.customFields,
+                                    });
+                                }}
+                            />
 
-                        const value = localQty.trim();
-
-                        if (value === '') {
-                            // remove product only if Enter + empty
-                            onRemoveLine({ lineId: row.original.id });
-                            return;
-                        }
-
-                        const quantity = Number(value);
-                        if (Number.isNaN(quantity) || quantity < 0) return;
-
-                        onAdjustLine({
-                            lineId: row.original.id,
-                            quantity,
-                            customFields: row.original.customFields,
-                        });
-                    }}
-                />
-                <Button
-                    variant="outline"
-                    type="button"
-                    size="icon"
-                    disabled={row.original.quantity === 0}
-                    onClick={() => onRemoveLine({ lineId: row.original.id })}
-                >
-                    <Trash2 />
-                </Button>
-                {row.original.customFields && (
-                    <OrderLineCustomFieldsForm
-                        onUpdate={customFields => {
-                            onAdjustLine({
-                                lineId: row.original.id,
-                                quantity: row.original.quantity,
-                                customFields,
-                            });
-                        }}
-                        value={row.original.customFields}
-                    />
-                )}
-            </div>
-        );
-    },  
-},
+                            <Button
+                                variant="outline"
+                                type="button"
+                                size="icon"
+                                disabled={row.original.quantity === 0}
+                                onClick={() => onRemoveLine({ lineId: row.original.id })}
+                            >
+                                <Trash2 />
+                            </Button>
+                            {row.original.customFields && (
+                                <OrderLineCustomFieldsForm
+                                    onUpdate={customFields => {
+                                        onAdjustLine({
+                                            lineId: row.original.id,
+                                            quantity: row.original.quantity,
+                                            customFields,
+                                        });
+                                    }}
+                                    value={row.original.customFields}
+                                />
+                            )}
+                        </div>
+                    );
+                },
+            },
             {
                 header: t`Total`,
                 accessorKey: 'linePriceWithTax',
