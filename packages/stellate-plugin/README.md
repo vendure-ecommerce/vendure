@@ -1,3 +1,8 @@
+> **Deprecation Notice:** This package is moving to
+> [`@vendure-community/stellate-plugin`](https://github.com/vendurehq/vendure-community-plugins).
+> The `@vendure/stellate-plugin` package will be removed in the next minor release of Vendure.
+> Please update your dependencies to use the `@vendure-community/*` scope.
+
 # Vendure Stellate Plugin
 
 Integrates your Vendure server with the [Stellate](TaxRateEvent) GraphQL API cache.

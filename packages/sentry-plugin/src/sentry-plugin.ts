@@ -141,6 +141,9 @@ const SentryOptionsProvider = {
  *
  * You should then be able to see the error in your Sentry dashboard (it may take a couple of minutes to appear).
  *
+ * @deprecated This plugin is moving to `@vendure-community/sentry-plugin`.
+ * The `@vendure/sentry-plugin` package will be removed in the next minor release.
+ *
  * @docsCategory core plugins/SentryPlugin
  */
 @VendurePlugin({

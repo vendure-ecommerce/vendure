@@ -154,6 +154,9 @@ import { StripePluginOptions } from './types';
  *    ```
  * 4. The Stripe CLI will create a webhook signing secret you can then use in your config of the StripePlugin.
  *
+ * @deprecated This plugin is moving to `@vendure-community/payments-plugin`.
+ * The `@vendure/payments-plugin` package will be removed in the next minor release.
+ *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage StripePlugin
  */

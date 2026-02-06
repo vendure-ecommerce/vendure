@@ -1,3 +1,8 @@
+> **Deprecation Notice:** This package is moving to
+> [`@vendure-community/elasticsearch-plugin`](https://github.com/vendurehq/vendure-community-plugins).
+> The `@vendure/elasticsearch-plugin` package will be removed in the next minor release of Vendure.
+> Please update your dependencies to use the `@vendure-community/*` scope.
+
 # Vendure Elasticsearch Plugin
 
 The `ElasticsearchPlugin` uses Elasticsearch to power the Vendure product search. 
