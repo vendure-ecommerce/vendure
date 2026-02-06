@@ -5,6 +5,6 @@ import { isCI } from './ci-detector.helper';
  * variable or CI environment detection.
  */
 export function isTelemetryDisabled(): boolean {
-    const disableEnv = process.env.VENDURE_DISABLE_TELEMETRY;
+    const disableEnv = process.env.VENDURE_DISABLE_TELEMETRY?.toLowerCase();
     return disableEnv === 'true' || disableEnv === '1' || isCI();
 }

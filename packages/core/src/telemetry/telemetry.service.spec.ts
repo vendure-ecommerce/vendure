@@ -297,6 +297,24 @@ describe('TelemetryService', () => {
             });
         });
 
+        describe('graceful shutdown', () => {
+            it('clears the delay timeout on shutdown before telemetry fires', async () => {
+                service.onApplicationBootstrap();
+
+                // Shutdown before the 5s delay elapses
+                service.onApplicationShutdown();
+
+                // Advance past the delay
+                await vi.advanceTimersByTimeAsync(6000);
+
+                expect(mockFetch).not.toHaveBeenCalled();
+            });
+
+            it('onApplicationShutdown is safe to call when no timeout is pending', () => {
+                expect(() => service.onApplicationShutdown()).not.toThrow();
+            });
+        });
+
         describe('error handling', () => {
             it('silently ignores fetch network errors', async () => {
                 mockFetch.mockRejectedValue(new Error('Network error'));

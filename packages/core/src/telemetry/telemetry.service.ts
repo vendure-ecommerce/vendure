@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 
 import { ProcessContext } from '../process-context/process-context';
 import { VENDURE_VERSION } from '../version';
@@ -38,7 +38,9 @@ const TELEMETRY_TIMEOUT_MS = 5000;
  * @since 3.6.0
  */
 @Injectable()
-export class TelemetryService implements OnApplicationBootstrap {
+export class TelemetryService implements OnApplicationBootstrap, OnApplicationShutdown {
+    private delayTimeout: ReturnType<typeof setTimeout> | undefined;
+
     constructor(
         private readonly processContext: ProcessContext,
         private readonly installationIdCollector: InstallationIdCollector,
@@ -63,11 +65,19 @@ export class TelemetryService implements OnApplicationBootstrap {
         // Delay telemetry collection to allow user bootstrap code to complete
         // This ensures JobQueueService.start() has been called (if it will be)
         // before we check worker mode
-        setTimeout(() => {
+        this.delayTimeout = setTimeout(() => {
+            this.delayTimeout = undefined;
             this.sendTelemetry().catch(() => {
                 // Silently ignore all errors
             });
         }, 5000);
+    }
+
+    onApplicationShutdown() {
+        if (this.delayTimeout) {
+            clearTimeout(this.delayTimeout);
+            this.delayTimeout = undefined;
+        }
     }
 
     /**

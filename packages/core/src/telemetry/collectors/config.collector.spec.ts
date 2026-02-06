@@ -35,10 +35,12 @@ describe('ConfigCollector', () => {
                 Customer: [{ name: 'customField3' }],
             } as any,
             authOptions: {
-                adminAuthenticationStrategy: [{ constructor: { name: 'NativeAuthenticationStrategy' } }],
+                adminAuthenticationStrategy: [
+                    { name: 'native', constructor: { name: 'NativeAuthenticationStrategy' } },
+                ],
                 shopAuthenticationStrategy: [
-                    { constructor: { name: 'NativeAuthenticationStrategy' } },
-                    { constructor: { name: 'GoogleAuthenticationStrategy' } },
+                    { name: 'native', constructor: { name: 'NativeAuthenticationStrategy' } },
+                    { name: 'google', constructor: { name: 'GoogleAuthenticationStrategy' } },
                 ],
             } as any,
         };
@@ -71,10 +73,7 @@ describe('ConfigCollector', () => {
             it('returns authentication method names sorted and deduplicated', () => {
                 const result = collector.collect();
 
-                expect(result.authenticationMethods).toEqual([
-                    'GoogleAuthenticationStrategy',
-                    'NativeAuthenticationStrategy',
-                ]);
+                expect(result.authenticationMethods).toEqual(['google', 'native']);
             });
         });
 
@@ -150,13 +149,50 @@ describe('ConfigCollector', () => {
             it('handles null strategy array', () => {
                 mockConfigService.authOptions = {
                     adminAuthenticationStrategy: null as any,
-                    shopAuthenticationStrategy: [{ constructor: { name: 'SomeStrategy' } }],
+                    shopAuthenticationStrategy: [{ name: 'some', constructor: { name: 'SomeStrategy' } }],
                 } as any;
 
                 const result = collector.collect();
 
                 // Should return empty array due to error handling
                 expect(result.authenticationMethods).toEqual([]);
+            });
+        });
+
+        describe('minification resilience', () => {
+            it('falls back to constructor.name when no .name property', () => {
+                mockConfigService.assetOptions = {
+                    assetStorageStrategy: {
+                        constructor: { name: 'LocalAssetStorageStrategy' },
+                    },
+                } as any;
+
+                const result = collector.collect();
+
+                expect(result.assetStorageType).toBe('LocalAssetStorageStrategy');
+            });
+
+            it('returns unknown when constructor.name is minified (single char)', () => {
+                mockConfigService.assetOptions = {
+                    assetStorageStrategy: {
+                        constructor: { name: 'a' },
+                    },
+                } as any;
+
+                const result = collector.collect();
+
+                expect(result.assetStorageType).toBe('unknown');
+            });
+
+            it('prefers .name property over constructor.name for auth strategies', () => {
+                mockConfigService.authOptions = {
+                    adminAuthenticationStrategy: [{ name: 'native', constructor: { name: 'a' } }],
+                    shopAuthenticationStrategy: [],
+                } as any;
+
+                const result = collector.collect();
+
+                expect(result.authenticationMethods).toEqual(['native']);
             });
         });
 
