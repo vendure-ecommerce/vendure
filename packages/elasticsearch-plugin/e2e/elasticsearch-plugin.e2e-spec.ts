@@ -337,7 +337,10 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: false,
                 },
             });
-            expect(result.search.collections).toEqual([
+            const sortedCollections = [...result.search.collections].sort((a, b) =>
+                a.collection.id.localeCompare(b.collection.id),
+            );
+            expect(sortedCollections).toEqual([
                 { collection: { id: 'T_2', name: 'Plants' }, count: 4 },
                 { collection: { id: 'T_3', name: 'Electronics' }, count: 21 },
             ]);
@@ -349,7 +352,10 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: true,
                 },
             });
-            expect(result.search.collections).toEqual([
+            const sortedCollections = [...result.search.collections].sort((a, b) =>
+                a.collection.id.localeCompare(b.collection.id),
+            );
+            expect(sortedCollections).toEqual([
                 { collection: { id: 'T_2', name: 'Plants' }, count: 4 },
                 { collection: { id: 'T_3', name: 'Electronics' }, count: 10 },
             ]);

@@ -250,7 +250,7 @@ export class Importer {
                     variant.translations,
                     ctx.languageCode,
                 );
-                const createVariantAssets = await this.assetImporter.getAssets(variant.assetPaths);
+                const createVariantAssets = await this.assetImporter.getAssets(variant.assetPaths, ctx);
                 const variantAssets = createVariantAssets.assets;
                 if (createVariantAssets.errors.length) {
                     errors = errors.concat(createVariantAssets.errors);

@@ -395,8 +395,8 @@ const AuthenticatedProductsProductsProductIdOptionGroupsProductOptionGroupIdOpti
   )
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/': typeof AuthenticatedIndexRoute
   '/administrators': typeof AuthenticatedAdministratorsAdministratorsRoute
   '/assets': typeof AuthenticatedAssetsAssetsRoute
   '/channels': typeof AuthenticatedChannelsChannelsRoute
@@ -567,8 +567,8 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/login'
+    | '/'
     | '/administrators'
     | '/assets'
     | '/channels'
@@ -753,7 +753,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
-      fullPath: '/'
+      fullPath: ''
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }

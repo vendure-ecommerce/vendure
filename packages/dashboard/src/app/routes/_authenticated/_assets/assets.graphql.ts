@@ -17,13 +17,21 @@ export const assetDetailDocument = graphql(
     [assetFragment],
 );
 
-export const assetUpdateDocument = graphql(`
-    mutation AssetUpdate($input: UpdateAssetInput!) {
-        updateAsset(input: $input) {
-            id
+export const assetUpdateDocument = graphql(
+    `
+        mutation AssetUpdate($input: UpdateAssetInput!) {
+            updateAsset(input: $input) {
+                ...Asset
+                tags {
+                    id
+                    value
+                }
+                customFields
+            }
         }
-    }
-`);
+    `,
+    [assetFragment],
+);
 
 export const deleteAssetsDocument = graphql(`
     mutation DeleteAssets($input: DeleteAssetsInput!) {
