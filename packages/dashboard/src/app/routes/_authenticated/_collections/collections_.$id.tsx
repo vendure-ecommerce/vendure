@@ -26,6 +26,7 @@ import { useJobQueuePolling } from '@/vdb/hooks/use-job-queue-polling.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import {
     collectionDetailDocument,
@@ -130,6 +131,8 @@ function CollectionDetailPage() {
     const currentFiltersValue = form.watch('filters');
     const currentInheritFiltersValue = form.watch('inheritFilters');
 
+    const [filtersArgsValid, setFiltersArgsValid] = useState(true);
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New collection</Trans> : (entity?.name ?? '')}</PageTitle>
@@ -138,7 +141,12 @@ function CollectionDetailPage() {
                     <PermissionGuard requires={['UpdateCollection', 'UpdateCatalog']}>
                         <Button
                             type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                            disabled={
+                                !form.formState.isDirty ||
+                                !form.formState.isValid ||
+                                isPending ||
+                                !filtersArgsValid
+                            }
                         >
                             {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
@@ -207,7 +215,11 @@ function CollectionDetailPage() {
                         control={form.control}
                         name="filters"
                         render={({ field }) => (
-                            <CollectionFiltersSelector value={field.value ?? []} onChange={field.onChange} />
+                            <CollectionFiltersSelector
+                                value={field.value ?? []}
+                                onChange={field.onChange}
+                                onValidityChange={setFiltersArgsValid}
+                            />
                         )}
                     />
                 </PageBlock>

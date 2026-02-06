@@ -17,9 +17,14 @@ export const shippingCalculatorsDocument = graphql(
 interface ShippingCalculatorSelectorProps {
     value: ConfigurableOperationInputType | undefined;
     onChange: (value: ConfigurableOperationInputType | undefined) => void;
+    onValidityChange?: (isValid: boolean) => void;
 }
 
-export function ShippingCalculatorSelector({ value, onChange }: Readonly<ShippingCalculatorSelectorProps>) {
+export function ShippingCalculatorSelector({
+    value,
+    onChange,
+    onValidityChange,
+}: Readonly<ShippingCalculatorSelectorProps>) {
     return (
         <ConfigurableOperationSelector
             value={value}
@@ -28,6 +33,7 @@ export function ShippingCalculatorSelector({ value, onChange }: Readonly<Shippin
             queryKey="shippingCalculators"
             dataPath="shippingCalculators"
             buttonText="Select Shipping Calculator"
+            onValidityChange={onValidityChange}
         />
     );
 }

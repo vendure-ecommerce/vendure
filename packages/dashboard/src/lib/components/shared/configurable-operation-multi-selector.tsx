@@ -12,6 +12,7 @@ import { Trans } from '@lingui/react/macro';
 import { DefinedInitialDataOptions, useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
+import { useCallback, useEffect, useRef } from 'react';
 import { ConfigurableOperationInput } from './configurable-operation-input.js';
 
 /**
@@ -45,6 +46,8 @@ export interface ConfigurableOperationMultiSelectorProps {
      * Simple style is used by collection filters for a cleaner, more compact appearance.
      */
     showEnhancedDropdown?: boolean;
+    /** Callback when validity of required args changes (all operations must be valid) */
+    onValidityChange?: (isValid: boolean) => void;
 }
 
 type QueryData = {
@@ -104,7 +107,48 @@ export function ConfigurableOperationMultiSelector({
     dropdownTitle,
     emptyText = 'No options found',
     showEnhancedDropdown = true,
+    onValidityChange,
 }: Readonly<ConfigurableOperationMultiSelectorProps>) {
+    // Track validity for each operation by code+index to handle reordering/removal.
+    // When operations change, we clear and let each ConfigurableOperationInput re-report.
+    const validityMapRef = useRef<Record<string, boolean>>({});
+    const prevValueRef = useRef(value);
+
+    // Create stable key for each operation (code + position)
+    const getOperationKey = (operation: ConfigurableOperationInputType, index: number) =>
+        `${operation.code}:${index}`;
+
+    const updateOperationValidity = useCallback(
+        (index: number, isValid: boolean) => {
+            const operation = value[index];
+            if (!operation) return;
+            const key = getOperationKey(operation, index);
+            validityMapRef.current[key] = isValid;
+            if (onValidityChange) {
+                const allValid =
+                    value.length === 0 ||
+                    value.every((op, i) => validityMapRef.current[getOperationKey(op, i)] !== false);
+                onValidityChange(allValid);
+            }
+        },
+        [onValidityChange, value],
+    );
+
+    // Reset validity map when operations array changes (add/remove/reorder)
+    useEffect(() => {
+        const prevCodes = prevValueRef.current.map(op => op.code).join(',');
+        const currCodes = value.map(op => op.code).join(',');
+        if (prevCodes !== currCodes) {
+            // Operations changed - clear map and let components re-report
+            validityMapRef.current = {};
+            // Temporarily report as valid until components re-validate
+            if (onValidityChange && value.length === 0) {
+                onValidityChange(true);
+            }
+        }
+        prevValueRef.current = value;
+    }, [value, onValidityChange]);
+
     const { data } = useQuery<QueryData>(
         queryOptions || {
             queryKey: [queryKey],
@@ -208,6 +252,7 @@ export function ConfigurableOperationMultiSelector({
                                     value={operation}
                                     onChange={value => onOperationValueChange(operation, value)}
                                     onRemove={() => onOperationRemove(index)}
+                                    onValidityChange={isValid => updateOperationValidity(index, isValid)}
                                 />
                             </div>
                         );

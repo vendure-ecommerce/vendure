@@ -17,9 +17,14 @@ export const paymentHandlersDocument = graphql(
 interface PaymentHandlerSelectorProps {
     value: ConfigurableOperationInputType | undefined;
     onChange: (value: ConfigurableOperationInputType | undefined) => void;
+    onValidityChange?: (isValid: boolean) => void;
 }
 
-export function PaymentHandlerSelector({ value, onChange }: Readonly<PaymentHandlerSelectorProps>) {
+export function PaymentHandlerSelector({
+    value,
+    onChange,
+    onValidityChange,
+}: Readonly<PaymentHandlerSelectorProps>) {
     return (
         <ConfigurableOperationSelector
             value={value}
@@ -28,6 +33,7 @@ export function PaymentHandlerSelector({ value, onChange }: Readonly<PaymentHand
             queryKey="paymentMethodHandlers"
             dataPath="paymentMethodHandlers"
             buttonText="Select Payment Handler"
+            onValidityChange={onValidityChange}
         />
     );
 }
