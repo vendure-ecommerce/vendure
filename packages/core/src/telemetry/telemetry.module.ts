@@ -4,6 +4,7 @@ import { ConfigModule } from '../config/config.module';
 import { ConnectionModule } from '../connection/connection.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { ProcessContextModule } from '../process-context/process-context.module';
+import { SettingsStoreService } from '../service/helpers/settings-store/settings-store.service';
 
 import { ConfigCollector } from './collectors/config.collector';
 import { DatabaseCollector } from './collectors/database.collector';
@@ -34,6 +35,7 @@ import { TelemetryService } from './telemetry.service';
     imports: [ProcessContextModule, ConfigModule, ConnectionModule, JobQueueModule],
     providers: [
         TelemetryService,
+        SettingsStoreService,
         InstallationIdCollector,
         SystemInfoCollector,
         DatabaseCollector,
