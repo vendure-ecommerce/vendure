@@ -26,6 +26,7 @@
         "generate-index": "node scripts/generate-index.js",
         "i18n:extract": "lingui extract && node ./scripts/translate/i18n-tool.js extract",
         "i18n:apply": "node ./scripts/translate/i18n-tool.js apply",
+        "i18n:check": "node ./scripts/translate/check-translations.js",
         "storybook": "storybook dev -p 6006",
         "storybook:build": "storybook build",
         "storybook:deploy": "npm run build --prefix ../common && npm run build --prefix ../core && npm run build:vite && storybook build"
