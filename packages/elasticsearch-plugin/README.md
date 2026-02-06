@@ -1,6 +1,6 @@
 > **Deprecation Notice:** This package is moving to
 > [`@vendure-community/elasticsearch-plugin`](https://github.com/vendurehq/vendure-community-plugins).
-> The `@vendure/elasticsearch-plugin` package will be removed in the next minor release of Vendure.
+> The `@vendure/elasticsearch-plugin` package will be removed in Vendure v3.6.0.
 > Please update your dependencies to use the `@vendure-community/*` scope.
 
 # Vendure Elasticsearch Plugin

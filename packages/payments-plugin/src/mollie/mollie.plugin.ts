@@ -197,7 +197,7 @@ export interface MolliePluginOptions {
  * and if so, allow your customer to pay for the additional items by creating another Mollie payment.
  *
  * @deprecated This plugin is moving to `@vendure-community/payments-plugin`.
- * The `@vendure/payments-plugin` package will be removed in the next minor release.
+ * The `@vendure/payments-plugin` package will be removed in Vendure v3.6.0.
  *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin

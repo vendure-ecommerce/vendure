@@ -18,7 +18,7 @@ import { PubSubJobQueueStrategy } from './pub-sub-job-queue-strategy';
  * ```
  *
  * @deprecated The Pub/Sub plugin is moving to `@vendure-community/pub-sub-plugin`.
- * It will be removed from `@vendure/job-queue-plugin` in the next minor release.
+ * It will be removed from `@vendure/job-queue-plugin` in Vendure v3.6.0.
  * The BullMQ plugin remains in `@vendure/job-queue-plugin`.
  *
  * @docsCategory core plugins/JobQueuePlugin

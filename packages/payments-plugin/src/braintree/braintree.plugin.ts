@@ -236,7 +236,7 @@ import { BraintreePluginOptions } from './types';
  * ```
  *
  * @deprecated This plugin is moving to `@vendure-community/payments-plugin`.
- * The `@vendure/payments-plugin` package will be removed in the next minor release.
+ * The `@vendure/payments-plugin` package will be removed in Vendure v3.6.0.
  *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage BraintreePlugin

@@ -221,7 +221,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * ```
  *
  * @deprecated This plugin is moving to `@vendure-community/elasticsearch-plugin`.
- * The `@vendure/elasticsearch-plugin` package will be removed in the next minor release.
+ * The `@vendure/elasticsearch-plugin` package will be removed in Vendure v3.6.0.
  *
  * @docsCategory core plugins/ElasticsearchPlugin
  */
