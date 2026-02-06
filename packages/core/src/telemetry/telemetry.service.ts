@@ -35,7 +35,7 @@ const TELEMETRY_TIMEOUT_MS = 5000;
  * Telemetry is automatically disabled in CI environments.
  *
  * @docsCategory Telemetry
- * @since 3.2.0
+ * @since 3.6.0
  */
 @Injectable()
 export class TelemetryService implements OnApplicationBootstrap {

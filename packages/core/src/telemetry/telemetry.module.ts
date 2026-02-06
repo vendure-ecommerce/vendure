@@ -29,7 +29,7 @@ import { TelemetryService } from './telemetry.service';
  * Set `VENDURE_DISABLE_TELEMETRY=true` to disable.
  *
  * @docsCategory Telemetry
- * @since 3.2.0
+ * @since 3.6.0
  */
 @Module({
     imports: [ProcessContextModule, ConfigModule, ConnectionModule, JobQueueModule],
