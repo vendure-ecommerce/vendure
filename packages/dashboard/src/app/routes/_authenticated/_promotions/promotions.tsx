@@ -1,9 +1,8 @@
 import { BooleanDisplayBadge } from '@/vdb/components/data-display/boolean.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -79,16 +78,14 @@ function PromotionListPage() {
                 },
             ]}
         >
-            <PageActionBarRight>
-                <PermissionGuard requires={['CreatePromotion']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            <Trans>New Promotion</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
-            </PageActionBarRight>
+            <ActionBarItem itemId="create-button" requiresPermission={['CreatePromotion']}>
+                <Button asChild>
+                    <Link to="./new">
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        <Trans>New Promotion</Trans>
+                    </Link>
+                </Button>
+            </ActionBarItem>
         </ListPage>
     );
 }

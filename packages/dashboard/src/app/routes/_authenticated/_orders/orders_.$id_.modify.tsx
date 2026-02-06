@@ -1,13 +1,12 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import {
-    Page,
+import {    Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -162,11 +161,11 @@ function ModifyOrderPage() {
                 <Trans>Modify order</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
+                <ActionBarItem itemId="cancel-modification-button">
                     <Button type="button" variant="secondary" onClick={handleCancelModificationClick}>
                         <Trans>Cancel modification</Trans>
                     </Button>
-                </PageActionBarRight>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="order-lines" title={<Trans>Order lines</Trans>}>

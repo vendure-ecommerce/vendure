@@ -2,23 +2,17 @@ import { DateRangePicker } from '@/vdb/components/date-range-picker.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import type { GridLayout as GridLayoutType } from '@/vdb/components/ui/grid-layout.js';
 import { GridLayout } from '@/vdb/components/ui/grid-layout.js';
-import {
-    getDashboardWidget,
-    getDashboardWidgetRegistry,
-} from '@/vdb/framework/dashboard-widget/widget-extensions.js';
-import {
-    DefinedDateRange,
-    WidgetFiltersProvider,
-} from '@/vdb/framework/dashboard-widget/widget-filters-context.js';
+import { getDashboardWidget, getDashboardWidgetRegistry, } from '@/vdb/framework/dashboard-widget/widget-extensions.js';
+import { DefinedDateRange, WidgetFiltersProvider, } from '@/vdb/framework/dashboard-widget/widget-filters-context.js';
 import { DashboardWidgetInstance } from '@/vdb/framework/extension-api/types/widgets.js';
 import {
     FullWidthPageBlock,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { endOfDay, startOfMonth } from 'date-fns';
@@ -181,19 +175,21 @@ function DashboardPage() {
                 <Trans>Insights</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
+                <ActionBarItem itemId="date-range-picker">
                     <DateRangePicker
                         dateRange={dateRange}
                         onDateRangeChange={setDateRange}
                         className="mr-2"
                     />
+                </ActionBarItem>
+                <ActionBarItem itemId="edit-layout-button">
                     <Button
                         variant={editMode ? 'default' : 'outline'}
                         onClick={() => setEditMode(prev => !prev)}
                     >
                         {editMode ? t`Save Layout` : t`Edit Layout`}
                     </Button>
-                </PageActionBarRight>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <FullWidthPageBlock blockId="widgets">

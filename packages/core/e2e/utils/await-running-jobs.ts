@@ -1,7 +1,7 @@
 import { SimpleGraphQLClient } from '@vendure/testing';
 
 import { GetRunningJobsQuery, GetRunningJobsQueryVariables } from '../graphql/generated-e2e-admin-types';
-import { GET_RUNNING_JOBS } from '../graphql/shared-definitions';
+import { getRunningJobsDocument } from '../graphql/shared-definitions';
 
 /**
  * For mutation which trigger background jobs, this can be used to "pause" the execution of
@@ -20,7 +20,7 @@ export async function awaitRunningJobs(
     await new Promise(resolve => setTimeout(resolve, delay));
     do {
         const { jobs } = await adminClient.query<GetRunningJobsQuery, GetRunningJobsQueryVariables>(
-            GET_RUNNING_JOBS,
+            getRunningJobsDocument,
             {
                 options: {
                     filter: {
@@ -34,4 +34,9 @@ export async function awaitRunningJobs(
         runningJobs = jobs.totalItems;
         timedOut = timeout < +new Date() - startTime;
     } while (runningJobs > 0 && !timedOut);
+
+    if (runningJobs > 0) {
+        /* eslint-disable no-console */
+        console.log(`awaitRunningJobs time out with ${runningJobs} jobs still running`);
+    }
 }

@@ -1,9 +1,8 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { FacetValueChip } from '@/vdb/components/shared/facet-value-chip.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -106,16 +105,14 @@ function FacetListPage() {
             ]}
             route={Route}
         >
-            <PageActionBarRight>
-                <PermissionGuard requires={['CreateFacet', 'CreateCatalog']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            <Trans>New Facet</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
-            </PageActionBarRight>
+            <ActionBarItem itemId="create-button" requiresPermission={['CreateFacet', 'CreateCatalog']}>
+                <Button asChild>
+                    <Link to="./new">
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        <Trans>New Facet</Trans>
+                    </Link>
+                </Button>
+            </ActionBarItem>
         </ListPage>
     );
 }

@@ -291,6 +291,11 @@ const manifestInput: DocsPackageManifestInput = {
                     slug: 'nest-devtools',
                     file: file('docs/guides/developer-guide/nest-devtools/index.mdx'),
                 },
+                {
+                    title: 'Telemetry',
+                    slug: 'telemetry',
+                    file: file('docs/guides/developer-guide/telemetry/index.mdx'),
+                },
             ],
         },
         {

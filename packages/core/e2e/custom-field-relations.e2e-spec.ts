@@ -1,3 +1,5 @@
+// this file relies on defintions that are only available at runtime, therefore we still use gql here.
+
 import {
     assertFound,
     Asset,
@@ -31,8 +33,7 @@ import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { TestPlugin1636_1664 } from './fixtures/test-plugins/issue-1636-1664/issue-1636-1664-plugin';
 import { PluginIssue2453 } from './fixtures/test-plugins/issue-2453/plugin-issue2453';
 import { TestCustomEntity, WithCustomEntity } from './fixtures/test-plugins/with-custom-entity';
-import { AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+import { addItemToOrderDocument } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
 const entitiesWithCustomFields: Array<keyof CustomFields> = [
@@ -145,6 +146,7 @@ describe('Custom field relations', () => {
             'id',
             'createdAt',
             'updatedAt',
+            'languageCode',
             'name',
             'type',
             'fileSize',
@@ -716,15 +718,12 @@ describe('Custom field relations', () => {
             let orderId: string;
 
             beforeAll(async () => {
-                const { addItemToOrder } = await shopClient.query<any, AddItemToOrderMutationVariables>(
-                    ADD_ITEM_TO_ORDER,
-                    {
-                        productVariantId: 'T_1',
-                        quantity: 1,
-                    },
-                );
+                const { addItemToOrder } = await shopClient.query(addItemToOrderDocument, {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                });
 
-                orderId = addItemToOrder.id;
+                orderId = (addItemToOrder as any).id;
             });
 
             it('shop setOrderCustomFields', async () => {

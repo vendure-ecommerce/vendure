@@ -13,6 +13,8 @@ import {
     PaginationPrevious,
 } from '@/vdb/components/ui/pagination.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
+import { PageActionBar } from '@/vdb/framework/layout-engine/page-layout.js';
 import { api } from '@/vdb/graphql/api.js';
 import { assetFragment, AssetFragment } from '@/vdb/graphql/fragments.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
@@ -357,9 +359,13 @@ export function AssetGallery({
                                 <SelectItem value={AssetType.BINARY}>Binary</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button onClick={openFileDialog} className="whitespace-nowrap">
-                            <Upload className="h-4 w-4 mr-2" /> <Trans>Upload</Trans>
-                        </Button>
+                        <PageActionBar>
+                            <ActionBarItem itemId="upload-assets-button">
+                                <Button onClick={openFileDialog} className="whitespace-nowrap">
+                                    <Upload className="h-4 w-4 mr-2" /> <Trans>Upload</Trans>
+                                </Button>
+                            </ActionBarItem>
+                        </PageActionBar>
                     </div>
 
                     {hasTags && (

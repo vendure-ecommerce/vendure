@@ -3,7 +3,8 @@ import { LocationWrapper } from '@/vdb/framework/layout-engine/location-wrapper.
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Trans } from '@lingui/react/macro';
-import { Controller, ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
+import { useEffect } from 'react';
+import { Controller, ControllerProps, FieldPath, FieldValues, useFormContext } from 'react-hook-form';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '../ui/form.js';
 import { FormFieldWrapper } from './form-field-wrapper.js';
 
@@ -48,12 +49,14 @@ export const TranslatableFormField = <
   }: TranslatableFormFieldProps<TFieldValues>) => {
     const { formatLanguageName } = useLocalFormat();
     const { contentLanguage } = useUserSettings().settings;
-    const formValues = props.control?._formValues;
-    const translations = Array.isArray(formValues) ? formValues?.[0].translations : formValues?.translations;
+    const { watch } = useFormContext();
+    const formValues = watch();
+    const translations = Array.isArray(formValues) ? formValues?.[0]?.translations : formValues?.translations;
     const existingIndex = translations?.findIndex(
         (translation: any) => translation?.languageCode === contentLanguage,
     );
-    const index = existingIndex === -1 ? translations?.length : existingIndex;
+    const isNewTranslation = existingIndex === -1;
+    const index = isNewTranslation ? translations?.length : existingIndex;
     if (index === undefined || index === -1) {
         return (
             <FormItem>
@@ -65,7 +68,41 @@ export const TranslatableFormField = <
         );
     }
     const translationName = `translations.${index}.${String(name)}` as FieldPath<TFieldValues>;
-    return <Controller {...props} name={translationName} key={translationName} />;
+    return (
+        <TranslatableFieldController
+            {...props}
+            name={translationName}
+            index={index}
+            isNewTranslation={isNewTranslation}
+            contentLanguage={contentLanguage}
+        />
+    );
+};
+
+const TranslatableFieldController = <TFieldValues extends TranslatableEntity | TranslatableEntity[]>({
+    index,
+    isNewTranslation,
+    contentLanguage,
+    ...props
+}: Omit<ControllerProps<TFieldValues>, 'name'> & {
+    name: FieldPath<TFieldValues>;
+    index: number;
+    isNewTranslation: boolean;
+    contentLanguage: string;
+}) => {
+    const { setValue, getValues } = useFormContext();
+
+    useEffect(() => {
+        if (isNewTranslation) {
+            const translations = getValues('translations') || [];
+            const currentLangCode = translations[index]?.languageCode;
+            if (currentLangCode !== contentLanguage) {
+                setValue(`translations.${index}.languageCode`, contentLanguage, { shouldDirty: true });
+            }
+        }
+    }, [isNewTranslation, index, contentLanguage, setValue, getValues]);
+
+    return <Controller key={`${props.name}-${contentLanguage}`} {...props} />;
 };
 
 export type TranslatableFormFieldWrapperProps<

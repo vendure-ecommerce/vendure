@@ -3,16 +3,15 @@ import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js'
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Input } from '@/vdb/components/ui/input.js';
-import {
-    CustomFieldsPageBlock,
+import {    CustomFieldsPageBlock,
     DetailFormGrid,
     Page,
     PageActionBar,
-    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
@@ -77,14 +76,14 @@ function ProfilePage() {
                 <Trans>Profile</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
+                <ActionBarItem itemId="save-button">
                     <Button
                         type="submit"
                         disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
                     >
                         <Trans>Update</Trans>
                     </Button>
-                </PageActionBarRight>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="main-form">

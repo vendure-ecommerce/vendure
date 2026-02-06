@@ -1,8 +1,7 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -100,22 +99,20 @@ function ProductListPage() {
                 },
             ]}
         >
-            <PageActionBarRight>
-                <PermissionGuard requires={['UpdateCatalog']}>
-                    <Button variant="outline" onClick={handleRebuildSearchIndex}>
-                        <ListRestart />
-                        <Trans>Rebuild search index</Trans>
-                    </Button>
-                </PermissionGuard>
-                <PermissionGuard requires={['CreateProduct', 'CreateCatalog']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            <Trans>New Product</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
-            </PageActionBarRight>
+            <ActionBarItem itemId="rebuild-index-button" requiresPermission={['UpdateCatalog']}>
+                <Button variant="outline" onClick={handleRebuildSearchIndex}>
+                    <ListRestart />
+                    <Trans>Rebuild search index</Trans>
+                </Button>
+            </ActionBarItem>
+            <ActionBarItem itemId="create-button" requiresPermission={['CreateProduct', 'CreateCatalog']}>
+                <Button asChild>
+                    <Link to="./new">
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        <Trans>New Product</Trans>
+                    </Link>
+                </Button>
+            </ActionBarItem>
         </ListPage>
     );
 }

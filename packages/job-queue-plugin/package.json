@@ -29,8 +29,8 @@
         "@google-cloud/pubsub": "^4.11.0",
         "@vendure/common": "3.5.3",
         "@vendure/core": "3.5.3",
-        "bullmq": "^5.66.4",
-        "ioredis": "5.8.2",
+        "bullmq": "^5.67.1",
+        "ioredis": "5.9.2",
         "rimraf": "^5.0.5",
         "typescript": "5.8.2"
     },

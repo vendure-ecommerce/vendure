@@ -1,7 +1,6 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -57,16 +56,14 @@ function CountryListPage() {
                 },
             ]}
         >
-            <PageActionBarRight>
-                <PermissionGuard requires={['CreateCountry']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon />
-                            <Trans>Add Country</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
-            </PageActionBarRight>
+            <ActionBarItem itemId="create-button" requiresPermission={['CreateCountry']}>
+                <Button asChild>
+                    <Link to="./new">
+                        <PlusIcon />
+                        <Trans>Add Country</Trans>
+                    </Link>
+                </Button>
+            </ActionBarItem>
         </ListPage>
     );
 }

@@ -1,7 +1,6 @@
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -14,14 +13,14 @@ import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
-import { Badge } from '@/vdb/components/ui/badge.js';
 import {
     calculateDragTargetPosition,
     calculateSiblingIndex,
     getItemParentId,
     isCircularReference,
 } from '@/vdb/components/data-table/data-table-utils.js';
+import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/order-table-cell-components.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
 import { collectionListDocument, moveCollectionDocument } from './collections.graphql.js';
 import {
     AssignCollectionsToChannelBulkAction,
@@ -32,12 +31,10 @@ import {
 } from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
 
-
 export const Route = createFileRoute('/_authenticated/_collections/collections')({
     component: CollectionListPage,
     loader: () => ({ breadcrumb: () => <Trans>Collections</Trans> }),
 });
-
 
 type Collection = ResultOf<typeof collectionListDocument>['collections']['items'][number];
 
@@ -245,7 +242,7 @@ function CollectionListPage() {
                 toast.success(t`Collection position updated`);
             } else {
                 queriesToInvalidate.push(
-                    queryClient.invalidateQueries({ queryKey: ['childCollections', targetParentId] })
+                    queryClient.invalidateQueries({ queryKey: ['childCollections', targetParentId] }),
                 );
                 await Promise.all(queriesToInvalidate);
                 toast.success(t`Collection moved to new parent`);
@@ -277,6 +274,8 @@ function CollectionListPage() {
             customizeColumns={{
                 name: {
                     meta: {
+                        // This column needs the following fields to always be available
+                        // in order to correctly render.
                         dependencies: ['children', 'breadcrumbs'],
                     },
                     cell: ({ row }) => {
@@ -329,7 +328,7 @@ function CollectionListPage() {
                                 collectionId={row.original.id}
                                 collectionName={row.original.name}
                             >
-                                <Trans>{row.original.productVariantCount} variants</Trans>
+                                <Trans>{row.original.productVariantCount as number} variants</Trans>
                             </CollectionContentsSheet>
                         );
                     },
@@ -357,6 +356,7 @@ function CollectionListPage() {
             }}
             defaultColumnOrder={[
                 'featuredAsset',
+                'children',
                 'name',
                 'slug',
                 'breadcrumbs',
@@ -442,17 +442,14 @@ function CollectionListPage() {
             onReorder={handleReorder}
             disableDragAndDrop={!!searchTerm}
         >
-            <PageActionBarRight>
-                <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            <Trans>New Collection</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
-            </PageActionBarRight>
+            <ActionBarItem itemId="create-button" requiresPermission={['CreateCollection', 'CreateCatalog']}>
+                <Button asChild>
+                    <Link to="./new">
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        <Trans>New Collection</Trans>
+                    </Link>
+                </Button>
+            </ActionBarItem>
         </ListPage>
     );
 }
-

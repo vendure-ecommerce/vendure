@@ -251,6 +251,7 @@ export * from './framework/form-engine/utils.js';
 export * from './framework/form-engine/value-transformers.js';
 export * from './framework/history-entry/history-entry-extensions.js';
 export * from './framework/history-entry/history-entry.js';
+export * from './framework/layout-engine/action-bar-item-wrapper.js';
 export * from './framework/layout-engine/dev-mode-button.js';
 export * from './framework/layout-engine/layout-extensions.js';
 export * from './framework/layout-engine/location-wrapper.js';

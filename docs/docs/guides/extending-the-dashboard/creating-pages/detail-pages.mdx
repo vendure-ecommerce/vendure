@@ -149,8 +149,6 @@ import {
     Page,
     PageTitle,
     PageActionBar,
-    PageActionBarRight,
-    PermissionGuard,
     Button,
     PageLayout,
     PageBlock,
@@ -160,6 +158,7 @@ import {
     Input,
     RichTextInput,
     CustomFieldsPageBlock,
+    ActionBarItem,
 } from '@vendure/dashboard';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -248,16 +247,14 @@ function ArticleDetailPage({ route }: { route: AnyRoute }) {
         <Page pageId="article-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>{creatingNewEntity ? 'New article' : (entity?.title ?? '')}</PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                        >
-                            Update
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
+                <ActionBarItem requires={['UpdateProduct', 'UpdateCatalog']} itemId="save-button">
+                    <Button
+                        type="submit"
+                        disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                    >
+                        Update
+                    </Button>
+                </ActionBarItem>
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="side" blockId="publish-status">
