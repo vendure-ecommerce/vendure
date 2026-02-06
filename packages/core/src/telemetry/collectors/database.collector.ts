@@ -45,7 +45,7 @@ export class DatabaseCollector {
         if (dbType === 'postgres' || dbType === 'mysql' || dbType === 'mariadb') {
             return dbType;
         }
-        return 'postgres';
+        return 'other';
     }
 
     private async collectEntityMetrics(): Promise<TelemetryEntityMetrics> {

@@ -73,12 +73,12 @@ describe('DatabaseCollector', () => {
             expect(result.databaseType).toBe('mariadb');
         });
 
-        it('defaults to "postgres" for unsupported database types', async () => {
+        it('defaults to "other" for unsupported database types', async () => {
             mockConfigService.dbConnectionOptions = { type: 'oracle', entities: [] } as any;
 
             const result = await collector.collect();
 
-            expect(result.databaseType).toBe('postgres');
+            expect(result.databaseType).toBe('other');
         });
     });
 

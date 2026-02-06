@@ -5,7 +5,6 @@ import { ConfigService } from '../../config/config.service';
 import { InMemoryJobQueueStrategy } from '../../job-queue/in-memory-job-queue-strategy';
 import { JobQueueService } from '../../job-queue/job-queue.service';
 import { ProcessContext } from '../../process-context/process-context';
-import { isCI } from '../helpers/ci-detector.helper';
 import { TelemetryDeployment } from '../telemetry.types';
 
 /**
@@ -54,7 +53,6 @@ export class DeploymentCollector {
             cloudProvider: this.detectCloudProvider(),
             workerMode: this.getWorkerMode(),
             serverless: this.isServerless(),
-            ci: isCI(),
         };
     }
 

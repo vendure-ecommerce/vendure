@@ -81,7 +81,10 @@ export class PluginCollector {
      */
     private findNpmPackage(plugin: Type<any> | DynamicModule): string | undefined {
         const pluginClass = isDynamicModule(plugin) ? plugin.module : plugin;
-        const pluginName = pluginClass?.name ?? 'unknown';
+        if (!pluginClass) {
+            return undefined;
+        }
+        const pluginName = pluginClass.name ?? 'unknown';
 
         // First, check against known Vendure plugins (most reliable)
         const knownPackage = KNOWN_VENDURE_PLUGINS[pluginName];

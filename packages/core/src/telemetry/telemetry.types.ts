@@ -10,16 +10,15 @@ export type RangeBucket = '0' | '1-100' | '101-1k' | '1k-10k' | '10k-100k' | '10
  * Derived from TypeORM's DataSourceOptions for type safety.
  * Note: 'better-sqlite3' is normalized to 'sqlite' in the collector.
  */
-export type SupportedDatabaseType = Extract<
-    DataSourceOptions['type'],
-    'postgres' | 'mysql' | 'mariadb' | 'sqlite'
->;
+export type SupportedDatabaseType =
+    | Extract<DataSourceOptions['type'], 'postgres' | 'mysql' | 'mariadb' | 'sqlite'>
+    | 'other';
 
 /**
  * Information about plugins used in the Vendure installation
  */
 export interface TelemetryPluginInfo {
-    /** Names of npm packages (official Vendure plugins) */
+    /** Names of detected npm packages (official Vendure and third-party plugins) */
     npm: string[];
     /** Count of custom plugins (names are NOT collected for privacy) */
     customCount: number;
@@ -44,7 +43,6 @@ export interface TelemetryDeployment {
     cloudProvider?: string;
     workerMode?: 'integrated' | 'separate';
     serverless?: boolean;
-    ci?: boolean;
 }
 
 /**

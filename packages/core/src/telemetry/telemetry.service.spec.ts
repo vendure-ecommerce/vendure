@@ -102,7 +102,6 @@ describe('TelemetryService', () => {
                 containerized: false,
                 workerMode: 'integrated',
                 serverless: false,
-                ci: false,
             }),
         };
 

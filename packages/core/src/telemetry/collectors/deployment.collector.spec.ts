@@ -8,17 +8,12 @@ import { ProcessContext } from '../../process-context/process-context';
 import { CLOUD_PROVIDERS, DeploymentCollector, SERVERLESS_ENV_VARS } from './deployment.collector';
 
 vi.mock('fs');
-vi.mock('../helpers/ci-detector.helper', () => ({
-    isCI: vi.fn(),
-}));
-
 describe('DeploymentCollector', () => {
     let collector: DeploymentCollector;
     let mockProcessContext: Partial<ProcessContext>;
     let mockConfigService: Partial<ConfigService>;
     let mockJobQueueService: Partial<JobQueueService>;
     let mockFs: typeof import('fs');
-    let mockIsCI: ReturnType<typeof vi.fn>;
 
     // Collect all env vars that need to be cleaned (from source of truth)
     const allEnvVarsToClean = [
@@ -56,9 +51,6 @@ describe('DeploymentCollector', () => {
         };
 
         mockFs = await import('fs');
-        const ciModule = await import('../helpers/ci-detector.helper');
-        mockIsCI = vi.mocked(ciModule.isCI);
-        mockIsCI.mockReturnValue(false);
 
         collector = new DeploymentCollector(
             mockProcessContext as ProcessContext,
@@ -315,27 +307,6 @@ describe('DeploymentCollector', () => {
             const result = collector.collect();
 
             expect(result.serverless).toBe(false);
-        });
-    });
-
-    describe('CI detection delegation', () => {
-        it('delegates CI detection to isCI helper', () => {
-            vi.mocked(mockFs.existsSync).mockReturnValue(false);
-            mockIsCI.mockReturnValue(true);
-
-            const result = collector.collect();
-
-            expect(result.ci).toBe(true);
-            expect(mockIsCI).toHaveBeenCalled();
-        });
-
-        it('returns false when isCI returns false', () => {
-            vi.mocked(mockFs.existsSync).mockReturnValue(false);
-            mockIsCI.mockReturnValue(false);
-
-            const result = collector.collect();
-
-            expect(result.ci).toBe(false);
         });
     });
 });

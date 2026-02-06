@@ -112,9 +112,7 @@ export class InstallationIdCollector implements OnModuleInit {
         try {
             const idPath = this.getInstallationIdPath();
             const vendureDir = path.dirname(idPath);
-            if (!fs.existsSync(vendureDir)) {
-                fs.mkdirSync(vendureDir, { recursive: true });
-            }
+            fs.mkdirSync(vendureDir, { recursive: true });
             fs.writeFileSync(idPath, id, 'utf-8');
         } catch {
             // Best-effort: silently ignore filesystem write failures

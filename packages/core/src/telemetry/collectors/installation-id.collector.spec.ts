@@ -1,5 +1,5 @@
 import path from 'path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { RequestContext } from '../../api/common/request-context';
 
@@ -44,10 +44,6 @@ describe('InstallationIdCollector', () => {
 
         // Default mock for randomUUID
         vi.mocked(mockCrypto.randomUUID).mockReturnValue(NEW_UUID);
-    });
-
-    afterEach(() => {
-        vi.resetAllMocks();
     });
 
     describe('onModuleInit()', () => {

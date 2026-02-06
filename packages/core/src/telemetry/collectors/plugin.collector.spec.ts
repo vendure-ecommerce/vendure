@@ -8,7 +8,6 @@ import { PluginCollector } from './plugin.collector';
 describe('PluginCollector', () => {
     let collector: PluginCollector;
     let mockConfigService: Partial<ConfigService>;
-    const originalRequireCache = { ...require.cache };
     const addedCacheKeys: string[] = [];
 
     beforeEach(() => {
