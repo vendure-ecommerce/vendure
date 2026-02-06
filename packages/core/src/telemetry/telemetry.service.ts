@@ -56,7 +56,7 @@ export class TelemetryService implements OnApplicationBootstrap {
         }
 
         // Skip if disabled or CI environment
-        if (this.isTelemetryDisabled()) {
+        if (isTelemetryDisabled()) {
             return;
         }
 
@@ -68,13 +68,6 @@ export class TelemetryService implements OnApplicationBootstrap {
                 // Silently ignore all errors
             });
         }, 5000);
-    }
-
-    /**
-     * Checks if telemetry is disabled via environment variable or CI detection.
-     */
-    private isTelemetryDisabled(): boolean {
-        return isTelemetryDisabled();
     }
 
     /**
