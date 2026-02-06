@@ -94,9 +94,10 @@ export class ConfigCollector {
  * then falls back to `constructor.name`. Returns 'unknown' if the name
  * appears to be minified (single char or empty).
  */
-function getStrategyName(strategy: { name?: string; constructor?: { name?: string } }): string {
-    if (typeof strategy.name === 'string' && strategy.name.length > 1) {
-        return strategy.name;
+function getStrategyName(strategy: object): string {
+    const name = (strategy as any).name;
+    if (typeof name === 'string' && name.length > 1) {
+        return name;
     }
     const ctorName = strategy.constructor?.name;
     if (ctorName && ctorName.length > 1) {

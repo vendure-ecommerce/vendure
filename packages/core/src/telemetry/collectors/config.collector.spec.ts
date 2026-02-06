@@ -7,7 +7,7 @@ import { ConfigCollector } from './config.collector';
 
 describe('ConfigCollector', () => {
     let collector: ConfigCollector;
-    let mockConfigService: Partial<ConfigService>;
+    let mockConfigService: Record<string, any>;
 
     beforeEach(() => {
         mockConfigService = {

@@ -7,7 +7,7 @@ import { PluginCollector } from './plugin.collector';
 
 describe('PluginCollector', () => {
     let collector: PluginCollector;
-    let mockConfigService: Partial<ConfigService>;
+    let mockConfigService: Record<string, any>;
     const addedCacheKeys: string[] = [];
 
     beforeEach(() => {

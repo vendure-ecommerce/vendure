@@ -17,7 +17,7 @@ vi.mock('./helpers/ci-detector.helper', () => ({
 
 describe('TelemetryService', () => {
     let service: TelemetryService;
-    let mockProcessContext: Partial<ProcessContext>;
+    let mockProcessContext: Record<string, any>;
     let mockInstallationIdCollector: Partial<InstallationIdCollector>;
     let mockSystemInfoCollector: Partial<SystemInfoCollector>;
     let mockDatabaseCollector: Partial<DatabaseCollector>;
@@ -50,7 +50,7 @@ describe('TelemetryService', () => {
         vi.stubGlobal('fetch', mockFetch);
 
         // Setup CI mock
-        const ciModule = await import('./helpers/ci-detector.helper');
+        const ciModule = await import('./helpers/ci-detector.helper.js');
         mockIsCI = vi.mocked(ciModule.isCI);
         mockIsCI.mockReturnValue(false);
 

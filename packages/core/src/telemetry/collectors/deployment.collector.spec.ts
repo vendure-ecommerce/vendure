@@ -10,9 +10,9 @@ import { CLOUD_PROVIDERS, DeploymentCollector, SERVERLESS_ENV_VARS } from './dep
 vi.mock('fs');
 describe('DeploymentCollector', () => {
     let collector: DeploymentCollector;
-    let mockProcessContext: Partial<ProcessContext>;
-    let mockConfigService: Partial<ConfigService>;
-    let mockJobQueueService: Partial<JobQueueService>;
+    let mockProcessContext: Record<string, any>;
+    let mockConfigService: Record<string, any>;
+    let mockJobQueueService: Record<string, any>;
     let mockFs: typeof import('fs');
 
     // Collect all env vars that need to be cleaned (from source of truth)

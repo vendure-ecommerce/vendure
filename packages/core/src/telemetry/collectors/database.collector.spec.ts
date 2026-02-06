@@ -8,7 +8,7 @@ import { DatabaseCollector } from './database.collector';
 
 describe('DatabaseCollector', () => {
     let collector: DatabaseCollector;
-    let mockConfigService: Partial<ConfigService>;
+    let mockConfigService: Record<string, any>;
     let mockConnection: Partial<TransactionalConnection>;
     let mockRepository: { count: ReturnType<typeof vi.fn> };
 
