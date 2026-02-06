@@ -86,9 +86,7 @@ import { config } from './vendure-config';
 async function importCustomerData() {
     const { app } = await bootstrapWorker(config);
     
-    // highlight-start
-    const customerService = app.get(CustomerService);
-    // highlight-end
+    const customerService = app.get(CustomerService); // [!code highlight]
 }
 ```
 
@@ -106,11 +104,9 @@ async function getProductCount() {
     const { app } = await bootstrapWorker(config);
     const productService = app.get(ProductService);
     
-    // highlight-start
-    const ctx = await app.get(RequestContextService).create({
-        apiType: 'admin',
-    });
-    // highlight-end
+    const ctx = await app.get(RequestContextService).create({ // [!code highlight]
+        apiType: 'admin', // [!code highlight]
+    }); // [!code highlight]
     
     const { totalItems } = await productService.findAll(ctx, {take: 0});
 }

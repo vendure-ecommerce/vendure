@@ -49,18 +49,16 @@ const config: CodegenConfig = {
     'src/gql/': {
       preset: 'client',
       plugins: [],
-      // highlight-start
-      config: {
-        scalars: {
-            // This tells codegen that the `Money` scalar is a number
-            Money: 'number',
-        },
-        namingConvention: {
-            // This ensures generated enums do not conflict with the built-in types.
-            enumValues: 'keep',
-        },
-      }
-      // highlight-end
+      config: { // [!code highlight]
+        scalars: { // [!code highlight]
+            // This tells codegen that the `Money` scalar is a number // [!code highlight]
+            Money: 'number', // [!code highlight]
+        }, // [!code highlight]
+        namingConvention: { // [!code highlight]
+            // This ensures generated enums do not conflict with the built-in types. // [!code highlight]
+            enumValues: 'keep', // [!code highlight]
+        }, // [!code highlight]
+      } // [!code highlight]
     },
   }
 };
@@ -92,14 +90,11 @@ replace it with the `graphql()` function.
 ```ts title="src/App.tsx"
 import { useQuery } from '@tanstack/react-query';
 import request from 'graphql-request'
-// highlight-next-line
-import { graphql } from './gql';
+import { graphql } from './gql'; // [!code highlight]
 
-// highlight-start
-// GET_PRODUCTS will be a `TypedDocumentNode` type,
-// which encodes the types of the query variables and the response data.
-const GET_PRODUCTS = graphql(`
-// highlight-end
+// GET_PRODUCTS will be a `TypedDocumentNode` type, // [!code highlight]
+// which encodes the types of the query variables and the response data. // [!code highlight]
+const GET_PRODUCTS = graphql(` // [!code highlight]
     query GetProducts($options: ProductListOptions) {
         products(options: $options) {
             items {
@@ -115,21 +110,17 @@ const GET_PRODUCTS = graphql(`
 `);
 
 export default function App() {
-  // highlight-start
-  // `data` will now be correctly typed
-  const { isLoading, data } = useQuery({
-  // highlight-end
+  // `data` will now be correctly typed // [!code highlight]
+  const { isLoading, data } = useQuery({ // [!code highlight]
     queryKey: ['products'],
     queryFn: async () =>
       request(
         'http://localhost:3000/shop-api',
-        // highlight-start
-        GET_PRODUCTS,
-        {
-        // The variables will also be correctly typed
-        options: { take: 3 },
-        }
-        // highlight-end
+        GET_PRODUCTS, // [!code highlight]
+        { // [!code highlight]
+        // The variables will also be correctly typed // [!code highlight]
+        options: { take: 3 }, // [!code highlight]
+        } // [!code highlight]
       ),
   });
 

@@ -176,16 +176,12 @@ You can do this by adding the following script to your `package.json`:
 ```json
 {
     "scripts": {
-        // highlight-start
-        "dev:server": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-server ts-node --require ./src/preload.ts ./src/index.ts",
-        "dev:worker": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-worker ts-node --require ./src/preload.ts ./src/index-worker.ts",
-        // highlight-end
+        "dev:server": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-server ts-node --require ./src/preload.ts ./src/index.ts", // [!code highlight]
+        "dev:worker": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-worker ts-node --require ./src/preload.ts ./src/index-worker.ts", // [!code highlight]
         "dev": "concurrently npm:dev:*",
         "build": "tsc",
-        // highlight-start
-        "start:server": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-server node --require ./dist/preload.js ./dist/index.js",
-        "start:worker": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-worker node --require ./dist/preload.js ./dist/index-worker.js",
-        // highlight-end
+        "start:server": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-server node --require ./dist/preload.js ./dist/index.js", // [!code highlight]
+        "start:worker": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-worker node --require ./dist/preload.js ./dist/index-worker.js", // [!code highlight]
         "start": "concurrently npm:start:*"
     },
 }
@@ -237,11 +233,9 @@ add the [Instrument decorator](/reference/typescript-api/telemetry/instrument) t
 
 ```ts
 import { Injectable } from '@nestjs/common';
-// highlight-next-line
-import { Instrument } from '@vendure/core';
+import { Instrument } from '@vendure/core'; // [!code highlight]
 
-// highlight-next-line
-@Instrument()
+@Instrument() // [!code highlight]
 @Injectable()
 export class MyService {
 

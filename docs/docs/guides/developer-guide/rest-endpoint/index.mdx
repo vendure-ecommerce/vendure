@@ -65,8 +65,7 @@ export const config: VendureConfig = {
     // ...
     plugins: [
         // ...
-        // highlight-next-line
-        RestPlugin,
+        RestPlugin, // [!code highlight]
     ],
 };
 ```
@@ -83,8 +82,7 @@ import { Allow, Permission, Ctx, ProductService, RequestContext } from '@vendure
 export class ProductsController {
     constructor(private productService: ProductService) {}
 
-    // highlight-next-line
-    @Allow(Permission.ReadProduct)
+    @Allow(Permission.ReadProduct) // [!code highlight]
     @Get()
     findAll(@Ctx() ctx: RequestContext) {
         return this.productService.findAll(ctx);

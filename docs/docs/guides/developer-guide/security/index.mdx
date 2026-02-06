@@ -89,14 +89,12 @@ export const config: VendureConfig = {
   plugins: [
     AssetServerPlugin.init({
       // ...
-      // highlight-start  
-      imageTransformStrategy: new PresetOnlyStrategy({
-        defaultPreset: 'large',
-        permittedQuality: [0, 50, 75, 85, 95],
-        permittedFormats: ['jpg', 'webp', 'avif'],
-        allowFocalPoint: false,
-      }),
-      // highlight-end
+      imageTransformStrategy: new PresetOnlyStrategy({ // [!code highlight]
+        defaultPreset: 'large', // [!code highlight]
+        permittedQuality: [0, 50, 75, 85, 95], // [!code highlight]
+        permittedFormats: ['jpg', 'webp', 'avif'], // [!code highlight]
+        allowFocalPoint: false, // [!code highlight]
+      }), // [!code highlight]
     }),
   ]
 };

@@ -30,8 +30,7 @@ import { sync } from '../constants';
 @Resolver()
 export class InventorySyncResolver {
 
-    // highlight-next-line
-    @Allow(sync.Permission)
+    @Allow(sync.Permission) // [!code highlight]
     @Mutation()
     syncInventory(/* ... */) {
         // ...
@@ -62,8 +61,7 @@ import { sync } from './constants';
         resolvers: [InventorySyncResolver]
     },
     configuration: config => {
-        // highlight-next-line
-        config.authOptions.customPermissions.push(sync);
+        config.authOptions.customPermissions.push(sync); // [!code highlight]
         return config;
     },
 })
@@ -94,31 +92,27 @@ import { productReviewPermission } from '../constants';
 @Resolver()
 export class ProductReviewResolver {
 
-    // highlight-next-line
-    @Allow(productReviewPermission.Read)
+    @Allow(productReviewPermission.Read) // [!code highlight]
     @Query()
     productReviews(/* ... */) {
         // ...
     }
     
-    // highlight-next-line
-    @Allow(productReviewPermission.Create)
+    @Allow(productReviewPermission.Create) // [!code highlight]
     @Mutation()
     @Transaction()
     createProductReview(/* ... */) {
         // ...
     }
     
-    // highlight-next-line
-    @Allow(productReviewPermission.Update)
+    @Allow(productReviewPermission.Update) // [!code highlight]
     @Mutation()
     @Transaction()
     updateProductReview(/* ... */) {
         // ...
     }
     
-    // highlight-next-line
-    @Allow(productReviewPermission.Delete)
+    @Allow(productReviewPermission.Delete) // [!code highlight]
     @Mutation()
     @Transaction()
     deleteProductReview(/* ... */) {
@@ -144,8 +138,7 @@ import { productReviewPermission } from './constants';
         resolvers: [ProductReviewResolver]
     },
     configuration: config => {
-        // highlight-next-line
-        config.authOptions.customPermissions.push(productReviewPermission);
+        config.authOptions.customPermissions.push(productReviewPermission); // [!code highlight]
         return config;
     },
 })
@@ -172,12 +165,10 @@ import { productReviewPermission } from './constants';
         config.customFields.Product.push({
             name: 'rating',
             type: 'int',
-            // highlight-start
-            requiresPermission: [
-                productReviewPermission.Read, 
-                productReviewPermission.Update,
-            ],
-            // highlight-end
+            requiresPermission: [ // [!code highlight]
+                productReviewPermission.Read, // [!code highlight]
+                productReviewPermission.Update, // [!code highlight]
+            ], // [!code highlight]
         });
         return config;
     },

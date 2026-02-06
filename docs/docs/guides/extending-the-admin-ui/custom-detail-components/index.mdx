@@ -153,15 +153,13 @@ export class ProductInfoComponent implements CustomDetailComponent, OnInit {
     entity$: Observable<any>
     detailForm: FormGroup;
     
-    // highlight-start
-    updateDescription() {
-        const descriptionControl = this.detailForm.get('description');
-        if (descriptionControl) {
-            descriptionControl.setValue('New description');
-            descriptionControl.markAsDirty();
-        }        
-    }
-    // highlight-end
+    updateDescription() { // [!code highlight]
+        const descriptionControl = this.detailForm.get('description'); // [!code highlight]
+        if (descriptionControl) { // [!code highlight]
+            descriptionControl.setValue('New description'); // [!code highlight]
+            descriptionControl.markAsDirty(); // [!code highlight]
+        } // [!code highlight]
+    } // [!code highlight]
 }
 ```
 
@@ -175,15 +173,13 @@ import { Card, useDetailComponentData } from '@vendure/admin-ui/react';
 export function ProductInfo() {
     const { detailForm } = useDetailComponentData();
 
-    // highlight-start
-    const updateDescription = () => {
-        const descriptionControl = detailForm.get('description');
-        if (descriptionControl) {
-            descriptionControl.setValue('New description');
-            descriptionControl.markAsDirty();
-        }
-    };
-    // highlight-end
+    const updateDescription = () => { // [!code highlight]
+        const descriptionControl = detailForm.get('description'); // [!code highlight]
+        if (descriptionControl) { // [!code highlight]
+            descriptionControl.setValue('New description'); // [!code highlight]
+            descriptionControl.markAsDirty(); // [!code highlight]
+        } // [!code highlight]
+    }; // [!code highlight]
 
     return (
         <button className="button secondary" onClick={updateDescription}>Update description</button>

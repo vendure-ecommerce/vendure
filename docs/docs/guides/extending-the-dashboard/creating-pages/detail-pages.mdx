@@ -119,14 +119,12 @@ Now we can register this route in our `index.tsx` file:
 import { defineDashboardExtension } from '@vendure/dashboard';
 
 import { articleList } from './article-list';
-// highlight-next-line
-import { articleDetail } from './article-detail';
+import { articleDetail } from './article-detail'; // [!code highlight]
 
 defineDashboardExtension({
     routes: [
         articleList,
-        // highlight-next-line
-        articleDetail,
+        articleDetail, // [!code highlight]
     ],
 });
 ```

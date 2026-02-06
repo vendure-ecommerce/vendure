@@ -25,8 +25,7 @@ import { VendureConfig, AddressBasedTaxZoneStrategy } from '@vendure/core';
 export const config: VendureConfig = {
   // other options...
   taxOptions: {
-    // highlight-next-line
-    taxZoneStrategy: new AddressBasedTaxZoneStrategy(),
+    taxZoneStrategy: new AddressBasedTaxZoneStrategy(), // [!code highlight]
   },
 };
 ```

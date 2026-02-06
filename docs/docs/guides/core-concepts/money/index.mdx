@@ -20,10 +20,8 @@ For example, here's the response from a query for a product's variant prices:
           "id": "74",
           "name": "Bonsai Tree",
           "currencyCode": "USD",
-          // highlight-start
-          "price": 1999,
-          "priceWithTax": 2399,
-          // highlight-end
+          "price": 1999, // [!code highlight]
+          "priceWithTax": 2399, // [!code highlight]
         }
       ]
     }
@@ -113,12 +111,10 @@ Here's how the `Money` scalar is used in the `ShippingLine` type:
 type ShippingLine {
     id: ID!
     shippingMethod: ShippingMethod!
-    // highlight-start
-    price: Money!
-    priceWithTax: Money!
-    discountedPrice: Money!
-    discountedPriceWithTax: Money!
-    // highlight-end
+    price: Money! # [!code highlight]
+    priceWithTax: Money! # [!code highlight]
+    discountedPrice: Money! # [!code highlight]
+    discountedPriceWithTax: Money! # [!code highlight]
     discounts: [Discount!]!
 }
 ```
@@ -154,10 +150,8 @@ class Quote extends VendureEntity {
     @Column()
     text: string;
 
-    // highlight-start
-    @Money()
-    value: number;
-    // highlight-end
+    @Money() // [!code highlight]
+    value: number; // [!code highlight]
 
     // Whenever you store a monetary value, it's a good idea to also
     // explicitly store the currency code too. This makes it possible
@@ -210,8 +204,7 @@ For example, you want to be able to sell a product for `$1.234` per unit. To do 
 import { DefaultMoneyStrategy, VendureConfig } from '@vendure/core';
 
 export class ThreeDecimalPlacesMoneyStrategy extends DefaultMoneyStrategy {
-    // highlight-next-line
-    readonly precision = 3;
+    readonly precision = 3; // [!code highlight]
 }
 
 export const config: VendureConfig = {
@@ -227,20 +220,16 @@ export const config: VendureConfig = {
 
 ```ts title="src/utils/format-currency.ts"
 export function formatCurrency(value: number, currencyCode: string, locale?: string) {
-    // highlight-next-line
-    const majorUnits = value / 1000;
+    const majorUnits = value / 1000; // [!code highlight]
     try {
         return new Intl.NumberFormat(locale, {
             style: 'currency',
             currency: currencyCode,
-            // highlight-start
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3,
-            // highlight-end
+            minimumFractionDigits: 3, // [!code highlight]
+            maximumFractionDigits: 3, // [!code highlight]
         }).format(majorUnits);
     } catch (e: any) {
-         // highlight-next-line
-        return majorUnits.toFixed(3);
+        return majorUnits.toFixed(3); // [!code highlight]
     }
 }
 ```

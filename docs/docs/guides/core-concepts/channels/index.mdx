@@ -85,11 +85,9 @@ import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '@vendur
 
 export const config: VendureConfig = {
     // ...
-    // highlight-start
-    productVariantPriceUpdateStrategy: new DefaultProductVariantPriceUpdateStrategy({
-        syncPricesAcrossChannels: true,
-    }),
-    // highlight-end
+    productVariantPriceUpdateStrategy: new DefaultProductVariantPriceUpdateStrategy({ // [!code highlight]
+        syncPricesAcrossChannels: true, // [!code highlight]
+    }), // [!code highlight]
     // ...
 };
 ```
@@ -138,11 +136,9 @@ Then we can make a GraphQL API call to the UK Channel by setting the `'vendure-t
 ```ts title="GraphQL API call to UK Channel"
 const { loading, error, data } = useQuery(GET_PRODUCT_LIST, {
     context: {
-        // highlight-start
-        headers: {
-            'vendure-token': 'uk-channel',
-        },
-        // highlight-end
+        headers: { // [!code highlight]
+            'vendure-token': 'uk-channel', // [!code highlight]
+        }, // [!code highlight]
     },
 });
 ```

@@ -79,26 +79,24 @@ export const config: VendureConfig = {
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: process.env.ASSET_UPLOAD_DIR || path.join(__dirname, '../static/assets'),
-            // highlight-start
-            // If the MINIO_ENDPOINT environment variable is set, we'll use
-            // Minio as the asset storage provider. Otherwise, we'll use the
-            // default local provider.
-            storageStrategyFactory: process.env.MINIO_ENDPOINT ?  configureS3AssetStorage({
-                bucket: 'vendure-assets',
-                credentials: {
-                    accessKeyId: process.env.MINIO_ACCESS_KEY,
-                    secretAccessKey: process.env.MINIO_SECRET_KEY,
-                },
-                nativeS3Configuration: {
-                    endpoint: process.env.MINIO_ENDPOINT,
-                    forcePathStyle: true,
-                    signatureVersion: 'v4',
-                    // The `region` is required by the AWS SDK even when using MinIO,
-                    // so we just use a dummy value here.
-                    region: 'eu-west-1',
-                },
-            }) : undefined,
-            // highlight-end
+            // If the MINIO_ENDPOINT environment variable is set, we'll use // [!code highlight]
+            // Minio as the asset storage provider. Otherwise, we'll use the // [!code highlight]
+            // default local provider. // [!code highlight]
+            storageStrategyFactory: process.env.MINIO_ENDPOINT ?  configureS3AssetStorage({ // [!code highlight]
+                bucket: 'vendure-assets', // [!code highlight]
+                credentials: { // [!code highlight]
+                    accessKeyId: process.env.MINIO_ACCESS_KEY, // [!code highlight]
+                    secretAccessKey: process.env.MINIO_SECRET_KEY, // [!code highlight]
+                }, // [!code highlight]
+                nativeS3Configuration: { // [!code highlight]
+                    endpoint: process.env.MINIO_ENDPOINT, // [!code highlight]
+                    forcePathStyle: true, // [!code highlight]
+                    signatureVersion: 'v4', // [!code highlight]
+                    // The `region` is required by the AWS SDK even when using MinIO, // [!code highlight]
+                    // so we just use a dummy value here. // [!code highlight]
+                    region: 'eu-west-1', // [!code highlight]
+                }, // [!code highlight]
+            }) : undefined, // [!code highlight]
         }),
     ],
     // ...
@@ -170,16 +168,12 @@ DB_PASSWORD=${db.PASSWORD}
 DB_HOST=${db.HOSTNAME}
 DB_PORT=${db.PORT}
 DB_CA_CERT=${db.CA_CERT}
-// highlight-next-line
-COOKIE_SECRET=<add some random characters>
+COOKIE_SECRET=<add some random characters> # [!code highlight]
 SUPERADMIN_USERNAME=superadmin
-// highlight-next-line
-SUPERADMIN_PASSWORD=<create some strong password>
-// highlight-start
-MINIO_ACCESS_KEY=<use the key generated earlier>
-MINIO_SECRET_KEY=<use the secret generated earlier>
-MINIO_ENDPOINT=<use the endpoint of your spaces bucket>
-// highlight-end
+SUPERADMIN_PASSWORD=<create some strong password> # [!code highlight]
+MINIO_ACCESS_KEY=<use the key generated earlier> # [!code highlight]
+MINIO_SECRET_KEY=<use the secret generated earlier> # [!code highlight]
+MINIO_ENDPOINT=<use the endpoint of your spaces bucket> # [!code highlight]
 ```
 
 :::note

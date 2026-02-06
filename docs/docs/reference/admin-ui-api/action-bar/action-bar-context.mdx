@@ -59,15 +59,13 @@ addActionBarDropdownMenuItem({
     label: 'Print Invoice',
     icon: 'printer',
     buttonState: context => {
-        // highlight-start
-        return context.entity$.pipe(
-            map((order) => {
-                return order?.state === 'PaymentSettled'
-                    ? { disabled: false, visible: true }
-                    : { disabled: true, visible: true };
-            }),
-        );
-        // highlight-end
+        return context.entity$.pipe( // [!code highlight]
+            map((order) => { // [!code highlight]
+                return order?.state === 'PaymentSettled' // [!code highlight]
+                    ? { disabled: false, visible: true } // [!code highlight]
+                    : { disabled: true, visible: true }; // [!code highlight]
+            }), // [!code highlight]
+        ); // [!code highlight]
     },
     requiresPermission: ['UpdateOrder'],
 }),

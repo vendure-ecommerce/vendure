@@ -281,9 +281,7 @@ import {
 
 @Injectable()
 export class PublicChannelService {
-// highlight-start
-  private publicChannel: SelfRefreshingCache<Channel, [RequestContext]>;
-// highlight-end
+  private publicChannel: SelfRefreshingCache<Channel, [RequestContext]>; // [!code highlight]
   private readonly logCtx = 'PublicChannelService';
 
   constructor(
@@ -291,20 +289,16 @@ export class PublicChannelService {
     private eventBus: EventBus,
   ) {
     this.eventBus.ofType(InitializerEvent).subscribe(async () => {
-      // highlight-start
-      this.publicChannel = await createSelfRefreshingCache({
-        name: 'PublicChannelService.publicChannel',
-        ttl: 1000 * 60 * 5, // 5min
-        refresh: { fn: ctx => this.findPublicChannel(ctx), defaultArgs: [RequestContext.empty()] },
-      });
-      // highlight-end
+      this.publicChannel = await createSelfRefreshingCache({ // [!code highlight]
+        name: 'PublicChannelService.publicChannel', // [!code highlight]
+        ttl: 1000 * 60 * 5, // 5min // [!code highlight]
+        refresh: { fn: ctx => this.findPublicChannel(ctx), defaultArgs: [RequestContext.empty()] }, // [!code highlight]
+      }); // [!code highlight]
     });
   }
 
   async getPublicChannel(): Promise<Channel> {
-    // highlight-start
-    const publicChannel = await this.publicChannel.value();
-    // highlight-end
+    const publicChannel = await this.publicChannel.value(); // [!code highlight]
     if (!publicChannel) {
       throw new InternalServerError(`error.public-channel-not-found`);
     }

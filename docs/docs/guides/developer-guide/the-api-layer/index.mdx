@@ -258,8 +258,7 @@ to resolve the fields of a GraphQL query or mutation.
 ```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
 import { Resolver } from '@nestjs/graphql';
 
-// highlight-next-line
-@Resolver()
+@Resolver() // [!code highlight]
 export class WishlistResolver {
     // ...
 }
@@ -277,8 +276,7 @@ import { Query, Resolver } from '@nestjs/graphql';
 @Resolver()
 export class WishlistResolver {
 
-    // highlight-next-line
-    @Query()
+    @Query() // [!code highlight]
     wishlist() {
         // ...
     }
@@ -297,8 +295,7 @@ import { Mutation, Resolver } from '@nestjs/graphql';
 @Resolver()
 export class WishlistResolver {
 
-    // highlight-next-line
-    @Mutation()
+    @Mutation() // [!code highlight]
     addItemToWishlist() {
         // ...
     }
@@ -319,8 +316,7 @@ import { Allow, Permission } from '@vendure/core';
 export class WishlistResolver {
 
     @Mutation()
-    // highlight-next-line
-    @Allow(Permission.UpdateCustomer)
+    @Allow(Permission.UpdateCustomer) // [!code highlight]
     updateCustomerWishlist() {
         // ...
     }
@@ -339,8 +335,7 @@ import { Transaction } from '@vendure/core';
 @Resolver()
 export class WishlistResolver {
 
-    // highlight-next-line
-    @Transaction()
+    @Transaction() // [!code highlight]
     @Mutation()
     addItemToWishlist() {
         // if an error is thrown here, the
@@ -371,8 +366,7 @@ import { Ctx, RequestContext } from '@vendure/core';
 export class WishlistResolver {
 
     @Mutation()
-    // highlight-next-line
-    addItemToWishlist(@Ctx() ctx: RequestContext) {
+    addItemToWishlist(@Ctx() ctx: RequestContext) { // [!code highlight]
         // ...
     }
 }
@@ -406,8 +400,7 @@ export class WishlistResolver {
     @Mutation()
     addItemToWishlist(
         @Ctx() ctx: RequestContext,
-        // highlight-next-line
-        @Args() args: { variantId: ID }
+        @Args() args: { variantId: ID } // [!code highlight]
     ) {
         // ...
     }
@@ -424,8 +417,7 @@ used to resolve the fields of a type. For example, given the following schema de
 ```graphql
 type WishlistItem {
     id: ID!
-    // highlight-next-line
-    product: Product!
+    product: Product! # [!code highlight]
 }
 ```
 
@@ -438,16 +430,13 @@ import { Ctx, RequestContext } from '@vendure/core';
 
 import { WishlistItem } from '../entities/wishlist-item.entity';
 
-// highlight-next-line
-@Resolver('WishlistItem')
+@Resolver('WishlistItem') // [!code highlight]
 export class WishlistItemResolver {
 
-    // highlight-next-line
-    @ResolveField()
+    @ResolveField() // [!code highlight]
     product(
         @Ctx() ctx: RequestContext,
-        // highlight-next-line
-        @Parent() wishlistItem: WishlistItem
+        @Parent() wishlistItem: WishlistItem // [!code highlight]
     ) {
         // ...
     }
