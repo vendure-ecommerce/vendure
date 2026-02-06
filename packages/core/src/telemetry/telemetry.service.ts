@@ -12,7 +12,7 @@ import { SystemInfoCollector } from './collectors/system-info.collector';
 import { isTelemetryDisabled } from './helpers/is-telemetry-disabled.helper';
 import { TelemetryPayload } from './telemetry.types';
 
-const DEFAULT_TELEMETRY_ENDPOINT = 'https://telemetry.vendure.io/api/v1/collect';
+const TELEMETRY_ENDPOINT = 'https://telemetry.vendure.io/api/v1/collect';
 const TELEMETRY_TIMEOUT_MS = 5000;
 
 /**
@@ -120,7 +120,7 @@ export class TelemetryService implements OnApplicationBootstrap {
      * Uses a 5-second timeout to prevent blocking.
      */
     private async send(payload: TelemetryPayload): Promise<void> {
-        const endpoint = process.env.VENDURE_TELEMETRY_ENDPOINT || DEFAULT_TELEMETRY_ENDPOINT;
+        const endpoint = TELEMETRY_ENDPOINT;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), TELEMETRY_TIMEOUT_MS);
 

@@ -56,7 +56,6 @@ describe('TelemetryService', () => {
 
         // Clear telemetry env vars
         delete process.env.VENDURE_DISABLE_TELEMETRY;
-        delete process.env.VENDURE_TELEMETRY_ENDPOINT;
         delete process.env.NODE_ENV;
 
         mockProcessContext = {
@@ -64,7 +63,7 @@ describe('TelemetryService', () => {
         };
 
         mockInstallationIdCollector = {
-            collect: vi.fn().mockReturnValue('test-installation-id'),
+            collect: vi.fn().mockResolvedValue('test-installation-id'),
         };
 
         mockSystemInfoCollector = {
@@ -205,14 +204,12 @@ describe('TelemetryService', () => {
                 );
             });
 
-            it('uses custom endpoint via VENDURE_TELEMETRY_ENDPOINT', async () => {
-                process.env.VENDURE_TELEMETRY_ENDPOINT = 'https://custom.endpoint.com/telemetry';
-
+            it('always uses the hardcoded telemetry endpoint', async () => {
                 service.onApplicationBootstrap();
                 await flushPromises();
 
                 expect(mockFetch).toHaveBeenCalledWith(
-                    'https://custom.endpoint.com/telemetry',
+                    'https://telemetry.vendure.io/api/v1/collect',
                     expect.any(Object),
                 );
             });
