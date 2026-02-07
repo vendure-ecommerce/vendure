@@ -30,7 +30,7 @@ import {
 import { Observable } from 'rxjs';
 import { In, IsNull } from 'typeorm';
 
-import { ELASTIC_SEARCH_OPTIONS, VARIANT_INDEX_NAME, loggerCtx } from '../constants';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from '../constants';
 import { ElasticsearchOptions } from '../options';
 import {
     BulkOperation,
@@ -963,7 +963,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     private async getProductInStockValue(ctx: RequestContext, variants: ProductVariant[]): Promise<boolean> {
         return this.requestContextCache.get(
             ctx,
-            `elastic-index-product-in-stock-${variants.map(v => v.id).join(',')}`,
+            `elastic-index-product-in-stock-${ctx.channelId}-${variants.map(v => v.id).join(',')}`,
             async () => {
                 const stockLevels = await Promise.all(
                     variants.map(variant => this.productVariantService.getSaleableStockLevel(ctx, variant)),
