@@ -118,7 +118,7 @@ export function EditOrderTable({
                                 type="number"
                                 min={0}
                                 defaultValue={row.original.quantity}
-                                placeholder="—"
+                                placeholder="1"
                                 onKeyDown={e => {
                                     if (e.key !== 'Enter') return;
                                     const input = e.currentTarget.value.trim();
