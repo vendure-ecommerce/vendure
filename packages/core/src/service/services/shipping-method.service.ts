@@ -38,7 +38,7 @@ import { RoleService } from './role.service';
 
 /**
  * @description
- * Contains methods relating to {@link ShippingMethod} entities.
+ * Provides methods for managing {@link ShippingMethod} entities, including eligibility checking and calculator configuration.
  *
  * @docsCategory services
  */

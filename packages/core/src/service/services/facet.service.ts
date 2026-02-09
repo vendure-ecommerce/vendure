@@ -38,7 +38,7 @@ import { RoleService } from './role.service';
 
 /**
  * @description
- * Contains methods relating to {@link Facet} entities.
+ * Provides methods for managing {@link Facet} entities, including creation, translation and channel assignment.
  *
  * @docsCategory services
  */

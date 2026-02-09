@@ -40,7 +40,7 @@ import { RoleService } from './role.service';
 
 /**
  * @description
- * Contains methods relating to {@link PaymentMethod} entities.
+ * Provides methods for managing {@link PaymentMethod} entities, including eligibility checking and handler configuration.
  *
  * @docsCategory services
  */
