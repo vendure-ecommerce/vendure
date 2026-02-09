@@ -1,0 +1,88 @@
+name: Generate Docs
+
+on:
+    pull_request:
+        branches:
+            - master
+            - minor
+            - major
+        paths:
+            - 'packages/**/*.ts'
+            - 'packages/**/*.tsx'
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    generate:
+        name: Generate & commit docs
+        # Skip fork PRs — can't push back to fork branches
+        if: ${{ !github.event.pull_request.head.repo.fork }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+        steps:
+            - name: Generate CI Bot Token
+              id: app-token
+              uses: actions/create-github-app-token@v2
+              with:
+                  app-id: ${{ secrets.CI_BOT_APP_ID }}
+                  private-key: ${{ secrets.CI_BOT_APP_PRIVATE_KEY }}
+
+            - name: Checkout PR branch
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ steps.app-token.outputs.token }}
+                  ref: ${{ github.head_ref }}
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: 'npm'
+
+            - name: Install root dependencies
+              run: npm install
+
+            - name: Generate TypeScript docs
+              run: npm run docs:generate-typescript-docs
+
+            - name: Generate GraphQL docs
+              run: npm run docs:generate-graphql-docs
+
+            - name: Install docs dependencies
+              working-directory: docs
+              run: npm install
+
+            - name: Validate generated docs
+              working-directory: docs
+              run: npm run test:mdx
+
+            - name: Check for changes
+              id: diff
+              run: |
+                  git add docs/
+                  if git diff --cached --quiet; then
+                    echo "changed=false" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "changed=true" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Get CI Bot user info
+              if: steps.diff.outputs.changed == 'true'
+              id: get-user
+              env:
+                  GH_TOKEN: ${{ steps.app-token.outputs.token }}
+              run: |
+                  user_id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}%5Bbot%5D" --jq .id)
+                  echo "user-id=$user_id" >> "$GITHUB_OUTPUT"
+
+            - name: Commit and push generated docs
+              if: steps.diff.outputs.changed == 'true'
+              run: |
+                  git config user.name "${{ steps.app-token.outputs.app-slug }}[bot]"
+                  git config user.email "${{ steps.get-user.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"
+                  git commit -m "docs: Generate docs for source changes"
+                  git push
