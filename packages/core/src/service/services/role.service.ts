@@ -48,7 +48,7 @@ import { ChannelService } from './channel.service';
 
 /**
  * @description
- * Contains methods relating to {@link Role} entities.
+ * Provides methods for managing {@link Role} entities, including CRUD operations and permission handling.
  *
  * @docsCategory services
  */

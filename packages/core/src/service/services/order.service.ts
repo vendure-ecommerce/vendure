@@ -133,7 +133,7 @@ import { StockLevelService } from './stock-level.service';
 
 /**
  * @description
- * Contains methods relating to {@link Order} entities.
+ * Provides methods for managing {@link Order} entities, including creation, modification and fulfillment.
  *
  * @docsCategory services
  */

@@ -47,7 +47,7 @@ import { ProductVariantService } from './product-variant.service';
 
 /**
  * @description
- * Contains methods relating to {@link Product} entities.
+ * Provides methods for managing {@link Product} entities, including creation, updates and channel assignment.
  *
  * @docsCategory services
  */
