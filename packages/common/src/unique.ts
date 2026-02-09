@@ -1,8 +1,8 @@
 /**
  * @description
- * Returns an array with only unique values. Objects are compared by reference,
- * unless the `byKey` argument is supplied, in which case matching properties will
- * be used to check duplicates
+ * Returns a de-duplicated copy of the given array. Objects are compared by reference,
+ * unless the `byKey` argument is supplied, in which case the specified property will
+ * be used to determine uniqueness
  */
 export function unique<T>(arr: T[], byKey?: keyof T): T[] {
     if (byKey == null) {

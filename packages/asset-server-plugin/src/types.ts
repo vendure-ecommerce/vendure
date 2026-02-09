@@ -11,8 +11,8 @@ export type ImageTransformFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif';
 
 /**
  * @description
- * Specifies the way in which an asset preview image will be resized to fit in the
- * proscribed dimensions:
+ * Specifies the way in which an asset preview image will be resized to fit within the
+ * given dimensions:
  *
  * * crop: crops the image to cover both provided dimensions
  * * resize: Preserving aspect ratio, resizes the image to be as large as possible
