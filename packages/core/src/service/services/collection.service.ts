@@ -70,7 +70,7 @@ export type ApplyCollectionFiltersJobData = {
 
 /**
  * @description
- * Contains methods relating to {@link Collection} entities.
+ * Provides methods for managing {@link Collection} entities, including tree operations and filter-based product assignment.
  *
  * @docsCategory services
  */

@@ -73,7 +73,7 @@ import { UserService } from './user.service';
 
 /**
  * @description
- * Contains methods relating to {@link Customer} entities.
+ * Provides methods for managing {@link Customer} entities, including registration, address management and group assignment.
  *
  * @docsCategory services
  */

@@ -47,7 +47,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 import { GlobalSettingsService } from './global-settings.service';
 /**
  * @description
- * Contains methods relating to {@link Channel} entities.
+ * Provides methods for managing {@link Channel} entities, including creation, currency configuration and default settings.
  *
  * @docsCategory services
  */
