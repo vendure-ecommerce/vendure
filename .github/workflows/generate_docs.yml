@@ -85,6 +85,7 @@ jobs:
               continue-on-error: true
               uses: actions/ai-inference@v1
               with:
+                  token: ${{ steps.app-token.outputs.token }}
                   model: openai/gpt-4o-mini
                   max-tokens: 100
                   system-prompt: |
