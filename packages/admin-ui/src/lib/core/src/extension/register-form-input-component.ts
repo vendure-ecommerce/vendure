@@ -13,8 +13,7 @@ import { ComponentRegistryService } from '../providers/component-registry/compon
  * import { registerFormInputComponent } from '\@vendure/admin-ui/core';
  *
  * export default [
- *     // highlight-next-line
- *     registerFormInputComponent('my-custom-input', MyCustomFieldControl),
+ *     registerFormInputComponent('my-custom-input', MyCustomFieldControl), // [!code highlight]
  * ];
  * ```
  *
@@ -31,8 +30,7 @@ import { ComponentRegistryService } from '../providers/component-registry/compon
  *       {
  *         name: 'rrp',
  *         type: 'int',
- *         // highlight-next-line
- *         ui: { component: 'my-custom-input' },
+ *         ui: { component: 'my-custom-input' }, // [!code highlight]
  *       },
  *     ]
  *   }
