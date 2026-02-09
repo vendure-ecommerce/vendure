@@ -83,7 +83,7 @@ export interface ApiOptions {
     hostname?: string;
     /**
      * @description
-     * Which port the Vendure server should listen on.
+     * Which port the Vendure server should listen on. Defaults to 3000.
      *
      * @default 3000
      */
