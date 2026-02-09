@@ -1,6 +1,6 @@
 /**
  * @description
- * The base class for all events used by the EventBus system.
+ * The base class for all events used by the {@link EventBus} system.
  *
  * @docsCategory events
  * */

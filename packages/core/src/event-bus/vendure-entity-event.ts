@@ -4,7 +4,7 @@ import { VendureEvent } from './vendure-event';
 
 /**
  * @description
- * The base class for all entity events used by the EventBus system.
+ * The base class for all entity events used by the {@link EventBus} system.
  * * For event type `'deleted'` the input will most likely be an `id: ID`
  *
  * @docsCategory events
