@@ -273,7 +273,7 @@ export function AddProductVariantDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        <Trans>Add product variant</Trans>
+                        <Trans>Manually add product variant</Trans>
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>

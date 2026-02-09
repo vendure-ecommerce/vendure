@@ -927,8 +927,8 @@ msgid "Add product options first"
 msgstr "먼저 상품 옵션을 추가하세요"
 
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:276
-msgid "Add product variant"
-msgstr "상품 변형 추가"
+msgid "Manually add product variant"
+msgstr "상품 변형 수동 추가"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx:231
 msgid "Add products to create a test order"
@@ -1435,8 +1435,8 @@ msgid "Create variant"
 msgstr "변형 생성"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:152
-msgid "Create Variants"
-msgstr "변형 생성"
+msgid "Variant Assistant"
+msgstr "변형 어시스턴트"
 
 #: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:155
 msgid "Create variants for your product"
@@ -3498,6 +3498,10 @@ msgstr "항목 제거"
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:138
 msgid "Remove link"
 msgstr "링크 제거"
+
+#: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx:181
+msgid "Remove option group"
+msgstr "옵션 그룹 제거"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:199
 msgid "Removed coupon codes"

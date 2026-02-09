@@ -57,7 +57,7 @@ import { Route as AuthenticatedCollectionsCollectionsIdRouteImport } from './rou
 import { Route as AuthenticatedChannelsChannelsIdRouteImport } from './routes/_authenticated/_channels/channels_.$id'
 import { Route as AuthenticatedAssetsAssetsIdRouteImport } from './routes/_authenticated/_assets/assets_.$id'
 import { Route as AuthenticatedAdministratorsAdministratorsIdRouteImport } from './routes/_authenticated/_administrators/administrators_.$id'
-import { Route as AuthenticatedProductsProductsIdVariantsRouteImport } from './routes/_authenticated/_products/products_.$id_.variants'
+import { Route as AuthenticatedProductsProductsIdOptionsRouteImport } from './routes/_authenticated/_products/products_.$id_.options'
 import { Route as AuthenticatedOrdersOrdersDraftIdRouteImport } from './routes/_authenticated/_orders/orders_.draft.$id'
 import { Route as AuthenticatedOrdersOrdersIdModifyRouteImport } from './routes/_authenticated/_orders/orders_.$id_.modify'
 import { Route as AuthenticatedProductsProductsProductIdOptionGroupsIdRouteImport } from './routes/_authenticated/_products/products_.$productId.option-groups.$id'
@@ -347,10 +347,10 @@ const AuthenticatedAdministratorsAdministratorsIdRoute =
     path: '/administrators/$id',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedProductsProductsIdVariantsRoute =
-  AuthenticatedProductsProductsIdVariantsRouteImport.update({
-    id: '/_products/products_/$id_/variants',
-    path: '/products/$id/variants',
+const AuthenticatedProductsProductsIdOptionsRoute =
+  AuthenticatedProductsProductsIdOptionsRouteImport.update({
+    id: '/_products/products_/$id_/options',
+    path: '/products/$id/options',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedOrdersOrdersDraftIdRoute =
@@ -395,8 +395,8 @@ const AuthenticatedProductsProductsProductIdOptionGroupsProductOptionGroupIdOpti
   )
 
 export interface FileRoutesByFullPath {
-  '/login': typeof LoginRoute
   '/': typeof AuthenticatedIndexRoute
+  '/login': typeof LoginRoute
   '/administrators': typeof AuthenticatedAdministratorsAdministratorsRoute
   '/assets': typeof AuthenticatedAssetsAssetsRoute
   '/channels': typeof AuthenticatedChannelsChannelsRoute
@@ -444,7 +444,7 @@ export interface FileRoutesByFullPath {
   '/zones/$id': typeof AuthenticatedZonesZonesIdRoute
   '/orders/$id/modify': typeof AuthenticatedOrdersOrdersIdModifyRoute
   '/orders/draft/$id': typeof AuthenticatedOrdersOrdersDraftIdRoute
-  '/products/$id/variants': typeof AuthenticatedProductsProductsIdVariantsRoute
+  '/products/$id/options': typeof AuthenticatedProductsProductsIdOptionsRoute
   '/facets/$facetId/values/$id': typeof AuthenticatedFacetsFacetsFacetIdValuesIdRoute
   '/orders/$aggregateOrderId/seller-orders/$sellerOrderId': typeof AuthenticatedOrdersOrdersAggregateOrderIdSellerOrdersSellerOrderIdRoute
   '/products/$productId/option-groups/$id': typeof AuthenticatedProductsProductsProductIdOptionGroupsIdRoute
@@ -500,7 +500,7 @@ export interface FileRoutesByTo {
   '/zones/$id': typeof AuthenticatedZonesZonesIdRoute
   '/orders/$id/modify': typeof AuthenticatedOrdersOrdersIdModifyRoute
   '/orders/draft/$id': typeof AuthenticatedOrdersOrdersDraftIdRoute
-  '/products/$id/variants': typeof AuthenticatedProductsProductsIdVariantsRoute
+  '/products/$id/options': typeof AuthenticatedProductsProductsIdOptionsRoute
   '/facets/$facetId/values/$id': typeof AuthenticatedFacetsFacetsFacetIdValuesIdRoute
   '/orders/$aggregateOrderId/seller-orders/$sellerOrderId': typeof AuthenticatedOrdersOrdersAggregateOrderIdSellerOrdersSellerOrderIdRoute
   '/products/$productId/option-groups/$id': typeof AuthenticatedProductsProductsProductIdOptionGroupsIdRoute
@@ -558,7 +558,7 @@ export interface FileRoutesById {
   '/_authenticated/_zones/zones_/$id': typeof AuthenticatedZonesZonesIdRoute
   '/_authenticated/_orders/orders_/$id_/modify': typeof AuthenticatedOrdersOrdersIdModifyRoute
   '/_authenticated/_orders/orders_/draft/$id': typeof AuthenticatedOrdersOrdersDraftIdRoute
-  '/_authenticated/_products/products_/$id_/variants': typeof AuthenticatedProductsProductsIdVariantsRoute
+  '/_authenticated/_products/products_/$id_/options': typeof AuthenticatedProductsProductsIdOptionsRoute
   '/_authenticated/_facets/facets_/$facetId/values_/$id': typeof AuthenticatedFacetsFacetsFacetIdValuesIdRoute
   '/_authenticated/_orders/orders_/$aggregateOrderId_/seller-orders/$sellerOrderId': typeof AuthenticatedOrdersOrdersAggregateOrderIdSellerOrdersSellerOrderIdRoute
   '/_authenticated/_products/products_/$productId/option-groups/$id': typeof AuthenticatedProductsProductsProductIdOptionGroupsIdRoute
@@ -567,8 +567,8 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/login'
     | '/'
+    | '/login'
     | '/administrators'
     | '/assets'
     | '/channels'
@@ -616,7 +616,7 @@ export interface FileRouteTypes {
     | '/zones/$id'
     | '/orders/$id/modify'
     | '/orders/draft/$id'
-    | '/products/$id/variants'
+    | '/products/$id/options'
     | '/facets/$facetId/values/$id'
     | '/orders/$aggregateOrderId/seller-orders/$sellerOrderId'
     | '/products/$productId/option-groups/$id'
@@ -672,7 +672,7 @@ export interface FileRouteTypes {
     | '/zones/$id'
     | '/orders/$id/modify'
     | '/orders/draft/$id'
-    | '/products/$id/variants'
+    | '/products/$id/options'
     | '/facets/$facetId/values/$id'
     | '/orders/$aggregateOrderId/seller-orders/$sellerOrderId'
     | '/products/$productId/option-groups/$id'
@@ -729,7 +729,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_zones/zones_/$id'
     | '/_authenticated/_orders/orders_/$id_/modify'
     | '/_authenticated/_orders/orders_/draft/$id'
-    | '/_authenticated/_products/products_/$id_/variants'
+    | '/_authenticated/_products/products_/$id_/options'
     | '/_authenticated/_facets/facets_/$facetId/values_/$id'
     | '/_authenticated/_orders/orders_/$aggregateOrderId_/seller-orders/$sellerOrderId'
     | '/_authenticated/_products/products_/$productId/option-groups/$id'
@@ -753,7 +753,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -1079,11 +1079,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdministratorsAdministratorsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/_products/products_/$id_/variants': {
-      id: '/_authenticated/_products/products_/$id_/variants'
-      path: '/products/$id/variants'
-      fullPath: '/products/$id/variants'
-      preLoaderRoute: typeof AuthenticatedProductsProductsIdVariantsRouteImport
+    '/_authenticated/_products/products_/$id_/options': {
+      id: '/_authenticated/_products/products_/$id_/options'
+      path: '/products/$id/options'
+      fullPath: '/products/$id/options'
+      preLoaderRoute: typeof AuthenticatedProductsProductsIdOptionsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/_orders/orders_/draft/$id': {
@@ -1180,7 +1180,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedZonesZonesIdRoute: typeof AuthenticatedZonesZonesIdRoute
   AuthenticatedOrdersOrdersIdModifyRoute: typeof AuthenticatedOrdersOrdersIdModifyRoute
   AuthenticatedOrdersOrdersDraftIdRoute: typeof AuthenticatedOrdersOrdersDraftIdRoute
-  AuthenticatedProductsProductsIdVariantsRoute: typeof AuthenticatedProductsProductsIdVariantsRoute
+  AuthenticatedProductsProductsIdOptionsRoute: typeof AuthenticatedProductsProductsIdOptionsRoute
   AuthenticatedFacetsFacetsFacetIdValuesIdRoute: typeof AuthenticatedFacetsFacetsFacetIdValuesIdRoute
   AuthenticatedOrdersOrdersAggregateOrderIdSellerOrdersSellerOrderIdRoute: typeof AuthenticatedOrdersOrdersAggregateOrderIdSellerOrdersSellerOrderIdRoute
   AuthenticatedProductsProductsProductIdOptionGroupsIdRoute: typeof AuthenticatedProductsProductsProductIdOptionGroupsIdRoute
@@ -1259,8 +1259,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOrdersOrdersIdModifyRoute:
     AuthenticatedOrdersOrdersIdModifyRoute,
   AuthenticatedOrdersOrdersDraftIdRoute: AuthenticatedOrdersOrdersDraftIdRoute,
-  AuthenticatedProductsProductsIdVariantsRoute:
-    AuthenticatedProductsProductsIdVariantsRoute,
+  AuthenticatedProductsProductsIdOptionsRoute:
+    AuthenticatedProductsProductsIdOptionsRoute,
   AuthenticatedFacetsFacetsFacetIdValuesIdRoute:
     AuthenticatedFacetsFacetsFacetIdValuesIdRoute,
   AuthenticatedOrdersOrdersAggregateOrderIdSellerOrdersSellerOrderIdRoute:

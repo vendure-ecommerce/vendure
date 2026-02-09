@@ -2,7 +2,7 @@ import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js'
 import { Button } from '@/vdb/components/ui/button.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
@@ -13,11 +13,13 @@ import { OptionValueInput } from './option-value-input.js';
 export const optionValueSchema = z.object({
     value: z.string().min(1, { message: 'Value cannot be empty' }),
     id: z.string().min(1, { message: 'Value cannot be empty' }),
+    existingId: z.string().optional(),
 });
 
 export const optionGroupSchema = z.object({
     name: z.string().min(1, { message: 'Option name is required' }),
     values: z.array(optionValueSchema).min(1, { message: 'At least one value is required' }),
+    existingId: z.string().optional(),
 });
 
 const multiGroupFormSchema = z.object({
@@ -29,9 +31,11 @@ export type MultiGroupForm = z.infer<typeof multiGroupFormSchema>;
 
 export interface SingleOptionGroup {
     name: string;
+    existingId?: string;
     values: Array<{
         value: string;
         id: string;
+        existingId?: string;
     }>;
 }
 
@@ -59,12 +63,14 @@ interface SingleOptionGroupEditorProps {
     control: Control<any>;
     fieldArrayPath: string;
     disabled?: boolean;
+    isExisting?: boolean;
 }
 
 export function SingleOptionGroupEditor({
     control,
     fieldArrayPath,
     disabled,
+    isExisting = false,
 }: Readonly<SingleOptionGroupEditorProps>) {
     const { fields, append, remove } = useFieldArray({
         control,
@@ -79,7 +85,9 @@ export function SingleOptionGroupEditor({
                         control={control}
                         name={[fieldArrayPath, 'name'].join('.')}
                         label={<Trans>Option Group Name</Trans>}
-                        render={({ field }) => <Input placeholder="e.g. Size" {...field} />}
+                        render={({ field }) => (
+                            <Input placeholder="e.g. Size" {...field} disabled={isExisting} />
+                        )}
                     />
                 </div>
 
@@ -110,6 +118,7 @@ interface OptionGroupsEditorProps {
 }
 
 export function OptionGroupsEditor({ onChange, initialGroups = [] }: Readonly<OptionGroupsEditorProps>) {
+    const { t } = useLingui();
     const form = useForm<MultiGroupForm>({
         resolver: zodResolver(multiGroupFormSchema),
         defaultValues: {
@@ -154,21 +163,30 @@ export function OptionGroupsEditor({ onChange, initialGroups = [] }: Readonly<Op
     return (
         <Form {...form}>
             <div className="space-y-4">
-                {optionGroups.map((group, index) => (
-                    <div key={group.id} className="flex items-start">
-                        <SingleOptionGroupEditor control={control} fieldArrayPath={`optionGroups.${index}`} />
-                        <div className="shrink-0 mt-6">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => removeOptionGroup(index)}
-                                title="Remove Option"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
+                {optionGroups.map((group, index) => {
+                    const isExisting = !!group.existingId;
+                    return (
+                        <div key={group.id} className="flex items-start">
+                            <SingleOptionGroupEditor
+                                control={control}
+                                fieldArrayPath={`optionGroups.${index}`}
+                                isExisting={isExisting}
+                            />
+                            {!isExisting && (
+                                <div className="shrink-0 mt-6">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => removeOptionGroup(index)}
+                                        title={t`Remove option group`}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            )}
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
 
                 <Button type="button" variant="secondary" onClick={handleAddOptionGroup}>
                     <Plus className="mr-2 h-4 w-4" />
