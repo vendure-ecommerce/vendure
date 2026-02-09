@@ -31,7 +31,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 
 /**
  * @description
- * Contains methods relating to {@link Zone} entities.
+ * Provides methods for managing {@link Zone} entities, including member country assignment.
  *
  * @docsCategory services
  */

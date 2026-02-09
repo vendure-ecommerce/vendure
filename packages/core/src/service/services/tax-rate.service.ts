@@ -30,7 +30,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 
 /**
  * @description
- * Contains methods relating to {@link TaxRate} entities.
+ * Provides methods for managing {@link TaxRate} entities, including tax calculation and zone-based rate lookups.
  *
  * @docsCategory services
  */

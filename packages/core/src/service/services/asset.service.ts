@@ -58,7 +58,7 @@ const sizeOf = require('image-size');
 
 /**
  * @description
- * Certain entities (Product, ProductVariant, Collection) use this interface
+ * Certain entities ({@link Product}, {@link ProductVariant}, {@link Collection}) use this interface
  * to model a featured asset and then a list of assets with a defined order.
  *
  * @docsCategory services
