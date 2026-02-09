@@ -126,10 +126,10 @@ class AssetEvent extends VendureEntityEvent<Asset, AssetInputTypes> {
 
 
 </div>
-<GenerationInfo sourceFile="packages/core/src/event-bus/events/attempted-login-event.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/attempted-login-event.ts" sourceLine="13" packageName="@vendure/core" />
 
 This event is fired when an attempt is made to log in via the shop or admin API `login` mutation.
-The `strategy` represents the name of the AuthenticationStrategy used in the login attempt.
+The `strategy` represents the name of the [AuthenticationStrategy](/reference/typescript-api/auth/authentication-strategy#authenticationstrategy) used in the login attempt.
 If the "native" strategy is used, the additional `identifier` property will be available.
 
 ```ts title="Signature"
