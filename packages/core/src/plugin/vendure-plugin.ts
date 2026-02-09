@@ -12,7 +12,7 @@ import { PLUGIN_METADATA } from './plugin-metadata';
 
 /**
  * @description
- * Defines the metadata of a Vendure plugin. This interface is an superset of the [Nestjs ModuleMetadata](https://docs.nestjs.com/modules)
+ * Defines the metadata of a Vendure plugin. This interface is a superset of the [Nestjs ModuleMetadata](https://docs.nestjs.com/modules)
  * (which allows the definition of `imports`, `exports`, `providers` and `controllers`), which means
  * that any Nestjs Module is a valid Vendure plugin. In addition, the VendurePluginMetadata allows the definition of
  * extra properties specific to Vendure.

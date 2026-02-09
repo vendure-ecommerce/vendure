@@ -7,7 +7,7 @@ export const TRANSACTION_MODE_METADATA_KEY = '__transaction_mode__';
  * @description
  * The Transaction decorator can handle transactions automatically (which is the default) or be set to
  * "manual" mode, where the {@link TransactionalConnection} `.startTransaction()` and `.commitOpenTransaction()`
- * methods must them be used.
+ * methods must then be used.
  *
  * @example
  * ```ts
