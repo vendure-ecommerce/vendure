@@ -240,6 +240,9 @@ const StellateOptionsProvider = {
  * ```
  *
  *
+ * @deprecated This plugin is moving to `@vendure-community/stellate-plugin`.
+ * The `@vendure/stellate-plugin` package will be removed in Vendure v3.6.0.
+ *
  * @since 2.1.5
  * @docsCategory core plugins/StellatePlugin
  */
