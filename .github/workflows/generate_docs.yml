@@ -23,6 +23,7 @@ jobs:
         permissions:
             contents: write
             pull-requests: write
+            models: read
         steps:
             - name: Generate CI Bot Token
               id: app-token
@@ -68,7 +69,34 @@ jobs:
                     echo "changed=false" >> "$GITHUB_OUTPUT"
                   else
                     echo "changed=true" >> "$GITHUB_OUTPUT"
+                    # Capture a stat summary + truncated diff for the AI commit message
+                    {
+                      echo 'summary<<DIFF_EOF'
+                      git diff --cached --stat
+                      echo '---'
+                      git diff --cached -- '*.mdx' | head -200
+                      echo 'DIFF_EOF'
+                    } >> "$GITHUB_OUTPUT"
                   fi
+
+            - name: Generate commit message
+              if: steps.diff.outputs.changed == 'true'
+              id: ai-message
+              continue-on-error: true
+              uses: actions/ai-inference@v1
+              with:
+                  model: openai/gpt-4o-mini
+                  max-tokens: 100
+                  system-prompt: |
+                      You generate concise git commit messages in conventional commit format.
+                      Always use the type "docs" with no scope. Write only the commit message
+                      subject line, nothing else. No quotes, no backticks, no explanation.
+                      Keep it under 72 characters. Describe what specifically changed in the
+                      documentation based on the diff provided.
+                  prompt: |
+                      Generate a commit message for these auto-generated documentation changes:
+
+                      ${{ steps.diff.outputs.summary }}
 
             - name: Get CI Bot user info
               if: steps.diff.outputs.changed == 'true'
@@ -81,8 +109,11 @@ jobs:
 
             - name: Commit and push generated docs
               if: steps.diff.outputs.changed == 'true'
+              env:
+                  AI_MESSAGE: ${{ steps.ai-message.outputs.response }}
               run: |
                   git config user.name "${{ steps.app-token.outputs.app-slug }}[bot]"
                   git config user.email "${{ steps.get-user.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"
-                  git commit -m "docs: Generate docs for source changes"
+                  message="${AI_MESSAGE:-docs: Generate docs for source changes}"
+                  git commit -m "$message"
                   git push
