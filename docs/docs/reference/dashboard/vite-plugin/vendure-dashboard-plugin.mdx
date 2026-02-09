@@ -304,6 +304,29 @@ An array of locales to be used on Admin UI.
 </div>
 <GenerationInfo sourceFile="packages/dashboard/vite/vite-plugin-ui-config.ts" sourceLine="124" packageName="@vendure/dashboard" since="3.4.0" />
 
+Options used by the [vendureDashboardPlugin](/reference/dashboard/vite-plugin/vendure-dashboard-plugin#venduredashboardplugin) to configure order-related
+Dashboard UI behaviour.
+
+```ts title="Signature"
+interface OrdersConfig {
+    refundReasons?: Array<{ value: string; label: string }>;
+}
+```
+
+<div className="members-wrapper">
+
+### refundReasons
+
+<MemberInfo kind="property" type={`Array<{ value: string; label: string }>`}   />
+
+An array of refund reasons to display in the refund order dialog.
+Each reason has a `value` (used as the identifier) and a `label` (displayed to the user).
+If not provided, default reasons will be used.
+
+
+</div>
+<GenerationInfo sourceFile="packages/dashboard/vite/vite-plugin-ui-config.ts" sourceLine="143" packageName="@vendure/dashboard" since="3.4.0" />
+
 Options used by the [vendureDashboardPlugin](/reference/dashboard/vite-plugin/vendure-dashboard-plugin#venduredashboardplugin) to configure aspects of the
 Dashboard UI behaviour.
 
@@ -311,6 +334,7 @@ Dashboard UI behaviour.
 interface UiConfigPluginOptions {
     api?: ApiConfig;
     i18n?: I18nConfig;
+    orders?: OrdersConfig;
 }
 ```
 
@@ -326,6 +350,11 @@ Configuration for API connection settings
 <MemberInfo kind="property" type={`<a href='/reference/dashboard/vite-plugin/vendure-dashboard-plugin#i18nconfig'>I18nConfig</a>`}   />
 
 Configuration for internationalization settings
+### orders
+
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/vite-plugin/vendure-dashboard-plugin#ordersconfig'>OrdersConfig</a>`}   />
+
+Configuration for order-related settings
 
 
 </div>

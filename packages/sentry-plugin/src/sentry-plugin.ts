@@ -85,12 +85,10 @@ const SentryOptionsProvider = {
  *     // ...
  *     plugins: [
  *         // ...
- *         // highlight-start
- *         SentryPlugin.init({
- *             // Optional configuration
- *             includeErrorTestMutation: true,
- *         }),
- *         // highlight-end
+ *         SentryPlugin.init({ // [!code highlight]
+ *             // Optional configuration // [!code highlight]
+ *             includeErrorTestMutation: true, // [!code highlight]
+ *         }), // [!code highlight]
  *     ],
  * };
  *```

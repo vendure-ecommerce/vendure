@@ -140,11 +140,9 @@ const StellateOptionsProvider = {
  * export const searchProductsDocument = graphql(`
  *     query SearchProducts($input: SearchInput!) {
  *         search(input: $input) {
- *             // highlight-start
- *             cacheIdentifier {
- *                 collectionSlug
- *             }
- *             // highlight-end
+ *             cacheIdentifier { // [!code highlight]
+ *                 collectionSlug // [!code highlight]
+ *             } // [!code highlight]
  *             items {
  *                # ...
  *             }
