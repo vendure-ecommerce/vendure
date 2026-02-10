@@ -58,7 +58,7 @@ be aware of any existing transaction. Therefore, calling this method without sup
 is discouraged without a deliberate reason.
 ### getRepository
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | undefined, target: ObjectType<Entity> | EntitySchema<Entity> | string, options?: {             replicationMode?: ReplicationMode;         }) => Repository<Entity>`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | undefined, target: ObjectType<Entity> | EntitySchema<Entity> | string, options?: {             replicationMode?: ReplicationMode;         }) => Repository<Entity>`}   />
 
 Returns a TypeORM repository which is bound to any existing transactions. It is recommended to _always_ pass
 the RequestContext argument when possible, otherwise the queries will be executed outside of any
@@ -68,7 +68,7 @@ The `options` parameter allows specifying additional configurations, such as the
 which determines whether the repository should interact with the master or replica database.
 ### getRepository
 
-<MemberInfo kind="method" type={`(ctxOrTarget: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | ObjectType<Entity> | EntitySchema<Entity> | string | undefined, maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string, options?: {             replicationMode?: ReplicationMode;         }) => Repository<Entity>`}   />
+<MemberInfo kind="method" type={`(ctxOrTarget: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | ObjectType<Entity> | EntitySchema<Entity> | string | undefined, maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string, options?: {             replicationMode?: ReplicationMode;         }) => Repository<Entity>`}   />
 
 Returns a TypeORM repository. Depending on the parameters passed, it will either be transaction-aware
 or not. If `RequestContext` is provided, the repository is bound to any ongoing transactions. The

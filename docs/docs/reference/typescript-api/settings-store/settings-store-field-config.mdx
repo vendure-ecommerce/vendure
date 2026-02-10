@@ -50,7 +50,7 @@ Whether this field is readonly via the GraphQL API.
 Readonly fields can still be modified programmatically via a service.
 ### requiresPermission
 
-<MemberInfo kind="property" type={`| Array<<a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string>         | <a href='/reference/typescript-api/common/permission#permission'>Permission</a>         | string         | {               read?: Array<<a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string> | <a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string;               write?: Array<<a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string> | <a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string;           }`}  since="3.5.0 - Added support for object with read/write properties"  />
+<MemberInfo kind="property" type={`| Array<<a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string>         | <a href='/reference/typescript-api/common/permission#permission'>Permission</a>         | string         | {               read?: Array<<a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string> | <a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string;               write?: Array<<a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string> | <a href='/reference/typescript-api/common/permission#permission'>Permission</a> | string;           }`}  since="3.5.0 - Added support for object with read/write properties"  />
 
 Permissions required to access this field. If not specified,
 basic authentication is required for admin API access.
@@ -79,7 +79,7 @@ requiresPermission: {
 ```
 ### validate
 
-<MemberInfo kind="property" type={`(         value: any,         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,     ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>`}   />
+<MemberInfo kind="property" type={`(         value: any,         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,     ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>`}   />
 
 Custom validation function for field values.
 

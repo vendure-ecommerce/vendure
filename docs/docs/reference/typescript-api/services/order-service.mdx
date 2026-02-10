@@ -182,7 +182,7 @@ incrementing an existing one.
 If you need to add multiple items to an Order, use `addItemsToOrder()` instead.
 ### addItemsToOrder
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, items: Array<{             productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>;             quantity: number;             customFields?: { [key: string]: any };         }>, relations?: RelationPaths<<a href='/reference/typescript-api/entities/order#order'>Order</a>>) => Promise<{ order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> }>`}  since="3.1.0"  />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, items: Array<{             productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>;             quantity: number;             customFields?: { [key: string]: any };         }>, relations?: RelationPaths<<a href='/reference/typescript-api/entities/order#order'>Order</a>>) => Promise<{ order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> }>`}  since="3.1.0"  />
 
 Adds multiple items to an Order. This method is more efficient than calling `addItemToOrder`
 multiple times, as it only needs to fetch the entire Order once, and only performs
