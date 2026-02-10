@@ -31,6 +31,8 @@ export interface ConfigurableOperationSelectorProps {
     buttonText: string;
     /** Text to display when no operations are available (defaults to "No options found") */
     emptyText?: string;
+    /** Callback when validity of required args changes */
+    onValidityChange?: (isValid: boolean) => void;
 }
 
 type QueryData = {
@@ -74,6 +76,7 @@ export function ConfigurableOperationSelector({
     dataPath,
     buttonText,
     emptyText = 'No options found',
+    onValidityChange,
 }: Readonly<ConfigurableOperationSelectorProps>) {
     const { data } = useQuery<QueryData>({
         queryKey: [queryKey],
@@ -111,6 +114,7 @@ export function ConfigurableOperationSelector({
 
     const onOperationRemove = () => {
         onChange(undefined);
+        onValidityChange?.(true);
     };
 
     const operationDef = operations?.find((op: ConfigurableOperationDefFragment) => op.code === value?.code);
@@ -124,6 +128,7 @@ export function ConfigurableOperationSelector({
                         value={value}
                         onChange={v => onOperationValueChange(v)}
                         onRemove={() => onOperationRemove()}
+                        onValidityChange={onValidityChange}
                     />
                 </div>
             )}
