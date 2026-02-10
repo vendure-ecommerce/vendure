@@ -2,6 +2,8 @@ import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js'
 import { Button } from '@/vdb/components/ui/button.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
+import { transformRelationCustomFieldInputs } from '@/vdb/lib/utils.js';
 import { Trans } from '@lingui/react/macro';
 import { Settings2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +14,7 @@ interface OrderLineCustomFieldsFormProps {
 }
 
 export function OrderLineCustomFieldsForm({ onUpdate, value }: Readonly<OrderLineCustomFieldsFormProps>) {
+    const customFieldConfig = useCustomFieldConfig('OrderLine');
     const form = useForm<Record<string, any>>({
         defaultValues: {
             customFields: value,
@@ -19,7 +22,9 @@ export function OrderLineCustomFieldsForm({ onUpdate, value }: Readonly<OrderLin
     });
 
     const onSubmit = (values: any) => {
-        onUpdate(values.customFields);
+        const result = { customFields: values.customFields };
+        transformRelationCustomFieldInputs(result, customFieldConfig ?? []);
+        onUpdate(result.customFields);
     };
 
     return (

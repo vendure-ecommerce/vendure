@@ -71,7 +71,12 @@ export function normalizeString(input: string, spaceReplacer = ' '): string {
  */
 export function removeReadonlyAndLocalizedCustomFields<T extends Record<string, any>>(
     values: T,
-    customFieldConfigs: Array<{ name: string; readonly?: boolean | null; type?: string }> = [],
+    customFieldConfigs: Array<{
+        name: string;
+        readonly?: boolean | null;
+        type?: string;
+        list?: boolean;
+    }> = [],
 ): T {
     if (!values || !customFieldConfigs?.length) {
         return values;
@@ -93,7 +98,41 @@ export function removeReadonlyAndLocalizedCustomFields<T extends Record<string, 
     }
 
     removeReadonlyFromTranslations(result, readonlyFieldNames);
+    transformRelationCustomFieldInputs(result, customFieldConfigs);
     return result;
+}
+
+export function transformRelationCustomFieldInputs<T extends Record<string, any>>(
+    input: T,
+    customFieldConfigs: Array<{ name: string; type?: string; list?: boolean }>,
+): void {
+    if (!input.customFields || typeof input.customFields !== 'object') {
+        return;
+    }
+
+    for (const fieldConfig of customFieldConfigs) {
+        if (fieldConfig.type === 'relation') {
+            const fieldName = fieldConfig.name;
+            const inputFieldName = fieldConfig.list ? `${fieldName}Ids` : `${fieldName}Id`;
+
+            if (input.customFields.hasOwnProperty(fieldName)) {
+                const value = input.customFields[fieldName];
+                delete input.customFields[fieldName];
+                input.customFields[inputFieldName] = transformRelationValue(value, fieldConfig.list);
+            }
+        }
+    }
+}
+
+function transformRelationValue(value: any, isList: boolean | undefined): any {
+    if (isList && Array.isArray(value)) {
+        return value.map(v => (typeof v === 'string' ? v : v?.id));
+    } else if (value === null) {
+        return null;
+    } else if (typeof value === 'object' && value !== null) {
+        return value.id;
+    }
+    return value;
 }
 
 function removeReadonlyFromTranslations(entity: Record<string, any>, readonlyFieldNames: string[]): void {
