@@ -73,11 +73,9 @@ export interface WillAdjustOrderLineInput {
  *       errorCode
  *       message
  *     }
- *     // highlight-start
- *     ... on OrderInterceptorError {
- *       interceptorError
- *     }
- *     // highlight-end
+ *     ... on OrderInterceptorError { # [!code highlight]
+ *       interceptorError # [!code highlight]
+ *     } # [!code highlight]
  *   }
  * }
  * ```
