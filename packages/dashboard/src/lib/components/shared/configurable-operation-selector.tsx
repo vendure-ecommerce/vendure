@@ -114,6 +114,7 @@ export function ConfigurableOperationSelector({
 
     const onOperationRemove = () => {
         onChange(undefined);
+        onValidityChange?.(true);
     };
 
     const operationDef = operations?.find((op: ConfigurableOperationDefFragment) => op.code === value?.code);
