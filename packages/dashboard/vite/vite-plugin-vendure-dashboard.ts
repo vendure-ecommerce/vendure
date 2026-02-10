@@ -1,7 +1,7 @@
 import { lingui } from '@lingui/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 import path from 'path';
 import { PluginOption } from 'vite';
 
@@ -13,6 +13,7 @@ import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
 import { hmrPlugin } from './vite-plugin-hmr.js';
+import { linguiBabelPlugin } from './vite-plugin-lingui-babel.js';
 import { dashboardTailwindSourcePlugin } from './vite-plugin-tailwind-source.js';
 import { themeVariablesPlugin, ThemeVariablesPluginOptions } from './vite-plugin-theme.js';
 import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
@@ -95,6 +96,18 @@ export type VitePluginVendureDashboardOptions = {
     pluginPackageScanner?: PackageScannerConfig;
     /**
      * @description
+     * Allows you to specify the module system to use when compiling and loading your Vendure config.
+     * By default, the compiler will use CommonJS, but you can set it to `esm` if you are using
+     * ES Modules in your Vendure project.
+     *
+     * **Status** Developer preview. If you are using ESM please try this out and provide us with feedback!
+     *
+     * @since 3.5.1
+     * @default 'commonjs'
+     */
+    module?: 'commonjs' | 'esm';
+    /**
+     * @description
      * Allows you to selectively disable individual plugins.
      * @example
      * ```ts
@@ -109,6 +122,7 @@ export type VitePluginVendureDashboardOptions = {
      */
     disablePlugins?: {
         tanstackRouter?: boolean;
+        linguiBabel?: boolean;
         react?: boolean;
         lingui?: boolean;
         themeVariables?: boolean;
@@ -174,11 +188,17 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
                 }),
         },
         {
+            // Custom plugin that transforms Lingui macros using Babel instead of SWC.
+            // This runs BEFORE the react plugin to ensure macros are transformed first.
+            // Using Babel eliminates the SWC binary compatibility issues that caused
+            // "failed to invoke plugin" errors in external projects.
+            // See: https://github.com/vendurehq/vendure/issues/3929
+            key: 'linguiBabel',
+            plugin: () => linguiBabelPlugin(),
+        },
+        {
             key: 'react',
-            plugin: () =>
-                react({
-                    plugins: [['@lingui/swc-plugin', {}]],
-                }),
+            plugin: () => react(),
         },
         {
             key: 'lingui',
@@ -204,6 +224,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
                     outputPath: tempDir,
                     pathAdapter: options.pathAdapter,
                     pluginPackageScanner: options.pluginPackageScanner,
+                    module: options.module,
                 }),
         },
         {

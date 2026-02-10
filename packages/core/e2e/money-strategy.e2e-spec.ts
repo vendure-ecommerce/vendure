@@ -1,11 +1,11 @@
-import { DefaultMoneyStrategy, Logger, mergeConfig, MoneyStrategy, VendurePlugin } from '@vendure/core';
+import { Logger, mergeConfig, MoneyStrategy, VendurePlugin } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 import { ColumnOptions } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { SortOrder } from './graphql/generated-e2e-admin-types';
@@ -105,7 +105,7 @@ describe('Custom MoneyStrategy', () => {
         expect(CustomMoneyStrategy.transformerFromSpy).toHaveBeenCalledTimes(2);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/838
+    // https://github.com/vendurehq/vendure/issues/838
     it('can handle totals over 21 million', async () => {
         await shopClient.asAnonymousUser();
         const { addItemToOrder } = await shopClient.query<
@@ -121,7 +121,7 @@ describe('Custom MoneyStrategy', () => {
         expect(addItemToOrder.lines[0].linePriceWithTax).toBe(2_399_999_760);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1835
+    // https://github.com/vendurehq/vendure/issues/1835
     // 31 * 1.2 = 37.2
     // Math.round(37.2 * 10) =372
     it('tax calculation rounds at the unit level', async () => {

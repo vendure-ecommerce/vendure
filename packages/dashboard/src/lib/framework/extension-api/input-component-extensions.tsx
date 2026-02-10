@@ -4,11 +4,13 @@ import {
     CustomerGroupInput,
     FacetValueInput,
     MoneyInput,
+    NumberInput,
     ProductMultiInput,
     RichTextInput,
     SelectWithOptions,
 } from '@/vdb/components/data-input/index.js';
 import { PasswordFormInput } from '@/vdb/components/data-input/password-form-input.js';
+import { TextInput } from '@/vdb/components/data-input/text-input.js';
 import { TextareaInput } from '@/vdb/components/data-input/textarea-input.js';
 import { DashboardFormComponent } from '@/vdb/framework/form-engine/form-engine-types.js';
 import { globalRegistry } from '../registry/global-registry.js';
@@ -38,6 +40,8 @@ inputComponents.set('relation-form-input', DefaultRelationInput);
 inputComponents.set('select-form-input', SelectWithOptions);
 inputComponents.set('product-multi-form-input', ProductMultiInput);
 inputComponents.set('combination-mode-form-input', CombinationModeInput);
+inputComponents.set('number-form-input', NumberInput);
+inputComponents.set('text-form-input', TextInput);
 
 export function getInputComponent(id: string | undefined): DashboardFormComponent | undefined {
     if (!id) {

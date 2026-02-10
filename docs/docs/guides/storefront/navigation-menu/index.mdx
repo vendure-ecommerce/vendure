@@ -2,13 +2,9 @@
 title: "Navigation Menu"
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import Stackblitz from '@site/src/components/Stackblitz';
-
 A navigation menu allows your customers to navigate your store and find the products they are looking for.
 
-Typically, navigation is based on a hierarchy of [collections](/guides/core-concepts/collections/). We can get the top-level
+Typically, navigation is based on a hierarchy of [collections](/core-concepts/collections/). We can get the top-level
 collections using the `collections` query with the `topLevelOnly` filter:
 
 
@@ -89,8 +85,7 @@ query GetAllCollections {
       id
       slug
       name
-      // highlight-next-line
-      parentId
+      parentId # [!code highlight]
       featuredAsset {
         id
         preview

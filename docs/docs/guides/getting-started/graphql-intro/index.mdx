@@ -1,9 +1,6 @@
 ---
 title: Introducing GraphQL
 ---
-import Playground from '@site/src/components/Playground';
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
 :::info
 
@@ -53,8 +50,8 @@ Both GraphQL and REST are valid approaches to building an API. These are some of
 - **Many resources in a single request**: Very often, a single page in a web app will need to fetch data from multiple resources. For example, a product detail page might need to fetch the product, the product's variants, the product's collections, the product's reviews, and the product's images. With REST, this would require multiple requests. With GraphQL, you can fetch all of this data in a single request.
 - **Static typing**: GraphQL APIs are always defined by a statically typed schema. This means that you can be sure that the data you receive from the API will always be in the format you expect.
 - **Developer tooling**: The schema definition allows for powerful developer tooling. For example, the GraphQL Playground above with auto-complete and full documentation is generated automatically from the schema definition. You can also get auto-complete and type-checking directly in your IDE.
-- **Code generation**: TypeScript types can be generated automatically from the schema definition. This means that you can be sure that your frontend code is always in sync with the API. This end-to-end type safety is extremely valuable, especially when working on large projects or with teams. See the [GraphQL Code Generation guide](/guides/storefront/codegen/)
-- **Extensible**: Vendure is designed with extensibility in mind, and GraphQL is a perfect fit. You can extend the GraphQL API with your own custom queries, mutations, and types. You can also extend the built-in types with your own custom fields, or supply you own custom logic to resolve existing fields. See the [Extend the GraphQL API guide](/guides/developer-guide/extend-graphql-api/)
+- **Code generation**: TypeScript types can be generated automatically from the schema definition. This means that you can be sure that your frontend code is always in sync with the API. This end-to-end type safety is extremely valuable, especially when working on large projects or with teams. See the [GraphQL Code Generation guide](/storefront/codegen/)
+- **Extensible**: Vendure is designed with extensibility in mind, and GraphQL is a perfect fit. You can extend the GraphQL API with your own custom queries, mutations, and types. You can also extend the built-in types with your own custom fields, or supply you own custom logic to resolve existing fields. See the [Extend the GraphQL API guide](/developer-guide/extend-graphql-api/)
 
 ## GraphQL Terminology
 
@@ -268,8 +265,7 @@ mutation {
     "updateCustomerEmail": {
       "id": "1",
       "name": "John Smith",
-      // highlight-next-line
-      "email": "john.smith@email.com"
+      "email": "john.smith@email.com" // [!code highlight]
     }
   }
 }
@@ -284,8 +280,7 @@ Operations can also have a **name**, which, while not required, is recommended f
 Here's the above query with a name:
 
 ```graphql
-// highlight-next-line
-query GetCustomers {
+query GetCustomers { # [!code highlight]
   customers {
     id
     name
@@ -306,10 +301,8 @@ Here's how we can re-write the above mutation operation to use variables:
 <TabItem value="Mutation" label="Mutation" default>
 
 ```graphql
-// highlight-next-line
-mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
-  // highlight-next-line
-  updateCustomerEmail(input: $input) {
+mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) { # [!code highlight]
+  updateCustomerEmail(input: $input) { # [!code highlight]
     id
     name
     email
@@ -338,8 +331,7 @@ mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
     "updateCustomerEmail": {
       "id": "1",
       "name": "John Smith",
-      // highlight-next-line
-      "email": "john.smith@email.com"
+      "email": "john.smith@email.com" // [!code highlight]
     }
   }
 }
@@ -391,8 +383,7 @@ type Mutation {
   updateCustomerEmail(input: UpdateCustomerEmailInput!): UpdateCustomerEmailResult!
 }
 
-// highlight-next-line
-union UpdateCustomerEmailResult = Customer | EmailAddressInUseError
+union UpdateCustomerEmailResult = Customer | EmailAddressInUseError # [!code highlight]
 
 type EmailAddressInUseError {
   errorCode: String!
@@ -401,7 +392,7 @@ type EmailAddressInUseError {
 ```
 
 :::info
-In Vendure, we use this pattern for almost all mutations. You can read more about it in the [Error Handling guide](/guides/developer-guide/error-handling/).
+In Vendure, we use this pattern for almost all mutations. You can read more about it in the [Error Handling guide](/developer-guide/error-handling/).
 :::
 
 Now, when we perform this mutation, we need alter the way we select the fields in the response, since the response could be one of two types:
@@ -468,8 +459,7 @@ The above operation could also be written to use the `CustomerFields` fragment w
 ```graphql
 mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
   updateCustomerEmail(input: $input) {
-    // highlight-next-line
-    ...CustomerFields
+    ...CustomerFields # [!code highlight]
     ... on EmailAddressInUseError {
       errorCode
       message
@@ -487,7 +477,7 @@ A resolver is a function which is responsible for fetching the data for a partic
 would be resolved by a function which fetches the list of customers from the database.
 
 To get started with Vendure's APIs, you don't need to know much about resolvers beyond this basic understanding. However,
-later on you may want to write your own custom resolvers to extend the API. This is covered in the [Extending the GraphQL API guide](/guides/developer-guide/extend-graphql-api/).
+later on you may want to write your own custom resolvers to extend the API. This is covered in the [Extending the GraphQL API guide](/developer-guide/extend-graphql-api/).
 
 ## Querying data
 
@@ -524,11 +514,9 @@ which fields of that object type we want to fetch. For example:
       name
       slug
       variants {
-        // highlight-start
-        # Sub-fields are required for object types
-        sku
-        priceWithTax
-        // highlight-end
+        # Sub-fields are required for object types # [!code highlight]
+        sku # [!code highlight]
+        priceWithTax # [!code highlight]
       }
     }
   }
@@ -558,7 +546,7 @@ can use to provide autocomplete.
 
 Code generation means the automatic generation of TypeScript types based on your GraphQL schema and your GraphQL operations. This is a very powerful feature that allows you to write your code in a type-safe manner, without you needing to manually write any types for your API calls.
 
-For more information see the [GraphQL Code Generation guide](/guides/storefront/codegen).
+For more information see the [GraphQL Code Generation guide](/storefront/codegen).
 
 ## Further reading
 

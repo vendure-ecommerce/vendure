@@ -23,7 +23,7 @@ import {
 } from '../ui/dropdown-menu.js';
 import { Input } from '../ui/input.js';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '../ui/sheet.js';
-import { useDataTableContext } from './data-table-context.js';
+import { useDataTableContext } from '@/vdb/hooks/use-data-table-context.js';
 
 interface ViewsSheetProps {
     open: boolean;
@@ -44,7 +44,7 @@ export const ViewsSheet: React.FC<ViewsSheetProps> = ({ open, onOpenChange, type
     const isGlobal = type === 'global';
 
     const handleViewApply = (view: SavedView) => {
-        handleApplyView(view.filters, view.searchTerm);
+        handleApplyView(view.filters,view.columnConfig, view.searchTerm);
         const viewName = view.name;
         const message = isGlobal ? t`Applied global view "${viewName}"` : t`Applied view "${viewName}"`;
         toast.success(message);

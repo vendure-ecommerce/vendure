@@ -120,7 +120,7 @@ export interface UiExtensionRouteDefinition {
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
  *
- * See [Extending the Admin UI](/guides/extending-the-admin-ui/getting-started/) for
+ * See [Extending the Admin UI](/extending-the-admin-ui/getting-started/) for
  * detailed instructions.
  *
  * @docsCategory UiDevkit
@@ -128,9 +128,7 @@ export interface UiExtensionRouteDefinition {
  * @docsWeight 0
  */
 export interface AdminUiExtension
-    extends Partial<TranslationExtension>,
-        Partial<StaticAssetExtension>,
-        Partial<GlobalStylesExtension> {
+    extends Partial<TranslationExtension>, Partial<StaticAssetExtension>, Partial<GlobalStylesExtension> {
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
@@ -204,8 +202,7 @@ export interface AdminUiExtension
      * import { AdminUiExtension } from '\@vendure/ui-devkit/compiler';
      *
      * export const uiExtensions: AdminUiExtension = {
-     *   // highlight-next-line
-     *   pathAlias: '\@common-ui-module',     // this is the important part
+     *   pathAlias: '\@common-ui-module',     // this is the important part // [!code highlight]
      *   extensionPath: path.join(__dirname, 'ui'),
      *   ngModules: [
      *     {
@@ -222,8 +219,7 @@ export interface AdminUiExtension
      *   "compilerOptions": {
      *     "baseUrl": ".",
      *     "paths": {
-     *       // highlight-next-line
-     *       "\@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
+     *       "\@common-ui-module/*": ["packages/common-ui-module/src/ui/*"] // [!code highlight]
      *     }
      *   }
      * }
@@ -232,11 +228,9 @@ export interface AdminUiExtension
      * ```ts title="packages/sample-plugin/src/ui/ui-extension.module.ts"
      * import { NgModule } from '\@angular/core';
      * import { SharedModule } from '\@vendure/admin-ui/core';
-     * // highlight-start
-     * // the import below works both in the context of the custom Admin UI app as well as the main project
-     * // '\@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
-     * import { CommonSharedUiModule, CommonUiComponent } from '\@common-ui-module/ui-shared.module';
-     * // highlight-end
+     * // the import below works both in the context of the custom Admin UI app as well as the main project // [!code highlight]
+     * // '\@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath" // [!code highlight]
+     * import { CommonSharedUiModule, CommonUiComponent } from '\@common-ui-module/ui-shared.module'; // [!code highlight]
      *
      * \@NgModule({
      *   imports: [

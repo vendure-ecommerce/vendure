@@ -11,6 +11,7 @@ import { DocumentNode } from 'graphql';
 
 import { DataDisplayComponent } from '../component-registry/component-registry.js';
 import { DashboardAlertDefinition } from '../extension-api/types/alerts.js';
+import { DataTableDisplayComponent } from '../extension-api/types/data-table.js';
 import { NavMenuConfig } from '../nav-menu/nav-menu-extensions.js';
 
 export interface GlobalRegistryContents {
@@ -22,7 +23,7 @@ export interface GlobalRegistryContents {
     dashboardWidgetRegistry: Map<string, DashboardWidgetDefinition>;
     dashboardAlertRegistry: Map<string, DashboardAlertDefinition>;
     inputComponents: Map<string, DashboardFormComponent>;
-    displayComponents: Map<string, DataDisplayComponent>;
+    displayComponents: Map<string, DataDisplayComponent | DataTableDisplayComponent>;
     bulkActionsRegistry: Map<string, BulkAction[]>;
     listQueryDocumentRegistry: Map<string, DocumentNode[]>;
     detailQueryDocumentRegistry: Map<string, DocumentNode[]>;

@@ -140,7 +140,7 @@ import { StripePluginOptions } from './types';
  *
  * :::info
  * A full working storefront example of the Stripe integration can be found in the
- * [Remix Starter repo](https://github.com/vendure-ecommerce/storefront-remix-starter/tree/master/app/components/checkout/stripe)
+ * [Remix Starter repo](https://github.com/vendurehq/storefront-remix-starter/tree/master/app/components/checkout/stripe)
  * :::
  *
  * ## Local development
@@ -153,6 +153,9 @@ import { StripePluginOptions } from './types';
  *    stripe listen --forward-to localhost:3000/payments/stripe
  *    ```
  * 4. The Stripe CLI will create a webhook signing secret you can then use in your config of the StripePlugin.
+ *
+ * @deprecated This plugin is moving to `@vendure-community/payments-plugin`.
+ * The `@vendure/payments-plugin` package will be removed in Vendure v3.6.0.
  *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage StripePlugin

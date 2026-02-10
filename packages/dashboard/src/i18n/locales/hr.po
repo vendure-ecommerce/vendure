@@ -14,6 +14,31 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:43
+msgid "refundReason.CustomerRequest"
+msgstr "Zahtjev kupca"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:44
+msgid "refundReason.NotAvailable"
+msgstr "Nedostupno"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:45
+msgid "refundReason.DamagedInShipping"
+msgstr "Oštećeno pri dostavi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:46
+msgid "refundReason.WrongItem"
+msgstr "Pogrešan artikl"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:47
+msgid "refundReason.Other"
+msgstr "Ostalo"
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-detail-query.ts:23
 #: src/lib/hooks/use-extended-list-query.ts:64
 msgid "Query extension error"
@@ -24,6 +49,31 @@ msgstr "Greška proširenja upita"
 #: src/lib/hooks/use-extended-list-query.ts:66
 msgid "The page will continue with the default query."
 msgstr "Stranica će nastaviti sa zadanim upitom."
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:41
+msgid "Failed to extend query document"
+msgstr "Proširenje dokumenta upita nije uspjelo"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:43
+msgid "Query extension is invalid: must have at least one top-level field"
+msgstr "Proširenje upita nije valjano: mora imati najmanje jedno polje najviše razine"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:47
+msgid "Query extension mismatch: "
+msgstr "Nepodudaranje proširenja upita:"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:49
+msgid "Query extension contains invalid GraphQL syntax"
+msgstr "Proširenje upita sadrži nevaljanu GraphQL sintaksu"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:51
+msgid "Query extension error: "
+msgstr "Greška proširenja upita:"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
@@ -192,34 +242,14 @@ msgid "Orders Summary Widget"
 msgstr "Widget sažetka narudžbi"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:41
-msgid "Failed to extend query document"
-msgstr "Proširenje dokumenta upita nije uspjelo"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:43
-msgid "Query extension is invalid: must have at least one top-level field"
-msgstr "Proširenje upita nije valjano: mora imati najmanje jedno polje najviše razine"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:47
-msgid "Query extension mismatch: "
-msgstr "Nepodudaranje proširenja upita:"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:49
-msgid "Query extension contains invalid GraphQL syntax"
-msgstr "Proširenje upita sadrži nevaljanu GraphQL sintaksu"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:51
-msgid "Query extension error: "
-msgstr "Greška proširenja upita:"
-
-#. js-lingui-explicit-id
 #: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.ts:35
 msgid "Running pending search index updates"
 msgstr "Pokretanje preostalih ažuriranja indeksa pretrage"
+
+#. js-lingui-explicit-id
+#: src/lib/components/data-input/string-list-input.tsx:237
+msgid "Type and press Enter or comma to add..."
+msgstr "Unesite i pritisnite Enter ili zarez za dodavanje..."
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
@@ -354,337 +384,337 @@ msgid "orderState.ArrangingAdditionalPayment"
 msgstr "Organiziranje dodatne uplate"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:43
+#: src/i18n/common-strings.ts:50
 msgid "fieldName.attempts"
 msgstr "Pokušaji"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:44
+#: src/i18n/common-strings.ts:51
 msgid "fieldName.availableCurrencyCodes"
 msgstr "Dostupni kodovi valuta"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:45
+#: src/i18n/common-strings.ts:52
 msgid "fieldName.availableLanguageCodes"
 msgstr "Kodovi dostupnih jezika"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:46
+#: src/i18n/common-strings.ts:53
 msgid "fieldName.breadcrumbs"
 msgstr "Navigacijske mrvice"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:47
+#: src/i18n/common-strings.ts:54
 msgid "fieldName.category"
 msgstr "Kategorija"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:48
+#: src/i18n/common-strings.ts:55
 msgid "fieldName.channels"
 msgstr "Kanali"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:49
+#: src/i18n/common-strings.ts:56
 msgid "fieldName.children"
 msgstr "Potomci"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:50
+#: src/i18n/common-strings.ts:57
 msgid "fieldName.code"
 msgstr "Kod"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:51
+#: src/i18n/common-strings.ts:58
 msgid "fieldName.couponCode"
 msgstr "Kod kupona"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:52
+#: src/i18n/common-strings.ts:59
 msgid "fieldName.createdAt"
 msgstr "Stvoreno"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:53
+#: src/i18n/common-strings.ts:60
 msgid "fieldName.currencyCode"
 msgstr "Kod valute"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:54
+#: src/i18n/common-strings.ts:61
 msgid "fieldName.customer"
 msgstr "Kupac"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:55
+#: src/i18n/common-strings.ts:62
 msgid "fieldName.customerGroup"
 msgstr "Grupa kupaca"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:56
+#: src/i18n/common-strings.ts:63
 msgid "fieldName.customers"
 msgstr "Kupci"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:57
+#: src/i18n/common-strings.ts:64
 msgid "fieldName.customFields"
 msgstr "Prilagođena polja"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:58
+#: src/i18n/common-strings.ts:65
 msgid "fieldName.data"
 msgstr "Podaci"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:59
+#: src/i18n/common-strings.ts:66
 msgid "fieldName.defaultCurrencyCode"
 msgstr "Zadani kod valute"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:60
+#: src/i18n/common-strings.ts:67
 msgid "fieldName.defaultLanguageCode"
 msgstr "Zadani kod jezika"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:61
+#: src/i18n/common-strings.ts:68
 msgid "fieldName.defaultShippingZone"
 msgstr "Zadana zona dostave"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:62
+#: src/i18n/common-strings.ts:69
 msgid "fieldName.defaultTaxZone"
 msgstr "Zadana porezna zona"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:63
+#: src/i18n/common-strings.ts:70
 msgid "fieldName.description"
 msgstr "Opis"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:64
+#: src/i18n/common-strings.ts:71
 msgid "fieldName.duration"
 msgstr "Trajanje"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:65
+#: src/i18n/common-strings.ts:72
 msgid "fieldName.emailAddress"
 msgstr "Adresa e-pošte"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:66
+#: src/i18n/common-strings.ts:73
 msgid "fieldName.enabled"
 msgstr "Omogućeno"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:67
+#: src/i18n/common-strings.ts:74
 msgid "fieldName.endsAt"
 msgstr "Završava"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:68
+#: src/i18n/common-strings.ts:75
 msgid "fieldName.error"
 msgstr "Greška"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:69
+#: src/i18n/common-strings.ts:76
 msgid "fieldName.featuredAsset"
 msgstr "Istaknuta datoteka"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:70
+#: src/i18n/common-strings.ts:77
 msgid "fieldName.firstName"
 msgstr "Ime"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:71
+#: src/i18n/common-strings.ts:78
 msgid "fieldName.fulfillmentHandlerCode"
 msgstr "Kod rukovatelja izvršenja"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:72
+#: src/i18n/common-strings.ts:79
 msgid "fieldName.id"
 msgstr "ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:73
+#: src/i18n/common-strings.ts:80
 msgid "fieldName.isDefault"
 msgstr "Zadano"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:74
+#: src/i18n/common-strings.ts:81
 msgid "fieldName.isPrivate"
 msgstr "Privatno"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:75
+#: src/i18n/common-strings.ts:82
 msgid "fieldName.isSettled"
 msgstr "Izvršeno"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:76
+#: src/i18n/common-strings.ts:83
 msgid "fieldName.lastName"
 msgstr "Prezime"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:77
+#: src/i18n/common-strings.ts:84
 msgid "fieldName.name"
 msgstr "Ime"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:78
+#: src/i18n/common-strings.ts:85
 msgid "fieldName.orderPlacedAt"
 msgstr "Narudžba postavljena"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:79
+#: src/i18n/common-strings.ts:86
 msgid "fieldName.parentId"
 msgstr "ID roditelja"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:80
+#: src/i18n/common-strings.ts:87
 msgid "fieldName.perCustomerUsageLimit"
 msgstr "Ograničenje korištenja po kupcu"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:81
+#: src/i18n/common-strings.ts:88
 msgid "fieldName.permissions"
 msgstr "Dozvole"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:82
+#: src/i18n/common-strings.ts:89
 msgid "fieldName.position"
 msgstr "Pozicija"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:83
+#: src/i18n/common-strings.ts:90
 msgid "fieldName.price"
 msgstr "Cijena"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:84
+#: src/i18n/common-strings.ts:91
 msgid "fieldName.priceWithTax"
 msgstr "Cijena s porezom"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:85
+#: src/i18n/common-strings.ts:92
 msgid "fieldName.pricesIncludeTax"
 msgstr "Cijene uključuju porez"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:86
+#: src/i18n/common-strings.ts:93
 msgid "fieldName.productVariants"
 msgstr "Varijante proizvoda"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:87
+#: src/i18n/common-strings.ts:94
 msgid "fieldName.progress"
 msgstr "Napredak"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:88
+#: src/i18n/common-strings.ts:95
 msgid "fieldName.queueName"
 msgstr "Ime reda"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:89
+#: src/i18n/common-strings.ts:96
 msgid "fieldName.result"
 msgstr "Rezultat"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:90
+#: src/i18n/common-strings.ts:97
 msgid "fieldName.retries"
 msgstr "Ponavljanja"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:91
+#: src/i18n/common-strings.ts:98
 msgid "fieldName.seller"
 msgstr "Prodavač"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:92
+#: src/i18n/common-strings.ts:99
 msgid "fieldName.settledAt"
 msgstr "Naplaćeno"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:93
+#: src/i18n/common-strings.ts:100
 msgid "fieldName.shippingLines"
 msgstr "Redci dostave"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:94
+#: src/i18n/common-strings.ts:101
 msgid "fieldName.sku"
 msgstr "SKU"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:95
+#: src/i18n/common-strings.ts:102
 msgid "fieldName.slug"
 msgstr "URL naziv"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:96
+#: src/i18n/common-strings.ts:103
 msgid "fieldName.startedAt"
 msgstr "Pokrenuto"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:97
+#: src/i18n/common-strings.ts:104
 msgid "fieldName.startsAt"
 msgstr "Počinje"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:98
+#: src/i18n/common-strings.ts:105
 msgid "fieldName.state"
 msgstr "Stanje"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:99
+#: src/i18n/common-strings.ts:106
 msgid "fieldName.stockLevels"
 msgstr "Razine zaliha"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:100
+#: src/i18n/common-strings.ts:107
 msgid "fieldName.token"
 msgstr "Token"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:101
+#: src/i18n/common-strings.ts:108
 msgid "fieldName.total"
 msgstr "Ukupno"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:102
+#: src/i18n/common-strings.ts:109
 msgid "fieldName.totalWithTax"
 msgstr "Ukupno s porezom"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:103
+#: src/i18n/common-strings.ts:110
 msgid "fieldName.type"
 msgstr "Tip"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:104
+#: src/i18n/common-strings.ts:111
 msgid "fieldName.updatedAt"
 msgstr "Ažurirano"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:105
+#: src/i18n/common-strings.ts:112
 msgid "fieldName.usageLimit"
 msgstr "Ograničenje korištenja"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:106
+#: src/i18n/common-strings.ts:113
 msgid "fieldName.user"
 msgstr "Korisnik"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:107
+#: src/i18n/common-strings.ts:114
 msgid "fieldName.value"
 msgstr "Vrijednost"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:108
+#: src/i18n/common-strings.ts:115
 msgid "fieldName.valueList"
 msgstr "Popis vrijednosti"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:109
+#: src/i18n/common-strings.ts:116
 msgid "fieldName.zone"
 msgstr "Zona"
 
@@ -737,7 +767,7 @@ msgstr "!="
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:44
 #: src/app/routes/_authenticated/_orders/components/state-transition-control.tsx:90
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:189
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:45
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:44
 #: src/lib/components/data-input/product-multi-selector-input.tsx:278
 #: src/lib/components/data-input/relation-selector.tsx:403
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:425
@@ -745,12 +775,12 @@ msgid "{0}"
 msgstr "{0}"
 
 #. placeholder {0}: value.totalItems
-#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:41
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:40
 msgid "{0} customers"
 msgstr "{0} kupaca"
 
 #. placeholder {0}: selectedIds.length
-#: src/lib/components/data-input/product-multi-selector-input.tsx:401
+#: src/lib/components/data-input/product-multi-selector-input.tsx:398
 msgid "{0} items selected"
 msgstr "{0} stavki odabrano"
 
@@ -761,24 +791,24 @@ msgid "{0} of {1} available to fulfill"
 msgstr "{0} od {1} dostupno za ispunjenje"
 
 #. placeholder {0}: selection.length
-#: src/lib/components/data-table/data-table-bulk-actions.tsx:72
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:73
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:82
 msgid "{0} selected"
 msgstr "{0} odabrano"
 
-#. placeholder {0}: row.original.productVariants?.totalItems
-#: src/app/routes/_authenticated/_collections/collections.tsx:154
+#. placeholder {0}: row.original.productVariantCount
+#: src/app/routes/_authenticated/_collections/collections.tsx:234
 msgid "{0} variants"
 msgstr "{0} varijanti"
 
-#: src/lib/components/data-input/product-multi-selector-input.tsx:396
-#: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
+#: src/lib/components/data-input/product-multi-selector-input.tsx:393
+#: src/lib/components/shared/configurable-operation-multi-selector.tsx:223
 #: src/lib/components/shared/configurable-operation-selector.tsx:135
 msgid "{buttonText}"
 msgstr "{buttonText}"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:108
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:136
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:109
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:137
 msgid "{label}"
 msgstr "{label}"
 
@@ -786,16 +816,20 @@ msgstr "{label}"
 msgid "{operator}"
 msgstr "{operator}"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:286
+msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
+msgstr "{successfulRefundCount} plaćanje/a vraćeno prije greške. Provjerite povijest narudžbe za detalje."
+
 #: src/lib/framework/dashboard-widget/base-widget.tsx:89
 msgid "{title}"
 msgstr "{title}"
 
 #. placeholder {0}: list.totalItems - 3
-#: src/app/routes/_authenticated/_facets/facets.tsx:50
+#: src/app/routes/_authenticated/_facets/facets.tsx:65
 msgid "+ {0} more"
 msgstr "+ {0} više"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:172
+#: src/app/routes/_authenticated/_collections/collections.tsx:252
 msgid "+ {leftOver} more"
 msgstr "+ {leftOver} više"
 
@@ -807,17 +841,21 @@ msgstr "+ {leftOver} više"
 msgid "="
 msgstr "="
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:214
+msgid "A reason for the refund is required"
+msgstr "Potreban je razlog povrata"
+
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:173
 msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
 msgstr "Potreban je povrat novca u iznosu {formattedDiff}. Odaberite iznose plaćanja i unesite bilješku za nastavak."
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:233
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:229
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
-#: src/lib/components/data-table/use-generated-columns.tsx:234
+#: src/lib/components/data-table/use-generated-columns.tsx:238
 msgid "Actions"
 msgstr "Radnje"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:179
 msgctxt "active language"
 msgid "Active"
 msgstr "Aktivan"
@@ -831,7 +869,7 @@ msgstr "Dodaj \"{newOptionInput}\""
 msgid "Add a manual payment of {0}"
 msgstr "Dodaj ručnu uplatu od {0}"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:230
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:226
 msgid "Add a new address to the customer."
 msgstr "Dodajte novu adresu kupcu."
 
@@ -847,6 +885,10 @@ msgstr "Dodaj još jednu grupu opcija"
 msgid "Add asset"
 msgstr "Dodaj datoteku"
 
+#: src/lib/components/layout/channel-switcher.tsx:212
+msgid "Add channel"
+msgstr "Dodaj kanal"
+
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:151
 msgid "Add column after"
 msgstr "Dodaj stupac nakon"
@@ -855,7 +897,7 @@ msgstr "Dodaj stupac nakon"
 msgid "Add column before"
 msgstr "Dodaj stupac prije"
 
-#: src/app/routes/_authenticated/_countries/countries.tsx:65
+#: src/app/routes/_authenticated/_countries/countries.tsx:63
 msgid "Add Country"
 msgstr "Dodaj zemlju"
 
@@ -892,8 +934,8 @@ msgstr "Dodajte filtre za pregled sadržaja kolekcije."
 msgid "Add item"
 msgstr "Dodaj stavku"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:221
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:227
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:217
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:223
 msgid "Add new address"
 msgstr "Dodaj novu adresu"
 
@@ -968,9 +1010,14 @@ msgstr "Dodaj redak prije"
 msgid "Add stock level for another location"
 msgstr "Dodaj razinu zaliha za drugu lokaciju"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:179
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:182
 msgid "Add Stock to Location"
 msgstr "Dodaj zalihu lokaciji"
+
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:134
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:187
+msgid "Add surcharge"
+msgstr "Dodaj doplatu"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:141
 msgid "Add tags..."
@@ -981,7 +1028,7 @@ msgstr "Dodaj oznake..."
 msgid "Add variant"
 msgstr "Dodaj varijantu"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:188
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:206
 msgid "Added coupon codes"
 msgstr "Dodani kodovi kupona"
 
@@ -990,9 +1037,14 @@ msgid "Added to group"
 msgstr "Dodano u grupu"
 
 #. placeholder {0}: addedLines.length
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:162
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:180
 msgid "Adding {0} item(s)"
 msgstr "Dodavanje {0} stavki"
+
+#. placeholder {0}: addedSurcharges.length
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:230
+msgid "Adding {0} surcharge(s)"
+msgstr "Dodavanje {0} doplata(e)"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:175
 msgid "Adding..."
@@ -1025,19 +1077,19 @@ msgstr "Adresa ažurirana"
 msgid "Address updated successfully"
 msgstr "Adresa uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:200
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:231
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:196
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:239
 msgid "Addresses"
 msgstr "Adrese"
 
 #. placeholder {0}: adjustedLines.length
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:131
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:149
 msgid "Adjusting {0} lines"
 msgstr "Prilagođavanje {0} redaka"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:39
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:16
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:23
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:37
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:15
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:22
 msgid "Administrators"
 msgstr "Administratori"
 
@@ -1045,15 +1097,24 @@ msgstr "Administratori"
 msgid "after"
 msgstr "nakon"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:67
+#: src/lib/components/shared/alerts.tsx:33
+msgid "Alerts"
+msgstr "Upozorenja"
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:66
 msgid "All resources are up and running"
 msgstr "Svi resursi su aktivni"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:411
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:408
 msgid "Allocated"
 msgstr "Dodijeljeno"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:210
+msgid "Allocated payment amount must equal refund total"
+msgstr "Dodijeljeni iznos plaćanja mora biti jednak ukupnom povratu"
+
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:170
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:312
 msgid "Amount"
 msgstr "Iznos"
 
@@ -1065,8 +1126,8 @@ msgstr "Bit će potrebno dodatno plaćanje od {formattedDiff}."
 msgid "AND"
 msgstr "I"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:163
-#: src/lib/components/shared/customer-address-form.tsx:154
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:164
+#: src/lib/components/shared/customer-address-form.tsx:155
 msgid "Apartment, suite, etc."
 msgstr "Stan, apartman itd."
 
@@ -1103,7 +1164,7 @@ msgstr "Jeste li sigurni da želite obrisati {selectionLength} datoteka?"
 msgid "Are you sure you want to delete this address?"
 msgstr "Jeste li sigurni da želite obrisati ovu adresu?"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:302
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:299
 msgid "Are you sure you want to delete this draft order?"
 msgstr "Jeste li sigurni da želite obrisati ovu skicu narudžbe?"
 
@@ -1111,7 +1172,7 @@ msgstr "Jeste li sigurni da želite obrisati ovu skicu narudžbe?"
 msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
 msgstr "Jeste li sigurni da želite obrisati ovaj globalni prikaz? Ova radnja se ne može poništiti i utjecat će na sve korisnike."
 
-#: src/lib/components/data-table/use-generated-columns.tsx:352
+#: src/lib/components/data-table/use-generated-columns.tsx:384
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "Jeste li sigurni da želite obrisati ovu stavku? Ova radnja se ne može poništiti."
 
@@ -1128,16 +1189,22 @@ msgid "Are you sure you want to navigate away from this page? Any unsaved change
 msgstr "Jeste li sigurni da želite napustiti ovu stranicu? Sve nespremljene promjene bit će izgubljene."
 
 #. placeholder {0}: selection.length
+#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:51
+msgid "Are you sure you want to remove {0} {1} from this zone?"
+msgstr "Jeste li sigurni da želite ukloniti {0} {1} iz ove zone?"
+
+#. placeholder {0}: selection.length
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:84
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "Jeste li sigurni da želite ukloniti {0} {entityType} iz trenutnog kanala?"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:38
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:36
 #: src/app/routes/_authenticated/_assets/assets.tsx:9
 #: src/app/routes/_authenticated/_assets/assets.tsx:30
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:198
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:443
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:208
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:194
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:440
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:227
 msgid "Assets"
 msgstr "Datoteke"
 
@@ -1154,24 +1221,29 @@ msgid "Assign options to existing variant"
 msgstr "Dodijeli opcije postojećoj varijanti"
 
 #: src/lib/components/shared/assign-to-channel-bulk-action.tsx:55
+#: src/lib/components/shared/assigned-channels.tsx:88
 msgid "Assign to channel"
 msgstr "Dodijeli kanalu"
 
 #. placeholder {0}: currentInterval?.label
-#: src/app/routes/_authenticated/_system/job-queue.tsx:236
+#: src/app/routes/_authenticated/_system/job-queue.tsx:245
 msgid "Auto refresh: {0}"
 msgstr "Automatsko osvježavanje: {0}"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:176
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:301
+msgid "Available"
+msgstr "Dostupno"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:172
 msgid "Available currencies"
 msgstr "Dostupne valute"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:164
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:112
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:160
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:108
 msgid "Available languages"
 msgstr "Dostupni jezici"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:340
+#: src/lib/components/layout/manage-languages-dialog.tsx:322
 msgid "Available Languages"
 msgstr "Dostupni jezici"
 
@@ -1195,21 +1267,21 @@ msgstr "prije"
 msgid "between"
 msgstr "između"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:267
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:260
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:450
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:293
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:268
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:446
 msgid "Billing address"
 msgstr "Adresa za naplatu"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:117
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:135
 msgid "Billing address changed"
 msgstr "Adresa za naplatu promijenjena"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:189
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:187
 msgid "Billing address set for order"
 msgstr "Adresa za naplatu postavljena za narudžbu"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:205
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:203
 msgid "Billing address unset for order"
 msgstr "Adresa za naplatu uklonjena s narudžbe"
 
@@ -1218,41 +1290,42 @@ msgstr "Adresa za naplatu uklonjena s narudžbe"
 msgid "Browse facets"
 msgstr "Pregledaj facete"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:185
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:181
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:183
 msgid "Calculator"
 msgstr "Kalkulator"
 
 #: src/app/common/duplicate-entity-dialog.tsx:108
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:413
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:334
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:417
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:337
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:168
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:304
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:306
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:350
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:353
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:71
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
 #: src/lib/components/data-input/product-multi-selector-input.tsx:364
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:121
-#: src/lib/components/data-table/use-generated-columns.tsx:359
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:122
+#: src/lib/components/data-table/use-generated-columns.tsx:391
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:396
+#: src/lib/components/layout/manage-languages-dialog.tsx:377
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
-#: src/lib/components/shared/customer-address-form.tsx:325
+#: src/lib/components/shared/customer-address-form.tsx:328
 #: src/lib/components/shared/navigation-confirmation.tsx:55
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:205
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:142
 msgid "Cancel"
 msgstr "Otkaži"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:184
+#: src/app/routes/_authenticated/_system/job-queue.tsx:193
 msgid "Cancel Job"
 msgstr "Otkaži zadatak"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:164
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:166
 msgid "Cancel modification"
 msgstr "Otkaži izmjenu"
 
@@ -1260,7 +1333,15 @@ msgstr "Otkaži izmjenu"
 msgid "Cancel payment"
 msgstr "Otkaži uplatu"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:63
+#: src/app/routes/_authenticated/_collections/collections.tsx:119
+msgid "Cannot move a collection into its own descendant"
+msgstr "Nije moguće premjestiti kolekciju u vlastiti podskup"
+
+#: src/lib/components/shared/assigned-channels.tsx:49
+msgid "Cannot remove from active channel"
+msgstr "Nije moguće ukloniti iz aktivnog kanala"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:62
 msgid "Category"
 msgstr "Kategorija"
 
@@ -1268,25 +1349,26 @@ msgstr "Kategorija"
 msgid "Channel"
 msgstr "Kanal"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:187
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:183
 msgid "Channel defaults"
 msgstr "Zadane postavke kanala"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:323
+#: src/lib/components/layout/manage-languages-dialog.tsx:305
 msgid "Channel Languages"
 msgstr "Jezici kanala"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:40
-#: src/app/routes/_authenticated/_channels/channels.tsx:16
-#: src/app/routes/_authenticated/_channels/channels.tsx:24
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:38
+#: src/app/routes/_authenticated/_channels/channels.tsx:15
+#: src/app/routes/_authenticated/_channels/channels.tsx:23
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:216
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:111
+#: src/lib/components/layout/channel-switcher.tsx:146
 msgid "Channels"
 msgstr "Kanali"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:184
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:196
-#: src/lib/components/shared/customer-address-form.tsx:175
+#: src/lib/components/shared/customer-address-form.tsx:176
 msgid "City"
 msgstr "Grad"
 
@@ -1295,7 +1377,7 @@ msgid "Clear"
 msgstr "Obriši"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
-#: src/lib/components/data-table/data-table.tsx:305
+#: src/lib/components/data-table/data-table.tsx:406
 msgid "Clear all"
 msgstr "Obriši sve"
 
@@ -1311,17 +1393,17 @@ msgstr "Obriši filtere"
 msgid "Click \"Run Test\" to test this shipping method."
 msgstr "Kliknite \"Pokreni test\" za testiranje ovog načina dostave."
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:136
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:114
-#: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:113
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:141
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:130
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:157
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:155
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:187
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:78
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:132
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:110
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:137
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:126
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:153
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:151
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:183
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:100
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:147
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:61
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:97
 msgid "Code"
 msgstr "Kod"
 
@@ -1329,13 +1411,21 @@ msgstr "Kod"
 msgid "Collection contents for {collectionName}"
 msgstr "Sadržaj kolekcije {collectionName}"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
-#: src/app/routes/_authenticated/_collections/collections.tsx:30
-#: src/app/routes/_authenticated/_collections/collections.tsx:86
+#: src/app/routes/_authenticated/_collections/collections.tsx:152
+msgid "Collection moved to new parent"
+msgstr "Kolekcija premještena u novi nadređeni element"
+
+#: src/app/routes/_authenticated/_collections/collections.tsx:146
+msgid "Collection position updated"
+msgstr "Pozicija kolekcije ažurirana"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:43
+#: src/app/routes/_authenticated/_collections/collections.tsx:36
+#: src/app/routes/_authenticated/_collections/collections.tsx:166
 msgid "Collections"
 msgstr "Kolekcije"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:282
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:284
 msgid "Collections moved successfully"
 msgstr "Kolekcije uspješno premještene"
 
@@ -1343,22 +1433,22 @@ msgstr "Kolekcije uspješno premještene"
 msgid "Column settings"
 msgstr "Postavke stupaca"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:125
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:126
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:165
-#: src/lib/components/shared/customer-address-form.tsx:116
+#: src/lib/components/shared/customer-address-form.tsx:117
 msgid "Company"
 msgstr "Tvrtka"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:323
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:320
 msgid "Complete draft"
 msgstr "Dovrši skicu"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:221
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:173
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:217
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:171
 msgid "Conditions"
 msgstr "Uvjeti"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:261
+#: src/lib/components/layout/manage-languages-dialog.tsx:243
 msgid "Configure available languages for your store and channels"
 msgstr "Konfigurirajte dostupne jezike za svoju trgovinu i kanale"
 
@@ -1367,11 +1457,11 @@ msgstr "Konfigurirajte dostupne jezike za svoju trgovinu i kanale"
 msgid "Confirm"
 msgstr "Potvrdi"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:115
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:116
 msgid "Confirm Action"
 msgstr "Potvrdi radnju"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:349
+#: src/lib/components/data-table/use-generated-columns.tsx:381
 msgid "Confirm deletion"
 msgstr "Potvrdi brisanje"
 
@@ -1383,12 +1473,16 @@ msgstr "Potvrdi navigaciju"
 msgid "contains"
 msgstr "sadrži"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:222
-#: src/app/routes/_authenticated/_collections/collections.tsx:147
+#: src/lib/components/layout/channel-switcher.tsx:157
+msgid "Content:"
+msgstr "Sadržaj:"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:218
+#: src/app/routes/_authenticated/_collections/collections.tsx:227
 msgid "Contents"
 msgstr "Sadržaj"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:124
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:125
 #: src/lib/components/shared/confirmation-dialog.tsx:52
 msgid "Continue"
 msgstr "Nastavi"
@@ -1397,53 +1491,54 @@ msgstr "Nastavi"
 msgid "Copy to Personal"
 msgstr "Kopiraj u osobno"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:34
-#: src/app/routes/_authenticated/_countries/countries.tsx:14
-#: src/app/routes/_authenticated/_countries/countries.tsx:23
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:103
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:32
+#: src/app/routes/_authenticated/_countries/countries.tsx:13
+#: src/app/routes/_authenticated/_countries/countries.tsx:22
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:100
 msgid "Countries"
 msgstr "Zemlje"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:239
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:240
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:217
-#: src/lib/components/shared/customer-address-form.tsx:230
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:53
+#: src/lib/components/shared/customer-address-form.tsx:231
 msgid "Country"
 msgstr "Država"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:199
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:195
 msgid "Coupon code"
 msgstr "Kod kupona"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:245
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:243
 msgid "Coupon code removed from order"
 msgstr "Kod kupona uklonjen s narudžbe"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:232
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:230
 msgid "Coupon code set for order"
 msgstr "Kod kupona postavljen za narudžbu"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:108
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:125
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:124
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:197
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:111
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:136
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:105
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:122
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:121
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:84
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:93
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:152
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:110
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:99
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:127
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:214
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:200
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:119
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:135
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:156
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:133
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:84
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:78
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:131
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:96
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:96
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:93
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:83
 msgid "Create"
 msgstr "Stvori"
 
@@ -1453,7 +1548,7 @@ msgstr "Stvori"
 msgid "Create \"{0}\""
 msgstr "Stvori \"{0}\""
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:181
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:182
 msgid "Create {createCount} variants"
 msgstr "Stvori {createCount} varijanti"
 
@@ -1470,16 +1565,16 @@ msgstr "Stvori opcije proizvoda"
 msgid "Create variant"
 msgstr "Stvori varijantu"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:152
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:153
 msgid "Create Variants"
 msgstr "Stvori varijante"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:155
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:156
 msgid "Create variants for your product"
 msgstr "Stvorite varijante za svoj proizvod"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:114
-#: src/lib/framework/layout-engine/page-layout.tsx:404
+#: src/lib/framework/layout-engine/page-layout.tsx:616
 msgid "Created"
 msgstr "Stvoreno"
 
@@ -1488,11 +1583,11 @@ msgstr "Stvoreno"
 msgid "Created at"
 msgstr "Stvoreno u"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:180
 msgid "Creating..."
 msgstr "Stvaranje..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:98
 msgctxt "current channel"
 msgid "Current"
 msgstr "Trenutno"
@@ -1501,11 +1596,11 @@ msgstr "Trenutno"
 msgid "Current facet values"
 msgstr "Trenutne vrijednosti svojstava"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:55
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:54
 msgid "Current status"
 msgstr "Trenutno stanje"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:377
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:373
 msgid "Custom fields"
 msgstr "Prilagođena polja"
 
@@ -1513,13 +1608,13 @@ msgstr "Prilagođena polja"
 msgid "Custom Fields"
 msgstr "Prilagođena polja"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:151
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:169
 msgid "Custom fields changed"
 msgstr "Prilagođena polja promijenjena"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:242
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:217
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:403
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:268
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:225
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:399
 #: src/lib/components/shared/role-code-label.tsx:8
 msgid "Customer"
 msgstr "Kupac"
@@ -1536,18 +1631,18 @@ msgstr "Detalji kupca ažurirani"
 msgid "Customer group members for {customerGroupName}"
 msgstr "Članovi grupe kupaca {customerGroupName}"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:255
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:251
 msgid "Customer groups"
 msgstr "Grupe kupaca"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:37
-#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:15
-#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:22
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:35
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:14
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:21
 msgid "Customer Groups"
 msgstr "Grupe kupaca"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:30
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:249
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:245
 msgid "Customer history"
 msgstr "Povijest kupca"
 
@@ -1563,7 +1658,7 @@ msgstr "Kupac nije pronađen"
 msgid "Customer registered"
 msgstr "Kupac registriran"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:159
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:157
 msgid "Customer set for order"
 msgstr "Kupac postavljen za narudžbu"
 
@@ -1575,10 +1670,10 @@ msgstr "Kupac ažuriran"
 msgid "Customer verified"
 msgstr "Kupac verificiran"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:114
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:58
-#: src/app/routes/_authenticated/_customers/customers.tsx:16
-#: src/app/routes/_authenticated/_customers/customers.tsx:22
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:110
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:56
+#: src/app/routes/_authenticated/_customers/customers.tsx:15
+#: src/app/routes/_authenticated/_customers/customers.tsx:21
 msgid "Customers"
 msgstr "Kupci"
 
@@ -1587,8 +1682,8 @@ msgctxt "theme"
 msgid "Dark"
 msgstr "Tamna"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:319
-#: src/lib/components/shared/customer-address-form.tsx:310
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
+#: src/lib/components/shared/customer-address-form.tsx:313
 msgid "Default Billing Address"
 msgstr "Zadana adresa za naplatu"
 
@@ -1596,36 +1691,36 @@ msgstr "Zadana adresa za naplatu"
 msgid "Default channel"
 msgstr "Zadani kanal"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:205
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:201
 msgid "Default currency"
 msgstr "Zadana valuta"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:192
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:188
 msgid "Default language"
 msgstr "Zadani jezik"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:368
+#: src/lib/components/layout/manage-languages-dialog.tsx:350
 msgid "Default Language"
 msgstr "Zadani jezik"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:299
-#: src/lib/components/shared/customer-address-form.tsx:290
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
+#: src/lib/components/shared/customer-address-form.tsx:293
 msgid "Default Shipping Address"
 msgstr "Zadana adresa za dostavu"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:226
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:222
 msgid "Default shipping zone"
 msgstr "Zadana zona dostave"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:218
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:214
 msgid "Default tax zone"
 msgstr "Zadana porezna zona"
 
 #: src/app/common/delete-bulk-action.tsx:139
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:41
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:312
-#: src/lib/components/data-table/use-generated-columns.tsx:342
-#: src/lib/components/data-table/use-generated-columns.tsx:373
+#: src/lib/components/data-table/use-generated-columns.tsx:374
+#: src/lib/components/data-table/use-generated-columns.tsx:405
 #: src/lib/components/data-table/views-sheet.tsx:272
 #: src/lib/components/data-table/views-sheet.tsx:298
 msgid "Delete"
@@ -1639,11 +1734,11 @@ msgstr "Obriši adresu"
 msgid "Delete column"
 msgstr "Obriši stupac"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:308
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:305
 msgid "Delete draft"
 msgstr "Obriši skicu"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:301
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:298
 msgid "Delete draft order"
 msgstr "Obriši skicu narudžbe"
 
@@ -1667,18 +1762,19 @@ msgstr "Obrisano {deleted} {entityName}"
 msgid "Deleted {selectionLength} assets"
 msgstr "Obrisano {selectionLength} datoteka"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:323
+#: src/lib/components/data-table/use-generated-columns.tsx:355
 msgid "Deleted successfully"
 msgstr "Uspješno obrisano"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:167
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:163
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:77
 #: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:14
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:164
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:155
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:167
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:98
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:157
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:118
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:160
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:162
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:163
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:94
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:155
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:114
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:110
 msgid "Description"
 msgstr "Opis"
@@ -1687,7 +1783,7 @@ msgstr "Opis"
 msgid "Description (alt)"
 msgstr "Opis (alternativni tekst)"
 
-#: src/lib/components/layout/dev-mode-indicator.tsx:12
+#: src/lib/components/layout/dev-mode-indicator.tsx:15
 #: src/lib/components/layout/nav-user.tsx:149
 msgid "Dev Mode"
 msgstr "Razvojni način"
@@ -1697,20 +1793,20 @@ msgid "Disable"
 msgstr "Onemogući"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:121
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:59
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:58
 #: src/lib/components/layout/nav-user.tsx:161
 msgid "Disabled"
 msgstr "Onemogućeno"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:35
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:38
 msgid "Discount"
 msgstr "Popust"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Jezik prikaza"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:344
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:341
 msgid "Do not track"
 msgstr "Ne prati"
 
@@ -1718,16 +1814,16 @@ msgstr "Ne prati"
 msgid "does not contain"
 msgstr "ne sadrži"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:295
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:293
 #: src/app/routes/_authenticated/_orders/orders.tsx:115
 msgid "Draft order"
 msgstr "Skica narudžbe"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:256
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:254
 msgid "Draft order completed"
 msgstr "Skica narudžbe dovršena"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:273
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:271
 msgid "Draft order deleted"
 msgstr "Skica narudžbe obrisana"
 
@@ -1764,9 +1860,9 @@ msgstr "npr. Mala"
 msgid "e.g., Red, Large, Cotton"
 msgstr "npr. Crvena, Velika, Pamuk"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:241
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:267
-#: src/lib/components/shared/asset/asset-gallery.tsx:462
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:249
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:275
+#: src/lib/components/shared/asset/asset-gallery.tsx:468
 #: src/lib/components/shared/history-timeline/history-note-entry.tsx:48
 msgid "Edit"
 msgstr "Uredi"
@@ -1775,7 +1871,7 @@ msgstr "Uredi"
 msgid "Edit Address"
 msgstr "Uredi adresu"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:95
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:93
 msgid "Edit asset"
 msgstr "Uredi datoteku"
 
@@ -1789,7 +1885,7 @@ msgstr "Uredi vrijednosti svojstava"
 msgid "Edit image"
 msgstr "Uredi sliku"
 
-#: src/app/routes/_authenticated/index.tsx:194
+#: src/app/routes/_authenticated/index.tsx:190
 msgid "Edit Layout"
 msgstr "Uredi raspored"
 
@@ -1822,12 +1918,12 @@ msgstr "Uredite detalje adrese u nastavku."
 msgid "Email"
 msgstr "E-pošta"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:185
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:181
 msgid "Email address"
 msgstr "Adresa e-pošte"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:131
-#: src/app/routes/_authenticated/_profile/profile.tsx:104
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:127
+#: src/app/routes/_authenticated/_profile/profile.tsx:103
 msgid "Email Address or identifier"
 msgstr "Adresa e-pošte ili identifikator"
 
@@ -1843,24 +1939,29 @@ msgstr "Ažuriranje e-pošte verificirano"
 msgid "Enable"
 msgstr "Omogući"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:43
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:226
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:121
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:92
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:136
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:42
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:223
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:128
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:142
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:113
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:117
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:105
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:56
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:58
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:102
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:55
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:57
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:57
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "Omogućeno"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:187
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:183
 msgid "Ends at"
 msgstr "Završava u"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:232
+msgid "Enter custom reason..."
+msgstr "Unesite prilagođeni razlog..."
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:306
 msgid "Enter refund note"
@@ -1878,7 +1979,7 @@ msgstr "Unesite ID transakcije za ovo izvršenje povrata"
 msgid "Enter transaction ID"
 msgstr "Unesite ID transakcije"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:377
+#: src/lib/framework/layout-engine/page-layout.tsx:589
 msgid "Entity Information"
 msgstr "Informacije o entitetu"
 
@@ -1900,7 +2001,7 @@ msgstr "Greška učitavanja povijesti narudžbe: {0}"
 msgid "Error message"
 msgstr "Poruka greške"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:125
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:124
 msgid "Error transitioning to state"
 msgstr "Greška prilikom prijelaza u stanje"
 
@@ -1928,33 +2029,33 @@ msgstr "bez PDV-a:"
 msgid "Explore Enterprise Edition"
 msgstr "Istražite Enterprise izdanje"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:123
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:119
 msgid "Facet"
 msgstr "Svojstvo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:145
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:141
 msgid "Facet values"
 msgstr "Vrijednosti svojstava"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:426
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:199
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:423
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:206
 msgid "Facet Values"
 msgstr "Vrijednosti svojstava"
 
-#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:32
+#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:33
 msgid "Facet values for {facetName}"
 msgstr "Vrijednosti svojstava za {facetName}"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:40
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
-#: src/app/routes/_authenticated/_facets/facets.tsx:24
-#: src/app/routes/_authenticated/_facets/facets.tsx:64
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:38
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:35
+#: src/app/routes/_authenticated/_facets/facets.tsx:21
+#: src/app/routes/_authenticated/_facets/facets.tsx:28
 #: src/lib/components/shared/facet-value-selector.tsx:405
 msgid "Facets"
 msgstr "Svojstva"
 
 #: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:61
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:129
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:127
 msgid "Failed to add customer to group"
 msgstr "Dodavanje kupca u grupu nije uspjelo"
 
@@ -1967,6 +2068,14 @@ msgstr "Dodavanje vrijednosti opcije nije uspjelo"
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:86
 msgid "Failed to add payment"
 msgstr "Dodavanje plaćanja nije uspjelo"
+
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:73
+msgid "Failed to assign {entityIdsLength} {entityType} to channel"
+msgstr "Nije uspjelo dodijeliti {entityIdsLength} {entityType} kanalu"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:259
+msgid "Failed to cancel order items"
+msgstr "Nije uspjelo otkazati stavke narudžbe"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:78
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:82
@@ -1981,41 +2090,41 @@ msgstr "Pretvaranje globalnog prikaza u osobni prikaz nije uspjelo"
 msgid "Failed to convert view to global"
 msgstr "Pretvaranje prikaza u globalni nije uspjelo"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:119
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:117
 msgid "Failed to create address"
 msgstr "Stvaranje adrese nije uspjelo"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:88
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:86
 msgid "Failed to create administrator"
 msgstr "Neuspješno kreiranje administratora"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:92
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:98
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:90
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:96
 msgid "Failed to create channel"
 msgstr "Stvaranje kanala nije uspjelo"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:100
 msgid "Failed to create collection"
 msgstr "Stvaranje kolekcije nije uspjelo"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:69
 msgid "Failed to create country"
 msgstr "Stvaranje zemlje nije uspjelo"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:100
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:106
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:98
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:104
 msgid "Failed to create customer"
 msgstr "Stvaranje kupca nije uspjelo"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:76
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:74
 msgid "Failed to create customer group"
 msgstr "Stvaranje grupe kupaca nije uspjelo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:84
 msgid "Failed to create facet"
 msgstr "Stvaranje svojstva nije uspjelo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:95
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:93
 msgid "Failed to create facet value"
 msgstr "Stvaranje vrijednosti svojstva nije uspjelo"
 
@@ -2023,19 +2132,19 @@ msgstr "Stvaranje vrijednosti svojstva nije uspjelo"
 msgid "Failed to create option group"
 msgstr "Stvaranje grupe opcija nije uspjelo"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:110
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:108
 msgid "Failed to create payment method"
 msgstr "Stvaranje načina plaćanja nije uspjelo"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:95
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:104
 msgid "Failed to create product"
 msgstr "Stvaranje proizvoda nije uspjelo"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:139
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:137
 msgid "Failed to create product option"
 msgstr "Nije uspjelo stvaranje opcije proizvoda"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:117
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:115
 msgid "Failed to create product option group"
 msgstr "Neuspješno stvaranje grupe opcija proizvoda"
 
@@ -2044,46 +2153,46 @@ msgstr "Neuspješno stvaranje grupe opcija proizvoda"
 msgid "Failed to create product options"
 msgstr "Stvaranje opcija proizvoda nije uspjelo"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:127
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:126
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:174
 msgid "Failed to create product variant"
 msgstr "Stvaranje varijante proizvoda nije uspjelo"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:112
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:120
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:110
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:118
 msgid "Failed to create promotion"
 msgstr "Stvaranje promocije nije uspjelo"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:71
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:69
 msgid "Failed to create role"
 msgstr "Stvaranje uloge nije uspjelo"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:63
 msgid "Failed to create seller"
 msgstr "Stvaranje prodavača nije uspjelo"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:100
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:98
 msgid "Failed to create shipping method"
 msgstr "Nije uspjelo stvaranje načina dostave"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:79
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:77
 msgid "Failed to create stock location"
 msgstr "Stvaranje lokacije zaliha nije uspjelo"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:79
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:77
 msgid "Failed to create tax category"
 msgstr "Stvaranje porezne kategorije nije uspjelo"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:79
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:78
 msgid "Failed to create tax rate"
 msgstr "Stvaranje porezne stope nije uspjelo"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:69
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:68
 msgid "Failed to create zone"
 msgstr "Stvaranje zone nije uspjelo"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:325
-#: src/lib/components/data-table/use-generated-columns.tsx:331
+#: src/lib/components/data-table/use-generated-columns.tsx:357
+#: src/lib/components/data-table/use-generated-columns.tsx:363
 msgid "Failed to delete"
 msgstr "Brisanje nije uspjelo"
 
@@ -2125,25 +2234,38 @@ msgstr "Dupliciranje prikaza nije uspjelo"
 msgid "Failed to fulfill order"
 msgstr "Izvršenje narudžbe nije uspjelo"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:290
+#: src/lib/components/layout/manage-languages-dialog.tsx:272
 msgid "Failed to load global settings"
 msgstr "Učitavanje globalnih postavki nije uspjelo"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:136
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:140
 msgid "Failed to modify order"
 msgstr "Izmjena narudžbe nije uspjela"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:289
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:293
 msgid "Failed to move collections"
 msgstr "Premještanje kolekcija nije uspjelo"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:139
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:289
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:302
+msgid "Failed to process refund"
+msgstr "Nije uspjelo obraditi povrat"
+
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:36
+msgid "Failed to remove countries from zone"
+msgstr "Nije uspjelo ukloniti države iz zone"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:137
 msgid "Failed to remove customer from group"
 msgstr "Uklanjanje kupca iz grupe nije uspjelo"
 
 #: src/app/routes/_authenticated/_facets/components/facet-bulk-actions.tsx:73
 msgid "Failed to remove facet from channel: {message}"
 msgstr "Uklanjanje svojstva iz kanala nije uspjelo: {message}"
+
+#: src/lib/components/shared/assigned-channels.tsx:43
+msgid "Failed to remove product from channel"
+msgstr "Nije uspjelo ukloniti proizvod iz kanala"
 
 #: src/lib/components/data-table/views-sheet.tsx:68
 msgid "Failed to rename global view"
@@ -2152,6 +2274,10 @@ msgstr "Preimenovanje globalnog prikaza nije uspjelo"
 #: src/lib/components/data-table/views-sheet.tsx:68
 msgid "Failed to rename view"
 msgstr "Preimenovanje prikaza nije uspjelo"
+
+#: src/lib/components/data-table/data-table.tsx:213
+msgid "Failed to reorder items"
+msgstr "Nije uspjelo preurediti stavke"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:48
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:52
@@ -2163,7 +2289,7 @@ msgstr "Izvršenje plaćanja nije uspjelo"
 msgid "Failed to settle refund"
 msgstr "Izvršenje povrata nije uspjelo"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:112
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:116
 msgid "Failed to transition order to state"
 msgstr "Prijelaz narudžbe u stanje nije uspio"
 
@@ -2171,41 +2297,45 @@ msgstr "Prijelaz narudžbe u stanje nije uspio"
 msgid "Failed to update address"
 msgstr "Ažuriranje adrese nije uspjelo"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:88
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:86
 msgid "Failed to update administrator"
 msgstr "Neuspješno ažuriranje administratora"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:74
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:72
 msgid "Failed to update asset"
 msgstr "Ažuriranje datoteke nije uspjelo"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:92
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:98
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:90
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:96
 msgid "Failed to update channel"
 msgstr "Ažuriranje kanala nije uspjelo"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:100
 msgid "Failed to update collection"
 msgstr "Ažuriranje kolekcije nije uspjelo"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
+#: src/app/routes/_authenticated/_collections/collections.tsx:157
+msgid "Failed to update collection position"
+msgstr "Nije uspjelo ažurirati poziciju kolekcije"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:69
 msgid "Failed to update country"
 msgstr "Ažuriranje zemlje nije uspjelo"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:100
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:106
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:98
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:104
 msgid "Failed to update customer"
 msgstr "Ažuriranje kupca nije uspjelo"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:76
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:74
 msgid "Failed to update customer group"
 msgstr "Ažuriranje grupe kupaca nije uspjelo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:84
 msgid "Failed to update facet"
 msgstr "Ažuriranje svojstva nije uspjelo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:95
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:93
 msgid "Failed to update facet value"
 msgstr "Ažuriranje vrijednosti svojstva nije uspjelo"
 
@@ -2214,17 +2344,17 @@ msgstr "Ažuriranje vrijednosti svojstva nije uspjelo"
 msgid "Failed to update fulfillment state"
 msgstr "Ažuriranje stanja izvršenja nije uspjelo"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:77
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:83
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:75
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:81
 msgid "Failed to update global settings"
 msgstr "Ažuriranje globalnih postavki nije uspjelo"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:89
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:92
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:59
 msgid "Failed to update order"
 msgstr "Ažuriranje narudžbe nije uspjelo"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:110
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:108
 msgid "Failed to update payment method"
 msgstr "Ažuriranje načina plaćanja nije uspjelo"
 
@@ -2233,56 +2363,56 @@ msgstr "Ažuriranje načina plaćanja nije uspjelo"
 msgid "Failed to update payment state"
 msgstr "Ažuriranje stanja plaćanja nije uspjelo"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:95
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:104
 msgid "Failed to update product"
 msgstr "Ažuriranje proizvoda nije uspjelo"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:139
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:137
 msgid "Failed to update product option"
 msgstr "Nije uspjelo ažuriranje opcije proizvoda"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:118
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:116
 msgid "Failed to update product option group"
 msgstr "Neuspješno ažuriranje grupe opcija proizvoda"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:127
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:126
 msgid "Failed to update product variant"
 msgstr "Ažuriranje varijante proizvoda nije uspjelo"
 
-#: src/app/routes/_authenticated/_profile/profile.tsx:65
+#: src/app/routes/_authenticated/_profile/profile.tsx:64
 msgid "Failed to update profile"
 msgstr "Ažuriranje profila nije uspjelo"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:112
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:120
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:110
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:118
 msgid "Failed to update promotion"
 msgstr "Ažuriranje promocije nije uspjelo"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:71
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:69
 msgid "Failed to update role"
 msgstr "Ažuriranje uloge nije uspjelo"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:63
 msgid "Failed to update seller"
 msgstr "Ažuriranje prodavača nije uspjelo"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:100
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:98
 msgid "Failed to update shipping method"
 msgstr "Nije uspjelo ažuriranje načina dostave"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:79
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:77
 msgid "Failed to update stock location"
 msgstr "Ažuriranje lokacije zaliha nije uspjelo"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:79
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:77
 msgid "Failed to update tax category"
 msgstr "Ažuriranje porezne kategorije nije uspjelo"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:79
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:78
 msgid "Failed to update tax rate"
 msgstr "Ažuriranje porezne stope nije uspjelo"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:69
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:68
 msgid "Failed to update zone"
 msgstr "Ažuriranje zone nije uspjelo"
 
@@ -2294,7 +2424,7 @@ msgstr "Netočno"
 msgid "Filter by {columnId}"
 msgstr "Filtriraj po {columnId}"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:365
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:369
 msgid "Filter by collection name"
 msgstr "Filtriraj po nazivu kolekcije"
 
@@ -2302,21 +2432,21 @@ msgstr "Filtriraj po nazivu kolekcije"
 msgid "Filter by tags"
 msgstr "Filtriraj po oznakama"
 
-#: src/lib/components/data-table/data-table.tsx:244
+#: src/lib/components/data-table/data-table.tsx:344
 msgid "Filter..."
 msgstr "Filtriraj..."
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:172
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:168
 msgid "Filters"
 msgstr "Filteri"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:119
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:173
-#: src/app/routes/_authenticated/_profile/profile.tsx:92
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:115
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:169
+#: src/app/routes/_authenticated/_profile/profile.tsx:91
 msgid "First name"
 msgstr "Ime"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:152
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:148
 msgid "Focal Point"
 msgstr "Žarišna točka"
 
@@ -2334,7 +2464,7 @@ msgstr "Od {0} do {1}"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:219
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:225
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:310
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:312
 msgid "Fulfill order"
 msgstr "Izvrši narudžbu"
 
@@ -2343,7 +2473,7 @@ msgstr "Izvrši narudžbu"
 msgid "Fulfilled items ({0})"
 msgstr "Izvršene stavke ({0})"
 
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:308
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:310
 msgid "Fulfilling..."
 msgstr "Izvršavanje..."
 
@@ -2363,12 +2493,12 @@ msgstr "Izvršenje #{0} od {1} do {2}"
 msgid "Fulfillment created"
 msgstr "Izvršenje stvoreno"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:277
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:303
 msgid "Fulfillment details"
 msgstr "Detalji izvršenja"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:289
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:165
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:163
 msgid "Fulfillment handler"
 msgstr "Rukovatelj izvršenja"
 
@@ -2384,13 +2514,13 @@ msgstr "Stanje izvršenja uspješno ažurirano"
 msgid "Fulfillment transitioned"
 msgstr "Izvršenje prevedeno"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:108
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:109
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:159
-#: src/lib/components/shared/customer-address-form.tsx:99
+#: src/lib/components/shared/customer-address-form.tsx:100
 msgid "Full Name"
 msgstr "Puno ime"
 
-#: src/lib/components/shared/custom-fields-form.tsx:100
+#: src/lib/components/shared/custom-fields-form.tsx:101
 msgid "General"
 msgstr "Općenito"
 
@@ -2399,16 +2529,16 @@ msgstr "Općenito"
 msgid "Generate slug automatically"
 msgstr "Automatski generiraj URL naziv"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:270
+#: src/lib/components/layout/manage-languages-dialog.tsx:252
 msgid "Global Languages"
 msgstr "Globalni jezici"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:131
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:127
 msgid "Global out of stock threshold"
 msgstr "Globalni prag zaliha"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:42
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:92
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:40
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:90
 msgid "Global Settings"
 msgstr "Globalne postavke"
 
@@ -2480,7 +2610,7 @@ msgstr "Naslov 5"
 msgid "Heading 6"
 msgstr "Naslov 6"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:43
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:42
 msgid "Health checks"
 msgstr "Provjere zdravlja"
 
@@ -2500,15 +2630,16 @@ msgstr "Sakrij lozinku"
 msgid "ID"
 msgstr "ID"
 
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:74
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:73
 msgid "Identifier"
 msgstr "Identifikator"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:178
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:174
 msgid "If enabled, the filters will be inherited from the parent collection and combined with the filters set on this collection."
 msgstr "Ako je omogućeno, filteri će se naslijediti iz nadređene kolekcije i kombinirati s filterima postavljenim na ovoj kolekciji."
 
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:33
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:90
 msgid "Image"
 msgstr "Slika"
 
@@ -2516,11 +2647,15 @@ msgstr "Slika"
 msgid "in"
 msgstr "u"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:176
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:102
+msgid "Includes tax at {taxRate}%"
+msgstr "Uključuje porez od {taxRate}%"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:172
 msgid "Inherit filters"
 msgstr "Naslijedi filtere"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:338
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:335
 msgid "Inherit from global settings"
 msgstr "Naslijedi iz globalnih postavki"
 
@@ -2533,7 +2668,7 @@ msgstr "Umetni sliku"
 msgid "Insert link"
 msgstr "Umetni poveznicu"
 
-#: src/app/routes/_authenticated/index.tsx:181
+#: src/app/routes/_authenticated/index.tsx:175
 msgid "Insights"
 msgstr "Uvidi"
 
@@ -2549,7 +2684,7 @@ msgstr "je prije"
 msgid "is between"
 msgstr "je između"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:116
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:112
 msgid "Is default tax category"
 msgstr "Je zadana porezna kategorija"
 
@@ -2589,12 +2724,12 @@ msgstr "nije u"
 msgid "is null"
 msgstr "je prazno"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:106
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:104
 msgid "Item added to order"
 msgstr "Stavka dodana narudžbi"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:33
-#: src/app/routes/_authenticated/_system/job-queue.tsx:97
+#: src/app/routes/_authenticated/_system/job-queue.tsx:102
 msgid "Job Queue"
 msgstr "Red zadataka"
 
@@ -2603,7 +2738,7 @@ msgid "Language"
 msgstr "Jezik"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:130
 msgid "Language: {0}"
 msgstr "Jezik: {0}"
 
@@ -2626,9 +2761,9 @@ msgctxt "date-range"
 msgid "Last month"
 msgstr "Prošli mjesec"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:125
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
-#: src/app/routes/_authenticated/_profile/profile.tsx:98
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:121
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:175
+#: src/app/routes/_authenticated/_profile/profile.tsx:97
 msgid "Last name"
 msgstr "Prezime"
 
@@ -2637,11 +2772,11 @@ msgid "Last Result"
 msgstr "Posljednji rezultat"
 
 #. placeholder {0}: formatRelative(dataUpdatedAt, new Date())
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:58
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:57
 msgid "Last updated {0}"
 msgstr "Posljednje ažurirano {0}"
 
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:58
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:77
 msgid "Latest Orders"
 msgstr "Najnovije narudžbe"
 
@@ -2679,11 +2814,11 @@ msgstr "Učitaj više"
 msgid "Loading addresses..."
 msgstr "Učitavanje adresa..."
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:374
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:378
 msgid "Loading collections..."
 msgstr "Učitavanje kolekcija..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:284
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Loading global settings..."
 msgstr "Učitavanje globalnih postavki..."
 
@@ -2706,7 +2841,7 @@ msgstr "Učitavanje oznaka..."
 msgid "Loading..."
 msgstr "Učitavanje..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Lokalitet"
 
@@ -2730,8 +2865,8 @@ msgstr "Upravljaj globalnim prikazima"
 msgid "Manage Global Views"
 msgstr "Upravljaj globalnim prikazima"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:258
+#: src/lib/components/layout/channel-switcher.tsx:193
+#: src/lib/components/layout/manage-languages-dialog.tsx:240
 msgid "Manage Languages"
 msgstr "Upravljaj jezicima"
 
@@ -2744,7 +2879,7 @@ msgid "Manage Tags"
 msgstr "Upravljaj oznakama"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:252
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:173
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:180
 msgid "Manage variants"
 msgstr "Upravljaj varijantama"
 
@@ -2760,7 +2895,7 @@ msgstr "Upravljajte svojim osobnim spremljenim prikazima za ovu tablicu"
 msgid "matches regex"
 msgstr "odgovara regex-u"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Srednji datum"
 
@@ -2776,16 +2911,16 @@ msgstr "Metoda"
 msgid "Metrics"
 msgstr "Metrike"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:171
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
 msgid "Modify"
 msgstr "Izmijeni"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:159
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:161
 msgid "Modify order"
 msgstr "Izmijeni narudžbu"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:83
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:82
 msgid "Monitored Resources"
 msgstr "Praćeni resursi"
 
@@ -2798,27 +2933,27 @@ msgstr "Od početka mjeseca"
 msgid "More views"
 msgstr "Više prikaza"
 
-#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:111
+#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:118
 msgid "Move"
 msgstr "Premjesti"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:335
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:422
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:339
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:426
 msgid "Move Collections"
 msgstr "Premjesti kolekcije"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:106
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:107
 msgid "Move to the top level"
 msgstr "Premjesti na najvišu razinu"
 
 #. placeholder {0}: collectionsToMove.length
 #. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
 #. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:74
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:75
 msgid "Moving {0} collection{1} into {2}"
 msgstr "Premještanje {0} kolekcija u {2}"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:420
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:424
 msgid "Moving..."
 msgstr "Premještanje..."
 
@@ -2830,26 +2965,25 @@ msgstr "Moji spremljeni prikazi"
 msgid "My Saved Views"
 msgstr "Moji spremljeni prikazi"
 
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:46
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:146
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:108
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:107
-#: src/app/routes/_authenticated/_customers/customers.tsx:72
-#: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:104
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:135
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:124
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:151
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:45
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:142
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:104
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:103
+#: src/app/routes/_authenticated/_customers/customers.tsx:71
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:131
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:120
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:147
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:328
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:303
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:149
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:181
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:158
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:96
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:143
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:109
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:110
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:116
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:96
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:145
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:177
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:154
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:92
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:141
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:105
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:106
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:113
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:93
 msgid "Name"
 msgstr "Naziv"
 
@@ -2858,53 +2992,53 @@ msgstr "Naziv"
 msgid "Never"
 msgstr "Nikada"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:40
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:99
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:38
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:97
 msgid "New administrator"
 msgstr "Novi administrator"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:39
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:37
 msgid "New asset"
 msgstr "Nova datoteka"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:41
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:113
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:39
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:111
 msgid "New channel"
 msgstr "Novi kanal"
 
-#: src/app/routes/_authenticated/_channels/channels.tsx:74
+#: src/app/routes/_authenticated/_channels/channels.tsx:72
 msgid "New Channel"
 msgstr "Novi kanal"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:46
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:116
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:44
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:114
 msgid "New collection"
 msgstr "Nova kolekcija"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:247
+#: src/app/routes/_authenticated/_collections/collections.tsx:334
 msgid "New Collection"
 msgstr "Nova kolekcija"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:35
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:79
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:33
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:77
 msgid "New country"
 msgstr "Nova država"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:59
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:147
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:57
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:145
 msgid "New customer"
 msgstr "Novi kupac"
 
-#: src/app/routes/_authenticated/_customers/customers.tsx:97
+#: src/app/routes/_authenticated/_customers/customers.tsx:95
 msgid "New Customer"
 msgstr "Novi kupac"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:38
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:87
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:36
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:85
 msgid "New customer group"
 msgstr "Nova grupa kupaca"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:65
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:63
 msgid "New Customer Group"
 msgstr "Nova grupa kupaca"
 
@@ -2912,17 +3046,17 @@ msgstr "Nova grupa kupaca"
 msgid "New email:"
 msgstr "Nova e-pošta:"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:38
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:94
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:36
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:92
 msgid "New facet"
 msgstr "Novo svojstvo"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:130
+#: src/app/routes/_authenticated/_facets/facets.tsx:112
 msgid "New Facet"
 msgstr "Novo svojstvo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:42
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:104
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:40
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:102
 msgid "New facet value"
 msgstr "Nova vrijednost svojstva"
 
@@ -2930,69 +3064,69 @@ msgstr "Nova vrijednost svojstva"
 msgid "New facet values to add:"
 msgstr "Nove vrijednosti svojstava za dodavanje:"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:86
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:84
 msgid "New option"
 msgstr "Nova opcija"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:43
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:121
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:41
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:119
 msgid "New payment method"
 msgstr "Novi način plaćanja"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:81
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:79
 msgid "New Payment Method"
 msgstr "Novi način plaćanja"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:46
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:103
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:53
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:112
 msgid "New product"
 msgstr "Novi proizvod"
 
-#: src/app/routes/_authenticated/_products/products.tsx:114
+#: src/app/routes/_authenticated/_products/products.tsx:112
 msgid "New Product"
 msgstr "Novi proizvod"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:150
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:148
 msgid "New product option"
 msgstr "Nova opcija proizvoda"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:129
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:127
 msgid "New product option group"
 msgstr "Nova grupa opcija proizvoda"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:207
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:206
 msgid "New product variant"
 msgstr "Nova varijanta proizvoda"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:45
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:128
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:43
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:126
 msgid "New promotion"
 msgstr "Nova promocija"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:87
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:85
 msgid "New Promotion"
 msgstr "Nova promocija"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:35
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:79
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:33
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:77
 msgid "New role"
 msgstr "Nova uloga"
 
-#: src/app/routes/_authenticated/_roles/roles.tsx:92
+#: src/app/routes/_authenticated/_roles/roles.tsx:90
 msgid "New Role"
 msgstr "Nova uloga"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:32
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:73
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:30
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:71
 msgid "New seller"
 msgstr "Novi prodavač"
 
-#: src/app/routes/_authenticated/_sellers/sellers.tsx:49
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:47
 msgid "New Seller"
 msgstr "Novi prodavač"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:44
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:114
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:42
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:112
 msgid "New shipping method"
 msgstr "Novi način dostave"
 
@@ -3000,30 +3134,30 @@ msgstr "Novi način dostave"
 msgid "New Shipping Method"
 msgstr "Novi način dostave"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:39
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:90
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:37
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:88
 msgid "New stock location"
 msgstr "Nova lokacija zaliha"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:58
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:56
 msgid "New Stock Location"
 msgstr "Nova lokacija zaliha"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:39
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:90
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:37
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:88
 msgid "New tax category"
 msgstr "Nova porezna kategorija"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:62
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:60
 msgid "New Tax Category"
 msgstr "Nova porezna kategorija"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:38
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:87
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:37
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:86
 msgid "New tax rate"
 msgstr "Nova porezna stopa"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:112
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:110
 msgid "New Tax Rate"
 msgstr "Nova porezna stopa"
 
@@ -3031,12 +3165,12 @@ msgstr "Nova porezna stopa"
 msgid "New window"
 msgstr "Novi prozor"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:35
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:77
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:34
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:76
 msgid "New zone"
 msgstr "Nova zona"
 
-#: src/app/routes/_authenticated/_zones/zones.tsx:56
+#: src/app/routes/_authenticated/_zones/zones.tsx:55
 msgid "New Zone"
 msgstr "Nova zona"
 
@@ -3044,7 +3178,7 @@ msgstr "Nova zona"
 msgid "Next Execution"
 msgstr "Sljedeće izvršenje"
 
-#: src/lib/components/data-table/data-table-bulk-actions.tsx:92
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:93
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:102
 msgid "No actions available"
 msgstr "Nema dostupnih radnji"
@@ -3057,11 +3191,11 @@ msgstr "Nema adrese"
 msgid "No addresses found"
 msgstr "Nisu pronađene adrese"
 
-#: src/lib/components/shared/alerts.tsx:43
+#: src/lib/components/shared/alerts.tsx:45
 msgid "No alerts"
 msgstr "Nema upozorenja"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:280
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:288
 msgid "No billing address"
 msgstr "Nema adrese za naplatu"
 
@@ -3069,8 +3203,8 @@ msgstr "Nema adrese za naplatu"
 msgid "No countries found"
 msgstr "Nisu pronađene države"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:252
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:227
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:278
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:235
 msgid "No customer"
 msgstr "Nema kupca"
 
@@ -3090,11 +3224,11 @@ msgstr "Nisu pronađeni prihvatljivi načini dostave za ovu narudžbu."
 msgid "No facet values"
 msgstr "Nema vrijednosti svojstava"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:297
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:323
 msgid "No fulfillments"
 msgstr "Nema izvršenja"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:354
+#: src/lib/components/layout/manage-languages-dialog.tsx:336
 msgid "No global languages configured"
 msgstr "Nisu konfigurirani globalni jezici"
 
@@ -3110,7 +3244,7 @@ msgstr "Nisu pronađene stavke"
 msgid "No items selected"
 msgstr "Nisu odabrane stavke"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:218
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:246
 msgid "No modifications made"
 msgstr "Nisu napravljene izmjene"
 
@@ -3135,12 +3269,12 @@ msgstr "Za ove izmjene nije potrebno plaćanje ili povrat."
 msgid "No payment or refund required"
 msgstr "Nije potrebno plaćanje ili povrat"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:141
+#: src/app/routes/_authenticated/_system/job-queue.tsx:148
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:184
 msgid "No result yet"
 msgstr "Još nema rezultata"
 
-#: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/data-table/data-table.tsx:493
 #: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Nema rezultata"
@@ -3154,7 +3288,7 @@ msgstr "Nisu pronađeni rezultati"
 msgid "No sellers found"
 msgstr "Nisu pronađeni prodavači"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:254
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:262
 msgid "No shipping address"
 msgstr "Nema adrese za dostavu"
 
@@ -3162,7 +3296,7 @@ msgstr "Nema adrese za dostavu"
 msgid "No shipping methods available"
 msgstr "Nema dostupnih načina dostave"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:171
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:174
 msgid "No stock locations available on current channel"
 msgstr "Nema dostupnih lokacija zaliha na trenutnom kanalu"
 
@@ -3193,9 +3327,13 @@ msgstr "nije u"
 msgid "Not Running"
 msgstr "Ne izvršava se"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:158
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:154
 msgid "Not set"
 msgstr "Nije postavljeno"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:251
+msgid "Note"
+msgstr "Napomena"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:43
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:69
@@ -3236,8 +3374,8 @@ msgid "Option group removed"
 msgstr "Grupa opcija uklonjena"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:255
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:63
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:81
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
 msgid "Option Groups"
 msgstr "Grupe opcija"
 
@@ -3271,7 +3409,7 @@ msgstr "Narudžba otkazana"
 msgid "Order Count"
 msgstr "Broj narudžbi"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:89
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:87
 msgid "Order custom fields updated"
 msgstr "Prilagođena polja narudžbe ažurirana"
 
@@ -3283,21 +3421,22 @@ msgstr "Narudžba dostavljena"
 msgid "Order fulfilled"
 msgstr "Narudžba izvršena"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:230
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:256
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:30
 msgid "Order history"
 msgstr "Povijest narudžbe"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:143
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:141
 msgid "Order line removed"
 msgstr "Redak narudžbe uklonjen"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:127
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:125
 msgid "Order line updated"
 msgstr "Redak narudžbe ažuriran"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:241
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:169
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:83
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:171
 msgid "Order lines"
 msgstr "Redci narudžbe"
 
@@ -3335,7 +3474,7 @@ msgstr "Ukupno narudžba"
 msgid "Order transitioned"
 msgstr "Narudžba prevedena"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:246
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:242
 #: src/app/routes/_authenticated/_orders/orders.tsx:21
 #: src/app/routes/_authenticated/_orders/orders.tsx:37
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:45
@@ -3349,9 +3488,13 @@ msgstr "Narudžbe"
 msgid "Orders Summary"
 msgstr "Sažetak narudžbi"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:353
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:350
 msgid "Out-of-stock threshold"
 msgstr "Prag zaliha"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:258
+msgid "Override"
+msgstr "Premosti"
 
 #. placeholder {0}: table.getState().pagination.pageIndex + 1
 #. placeholder {1}: table.getPageCount() || 1
@@ -3359,12 +3502,16 @@ msgstr "Prag zaliha"
 msgid "Page {0} of {1}"
 msgstr "Stranica {0} od {1}"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:436
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:433
 msgid "Parent product"
 msgstr "Nadređeni proizvod"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:137
-#: src/app/routes/_authenticated/_profile/profile.tsx:110
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:285
+msgid "Partial refund completed"
+msgstr "Djelomični povrat završen"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:133
+#: src/app/routes/_authenticated/_profile/profile.tsx:109
 #: src/lib/components/login/login-form.tsx:96
 msgid "Password"
 msgstr "Lozinka"
@@ -3398,11 +3545,11 @@ msgstr "Plaćanje autorizirano"
 msgid "Payment cancelled successfully"
 msgstr "Plaćanje uspješno otkazano"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:218
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:244
 msgid "Payment details"
 msgstr "Detalji plaćanja"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:172
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:168
 msgid "Payment eligibility checker"
 msgstr "Provjera prihvatljivosti plaćanja"
 
@@ -3423,9 +3570,9 @@ msgstr "Način plaćanja"
 msgid "Payment method is required"
 msgstr "Način plaćanja je obavezan"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:42
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:20
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:30
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:40
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:19
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:29
 msgid "Payment Methods"
 msgstr "Načini plaćanja"
 
@@ -3445,25 +3592,25 @@ msgstr "Stanje plaćanja uspješno ažurirano"
 msgid "Payment transitioned"
 msgstr "Plaćanje prevedeno"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:205
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:201
 msgid "Per customer usage limit"
 msgstr "Ograničenje korištenja po kupcu"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:133
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:129
 msgid "Permissions"
 msgstr "Dozvole"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:191
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:187
 msgid "Phone number"
 msgstr "Telefonski broj"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:272
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:273
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:241
-#: src/lib/components/shared/customer-address-form.tsx:263
+#: src/lib/components/shared/customer-address-form.tsx:264
 msgid "Phone Number"
 msgstr "Telefonski broj"
 
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:88
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:107
 msgid "Placed At"
 msgstr "Naručeno"
 
@@ -3471,13 +3618,13 @@ msgstr "Naručeno"
 msgid "Please add products and complete the shipping address to run the test."
 msgstr "Molimo dodajte proizvode i dovršite adresu za dostavu kako biste pokrenuli test."
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:307
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:311
 msgid "Please select a target collection"
 msgstr "Molimo odaberite ciljnu kolekciju"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:222
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:223
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:208
-#: src/lib/components/shared/customer-address-form.tsx:213
+#: src/lib/components/shared/customer-address-form.tsx:214
 msgid "Postal Code"
 msgstr "Poštanski broj"
 
@@ -3486,7 +3633,7 @@ msgstr "Poštanski broj"
 msgid "Preview"
 msgstr "Pregled"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:206
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:214
 msgid "Preview changes"
 msgstr "Pregled izmjena"
 
@@ -3494,15 +3641,16 @@ msgstr "Pregled izmjena"
 msgid "Preview order modifications"
 msgstr "Pregled izmjena narudžbe"
 
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:89
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:269
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Cijena"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:252
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:249
 msgid "Price and tax"
 msgstr "Cijena i porez"
 
@@ -3510,37 +3658,42 @@ msgstr "Cijena i porez"
 msgid "Price conversion factor"
 msgstr "Faktor pretvorbe cijene"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:234
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:230
 msgid "Prices include tax for default tax zone"
 msgstr "Cijene uključuju porez za zadanu poreznu zonu"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:82
+#: src/app/routes/_authenticated/_facets/facets.tsx:44
 msgid "private"
 msgstr "privatno"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:134
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:112
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:130
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:108
 msgid "Private"
 msgstr "Privatno"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:135
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:131
 msgid "Private collections are not visible in the shop"
 msgstr "Privatne kolekcije nisu vidljive u trgovini"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:113
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:109
 msgid "Private facets are not visible in the shop"
 msgstr "Privatna svojstva nisu vidljiva u trgovini"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:360
+msgid "Processing..."
+msgstr "Obrada..."
+
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:87
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:44
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:93
 msgid "Product"
 msgstr "Proizvod"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:133
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:140
 msgid "Product name"
 msgstr "Naziv proizvoda"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:169
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:165
 msgid "Product Option Group"
 msgstr "Grupa opcija proizvoda"
 
@@ -3548,42 +3701,46 @@ msgstr "Grupa opcija proizvoda"
 msgid "Product options"
 msgstr "Opcije proizvoda"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:191
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:170
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:198
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:166
 msgid "Product Options"
 msgstr "Opcije proizvoda"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:62
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:60
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:18
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:26
 msgid "Product Variants"
 msgstr "Varijante proizvoda"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:57
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:55
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:54
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:45
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
-#: src/app/routes/_authenticated/_products/products.tsx:24
-#: src/app/routes/_authenticated/_products/products.tsx:47
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:52
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:59
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:77
+#: src/app/routes/_authenticated/_products/products.tsx:23
+#: src/app/routes/_authenticated/_products/products.tsx:46
 msgid "Products"
 msgstr "Proizvodi"
 
-#: src/app/routes/_authenticated/_profile/profile.tsx:30
-#: src/app/routes/_authenticated/_profile/profile.tsx:74
+#: src/app/routes/_authenticated/_profile/profile.tsx:29
+#: src/app/routes/_authenticated/_profile/profile.tsx:73
 #: src/lib/components/layout/nav-user.tsx:108
 msgid "Profile"
 msgstr "Profil"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:44
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:21
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:30
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:42
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:20
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:29
 msgid "Promotions"
 msgstr "Promocije"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:82
+#: src/app/routes/_authenticated/_facets/facets.tsx:44
 msgid "public"
 msgstr "javno"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:99
+msgid "Qty"
+msgstr "Kol."
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:265
@@ -3591,23 +3748,24 @@ msgstr "javno"
 msgid "Quantity"
 msgstr "Količina"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:211
+#: src/app/routes/_authenticated/_system/job-queue.tsx:220
 msgid "Queue"
 msgstr "Red"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:122
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:119
 msgid "Rate"
 msgstr "Stopa"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:233
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:216
 msgid "Reason"
 msgstr "Razlog"
 
-#: src/app/routes/_authenticated/_products/products.tsx:107
+#: src/app/routes/_authenticated/_products/products.tsx:105
 msgid "Rebuild search index"
 msgstr "Ponovno izgradi indeks pretraživanja"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:47
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:46
 msgid "Refresh"
 msgstr "Osvježi"
 
@@ -3615,11 +3773,28 @@ msgstr "Osvježi"
 msgid "Refresh data"
 msgstr "Osvježi podatke"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:102
+msgid "Refund"
+msgstr "Povrat"
+
+#. placeholder {0}: formatCurrency(refund.amountToRefundTotal, order.currencyCode)
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:362
+msgid "Refund {0}"
+msgstr "Povrat {0}"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:184
+msgid "Refund & Cancel"
+msgstr "Povrat i otkazivanje"
+
 #. placeholder {0}: entry.data.refundId
 #. placeholder {1}: entry.data.to
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:37
 msgid "Refund #{0} transitioned to {1}"
 msgstr "Povrat #{0} preveden u {1}"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:72
+msgid "Refund and cancel order"
+msgstr "Povrat i otkazivanje narudžbe"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:229
 msgid "Refund from this method"
@@ -3628,6 +3803,10 @@ msgstr "Povrat iz ove metode"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:215
 msgid "Refund ID"
 msgstr "ID povrata"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:299
+msgid "Refund processed successfully"
+msgstr "Povrat uspješno obrađen"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:170
 msgid "Refund required"
@@ -3640,6 +3819,23 @@ msgstr "Povrat izvršen"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:90
 msgid "Refund settled successfully"
 msgstr "Povrat uspješno izvršen"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:200
+msgid "Refund shipping"
+msgstr "Povrat dostave"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:244
+msgid "Refund total"
+msgstr "Ukupni povrat"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:200
+msgid "Refund total cannot be negative"
+msgstr "Ukupni povrat ne može biti negativan"
+
+#. placeholder {0}: formatCurrency(totalRefundableAmount, order.currencyCode)
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:205
+msgid "Refund total exceeds maximum refundable amount of {0}"
+msgstr "Ukupni povrat premašuje maksimalni iznos za povrat od {0}"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:67
 msgid "Refund transitioned"
@@ -3667,13 +3863,17 @@ msgstr "Registriran"
 msgid "Remaining:"
 msgstr "Preostalo:"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:491
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:487
 msgid "Remove"
 msgstr "Ukloni"
 
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:82
 msgid "Remove from current channel"
 msgstr "Ukloni iz trenutnog kanala"
+
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:49
+msgid "Remove from zone"
+msgstr "Ukloni iz zone"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:278
 msgid "Remove group"
@@ -3687,7 +3887,13 @@ msgstr "Ukloni stavku"
 msgid "Remove link"
 msgstr "Ukloni poveznicu"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:200
+#. placeholder {0}: selection.length
+#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:31
+msgid "Removed {0} {1} from zone"
+msgstr "Uklonjeno {0} {1} iz zone"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:218
 msgid "Removed coupon codes"
 msgstr "Uklonjeni kodovi kupona"
 
@@ -3696,7 +3902,7 @@ msgid "Removed from group"
 msgstr "Uklonjeno iz grupe"
 
 #. placeholder {0}: removedLines.length
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:176
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:194
 msgid "Removing {0} item(s)"
 msgstr "Uklanjanje {0} stavki"
 
@@ -3708,15 +3914,19 @@ msgstr "Preimenuj"
 msgid "Reset"
 msgstr "Resetiraj"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:105
+msgid "Return to stock"
+msgstr "Vrati na zalihu"
+
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:152
 msgid "Review the changes before applying them to the order."
 msgstr "Pregledajte izmjene prije njihove primjene na narudžbu."
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:143
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:56
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:34
-#: src/app/routes/_authenticated/_roles/roles.tsx:19
-#: src/app/routes/_authenticated/_roles/roles.tsx:28
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:139
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:55
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:32
+#: src/app/routes/_authenticated/_roles/roles.tsx:18
+#: src/app/routes/_authenticated/_roles/roles.tsx:27
 msgid "Roles"
 msgstr "Uloge"
 
@@ -3741,11 +3951,11 @@ msgstr "Pokrenuto"
 msgid "Same window"
 msgstr "Isti prozor"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Primjer oblikovanja"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:213
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:239
 #: src/lib/components/data-table/views-sheet.tsx:210
 #: src/lib/components/shared/history-timeline/history-note-editor.tsx:54
 msgid "Save"
@@ -3755,21 +3965,21 @@ msgstr "Spremi"
 msgid "Save a view as \"Global\" to make it available to all users."
 msgstr "Spremite prikaz kao \"Globalni\" kako bi bio dostupan svim korisnicima."
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:338
-#: src/lib/components/shared/customer-address-form.tsx:329
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:341
+#: src/lib/components/shared/customer-address-form.tsx:332
 msgid "Save Address"
 msgstr "Spremi adresu"
 
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:122
-msgid "Save changes"
-msgstr "Spremi izmjene"
+#~ msgid "Save changes"
+#~ msgstr "Spremi izmjene"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:399
+#: src/lib/components/layout/manage-languages-dialog.tsx:380
 msgid "Save Changes"
 msgstr "Spremi izmjene"
 
-#: src/app/routes/_authenticated/index.tsx:194
+#: src/app/routes/_authenticated/index.tsx:190
 msgid "Save Layout"
 msgstr "Spremi raspored"
 
@@ -3782,7 +3992,7 @@ msgid "Save View"
 msgstr "Spremi prikaz"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:399
+#: src/lib/components/layout/manage-languages-dialog.tsx:380
 msgid "Saving..."
 msgstr "Spremanje..."
 
@@ -3823,15 +4033,15 @@ msgstr "Pretraži valute..."
 msgid "Search facet values..."
 msgstr "Pretraži vrijednosti faceta..."
 
-#: src/app/routes/_authenticated/_products/products.tsx:35
+#: src/app/routes/_authenticated/_products/products.tsx:34
 msgid "Search index rebuild could not be started"
 msgstr "Ponovna izgradnja indeksa pretraživanja nije mogla započeti"
 
-#: src/app/routes/_authenticated/_products/products.tsx:32
+#: src/app/routes/_authenticated/_products/products.tsx:31
 msgid "Search index rebuild started"
 msgstr "Ponovna izgradnja indeksa pretraživanja započela"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Pretraži jezike..."
 
@@ -3870,8 +4080,8 @@ msgstr "Odaberite kanal"
 msgid "Select a channel to assign {0} {entityType} to"
 msgstr "Odaberite kanal za dodjelu {0} {entityType}"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:249
-#: src/lib/components/shared/customer-address-form.tsx:240
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:250
+#: src/lib/components/shared/customer-address-form.tsx:241
 msgid "Select a country"
 msgstr "Odaberite državu"
 
@@ -3879,20 +4089,24 @@ msgstr "Odaberite državu"
 msgid "Select a currency"
 msgstr "Odaberite valute"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:82
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:83
 msgid "Select a destination collection"
 msgstr "Odaberite odredišnu kolekciju"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Odaberite jezik"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:220
+msgid "Select a reason..."
+msgstr "Odaberite razlog..."
 
 #: src/lib/components/shared/role-selector.tsx:52
 msgid "Select a role"
 msgstr "Odaberite uloga"
 
 #. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:338
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:342
 msgid "Select a target collection to move {0} to."
 msgstr "Odaberite ciljnu kolekciju za premještanje {0}."
 
@@ -3912,11 +4126,11 @@ msgstr "Odaberi adresu"
 msgid "Select an address"
 msgstr "Odaberite adresu"
 
-#: src/lib/components/data-input/select-with-options.tsx:81
+#: src/lib/components/data-input/select-with-options.tsx:97
 msgid "Select an option"
 msgstr "Odaberite opciju"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:296
+#: src/lib/components/layout/manage-languages-dialog.tsx:278
 msgid "Select Available Languages"
 msgstr "Odaberi dostupne jezike"
 
@@ -3932,11 +4146,11 @@ msgstr "Odaberi kupca"
 msgid "Select date range"
 msgstr "Odaberite razdoblje"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Odaberite jezik prikaza"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:358
+#: src/lib/components/layout/manage-languages-dialog.tsx:340
 msgid "Select from globally available languages for this channel"
 msgstr "Odaberite iz globalno dostupnih jezika za ovaj kanal"
 
@@ -3948,9 +4162,17 @@ msgstr "Odaberi stavku"
 msgid "Select items"
 msgstr "Odaberi stavke"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:104
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:75
+msgid "Select items to refund and optionally return to stock"
+msgstr "Odaberite stavke za povrat i po želji vratite na zalihu"
+
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:103
 msgid "Select next state"
 msgstr "Odaberi sljedeće stanje"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:285
+msgid "Select payments to refund"
+msgstr "Odaberite plaćanja za povrat"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:228
 msgid "Select quantities to fulfill and configure the fulfillment handler"
@@ -3960,7 +4182,7 @@ msgstr "Odaberite količine za izvršenje i konfigurirajte rukovatelja izvršenj
 msgid "Select seller"
 msgstr "Odaberi prodavača"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:108
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:107
 msgid "Select the next state for the order"
 msgstr "Odaberite sljedeće stanje za narudžbu"
 
@@ -3973,7 +4195,7 @@ msgstr "Odaberite koje opcije trebaju primjenjivati na postojeću varijantu \"{0
 msgid "Selected Items"
 msgstr "Odabrane stavke"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:156
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:152
 msgid "Seller"
 msgstr "Prodavač"
 
@@ -3985,13 +4207,13 @@ msgstr "Narudžba prodavača"
 msgid "Seller orders"
 msgstr "Narudžbe prodavača"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:31
-#: src/app/routes/_authenticated/_sellers/sellers.tsx:14
-#: src/app/routes/_authenticated/_sellers/sellers.tsx:23
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:29
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:13
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:22
 msgid "Sellers"
 msgstr "Prodavači"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:398
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:394
 msgid "Set custom fields"
 msgstr "Postavi prilagođena polja"
 
@@ -4003,16 +4225,16 @@ msgstr "Postavi žarišnu točku"
 msgid "Set link"
 msgstr "Postavi poveznicu"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:114
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:110
 msgid "Sets the languages that are available for all channels. Individual channels can then support a subset of these languages."
 msgstr "Postavlja jezike koji su dostupni za sve kanale. Pojedinačni kanali tada mogu podržavati podskup ovih jezika."
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:133
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:129
 msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
 msgstr "Postavlja razinu zaliha pri kojoj se ova varijanta smatra rasprodanom. Korištenje negativne vrijednosti omogućuje podršku za prednarudžbe. Može se nadjačati varijantama proizvoda."
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:355
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:373
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:352
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:370
 msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
 msgstr "Postavlja razinu zaliha pri kojoj se ova varijanta smatra rasprodanom. Korištenje negativne vrijednosti omogućuje podršku za prednarudžbe."
 
@@ -4026,14 +4248,15 @@ msgstr "Izvrši plaćanje"
 msgid "Settle refund"
 msgstr "Izvrši povrat"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:61
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:66
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:188
 #: src/app/routes/_authenticated/_orders/orders.tsx:85
 msgid "Shipping"
 msgstr "Dostava"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:259
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:234
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:418
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:285
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:242
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:414
 msgid "Shipping address"
 msgstr "Adresa za dostavu"
 
@@ -4041,19 +4264,19 @@ msgstr "Adresa za dostavu"
 msgid "Shipping Address"
 msgstr "Adresa za dostavu"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:110
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:128
 msgid "Shipping address changed"
 msgstr "Adresa za dostavu promijenjena"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:181
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:179
 msgid "Shipping address set for order"
 msgstr "Adresa dostave postavljena za narudžbu"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:197
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:195
 msgid "Shipping address unset for order"
 msgstr "Adresa dostave uklonjena za narudžbu"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:124
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:142
 msgid "Shipping method changed"
 msgstr "Način dostave promijenjen"
 
@@ -4065,17 +4288,17 @@ msgstr "Način dostave je prihvatljiv za ovu narudžbu"
 msgid "Shipping method is not eligible for this order"
 msgstr "Način dostave nije prihvatljiv za ovu narudžbu"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:216
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:214
 msgid "Shipping method set for order"
 msgstr "Način dostave postavljen za narudžbu"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:20
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:29
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:41
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:28
 msgid "Shipping Methods"
 msgstr "Načini dostave"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Kratki datum"
 
@@ -4096,17 +4319,18 @@ msgstr "Prijava"
 msgid "Sign in to access the admin dashboard"
 msgstr "Prijavite se za pristup admin nadzornoj ploči"
 
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:83
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:96
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:245
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:242
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:206
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:306
 msgid "SKU"
 msgstr "SKU"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:152
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:139
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:148
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:146
 msgid "Slug"
 msgstr "URL naziv"
 
@@ -4118,7 +4342,7 @@ msgstr "URL naziv je postavljen"
 msgid "Slug will be generated automatically..."
 msgstr "URL naziv će se automatski generirati..."
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:74
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:73
 msgid "Some resources are down"
 msgstr "Neki resursi nisu dostupni"
 
@@ -4126,14 +4350,14 @@ msgstr "Neki resursi nisu dostupni"
 msgid "Source"
 msgstr "Izvor"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:175
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:171
 msgid "Starts at"
 msgstr "Počinje u"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:108
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:217
 #: src/app/routes/_authenticated/_orders/orders.tsx:101
-#: src/app/routes/_authenticated/_system/job-queue.tsx:222
+#: src/app/routes/_authenticated/_system/job-queue.tsx:231
 msgid "State"
 msgstr "Stanje"
 
@@ -4141,17 +4365,17 @@ msgstr "Stanje"
 msgid "State / Province"
 msgstr "Država / Pokrajina"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:201
-#: src/lib/components/shared/customer-address-form.tsx:192
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:202
+#: src/lib/components/shared/customer-address-form.tsx:193
 msgid "State/Province"
 msgstr "Država/Pokrajina"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:252
-#: src/app/routes/_authenticated/_customers/customers.tsx:46
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:248
+#: src/app/routes/_authenticated/_customers/customers.tsx:45
 msgid "Status"
 msgstr "Status"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:316
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:313
 msgid "Stock"
 msgstr "Zaliha"
 
@@ -4159,18 +4383,18 @@ msgstr "Zaliha"
 msgid "Stock allocated"
 msgstr "Zaliha dodijeljena"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:396
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:393
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:353
 msgid "Stock level"
 msgstr "Razina zaliha"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:321
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:318
 msgid "Stock levels"
 msgstr "Razine zaliha"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:38
-#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:18
-#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:25
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:36
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:17
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:24
 msgid "Stock Locations"
 msgstr "Lokacije zaliha"
 
@@ -4178,13 +4402,13 @@ msgstr "Lokacije zaliha"
 msgid "Stock on hand"
 msgstr "Zaliha na skladištu"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:215
 msgid "Stock on Hand"
 msgstr "Zaliha na skladištu"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:146
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:147
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:175
-#: src/lib/components/shared/customer-address-form.tsx:137
+#: src/lib/components/shared/customer-address-form.tsx:138
 msgid "Street Address"
 msgstr "Ulica"
 
@@ -4192,7 +4416,7 @@ msgstr "Ulica"
 msgid "Street Address 2"
 msgstr "Ulica 2"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:49
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:52
 msgid "Sub total"
 msgstr "Međuzbroj"
 
@@ -4212,35 +4436,35 @@ msgstr "Plaćanje uspješno dodano narudžbi"
 msgid "Successfully assigned {entityIdsLength} {entityType} to channel"
 msgstr "Uspješno dodijeljeno {entityIdsLength} {entityType} kanalu"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:79
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:77
 msgid "Successfully created administrator"
 msgstr "Administrator uspješno kreiran"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:85
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:83
 msgid "Successfully created channel"
 msgstr "Kanal uspješno stvoren"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:92
 msgid "Successfully created collection"
 msgstr "Kolekcija uspješno stvorena"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:62
 msgid "Successfully created country"
 msgstr "Država uspješno stvorena"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:93
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:91
 msgid "Successfully created customer"
 msgstr "Kupac uspješno stvoren"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:66
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:64
 msgid "Successfully created customer group"
 msgstr "Grupa kupaca uspješno stvorena"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:77
 msgid "Successfully created facet"
 msgstr "Svojstvo uspješno stvoreno"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:84
 msgid "Successfully created facet value"
 msgstr "Vrijednost svojstva uspješno stvorena"
 
@@ -4248,19 +4472,19 @@ msgstr "Vrijednost svojstva uspješno stvorena"
 msgid "Successfully created option group"
 msgstr "Grupa opcija uspješno stvorena"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:100
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:98
 msgid "Successfully created payment method"
 msgstr "Način plaćanja uspješno stvoren"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:87
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:96
 msgid "Successfully created product"
 msgstr "Proizvod uspješno stvoren"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:128
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:126
 msgid "Successfully created product option"
 msgstr "Opcija proizvoda uspješno stvorena"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:106
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:104
 msgid "Successfully created product option group"
 msgstr "Grupa opcija proizvoda uspješno stvorena"
 
@@ -4268,40 +4492,40 @@ msgstr "Grupa opcija proizvoda uspješno stvorena"
 msgid "Successfully created product options"
 msgstr "Opcije proizvoda uspješno stvorene"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:117
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:116
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:169
 msgid "Successfully created product variant"
 msgstr "Varijanta proizvoda uspješno stvorena"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:104
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:102
 msgid "Successfully created promotion"
 msgstr "Promocija uspješno stvorena"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:64
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:62
 msgid "Successfully created role"
 msgstr "Uloga uspješno stvorena"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:56
 msgid "Successfully created seller"
 msgstr "Prodavač uspješno stvoren"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:90
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:88
 msgid "Successfully created shipping method"
 msgstr "Način dostave uspješno stvoren"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:69
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:67
 msgid "Successfully created stock location"
 msgstr "Lokacija zaliha uspješno stvorena"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:69
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:67
 msgid "Successfully created tax category"
 msgstr "Porezna kategorija uspješno stvorena"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:71
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:70
 msgid "Successfully created tax rate"
 msgstr "Porezna stopa uspješno stvorena"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:62
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:61
 msgid "Successfully created zone"
 msgstr "Zona uspješno stvorena"
 
@@ -4321,39 +4545,43 @@ msgstr "Uspješno uklonjeno {selectionLength} {entityType} iz kanala"
 msgid "Successfully removed {successCount} facets from channel"
 msgstr "Uspješno uklonjeno {successCount} svojstava iz kanala"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:80
+#: src/lib/components/shared/assigned-channels.tsx:39
+msgid "Successfully removed product from channel"
+msgstr "Proizvod uspješno uklonjen iz kanala"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:78
 msgid "Successfully updated administrator"
 msgstr "Administrator uspješno ažuriran"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:70
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:68
 msgid "Successfully updated asset"
 msgstr "Datoteka uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:85
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:83
 msgid "Successfully updated channel"
 msgstr "Kanal uspješno ažuriran"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:92
 msgid "Successfully updated collection"
 msgstr "Kolekcija uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:62
 msgid "Successfully updated country"
 msgstr "Država uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:93
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:91
 msgid "Successfully updated customer"
 msgstr "Kupac uspješno ažuriran"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:67
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:65
 msgid "Successfully updated customer group"
 msgstr "Grupa kupaca uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:77
 msgid "Successfully updated facet"
 msgstr "Svojstvo uspješno ažurirano"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:84
 msgid "Successfully updated facet value"
 msgstr "Vrijednost svojstva uspješno ažurirana"
 
@@ -4361,72 +4589,72 @@ msgstr "Vrijednost svojstva uspješno ažurirana"
 msgid "Successfully updated facet values for {entityIdsLength} {entityType}"
 msgstr "Vrijednosti svojstava uspješno ažurirane za {entityIdsLength} {entityType}"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:71
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:69
 msgid "Successfully updated global settings"
 msgstr "Globalne postavke uspješno ažurirane"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:85
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:88
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:55
 msgid "Successfully updated order"
 msgstr "Narudžba uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:101
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:99
 msgid "Successfully updated payment method"
 msgstr "Način plaćanja uspješno ažuriran"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:87
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:96
 msgid "Successfully updated product"
 msgstr "Proizvod uspješno ažuriran"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:129
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:127
 msgid "Successfully updated product option"
 msgstr "Opcija proizvoda uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:107
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:105
 msgid "Successfully updated product option group"
 msgstr "Grupa opcija proizvoda uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:118
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:117
 msgid "Successfully updated product variant"
 msgstr "Varijanta proizvoda uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_profile/profile.tsx:61
+#: src/app/routes/_authenticated/_profile/profile.tsx:60
 msgid "Successfully updated profile"
 msgstr "Profil uspješno ažuriran"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:104
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:102
 msgid "Successfully updated promotion"
 msgstr "Promocija uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:64
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:62
 msgid "Successfully updated role"
 msgstr "Uloga uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:56
 msgid "Successfully updated seller"
 msgstr "Prodavač uspješno ažuriran"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:91
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:89
 msgid "Successfully updated shipping method"
 msgstr "Način dostave uspješno ažuriran"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:70
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:68
 msgid "Successfully updated stock location"
 msgstr "Lokacija zaliha uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:70
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:68
 msgid "Successfully updated tax category"
 msgstr "Porezna kategorija uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:71
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:70
 msgid "Successfully updated tax rate"
 msgstr "Porezna stopa uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:62
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:61
 msgid "Successfully updated zone"
 msgstr "Zona uspješno ažurirana"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:187
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:194
 msgid "Summary of modifications"
 msgstr "Sažetak izmjena"
 
@@ -4434,7 +4662,7 @@ msgstr "Sažetak izmjena"
 msgid "Super Admin"
 msgstr "Super administrator"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:19
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:22
 msgid "Surcharge"
 msgstr "Dodatna naknada"
 
@@ -4451,17 +4679,22 @@ msgstr "Oznake"
 msgid "Tax base"
 msgstr "Porezna osnovica"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:38
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:15
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:24
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:36
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:14
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:23
 msgid "Tax Categories"
 msgstr "Porezne kategorije"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:257
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:137
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:254
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:127
 msgid "Tax category"
 msgstr "Porezna kategorija"
 
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:124
+msgid "Tax description"
+msgstr "Opis poreza"
+
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:110
 #: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:17
 msgid "Tax rate"
 msgstr "Porezna stopa"
@@ -4470,13 +4703,13 @@ msgstr "Porezna stopa"
 msgid "Tax rate: {taxRate}%"
 msgstr "Porezna stopa: {taxRate}%"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:37
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:19
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:29
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:36
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:18
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:28
 msgid "Tax Rates"
 msgstr "Porezne stope"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:202
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:228
 msgid "Tax summary"
 msgstr "Sažetak poreza"
 
@@ -4526,24 +4759,24 @@ msgstr "Testiranje načina dostave..."
 msgid "Testing shipping methods..."
 msgstr "Testiranje načina dostave..."
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:114
+#: src/app/routes/_authenticated/_system/job-queue.tsx:120
 msgid "The data that has been passed to the job"
 msgstr "Podaci koji su proslijeđeni zadatku"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:132
+#: src/app/routes/_authenticated/_system/job-queue.tsx:139
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:175
 msgid "The result of the job"
 msgstr "Rezultat zadatka"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:117
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:113
 msgid "The selected permissions will be applied to the these channels."
 msgstr "Odabrane dozvole će se primijeniti na ove kanale."
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:147
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:143
 msgid "The token is used to specify the channel when making API requests."
 msgstr "Token se koristi za specificiranje kanala pri slanju API zahtjeva."
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:116
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:114
 msgid "The variant could not be added. Ensure the parent product is enabled."
 msgstr "Varijanta se ne može dodati. Provjerite je li nadređeni proizvod omogućen."
 
@@ -4555,15 +4788,15 @@ msgstr "Tema"
 msgid "These are the customers in the <0>{customerGroupName}</0> customer group."
 msgstr "Ovo su kupci u grupi kupaca <0>{customerGroupName}</0>."
 
-#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:35
+#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:36
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Ovo su vrijednosti svojstava za svojstvo <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:311
+#: src/lib/components/layout/manage-languages-dialog.tsx:293
 msgid "These languages will be available for all channels to use"
 msgstr "Ovi jezici će biti dostupni za korištenje svim kanalima"
 
-#: src/app/routes/_authenticated/_roles/roles.tsx:54
+#: src/app/routes/_authenticated/_roles/roles.tsx:53
 msgid "This is a default Role and cannot be modified"
 msgstr "Ovo je zadana uloga i ne može se mijenjati"
 
@@ -4593,7 +4826,7 @@ msgctxt "date-range"
 msgid "This week"
 msgstr "Ovaj tjedan"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:162
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
 msgid "Title"
 msgstr "Naslov"
@@ -4616,15 +4849,15 @@ msgstr "Prebaci stupac zaglavlja"
 msgid "Toggle header row"
 msgstr "Prebaci redak zaglavlja"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:145
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:141
 msgid "Token"
 msgstr "Token"
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:157
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:73
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:88
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:114
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:98
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:120
 msgid "Total"
 msgstr "Ukupno"
 
@@ -4640,11 +4873,11 @@ msgstr "Ukupan povrat:"
 msgid "Total Revenue"
 msgstr "Ukupni prihod"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:341
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:338
 msgid "Track"
 msgstr "Prati"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:144
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:140
 msgid "Track inventory by default"
 msgstr "Prati zalihe prema zadanim postavkama"
 
@@ -4667,7 +4900,7 @@ msgstr "ID transakcije je obavezan"
 #. placeholder {0}: getTranslatedOrderState(state)
 #. placeholder {0}: getTranslatedPaymentState(state)
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:92
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:107
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:111
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:154
 msgid "Transition to {0}"
 msgstr "Prijelaz u {0}"
@@ -4676,7 +4909,7 @@ msgstr "Prijelaz u {0}"
 msgid "Transition to {suggestedState}"
 msgstr "Prijelaz u {suggestedState}"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:131
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:130
 msgid "Transition to selected state"
 msgstr "Prijelaz u odabrano stanje"
 
@@ -4690,10 +4923,12 @@ msgstr "Unesite najmanje 2 znaka za pretraživanje..."
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:100
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:57
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:96
 msgid "Unit price"
 msgstr "Jedinična cijena"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:102
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:303
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:87
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:175
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:125
@@ -4706,32 +4941,32 @@ msgstr "Nepoznata greška"
 msgid "Unverified"
 msgstr "Neverificiran"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:108
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:101
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:125
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:124
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:101
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:105
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:98
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:122
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:121
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:84
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:93
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:152
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:110
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:99
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:98
 #: src/app/routes/_authenticated/_orders/components/order-line-custom-fields-form.tsx:46
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:127
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:214
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:276
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:111
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
-#: src/app/routes/_authenticated/_profile/profile.tsx:82
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:136
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:119
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:135
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:156
+#: src/app/routes/_authenticated/_profile/profile.tsx:81
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:133
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:84
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:78
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:131
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:96
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:96
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:93
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:83
 #: src/lib/framework/page/detail-page.tsx:202
 msgid "Update"
 msgstr "Ažuriraj"
@@ -4740,29 +4975,29 @@ msgstr "Ažuriraj"
 msgid "Update the note content or visibility"
 msgstr "Ažurirajte sadržaj ili vidljivost bilješke"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:417
+#: src/lib/framework/layout-engine/page-layout.tsx:629
 msgid "Updated"
 msgstr "Ažurirano"
 
-#: src/lib/components/shared/asset/asset-gallery.tsx:361
+#: src/lib/components/shared/asset/asset-gallery.tsx:365
 msgid "Upload"
 msgstr "Prenesi"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:213
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:209
 msgid "Usage limit"
 msgstr "Ograničenje korištenja"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
-#: src/lib/components/shared/customer-address-form.tsx:313
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:325
+#: src/lib/components/shared/customer-address-form.tsx:316
 msgid "Use as the default billing address"
 msgstr "Koristi kao zadanu adresu za naplatu"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
-#: src/lib/components/shared/customer-address-form.tsx:293
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:305
+#: src/lib/components/shared/customer-address-form.tsx:296
 msgid "Use as the default shipping address"
 msgstr "Koristi kao zadanu adresu za dostavu"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:371
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:368
 msgid "Use global out-of-stock threshold"
 msgstr "Koristi globalni prag zaliha"
 
@@ -4782,11 +5017,11 @@ msgstr "Korištenje vanjske strategije autentifikacije: {strategy}"
 msgid "Using native authentication strategy"
 msgstr "Korištenje izvorne strategije autentifikacije"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:88
+#: src/app/routes/_authenticated/_facets/facets.tsx:50
 msgid "Values"
 msgstr "Vrijednosti"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:202
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:205
 msgid "Variant"
 msgstr "Varijanta"
 
@@ -4794,7 +5029,7 @@ msgstr "Varijanta"
 msgid "Variant deleted successfully"
 msgstr "Varijanta uspješno obrisana"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:238
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:235
 msgid "Variant name"
 msgstr "Naziv varijante"
 
@@ -4819,7 +5054,7 @@ msgstr "Pregled izmjena"
 msgid "View converted to global successfully"
 msgstr "Prikaz uspješno pretvoren u globalni"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:117
+#: src/app/routes/_authenticated/_system/job-queue.tsx:123
 msgid "View data"
 msgstr "Pregled podataka"
 
@@ -4835,11 +5070,11 @@ msgstr "Pregled detalja"
 msgid "View duplicated successfully"
 msgstr "Prikaz uspješno dupliciran"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:113
+#: src/app/routes/_authenticated/_system/job-queue.tsx:118
 msgid "View job data"
 msgstr "Pregled podataka zadatka"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:131
+#: src/app/routes/_authenticated/_system/job-queue.tsx:137
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:174
 msgid "View job result"
 msgstr "Pregled rezultata zadatka"
@@ -4848,16 +5083,16 @@ msgstr "Pregled rezultata zadatka"
 msgid "View renamed successfully"
 msgstr "Prikaz uspješno preimenovan"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:135
+#: src/app/routes/_authenticated/_system/job-queue.tsx:142
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:178
 msgid "View result"
 msgstr "Pregled rezultata"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:53
+#: src/app/routes/_authenticated/_facets/facets.tsx:67
 msgid "View values"
 msgstr "Pregled vrijednosti"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:77
+#: src/app/routes/_authenticated/_facets/facets.tsx:39
 msgid "Visibility"
 msgstr "Vidljivost"
 
@@ -4873,20 +5108,20 @@ msgstr "Vidljivo kupcu"
 msgid "Welcome to Vendure"
 msgstr "Dobrodošli u Vendure"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:227
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:122
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:224
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:129
 msgid "When enabled, a product is available in the shop"
 msgstr "Kada je omogućeno, proizvod je dostupan u trgovini"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:147
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:143
 msgid "When enabled, a promotion is available in the shop"
 msgstr "Kada je omogućeno, promocija je dostupna u trgovini"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:236
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:232
 msgid "When this is enabled, the prices entered in the product catalog will be included in the tax for the default tax zone."
 msgstr "Kada je ovo omogućeno, cijene unesene u katalog proizvoda bit će uključene u porez za zadanu poreznu zonu."
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:146
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:142
 msgid "When tracked, product variant stock levels will be automatically adjusted when sold. This setting can be overridden by individual product variants."
 msgstr "Kada se prati, razine zaliha varijanti proizvoda će se automatski prilagoditi pri prodaji. Ovu postavku mogu nadjačati pojedinačne varijante proizvoda."
 
@@ -4894,7 +5129,7 @@ msgstr "Kada se prati, razine zaliha varijanti proizvoda će se automatski prila
 msgid "Width"
 msgstr "Širina"
 
-#: src/lib/components/data-table/data-table-bulk-actions.tsx:77
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:78
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
 msgstr "S odabranima..."
@@ -4904,11 +5139,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Jučer"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:333
+#: src/lib/components/layout/manage-languages-dialog.tsx:315
 msgid "You don't have permission to view channel settings"
 msgstr "Nemate dozvolu za pregled postavki kanala"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:279
+#: src/lib/components/layout/manage-languages-dialog.tsx:261
 msgid "You don't have permission to view global language settings"
 msgstr "Nemate dozvolu za pregled globalnih postavki jezika"
 
@@ -4916,7 +5151,7 @@ msgstr "Nemate dozvolu za pregled globalnih postavki jezika"
 msgid "You haven't saved any views yet."
 msgstr "Još niste spremili nijedan prikaz."
 
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:58
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:77
 msgid "Your latest orders"
 msgstr "Vaše najnovije narudžbe"
 
@@ -4924,13 +5159,13 @@ msgstr "Vaše najnovije narudžbe"
 msgid "Your orders summary"
 msgstr "Sažetak vaših narudžbi"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:145
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:73
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:135
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:72
 msgid "Zone"
 msgstr "Zona"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:34
-#: src/app/routes/_authenticated/_zones/zones.tsx:15
-#: src/app/routes/_authenticated/_zones/zones.tsx:25
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:33
+#: src/app/routes/_authenticated/_zones/zones.tsx:14
+#: src/app/routes/_authenticated/_zones/zones.tsx:24
 msgid "Zones"
 msgstr "Zone"

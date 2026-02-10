@@ -10,7 +10,7 @@ export function registerNavigationExtensions(
         for (const section of navSections) {
             addNavMenuSection({
                 ...section,
-                placement: 'top',
+                placement: section.placement ?? 'top',
                 order: section.order ?? 999,
                 items: [],
             });
@@ -26,6 +26,9 @@ export function registerNavigationExtensions(
                     id: route.navMenuItem.id ?? route.path,
                     title: route.navMenuItem.title ?? route.path,
                     order: route.navMenuItem.order,
+                    requiresPermission: route.navMenuItem.requiresPermission,
+                    icon: route.navMenuItem.icon,
+                    placement: route.navMenuItem.placement,
                 };
                 addNavMenuItem(item, route.navMenuItem.sectionId);
             }

@@ -62,7 +62,7 @@ export interface DashboardPluginOptions {
  * ## Usage
  *
  * First you need to set up compilation of the Dashboard, using the Vite configuration
- * described in the [Dashboard Getting Started Guide](/guides/extending-the-dashboard/getting-started/)
+ * described in the [Dashboard Getting Started Guide](/extending-the-dashboard/getting-started/)
  *
  * ## Development vs Production
  *
@@ -150,6 +150,7 @@ export interface DashboardPluginOptions {
 })
 export class DashboardPlugin implements NestModule {
     private static options: DashboardPluginOptions | undefined;
+    private readonly rateLimitRequests = process.env.NODE_ENV === 'production' ? 500 : 100_000;
 
     constructor(private readonly processContext: ProcessContext) {}
 
@@ -185,7 +186,7 @@ export class DashboardPlugin implements NestModule {
     private createStaticServer(dashboardPath: string) {
         const limiter = rateLimit({
             windowMs: 60 * 1000,
-            limit: process.env.NODE_ENV === 'production' ? 500 : 10_000,
+            limit: this.rateLimitRequests,
             standardHeaders: true,
             legacyHeaders: false,
         });
@@ -240,7 +241,7 @@ export class DashboardPlugin implements NestModule {
     private createDefaultPage() {
         const limiter = rateLimit({
             windowMs: 60 * 1000,
-            limit: process.env.NODE_ENV === 'production' ? 500 : 20_000,
+            limit: this.rateLimitRequests,
             standardHeaders: true,
             legacyHeaders: false,
         });
@@ -267,7 +268,7 @@ export class DashboardPlugin implements NestModule {
     private createDynamicHandler(route: string, appDir: string, viteDevServerPort: number) {
         const limiter = rateLimit({
             windowMs: 60 * 1000,
-            limit: process.env.NODE_ENV === 'production' ? 500 : 2000,
+            limit: this.rateLimitRequests,
             standardHeaders: true,
             legacyHeaders: false,
         });

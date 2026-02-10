@@ -234,34 +234,63 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
             const blockId =
                 childBlock.props.blockId ??
                 (isOfType(childBlock, CustomFieldsPageBlock) ? 'custom-fields' : undefined);
-            const extensionBlock = extensionBlocks.find(block => block.location.position.blockId === blockId);
 
-            if (extensionBlock) {
-                let extensionBlockShouldRender = true;
-                if (typeof extensionBlock?.shouldRender === 'function') {
-                    extensionBlockShouldRender = extensionBlock.shouldRender(page);
+            // Get all extension blocks with the same position blockId
+            const matchingExtensionBlocks = extensionBlocks.filter(
+                block => block.location.position.blockId === blockId,
+            );
+
+            // sort the blocks to make sure we have the correct order
+            const arrangedExtensionBlocks = matchingExtensionBlocks.sort((a, b) => {
+                const orderPriority = { before: 1, replace: 2, after: 3 };
+                return orderPriority[a.location.position.order] - orderPriority[b.location.position.order];
+            });
+
+            const replacementBlockExists = arrangedExtensionBlocks.some(
+                block => block.location.position.order === 'replace',
+            );
+
+            let childBlockInserted = false;
+            if (matchingExtensionBlocks.length > 0) {
+                for (const extensionBlock of arrangedExtensionBlocks) {
+                    let extensionBlockShouldRender = true;
+                    if (typeof extensionBlock?.shouldRender === 'function') {
+                        extensionBlockShouldRender = extensionBlock.shouldRender(page);
+                    }
+
+                    // Insert child block before the first non-"before" block
+                    if (
+                        !childBlockInserted &&
+                        !replacementBlockExists &&
+                        extensionBlock.location.position.order !== 'before'
+                    ) {
+                        finalChildArray.push(childBlock);
+                        childBlockInserted = true;
+                    }
+
+                    const isFullWidth = extensionBlock.location.column === 'full';
+                    const BlockComponent = isFullWidth ? FullWidthPageBlock : PageBlock;
+
+                    const ExtensionBlock =
+                        extensionBlock.component && extensionBlockShouldRender ? (
+                            <BlockComponent
+                                key={extensionBlock.id}
+                                column={extensionBlock.location.column}
+                                blockId={extensionBlock.id}
+                                title={extensionBlock.title}
+                            >
+                                {<extensionBlock.component context={page} />}
+                            </BlockComponent>
+                        ) : undefined;
+
+                    if (extensionBlockShouldRender && ExtensionBlock) {
+                        finalChildArray.push(ExtensionBlock);
+                    }
                 }
-                const ExtensionBlock =
-                    extensionBlock.component && extensionBlockShouldRender ? (
-                        <PageBlock
-                            key={childBlock.key}
-                            column={extensionBlock.location.column}
-                            blockId={extensionBlock.id}
-                            title={extensionBlock.title}
-                        >
-                            {<extensionBlock.component context={page} />}
-                        </PageBlock>
-                    ) : undefined;
-                if (extensionBlock.location.position.order === 'before') {
-                    finalChildArray.push(...[ExtensionBlock, childBlock].filter(x => !!x));
-                } else if (extensionBlock.location.position.order === 'after') {
-                    finalChildArray.push(...[childBlock, ExtensionBlock].filter(x => !!x));
-                } else if (
-                    extensionBlock.location.position.order === 'replace' &&
-                    extensionBlockShouldRender &&
-                    ExtensionBlock
-                ) {
-                    finalChildArray.push(ExtensionBlock);
+
+                // If all blocks were "before", insert child block at the end
+                if (!childBlockInserted && !replacementBlockExists) {
+                    finalChildArray.push(childBlock);
                 }
             } else {
                 finalChildArray.push(childBlock);
@@ -286,7 +315,7 @@ export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
                     <div className="@3xl/layout:col-span-1 space-y-4">{sideBlocks}</div>
                 </div>
             ) : (
-                <div className="space-y-4">{children}</div>
+                <div className="space-y-4">{finalChildArray}</div>
             )}
         </div>
     );
@@ -518,7 +547,7 @@ export type PageBlockProps = {
      * @description
      * Which column this block should appear in
      */
-    column: 'main' | 'side';
+    column: 'main' | 'side' | 'full';
     /**
      * @description
      * The ID of the block, e.g. "gift-cards" or "related-products".

@@ -74,6 +74,14 @@ export interface MolliePluginOptions {
         ctx: RequestContext,
         order: Order | null,
     ) => AdditionalEnabledPaymentMethodsParams | Promise<AdditionalEnabledPaymentMethodsParams>;
+    /**
+     * @description
+     * Immediate capture mode for pay-later methods like Klarna.
+     * Setting this option will make the plugin ignore the `immediateCapture` option in the `createMolliePaymentIntent` mutation.
+     *
+     * The default is true, unless set otherwise as input in the `createMolliePaymentIntent` mutation.
+     */
+    immediateCapture?: boolean;
 }
 
 /**
@@ -187,6 +195,9 @@ export interface MolliePluginOptions {
  * This could result in an order being in `ArrangingAdditionalPayment` status after the customer finished payment.
  * You should check if there is still an active order with status `ArrangingAdditionalPayment` on your order confirmation page,
  * and if so, allow your customer to pay for the additional items by creating another Mollie payment.
+ *
+ * @deprecated This plugin is moving to `@vendure-community/payments-plugin`.
+ * The `@vendure/payments-plugin` package will be removed in Vendure v3.6.0.
  *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin

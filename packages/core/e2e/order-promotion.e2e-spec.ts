@@ -25,17 +25,17 @@ import path from 'path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { freeShipping } from '../src/config/promotion/actions/free-shipping-action';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 import { orderLineFixedDiscount } from '../src/config/promotion/actions/order-line-fixed-discount-action';
 
 import { TestMoneyStrategy } from './fixtures/test-money-strategy';
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
-import { CurrencyCode, HistoryEntryType, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { AdjustmentType, ErrorCode } from './graphql/generated-e2e-shop-types';
+import { CurrencyCode, HistoryEntryType, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { AdjustmentType, ErrorCode } from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     ASSIGN_PROMOTIONS_TO_CHANNEL,
@@ -251,7 +251,7 @@ describe('Promotions applied to Orders', () => {
             expect(removeCouponCode!.totalWithTax).toBe(6000);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/649
+        // https://github.com/vendurehq/vendure/issues/649
         it('discounts array cleared after coupon code removed', async () => {
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
@@ -350,7 +350,7 @@ describe('Promotions applied to Orders', () => {
                 shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1692
+            // https://github.com/vendurehq/vendure/issues/1692
             it('does not allow a couponCode from another channel', async () => {
                 shopClient.setChannelToken(OTHER_CHANNEL_TOKEN);
                 const { applyCouponCode } = await shopClient.query<
@@ -686,7 +686,7 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode.totalWithTax).toBe(4800);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1773
+            // https://github.com/vendurehq/vendure/issues/1773
             it('decimal percentage', async () => {
                 const decimalPercentageCouponCode = 'DPCC';
                 await createPromotion({
@@ -1276,7 +1276,7 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode.totalWithTax).toBe(6000);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/pull/1150
+            // https://github.com/vendurehq/vendure/pull/1150
             it('shipping discounts get correctly removed', async () => {
                 shopClient.setChannelToken(TAX_INCLUDED_CHANNEL_TOKEN);
                 const { addItemToOrder } = await shopClient.query<
@@ -1687,7 +1687,7 @@ describe('Promotions applied to Orders', () => {
                 expect(activeOrder!.couponCodes).toEqual([]);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1466
+            // https://github.com/vendurehq/vendure/issues/1466
             it('cancelled orders do not count against usage limit', async () => {
                 const { cancelOrder } = await adminClient.query<
                     Codegen.CancelOrderMutation,
@@ -1874,7 +1874,7 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_LIMIT_ERROR);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1466
+            // https://github.com/vendurehq/vendure/issues/1466
             it('cancelled orders do not count against usage limit', async () => {
                 const { cancelOrder } = await adminClient.query<
                     Codegen.CancelOrderMutation,
@@ -1903,7 +1903,7 @@ describe('Promotions applied to Orders', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/710
+    // https://github.com/vendurehq/vendure/issues/710
     it('removes order-level discount made invalid by removing OrderLine', async () => {
         const promotion = await createPromotion({
             enabled: true,
@@ -1956,7 +1956,7 @@ describe('Promotions applied to Orders', () => {
         expect(check2!.discounts.length).toBe(0);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/1492
+    // https://github.com/vendurehq/vendure/issues/1492
     it('correctly handles pro-ration of variants with 0 price', async () => {
         const couponCode = '20%_off_order';
         const promotion = await createPromotion({
@@ -1994,7 +1994,7 @@ describe('Promotions applied to Orders', () => {
         expect(applyCouponCode.totalWithTax).toBe(96);
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/2385
+    // https://github.com/vendurehq/vendure/issues/2385
     describe('prevents negative line price', () => {
         const TAX_INCLUDED_CHANNEL_TOKEN_2 = 'tax_included_channel_2';
         const couponCode1 = '100%_off';
@@ -2147,7 +2147,7 @@ describe('Promotions applied to Orders', () => {
         });
     });
 
-    // https://github.com/vendure-ecommerce/vendure/issues/2052
+    // https://github.com/vendurehq/vendure/issues/2052
     describe('multi-channel usage', () => {
         const SECOND_CHANNEL_TOKEN = 'second_channel_token';
         const THIRD_CHANNEL_TOKEN = 'third_channel_token';

@@ -182,7 +182,7 @@ export class ChannelService {
         channelIds: ID[],
     ): Promise<T> {
         const relations = [];
-        // This is a work-around for https://github.com/vendure-ecommerce/vendure/issues/1391
+        // This is a work-around for https://github.com/vendurehq/vendure/issues/1391
         // A better API would be to allow the consumer of this method to supply an entity instance
         // so that this join could be done prior to invoking this method.
         // TODO: overload the assignToChannels method to allow it to take an entity instance
@@ -203,6 +203,10 @@ export class ChannelService {
             id => !assignedChannels.some(ec => idsAreEqual(ec.channelId, id)),
         );
 
+        if (!newChannelIds.length) {
+            return entity;
+        }
+
         await this.connection
             .getRepository(ctx, entityType)
             .createQueryBuilder()
@@ -210,7 +214,9 @@ export class ChannelService {
             .of(entity.id)
             .add(newChannelIds);
 
-        await this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'assigned', entityType));
+        await this.eventBus.publish(
+            new ChangeChannelEvent(ctx, entity, newChannelIds, 'assigned', entityType),
+        );
         return entity;
     }
 
@@ -249,7 +255,9 @@ export class ChannelService {
             .relation('channels')
             .of(entity.id)
             .remove(existingChannelIds);
-        await this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
+        await this.eventBus.publish(
+            new ChangeChannelEvent(ctx, entity, existingChannelIds, 'removed', entityType),
+        );
         return entity;
     }
 

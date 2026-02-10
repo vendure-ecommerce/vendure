@@ -16,7 +16,7 @@ export interface DetailPageRouteLoaderConfig<T extends TypedDocumentNode<any, an
      * the detail query document) get correctly applied at the route loader level.
      */
     pageId?: string;
-    queryDocument: T;
+    queryDocument: T | (() => T);
     breadcrumb: (
         isNew: boolean,
         entity: DetailEntity<T>,
@@ -29,7 +29,7 @@ export function detailPageRouteLoader<T extends TypedDocumentNode<any, any>>({
     queryDocument,
     breadcrumb,
 }: DetailPageRouteLoaderConfig<T>) {
-    const loader: FileBaseRouteOptions<any, any>['loader'] = async ({
+    const loader: FileBaseRouteOptions<any, any, any>['loader'] = async ({
         context,
         params,
         location,
@@ -38,12 +38,14 @@ export function detailPageRouteLoader<T extends TypedDocumentNode<any, any>>({
         params: any;
         location: ParsedLocation;
     }) => {
+        const resolvedQueryDocument = typeof queryDocument === 'function' ? queryDocument() : queryDocument;
+
         if (!params.id) {
             throw new Error('ID param is required');
         }
         const isNew = params.id === NEW_ENTITY_PATH;
         const { extendedQuery: extendedQueryDocument } = extendDetailFormQuery(
-            addCustomFields(queryDocument),
+            addCustomFields(resolvedQueryDocument),
             pageId,
         );
         const result = isNew
@@ -53,8 +55,8 @@ export function detailPageRouteLoader<T extends TypedDocumentNode<any, any>>({
                   { id: params.id },
               );
 
-        const entityField = getQueryName(queryDocument);
-        const entityName = getQueryTypeFieldInfo(queryDocument)?.type;
+        const entityField = getQueryName(resolvedQueryDocument);
+        const entityName = getQueryTypeFieldInfo(resolvedQueryDocument)?.type;
 
         if (!isNew && !result[entityField]) {
             throw new Error(`${entityName} with the ID ${params.id} was not found`);

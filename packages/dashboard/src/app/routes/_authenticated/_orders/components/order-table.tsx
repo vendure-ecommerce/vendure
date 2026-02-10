@@ -147,7 +147,10 @@ export function OrderTable({ order, pageId }: Readonly<OrderTableProps>) {
     ];
     const currencyCode = order.currencyCode;
 
-    const fields = getFieldsFromDocumentNode(addCustomFields(orderDetailDocument), ['order', 'lines']);
+    const fields = getFieldsFromDocumentNode(
+        addCustomFields(orderDetailDocument, { includeNestedFragments: ['OrderLine'] }),
+        ['order', 'lines'],
+    );
 
     const customizeColumns = useMemo(() => createCustomizeColumns(currencyCode), [currencyCode]);
 
@@ -172,6 +175,7 @@ export function OrderTable({ order, pageId }: Readonly<OrderTableProps>) {
                 columns={columns as any}
                 data={data as any}
                 totalItems={data.length}
+                itemsPerPage={data.length}
                 disableViewOptions={false}
                 defaultColumnVisibility={columnVisibility}
                 onColumnVisibilityChange={(_, columnVisibility) => {

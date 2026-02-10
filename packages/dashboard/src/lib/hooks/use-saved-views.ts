@@ -113,6 +113,7 @@ export function useSavedViews() {
             scope: input.scope,
             filters: input.filters,
             searchTerm: input.searchTerm,
+            columnConfig: input.columnConfig,
             pageId,
             blockId: blockId === 'default' ? undefined : blockId,
             createdAt: new Date().toISOString(),

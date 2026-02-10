@@ -2,9 +2,6 @@
 title: 'Collections'
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 [`Collections`](/reference/typescript-api/entities/collection/) are used to categorize and organize your catalog. A collection
 contains multiple product variants, and a product variant can belong to multiple collections. Collections can be nested to
 create a hierarchy of categories, which is typically used to create a menu structure in the storefront.
@@ -56,7 +53,7 @@ in the child collection.
 ### Creating a collection filter
 
 You can create your own custom collection filters with the [`CollectionFilter`](/reference/typescript-api/configuration/collection-filter/) class. This class
-is a [configurable operation](/guides/developer-guide/strategies-configurable-operations/#configurable-operations) where the specific
+is a [configurable operation](/developer-guide/strategies-configurable-operations/#configurable-operations) where the specific
 filtering logic is implemented in the `apply()` method passed to its constructor.
 
 The `apply()` method receives an instance of the [TypeORM SelectQueryBuilder](https://typeorm.io/select-query-builder) which should have filtering logic
@@ -112,8 +109,7 @@ export const config: VendureConfig = {
     catalogOptions: {
         collectionFilters: [
             ...defaultCollectionFilters,
-            // highlight-next-line
-            skuCollectionFilter
+            skuCollectionFilter // [!code highlight]
         ],
     },
 };
@@ -121,5 +117,5 @@ export const config: VendureConfig = {
 
 :::info
 To see some more advanced collection filter examples, you can look at the source code of the
-[default collection filters](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/catalog/default-collection-filters.ts).
+[default collection filters](https://github.com/vendurehq/vendure/blob/master/packages/core/src/config/catalog/default-collection-filters.ts).
 :::

@@ -13,12 +13,19 @@ import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
+import { usePaginatedList } from '@/vdb/hooks/use-paginated-list.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
-import { AccessorFnColumnDef, AccessorKeyColumnDef, createColumnHelper, Row } from '@tanstack/react-table';
+import {
+    AccessorFnColumnDef,
+    AccessorKeyColumnDef,
+    CellContext,
+    createColumnHelper,
+    Row,
+} from '@tanstack/react-table';
 import { EllipsisIcon, TrashIcon } from 'lucide-react';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { toast } from 'sonner';
 import {
     AdditionalColumns,
@@ -27,7 +34,6 @@ import {
     FacetedFilterConfig,
     PaginatedListItemFields,
     RowAction,
-    usePaginatedList,
 } from '../shared/paginated-list-data-table.js';
 import {
     AlertDialog,
@@ -114,8 +120,34 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
 
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
             const customConfig = customizeColumns?.[fieldInfo.name as unknown as AllItemFieldKeys<T>] ?? {};
+
+            const disabled = customConfig.meta?.disabled ?? false;
+
+            if (disabled) {
+                return null;
+            }
+
             const { header, meta, cell: customCell, ...customConfigRest } = customConfig;
             const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
+            const displayComponentId =
+                pageId && pageBlock?.blockId
+                    ? generateDisplayComponentKey(pageId, pageBlock.blockId, fieldInfo.name)
+                    : undefined;
+
+            // If a custom cell function is provided, use it directly (like additionalColumns does).
+            // This preserves the same behavior and prevents cell unmounting issues.
+            // Only use CellWrapper for columns without custom cells.
+            const cellFn =
+                typeof customCell === 'function'
+                    ? customCell
+                    : (cellContext: CellContext<any, any>) => (
+                          <CellWrapper
+                              cellContext={cellContext}
+                              fieldInfo={fieldInfo}
+                              isCustomField={isCustomField}
+                              displayComponentId={displayComponentId}
+                          />
+                      );
 
             return columnHelper.accessor(fieldInfo.name as any, {
                 id: fieldInfo.name,
@@ -126,28 +158,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
                 // otherwise the TanStack Table with apply an "auto" function which somehow
                 // prevents certain filters from working.
                 filterFn: 'equalsString',
-                cell: cellContext => {
-                    const { cell, row } = cellContext;
-                    const cellValue = cell.getValue();
-                    const value =
-                        cellValue ??
-                        (isCustomField ? row.original?.customFields?.[fieldInfo.name] : undefined);
-                    const displayComponentId =
-                        pageId && pageBlock?.blockId
-                            ? generateDisplayComponentKey(pageId, pageBlock.blockId, fieldInfo.name)
-                            : undefined;
-
-                    const CustomDisplayComponent =
-                        displayComponentId && getDisplayComponent(displayComponentId);
-
-                    if (CustomDisplayComponent) {
-                        return <CustomDisplayComponent value={value} {...cellContext} />;
-                    }
-                    if (typeof customCell === 'function') {
-                        return customCell(cellContext);
-                    }
-                    return <DefaultDisplayComponent value={value} fieldInfo={fieldInfo} />;
-                },
+                cell: cellFn,
                 header: headerContext => {
                     return (
                         <DataTableColumnHeader headerContext={headerContext} customConfig={customConfig} />
@@ -157,13 +168,13 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
             });
         });
 
-        let finalColumns = [...queryBasedColumns];
+        let finalColumns = queryBasedColumns.filter(column => column !== null);
 
         for (const [id, column] of Object.entries(additionalColumns ?? {})) {
             if (!id) {
                 throw new Error('Column id is required');
             }
-            finalColumns.push(columnHelper.accessor(id as any, { ...column, id, enableColumnFilter: false }));
+            finalColumns.push(columnHelper.accessor(id as any, { enableColumnFilter: false, ...column, id }));
         }
 
         if (defaultColumnOrder) {
@@ -290,6 +301,34 @@ function DefaultDisplayComponent({ value, fieldInfo }: { value: any; fieldInfo: 
     }
     return value;
 }
+
+/**
+ * A cell wrapper component for columns without custom cell functions.
+ * Handles default display logic including custom display components and field-type-based rendering.
+ */
+const CellWrapper = memo(function CellWrapper({
+    cellContext,
+    fieldInfo,
+    isCustomField,
+    displayComponentId,
+}: {
+    cellContext: CellContext<any, any>;
+    fieldInfo: FieldInfo;
+    isCustomField: boolean;
+    displayComponentId?: string;
+}) {
+    const { cell, row } = cellContext;
+    const cellValue = cell.getValue();
+    const value =
+        cellValue ?? (isCustomField ? (row.original as any)?.customFields?.[fieldInfo.name] : undefined);
+
+    const CustomDisplayComponent = displayComponentId && getDisplayComponent(displayComponentId);
+
+    if (CustomDisplayComponent) {
+        return <CustomDisplayComponent value={value} {...cellContext} />;
+    }
+    return <DefaultDisplayComponent value={value} fieldInfo={fieldInfo} />;
+});
 
 function DeleteMutationRowAction({
     deleteMutation,

@@ -24,6 +24,7 @@ import { ResultOf } from 'gql.tada';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';
 import { CustomerAddressSelector } from './components/customer-address-selector.js';
+import { DraftOrderStatus } from './components/draft-order-status.js';
 import { EditOrderTable } from './components/edit-order-table.js';
 import { OrderAddress } from './components/order-address.js';
 import {
@@ -289,8 +290,15 @@ function DraftOrderPage() {
         });
     };
 
+    const hasCustomer = !!entity.customer;
+    const hasLines = entity.lines.length > 0;
+    const hasShippingMethod = entity.shippingLines.length > 0;
+    const isDraftState = entity.state === 'Draft';
+
+    const isCompleteDraftDisabled = !hasCustomer || !hasLines || !hasShippingMethod || !isDraftState;
+
     return (
-        <Page pageId="draft-order-detail" form={form}>
+        <Page pageId="draft-order-detail" form={form} entity={entity}>
             <PageTitle>
                 <Trans>Draft order</Trans>: {entity?.code ?? ''}
             </PageTitle>
@@ -312,12 +320,7 @@ function DraftOrderPage() {
                     <PermissionGuard requires={['UpdateOrder']}>
                         <Button
                             type="button"
-                            disabled={
-                                !entity.customer ||
-                                entity.lines.length === 0 ||
-                                entity.shippingLines.length === 0 ||
-                                entity.state !== 'Draft'
-                            }
+                            disabled={isCompleteDraftDisabled}
                             onClick={() => completeDraftOrder({ id: entity.id, state: 'ArrangingPayment' })}
                         >
                             <Trans>Complete draft</Trans>
@@ -325,7 +328,20 @@ function DraftOrderPage() {
                     </PermissionGuard>
                 </PageActionBarRight>
             </PageActionBar>
+
             <PageLayout>
+                <PageBlock
+                    column="side"
+                    blockId="draft-order-status"
+                    title={<Trans>Draft order status</Trans>}
+                >
+                    <DraftOrderStatus
+                        hasCustomer={hasCustomer}
+                        hasLines={hasLines}
+                        hasShippingMethod={hasShippingMethod}
+                        isDraftState={isDraftState}
+                    />
+                </PageBlock>
                 <PageBlock column="main" blockId="order-table">
                     <EditOrderTable
                         order={entity}

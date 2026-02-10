@@ -64,8 +64,7 @@ import { MyOrderCodeStrategy } from '../config/my-order-code-strategy';
 export const config: VendureConfig = {
     // ...
     orderOptions: {
-        // highlight-next-line
-        orderCodeStrategy: new MyOrderCodeStrategy(),
+        orderCodeStrategy: new MyOrderCodeStrategy(), // [!code highlight]
     },
 }
 ```
@@ -94,8 +93,7 @@ import { MyStockLocationStrategy } from '../config/my-stock-location-strategy';
 export const config: VendureConfig = {
     // ...
     catalogOptions: {
-        // highlight-next-line
-        stockLocationStrategy: new MyStockLocationStrategy({ maxDistance: 100 }),
+        stockLocationStrategy: new MyStockLocationStrategy({ maxDistance: 100 }), // [!code highlight]
     },
 }
 ```
@@ -322,7 +320,7 @@ a `component` property, and optional properties to configure that component.
 }
 ```
 
-A full description of the available UI components can be found in the [Custom Fields guide](/guides/developer-guide/custom-fields/#custom-field-ui).
+A full description of the available UI components can be found in the [Custom Fields guide](/developer-guide/custom-fields/#custom-field-ui).
 
 ### Injecting dependencies
 

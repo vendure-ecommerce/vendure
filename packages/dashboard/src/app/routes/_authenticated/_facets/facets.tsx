@@ -1,4 +1,3 @@
-import { DataTableCellComponent } from '@/vdb/components/data-table/types.js';
 import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import { FacetValueChip } from '@/vdb/components/shared/facet-value-chip.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
@@ -8,7 +7,6 @@ import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ResultOf } from 'gql.tada';
 import { PlusIcon } from 'lucide-react';
 import {
     AssignFacetsToChannelBulkAction,
@@ -24,39 +22,6 @@ export const Route = createFileRoute('/_authenticated/_facets/facets')({
     loader: () => ({ breadcrumb: () => <Trans>Facets</Trans> }),
 });
 
-const FacetValuesCell: DataTableCellComponent<ResultOf<typeof facetListDocument>['facets']['items'][0]> = ({
-    row,
-}) => {
-    const value = row.original.valueList;
-    if (!value) {
-        return null;
-    }
-    const list = value;
-    return (
-        <div className="flex flex-wrap gap-2 items-center">
-            {list.items.map(item => {
-                return (
-                    <FacetValueChip
-                        key={item.id}
-                        facetValue={item}
-                        removable={false}
-                        displayFacetName={false}
-                    />
-                );
-            })}
-            <FacetValuesSheet facetId={row.original.id} facetName={row.original.name}>
-                {list.totalItems > 3 ? (
-                    <div>
-                        <Trans>+ {list.totalItems - 3} more</Trans>
-                    </div>
-                ) : (
-                    <Trans>View values</Trans>
-                )}
-            </FacetValuesSheet>
-        </div>
-    );
-};
-
 function FacetListPage() {
     return (
         <ListPage
@@ -66,11 +31,9 @@ function FacetListPage() {
             defaultVisibility={{
                 name: true,
                 isPrivate: true,
-                valueList: true,
             }}
             customizeColumns={{
                 name: {
-                    id: 'name',
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 isPrivate: {
@@ -86,7 +49,28 @@ function FacetListPage() {
                 },
                 valueList: {
                     header: () => <Trans>Values</Trans>,
-                    cell: FacetValuesCell,
+                    cell: ({ row }) => {
+                        const list = row.original.valueList;
+                        return (
+                            <div className="flex flex-wrap gap-2 items-center">
+                                {list?.items.map(item => (
+                                    <FacetValueChip
+                                        key={item.id}
+                                        facetValue={item}
+                                        removable={false}
+                                        displayFacetName={false}
+                                    />
+                                ))}
+                                <FacetValuesSheet facetId={row.original.id} facetName={row.original.name}>
+                                    {list && list.totalItems > 3 ? (
+                                        <Trans>+ {list.totalItems - 3} more</Trans>
+                                    ) : (
+                                        <Trans>View values</Trans>
+                                    )}
+                                </FacetValuesSheet>
+                            </div>
+                        );
+                    },
                 },
             }}
             onSearchTermChange={searchTerm => {

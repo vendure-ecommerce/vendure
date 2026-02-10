@@ -21,7 +21,7 @@ import { PubSubOptions } from './options';
  * Note: To use this strategy, you need to manually install the `@google-cloud/pubsub` package:
  *
  * ```shell
- * npm install @google-cloud/pubsub@^2.8.0
+ * npm install @google-cloud/pubsub@^4.11.0
  * ```
  *
  * @docsCategory core plugins/JobQueuePlugin

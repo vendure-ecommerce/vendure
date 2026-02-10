@@ -14,6 +14,31 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:43
+msgid "refundReason.CustomerRequest"
+msgstr "Richiesta del cliente"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:44
+msgid "refundReason.NotAvailable"
+msgstr "Non disponibile"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:45
+msgid "refundReason.DamagedInShipping"
+msgstr "Danneggiato durante la spedizione"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:46
+msgid "refundReason.WrongItem"
+msgstr "Articolo errato"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts:47
+msgid "refundReason.Other"
+msgstr "Altro"
+
+#. js-lingui-explicit-id
 #: src/lib/hooks/use-extended-detail-query.ts:23
 #: src/lib/hooks/use-extended-list-query.ts:64
 msgid "Query extension error"
@@ -24,6 +49,31 @@ msgstr "Errore di estensione query"
 #: src/lib/hooks/use-extended-list-query.ts:66
 msgid "The page will continue with the default query."
 msgstr "La pagina continuerà con la query predefinita."
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:41
+msgid "Failed to extend query document"
+msgstr "Impossibile estendere il documento query"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:43
+msgid "Query extension is invalid: must have at least one top-level field"
+msgstr "L'estensione query non è valida: deve avere almeno un campo di livello superiore"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:47
+msgid "Query extension mismatch: "
+msgstr "Disallineamento estensione query: "
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:49
+msgid "Query extension contains invalid GraphQL syntax"
+msgstr "L'estensione query contiene sintassi GraphQL non valida"
+
+#. js-lingui-explicit-id
+#: src/lib/hooks/use-extended-list-query.ts:51
+msgid "Query extension error: "
+msgstr "Errore estensione query: "
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts:16
@@ -192,34 +242,14 @@ msgid "Orders Summary Widget"
 msgstr "Widget Riepilogo Ordini"
 
 #. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:41
-msgid "Failed to extend query document"
-msgstr "Impossibile estendere il documento query"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:43
-msgid "Query extension is invalid: must have at least one top-level field"
-msgstr "L'estensione query non è valida: deve avere almeno un campo di livello superiore"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:47
-msgid "Query extension mismatch: "
-msgstr "Disallineamento estensione query: "
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:49
-msgid "Query extension contains invalid GraphQL syntax"
-msgstr "L'estensione query contiene sintassi GraphQL non valida"
-
-#. js-lingui-explicit-id
-#: src/lib/hooks/use-extended-list-query.ts:51
-msgid "Query extension error: "
-msgstr "Errore estensione query: "
-
-#. js-lingui-explicit-id
 #: src/lib/framework/alert/search-index-buffer-alert/search-index-buffer-alert.ts:35
 msgid "Running pending search index updates"
 msgstr "Esecuzione degli aggiornamenti dell'indice di ricerca in sospeso"
+
+#. js-lingui-explicit-id
+#: src/lib/components/data-input/string-list-input.tsx:237
+msgid "Type and press Enter or comma to add..."
+msgstr "Digita e premi Invio o virgola per aggiungere..."
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
@@ -354,337 +384,337 @@ msgid "orderState.ArrangingAdditionalPayment"
 msgstr "Organizzazione pagamento aggiuntivo"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:43
+#: src/i18n/common-strings.ts:50
 msgid "fieldName.attempts"
 msgstr "Tentativi"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:44
+#: src/i18n/common-strings.ts:51
 msgid "fieldName.availableCurrencyCodes"
 msgstr "Codici valuta disponibili"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:45
+#: src/i18n/common-strings.ts:52
 msgid "fieldName.availableLanguageCodes"
 msgstr "Codici lingue disponibili"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:46
+#: src/i18n/common-strings.ts:53
 msgid "fieldName.breadcrumbs"
 msgstr "Breadcrumb"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:47
+#: src/i18n/common-strings.ts:54
 msgid "fieldName.category"
 msgstr "Categoria"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:48
+#: src/i18n/common-strings.ts:55
 msgid "fieldName.channels"
 msgstr "Canali"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:49
+#: src/i18n/common-strings.ts:56
 msgid "fieldName.children"
 msgstr "Figli"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:50
+#: src/i18n/common-strings.ts:57
 msgid "fieldName.code"
 msgstr "Codice"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:51
+#: src/i18n/common-strings.ts:58
 msgid "fieldName.couponCode"
 msgstr "Codice coupon"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:52
+#: src/i18n/common-strings.ts:59
 msgid "fieldName.createdAt"
 msgstr "Creato il"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:53
+#: src/i18n/common-strings.ts:60
 msgid "fieldName.currencyCode"
 msgstr "Codice valuta"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:54
+#: src/i18n/common-strings.ts:61
 msgid "fieldName.customer"
 msgstr "Cliente"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:55
+#: src/i18n/common-strings.ts:62
 msgid "fieldName.customerGroup"
 msgstr "Gruppo clienti"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:56
+#: src/i18n/common-strings.ts:63
 msgid "fieldName.customers"
 msgstr "Clienti"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:57
+#: src/i18n/common-strings.ts:64
 msgid "fieldName.customFields"
 msgstr "Campi personalizzati"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:58
+#: src/i18n/common-strings.ts:65
 msgid "fieldName.data"
 msgstr "Dati"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:59
+#: src/i18n/common-strings.ts:66
 msgid "fieldName.defaultCurrencyCode"
 msgstr "Codice valuta predefinito"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:60
+#: src/i18n/common-strings.ts:67
 msgid "fieldName.defaultLanguageCode"
 msgstr "Codice lingua predefinito"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:61
+#: src/i18n/common-strings.ts:68
 msgid "fieldName.defaultShippingZone"
 msgstr "Zona di spedizione predefinita"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:62
+#: src/i18n/common-strings.ts:69
 msgid "fieldName.defaultTaxZone"
 msgstr "Zona fiscale predefinita"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:63
+#: src/i18n/common-strings.ts:70
 msgid "fieldName.description"
 msgstr "Descrizione"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:64
+#: src/i18n/common-strings.ts:71
 msgid "fieldName.duration"
 msgstr "Durata"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:65
+#: src/i18n/common-strings.ts:72
 msgid "fieldName.emailAddress"
 msgstr "Indirizzo email"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:66
+#: src/i18n/common-strings.ts:73
 msgid "fieldName.enabled"
 msgstr "Abilitato"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:67
+#: src/i18n/common-strings.ts:74
 msgid "fieldName.endsAt"
 msgstr "Termina il"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:68
+#: src/i18n/common-strings.ts:75
 msgid "fieldName.error"
 msgstr "Errore"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:69
+#: src/i18n/common-strings.ts:76
 msgid "fieldName.featuredAsset"
 msgstr "File in evidenza"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:70
+#: src/i18n/common-strings.ts:77
 msgid "fieldName.firstName"
 msgstr "Nome"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:71
+#: src/i18n/common-strings.ts:78
 msgid "fieldName.fulfillmentHandlerCode"
 msgstr "Codice gestore evasione"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:72
+#: src/i18n/common-strings.ts:79
 msgid "fieldName.id"
 msgstr "ID"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:73
+#: src/i18n/common-strings.ts:80
 msgid "fieldName.isDefault"
 msgstr "Predefinito"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:74
+#: src/i18n/common-strings.ts:81
 msgid "fieldName.isPrivate"
 msgstr "Privato"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:75
+#: src/i18n/common-strings.ts:82
 msgid "fieldName.isSettled"
 msgstr "Completato"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:76
+#: src/i18n/common-strings.ts:83
 msgid "fieldName.lastName"
 msgstr "Cognome"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:77
+#: src/i18n/common-strings.ts:84
 msgid "fieldName.name"
 msgstr "Nome"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:78
+#: src/i18n/common-strings.ts:85
 msgid "fieldName.orderPlacedAt"
 msgstr "Ordine effettuato il"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:79
+#: src/i18n/common-strings.ts:86
 msgid "fieldName.parentId"
 msgstr "ID genitore"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:80
+#: src/i18n/common-strings.ts:87
 msgid "fieldName.perCustomerUsageLimit"
 msgstr "Limite utilizzo per cliente"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:81
+#: src/i18n/common-strings.ts:88
 msgid "fieldName.permissions"
 msgstr "Permessi"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:82
+#: src/i18n/common-strings.ts:89
 msgid "fieldName.position"
 msgstr "Posizione"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:83
+#: src/i18n/common-strings.ts:90
 msgid "fieldName.price"
 msgstr "Prezzo"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:84
+#: src/i18n/common-strings.ts:91
 msgid "fieldName.priceWithTax"
 msgstr "Prezzo con IVA"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:85
+#: src/i18n/common-strings.ts:92
 msgid "fieldName.pricesIncludeTax"
 msgstr "I prezzi includono l'IVA"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:86
+#: src/i18n/common-strings.ts:93
 msgid "fieldName.productVariants"
 msgstr "Varianti prodotto"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:87
+#: src/i18n/common-strings.ts:94
 msgid "fieldName.progress"
 msgstr "Progresso"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:88
+#: src/i18n/common-strings.ts:95
 msgid "fieldName.queueName"
 msgstr "Nome coda"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:89
+#: src/i18n/common-strings.ts:96
 msgid "fieldName.result"
 msgstr "Risultato"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:90
+#: src/i18n/common-strings.ts:97
 msgid "fieldName.retries"
 msgstr "Nuovi tentativi"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:91
+#: src/i18n/common-strings.ts:98
 msgid "fieldName.seller"
 msgstr "Venditore"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:92
+#: src/i18n/common-strings.ts:99
 msgid "fieldName.settledAt"
 msgstr "Liquidato il"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:93
+#: src/i18n/common-strings.ts:100
 msgid "fieldName.shippingLines"
 msgstr "Righe spedizione"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:94
+#: src/i18n/common-strings.ts:101
 msgid "fieldName.sku"
 msgstr "SKU"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:95
+#: src/i18n/common-strings.ts:102
 msgid "fieldName.slug"
 msgstr "Slug"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:96
+#: src/i18n/common-strings.ts:103
 msgid "fieldName.startedAt"
 msgstr "Iniziato il"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:97
+#: src/i18n/common-strings.ts:104
 msgid "fieldName.startsAt"
 msgstr "Inizia il"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:98
+#: src/i18n/common-strings.ts:105
 msgid "fieldName.state"
 msgstr "Stato"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:99
+#: src/i18n/common-strings.ts:106
 msgid "fieldName.stockLevels"
 msgstr "Livelli scorte"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:100
+#: src/i18n/common-strings.ts:107
 msgid "fieldName.token"
 msgstr "Token"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:101
+#: src/i18n/common-strings.ts:108
 msgid "fieldName.total"
 msgstr "Totale"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:102
+#: src/i18n/common-strings.ts:109
 msgid "fieldName.totalWithTax"
 msgstr "Totale con IVA"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:103
+#: src/i18n/common-strings.ts:110
 msgid "fieldName.type"
 msgstr "Tipo"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:104
+#: src/i18n/common-strings.ts:111
 msgid "fieldName.updatedAt"
 msgstr "Aggiornato il"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:105
+#: src/i18n/common-strings.ts:112
 msgid "fieldName.usageLimit"
 msgstr "Limite utilizzo"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:106
+#: src/i18n/common-strings.ts:113
 msgid "fieldName.user"
 msgstr "Utente"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:107
+#: src/i18n/common-strings.ts:114
 msgid "fieldName.value"
 msgstr "Valore"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:108
+#: src/i18n/common-strings.ts:115
 msgid "fieldName.valueList"
 msgstr "Elenco valori"
 
 #. js-lingui-explicit-id
-#: src/i18n/common-strings.ts:109
+#: src/i18n/common-strings.ts:116
 msgid "fieldName.zone"
 msgstr "Zona"
 
@@ -737,7 +767,7 @@ msgstr "!="
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:44
 #: src/app/routes/_authenticated/_orders/components/state-transition-control.tsx:90
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:189
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:45
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:44
 #: src/lib/components/data-input/product-multi-selector-input.tsx:278
 #: src/lib/components/data-input/relation-selector.tsx:403
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:425
@@ -745,12 +775,12 @@ msgid "{0}"
 msgstr "{0}"
 
 #. placeholder {0}: value.totalItems
-#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:41
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:40
 msgid "{0} customers"
 msgstr "{0} clienti"
 
 #. placeholder {0}: selectedIds.length
-#: src/lib/components/data-input/product-multi-selector-input.tsx:401
+#: src/lib/components/data-input/product-multi-selector-input.tsx:398
 msgid "{0} items selected"
 msgstr "{0} articoli selezionati"
 
@@ -761,24 +791,24 @@ msgid "{0} of {1} available to fulfill"
 msgstr "{0} di {1} disponibili per l'evasione"
 
 #. placeholder {0}: selection.length
-#: src/lib/components/data-table/data-table-bulk-actions.tsx:72
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:73
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:82
 msgid "{0} selected"
 msgstr "{0} selezionati"
 
-#. placeholder {0}: row.original.productVariants?.totalItems
-#: src/app/routes/_authenticated/_collections/collections.tsx:154
+#. placeholder {0}: row.original.productVariantCount
+#: src/app/routes/_authenticated/_collections/collections.tsx:234
 msgid "{0} variants"
 msgstr "{0} varianti"
 
-#: src/lib/components/data-input/product-multi-selector-input.tsx:396
-#: src/lib/components/shared/configurable-operation-multi-selector.tsx:225
+#: src/lib/components/data-input/product-multi-selector-input.tsx:393
+#: src/lib/components/shared/configurable-operation-multi-selector.tsx:223
 #: src/lib/components/shared/configurable-operation-selector.tsx:135
 msgid "{buttonText}"
 msgstr "{buttonText}"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:108
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:136
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:109
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:137
 msgid "{label}"
 msgstr "{label}"
 
@@ -786,16 +816,20 @@ msgstr "{label}"
 msgid "{operator}"
 msgstr "{operator}"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:286
+msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
+msgstr "{successfulRefundCount} pagamento/i rimborsato/i prima dell'errore. Controlla la cronologia dell'ordine per i dettagli."
+
 #: src/lib/framework/dashboard-widget/base-widget.tsx:89
 msgid "{title}"
 msgstr "{title}"
 
 #. placeholder {0}: list.totalItems - 3
-#: src/app/routes/_authenticated/_facets/facets.tsx:50
+#: src/app/routes/_authenticated/_facets/facets.tsx:65
 msgid "+ {0} more"
 msgstr "+ {0} altri"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:172
+#: src/app/routes/_authenticated/_collections/collections.tsx:252
 msgid "+ {leftOver} more"
 msgstr "+ {leftOver} altri"
 
@@ -807,17 +841,21 @@ msgstr "+ {leftOver} altri"
 msgid "="
 msgstr "="
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:214
+msgid "A reason for the refund is required"
+msgstr "È richiesto un motivo per il rimborso"
+
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:173
 msgid "A refund of {formattedDiff} is required. Select payment amounts and enter a note to proceed."
 msgstr "È richiesto un rimborso di {formattedDiff}. Seleziona gli importi dei pagamenti e inserisci una nota per procedere."
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:233
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:229
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:191
-#: src/lib/components/data-table/use-generated-columns.tsx:234
+#: src/lib/components/data-table/use-generated-columns.tsx:238
 msgid "Actions"
 msgstr "Azioni"
 
-#: src/lib/components/layout/channel-switcher.tsx:167
+#: src/lib/components/layout/channel-switcher.tsx:179
 msgctxt "active language"
 msgid "Active"
 msgstr "Attivo"
@@ -831,7 +869,7 @@ msgstr "Aggiungi \"{newOptionInput}\""
 msgid "Add a manual payment of {0}"
 msgstr "Aggiungi un pagamento manuale di {0}"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:230
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:226
 msgid "Add a new address to the customer."
 msgstr "Aggiungi un nuovo indirizzo al cliente."
 
@@ -847,6 +885,10 @@ msgstr "Aggiungi un altro gruppo di opzioni"
 msgid "Add asset"
 msgstr "Aggiungi file"
 
+#: src/lib/components/layout/channel-switcher.tsx:212
+msgid "Add channel"
+msgstr "Aggiungi canale"
+
 #: src/lib/components/shared/rich-text-editor/table-edit-icons.tsx:151
 msgid "Add column after"
 msgstr "Aggiungi colonna dopo"
@@ -855,7 +897,7 @@ msgstr "Aggiungi colonna dopo"
 msgid "Add column before"
 msgstr "Aggiungi colonna prima"
 
-#: src/app/routes/_authenticated/_countries/countries.tsx:65
+#: src/app/routes/_authenticated/_countries/countries.tsx:63
 msgid "Add Country"
 msgstr "Aggiungi paese"
 
@@ -892,8 +934,8 @@ msgstr "Aggiungi filtri per visualizzare in anteprima i contenuti della collezio
 msgid "Add item"
 msgstr "Aggiungi elemento"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:221
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:227
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:217
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:223
 msgid "Add new address"
 msgstr "Aggiungi nuovo indirizzo"
 
@@ -968,9 +1010,14 @@ msgstr "Aggiungi riga prima"
 msgid "Add stock level for another location"
 msgstr "Aggiungi livello di stock per un'altra posizione"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:179
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:182
 msgid "Add Stock to Location"
 msgstr "Aggiungi scorta all'ubicazione"
+
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:134
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:187
+msgid "Add surcharge"
+msgstr "Aggiungi supplemento"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tags-editor.tsx:141
 msgid "Add tags..."
@@ -981,7 +1028,7 @@ msgstr "Aggiungi tag..."
 msgid "Add variant"
 msgstr "Aggiungi variante"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:188
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:206
 msgid "Added coupon codes"
 msgstr "Codici coupon aggiunti"
 
@@ -990,9 +1037,14 @@ msgid "Added to group"
 msgstr "Aggiunto al gruppo"
 
 #. placeholder {0}: addedLines.length
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:162
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:180
 msgid "Adding {0} item(s)"
 msgstr "Aggiunta di {0} articolo/i"
+
+#. placeholder {0}: addedSurcharges.length
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:230
+msgid "Adding {0} surcharge(s)"
+msgstr "Aggiunta di {0} supplemento/i"
 
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:175
 msgid "Adding..."
@@ -1025,19 +1077,19 @@ msgstr "Indirizzo aggiornato"
 msgid "Address updated successfully"
 msgstr "Indirizzo aggiornato con successo"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:200
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:231
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:196
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:239
 msgid "Addresses"
 msgstr "Indirizzi"
 
 #. placeholder {0}: adjustedLines.length
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:131
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:149
 msgid "Adjusting {0} lines"
 msgstr "Regolazione di {0} righe"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:39
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:16
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:23
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:37
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:15
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:22
 msgid "Administrators"
 msgstr "Amministratori"
 
@@ -1045,15 +1097,24 @@ msgstr "Amministratori"
 msgid "after"
 msgstr "dopo"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:67
+#: src/lib/components/shared/alerts.tsx:33
+msgid "Alerts"
+msgstr "Avvisi"
+
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:66
 msgid "All resources are up and running"
 msgstr "Tutte le risorse sono attive"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:411
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:408
 msgid "Allocated"
 msgstr "Allocato"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:210
+msgid "Allocated payment amount must equal refund total"
+msgstr "L'importo del pagamento allocato deve essere uguale al totale del rimborso"
+
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:170
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:312
 msgid "Amount"
 msgstr "Importo"
 
@@ -1065,8 +1126,8 @@ msgstr "Sarà richiesto un pagamento aggiuntivo di {formattedDiff}."
 msgid "AND"
 msgstr "E"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:163
-#: src/lib/components/shared/customer-address-form.tsx:154
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:164
+#: src/lib/components/shared/customer-address-form.tsx:155
 msgid "Apartment, suite, etc."
 msgstr "Appartamento, suite, ecc."
 
@@ -1103,7 +1164,7 @@ msgstr "Sei sicuro di voler eliminare {selectionLength} file?"
 msgid "Are you sure you want to delete this address?"
 msgstr "Sei sicuro di voler eliminare questo indirizzo?"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:302
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:299
 msgid "Are you sure you want to delete this draft order?"
 msgstr "Sei sicuro di voler eliminare questa bozza di ordine?"
 
@@ -1111,7 +1172,7 @@ msgstr "Sei sicuro di voler eliminare questa bozza di ordine?"
 msgid "Are you sure you want to delete this global view? This action cannot be undone and will affect all users."
 msgstr "Sei sicuro di voler eliminare questa vista globale? Questa azione non può essere annullata e influenzerà tutti gli utenti."
 
-#: src/lib/components/data-table/use-generated-columns.tsx:352
+#: src/lib/components/data-table/use-generated-columns.tsx:384
 msgid "Are you sure you want to delete this item? This action cannot be undone."
 msgstr "Sei sicuro di voler eliminare questo articolo? Questa azione non può essere annullata."
 
@@ -1128,16 +1189,22 @@ msgid "Are you sure you want to navigate away from this page? Any unsaved change
 msgstr "Sei sicuro di voler uscire da questa pagina? Tutte le modifiche non salvate andranno perse."
 
 #. placeholder {0}: selection.length
+#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:51
+msgid "Are you sure you want to remove {0} {1} from this zone?"
+msgstr "Sei sicuro di voler rimuovere {0} {1} da questa zona?"
+
+#. placeholder {0}: selection.length
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:84
 msgid "Are you sure you want to remove {0} {entityType} from the current channel?"
 msgstr "Sei sicuro di voler rimuovere {0} {entityType} dal canale corrente?"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:38
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:36
 #: src/app/routes/_authenticated/_assets/assets.tsx:9
 #: src/app/routes/_authenticated/_assets/assets.tsx:30
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:198
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:443
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:208
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:194
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:440
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:227
 msgid "Assets"
 msgstr "Risorse"
 
@@ -1154,24 +1221,29 @@ msgid "Assign options to existing variant"
 msgstr "Assegna opzioni alla variante esistente"
 
 #: src/lib/components/shared/assign-to-channel-bulk-action.tsx:55
+#: src/lib/components/shared/assigned-channels.tsx:88
 msgid "Assign to channel"
 msgstr "Assegna al canale"
 
 #. placeholder {0}: currentInterval?.label
-#: src/app/routes/_authenticated/_system/job-queue.tsx:236
+#: src/app/routes/_authenticated/_system/job-queue.tsx:245
 msgid "Auto refresh: {0}"
 msgstr "Aggiornamento automatico: {0}"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:176
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:301
+msgid "Available"
+msgstr "Disponibile"
+
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:172
 msgid "Available currencies"
 msgstr "Valute disponibili"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:164
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:112
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:160
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:108
 msgid "Available languages"
 msgstr "Lingue disponibili"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:340
+#: src/lib/components/layout/manage-languages-dialog.tsx:322
 msgid "Available Languages"
 msgstr "Lingue disponibili"
 
@@ -1195,21 +1267,21 @@ msgstr "prima"
 msgid "between"
 msgstr "tra"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:267
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:260
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:450
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:293
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:268
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:446
 msgid "Billing address"
 msgstr "Indirizzo di fatturazione"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:117
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:135
 msgid "Billing address changed"
 msgstr "Indirizzo di fatturazione modificato"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:189
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:187
 msgid "Billing address set for order"
 msgstr "Indirizzo di fatturazione impostato per l'ordine"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:205
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:203
 msgid "Billing address unset for order"
 msgstr "Indirizzo di fatturazione rimosso dall'ordine"
 
@@ -1218,41 +1290,42 @@ msgstr "Indirizzo di fatturazione rimosso dall'ordine"
 msgid "Browse facets"
 msgstr "Sfoglia facet"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:185
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:185
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:181
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:183
 msgid "Calculator"
 msgstr "Calcolatrice"
 
 #: src/app/common/duplicate-entity-dialog.tsx:108
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:203
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:413
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:334
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:417
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:337
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:168
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:304
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:306
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:350
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:353
 #: src/app/routes/_authenticated/_orders/components/settle-refund-dialog.tsx:71
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:270
 #: src/lib/components/data-input/product-multi-selector-input.tsx:364
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:121
-#: src/lib/components/data-table/use-generated-columns.tsx:359
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:122
+#: src/lib/components/data-table/use-generated-columns.tsx:391
 #: src/lib/components/data-table/views-sheet.tsx:217
 #: src/lib/components/data-table/views-sheet.tsx:295
-#: src/lib/components/layout/manage-languages-dialog.tsx:396
+#: src/lib/components/layout/manage-languages-dialog.tsx:377
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx:88
 #: src/lib/components/shared/assign-to-channel-dialog.tsx:122
 #: src/lib/components/shared/confirmation-dialog.tsx:43
-#: src/lib/components/shared/customer-address-form.tsx:325
+#: src/lib/components/shared/customer-address-form.tsx:328
 #: src/lib/components/shared/navigation-confirmation.tsx:55
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:205
 #: src/lib/components/shared/rich-text-editor/link-dialog.tsx:142
 msgid "Cancel"
 msgstr "Annulla"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:184
+#: src/app/routes/_authenticated/_system/job-queue.tsx:193
 msgid "Cancel Job"
 msgstr "Annulla lavoro"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:164
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:166
 msgid "Cancel modification"
 msgstr "Annulla modifica"
 
@@ -1260,7 +1333,15 @@ msgstr "Annulla modifica"
 msgid "Cancel payment"
 msgstr "Annulla pagamento"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:63
+#: src/app/routes/_authenticated/_collections/collections.tsx:119
+msgid "Cannot move a collection into its own descendant"
+msgstr "Non è possibile spostare una collezione in un suo discendente"
+
+#: src/lib/components/shared/assigned-channels.tsx:49
+msgid "Cannot remove from active channel"
+msgstr "Non è possibile rimuovere dal canale attivo"
+
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:62
 msgid "Category"
 msgstr "Categoria"
 
@@ -1268,25 +1349,26 @@ msgstr "Categoria"
 msgid "Channel"
 msgstr "Canale"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:187
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:183
 msgid "Channel defaults"
 msgstr "Impostazioni predefinite canale"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:323
+#: src/lib/components/layout/manage-languages-dialog.tsx:305
 msgid "Channel Languages"
 msgstr "Lingue canale"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:40
-#: src/app/routes/_authenticated/_channels/channels.tsx:16
-#: src/app/routes/_authenticated/_channels/channels.tsx:24
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:115
-#: src/lib/components/layout/channel-switcher.tsx:117
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:38
+#: src/app/routes/_authenticated/_channels/channels.tsx:15
+#: src/app/routes/_authenticated/_channels/channels.tsx:23
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:216
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:111
+#: src/lib/components/layout/channel-switcher.tsx:146
 msgid "Channels"
 msgstr "Canali"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:184
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:185
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:196
-#: src/lib/components/shared/customer-address-form.tsx:175
+#: src/lib/components/shared/customer-address-form.tsx:176
 msgid "City"
 msgstr "Città"
 
@@ -1295,7 +1377,7 @@ msgid "Clear"
 msgstr "Cancella"
 
 #: src/app/routes/_authenticated/_assets/components/asset-tag-filter.tsx:180
-#: src/lib/components/data-table/data-table.tsx:305
+#: src/lib/components/data-table/data-table.tsx:406
 msgid "Clear all"
 msgstr "Cancella tutto"
 
@@ -1311,17 +1393,17 @@ msgstr "Cancella filtri"
 msgid "Click \"Run Test\" to test this shipping method."
 msgstr "Fai clic su \"Esegui test\" per testare questo metodo di spedizione."
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:136
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:114
-#: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:113
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:141
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:130
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:157
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:155
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:187
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:104
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:149
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:78
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:132
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:110
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:137
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:126
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:153
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:151
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:183
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:100
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:147
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:61
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:97
 msgid "Code"
 msgstr "Codice"
 
@@ -1329,13 +1411,21 @@ msgstr "Codice"
 msgid "Collection contents for {collectionName}"
 msgstr "Contenuti della collezione {collectionName}"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:45
-#: src/app/routes/_authenticated/_collections/collections.tsx:30
-#: src/app/routes/_authenticated/_collections/collections.tsx:86
+#: src/app/routes/_authenticated/_collections/collections.tsx:152
+msgid "Collection moved to new parent"
+msgstr "Collezione spostata al nuovo genitore"
+
+#: src/app/routes/_authenticated/_collections/collections.tsx:146
+msgid "Collection position updated"
+msgstr "Posizione della collezione aggiornata"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:43
+#: src/app/routes/_authenticated/_collections/collections.tsx:36
+#: src/app/routes/_authenticated/_collections/collections.tsx:166
 msgid "Collections"
 msgstr "Collezioni"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:282
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:284
 msgid "Collections moved successfully"
 msgstr "Collezioni spostate con successo"
 
@@ -1343,22 +1433,22 @@ msgstr "Collezioni spostate con successo"
 msgid "Column settings"
 msgstr "Impostazioni colonne"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:125
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:126
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:165
-#: src/lib/components/shared/customer-address-form.tsx:116
+#: src/lib/components/shared/customer-address-form.tsx:117
 msgid "Company"
 msgstr "Azienda"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:323
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:320
 msgid "Complete draft"
 msgstr "Completa bozza"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:221
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:173
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:217
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:171
 msgid "Conditions"
 msgstr "Condizioni"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:261
+#: src/lib/components/layout/manage-languages-dialog.tsx:243
 msgid "Configure available languages for your store and channels"
 msgstr "Configura le lingue disponibili per il tuo negozio e i canali"
 
@@ -1367,11 +1457,11 @@ msgstr "Configura le lingue disponibili per il tuo negozio e i canali"
 msgid "Confirm"
 msgstr "Conferma"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:115
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:116
 msgid "Confirm Action"
 msgstr "Conferma azione"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:349
+#: src/lib/components/data-table/use-generated-columns.tsx:381
 msgid "Confirm deletion"
 msgstr "Conferma eliminazione"
 
@@ -1383,12 +1473,16 @@ msgstr "Conferma navigazione"
 msgid "contains"
 msgstr "contiene"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:222
-#: src/app/routes/_authenticated/_collections/collections.tsx:147
+#: src/lib/components/layout/channel-switcher.tsx:157
+msgid "Content:"
+msgstr "Contenuto:"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:218
+#: src/app/routes/_authenticated/_collections/collections.tsx:227
 msgid "Contents"
 msgstr "Contenuti"
 
-#: src/lib/components/data-table/data-table-bulk-action-item.tsx:124
+#: src/lib/components/data-table/data-table-bulk-action-item.tsx:125
 #: src/lib/components/shared/confirmation-dialog.tsx:52
 msgid "Continue"
 msgstr "Continua"
@@ -1397,53 +1491,54 @@ msgstr "Continua"
 msgid "Copy to Personal"
 msgstr "Copia in personale"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:34
-#: src/app/routes/_authenticated/_countries/countries.tsx:14
-#: src/app/routes/_authenticated/_countries/countries.tsx:23
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:103
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:32
+#: src/app/routes/_authenticated/_countries/countries.tsx:13
+#: src/app/routes/_authenticated/_countries/countries.tsx:22
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:100
 msgid "Countries"
 msgstr "Paesi"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:239
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:240
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:217
-#: src/lib/components/shared/customer-address-form.tsx:230
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:53
+#: src/lib/components/shared/customer-address-form.tsx:231
 msgid "Country"
 msgstr "Paese"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:199
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:195
 msgid "Coupon code"
 msgstr "Codice coupon"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:245
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:243
 msgid "Coupon code removed from order"
 msgstr "Codice coupon rimosso dall'ordine"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:232
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:230
 msgid "Coupon code set for order"
 msgstr "Codice coupon impostato per l'ordine"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:108
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:125
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:124
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:197
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:111
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:136
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:105
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:122
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:121
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:84
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:93
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:152
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:110
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:99
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:127
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:214
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:200
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:119
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:135
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:156
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:133
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:84
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:78
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:131
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:96
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:96
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:93
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:83
 msgid "Create"
 msgstr "Crea"
 
@@ -1453,7 +1548,7 @@ msgstr "Crea"
 msgid "Create \"{0}\""
 msgstr "Crea \"{0}\""
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:181
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:182
 msgid "Create {createCount} variants"
 msgstr "Crea {createCount} varianti"
 
@@ -1470,16 +1565,16 @@ msgstr "Crea opzioni prodotto"
 msgid "Create variant"
 msgstr "Crea variante"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:152
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:153
 msgid "Create Variants"
 msgstr "Crea varianti"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:155
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:156
 msgid "Create variants for your product"
 msgstr "Crea varianti per il tuo prodotto"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:114
-#: src/lib/framework/layout-engine/page-layout.tsx:404
+#: src/lib/framework/layout-engine/page-layout.tsx:616
 msgid "Created"
 msgstr "Creato"
 
@@ -1488,11 +1583,11 @@ msgstr "Creato"
 msgid "Created at"
 msgstr "Creato il"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:179
+#: src/app/routes/_authenticated/_products/components/create-product-variants-dialog.tsx:180
 msgid "Creating..."
 msgstr "Creazione in corso..."
 
-#: src/lib/components/layout/channel-switcher.tsx:138
+#: src/lib/components/layout/channel-switcher.tsx:98
 msgctxt "current channel"
 msgid "Current"
 msgstr "Corrente"
@@ -1501,11 +1596,11 @@ msgstr "Corrente"
 msgid "Current facet values"
 msgstr "Valori attributo attuali"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:55
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:54
 msgid "Current status"
 msgstr "Stato attuale"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:377
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:373
 msgid "Custom fields"
 msgstr "Campi personalizzati"
 
@@ -1513,13 +1608,13 @@ msgstr "Campi personalizzati"
 msgid "Custom Fields"
 msgstr "Campi personalizzati"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:151
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:169
 msgid "Custom fields changed"
 msgstr "Campi personalizzati modificati"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:242
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:217
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:403
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:268
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:225
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:399
 #: src/lib/components/shared/role-code-label.tsx:8
 msgid "Customer"
 msgstr "Cliente"
@@ -1536,18 +1631,18 @@ msgstr "Dettagli cliente aggiornati"
 msgid "Customer group members for {customerGroupName}"
 msgstr "Membri del gruppo clienti {customerGroupName}"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:255
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:251
 msgid "Customer groups"
 msgstr "Gruppi clienti"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:37
-#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:15
-#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:22
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:35
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:14
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:21
 msgid "Customer Groups"
 msgstr "Gruppi clienti"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx:30
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:249
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:245
 msgid "Customer history"
 msgstr "Cronologia cliente"
 
@@ -1563,7 +1658,7 @@ msgstr "Cliente non trovato"
 msgid "Customer registered"
 msgstr "Cliente registrato"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:159
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:157
 msgid "Customer set for order"
 msgstr "Cliente impostato per l'ordine"
 
@@ -1575,10 +1670,10 @@ msgstr "Cliente aggiornato"
 msgid "Customer verified"
 msgstr "Cliente verificato"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:114
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:58
-#: src/app/routes/_authenticated/_customers/customers.tsx:16
-#: src/app/routes/_authenticated/_customers/customers.tsx:22
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:110
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:56
+#: src/app/routes/_authenticated/_customers/customers.tsx:15
+#: src/app/routes/_authenticated/_customers/customers.tsx:21
 msgid "Customers"
 msgstr "Clienti"
 
@@ -1587,8 +1682,8 @@ msgctxt "theme"
 msgid "Dark"
 msgstr "Scuro"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:319
-#: src/lib/components/shared/customer-address-form.tsx:310
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
+#: src/lib/components/shared/customer-address-form.tsx:313
 msgid "Default Billing Address"
 msgstr "Indirizzo di fatturazione predefinito"
 
@@ -1596,36 +1691,36 @@ msgstr "Indirizzo di fatturazione predefinito"
 msgid "Default channel"
 msgstr "Canale predefinito"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:205
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:201
 msgid "Default currency"
 msgstr "Valuta predefinita"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:192
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:188
 msgid "Default language"
 msgstr "Lingua predefinita"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:368
+#: src/lib/components/layout/manage-languages-dialog.tsx:350
 msgid "Default Language"
 msgstr "Lingua predefinita"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:299
-#: src/lib/components/shared/customer-address-form.tsx:290
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
+#: src/lib/components/shared/customer-address-form.tsx:293
 msgid "Default Shipping Address"
 msgstr "Indirizzo di spedizione predefinito"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:226
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:222
 msgid "Default shipping zone"
 msgstr "Zona di spedizione predefinita"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:218
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:214
 msgid "Default tax zone"
 msgstr "Zona fiscale predefinita"
 
 #: src/app/common/delete-bulk-action.tsx:139
 #: src/app/routes/_authenticated/_assets/components/asset-bulk-actions.tsx:41
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:312
-#: src/lib/components/data-table/use-generated-columns.tsx:342
-#: src/lib/components/data-table/use-generated-columns.tsx:373
+#: src/lib/components/data-table/use-generated-columns.tsx:374
+#: src/lib/components/data-table/use-generated-columns.tsx:405
 #: src/lib/components/data-table/views-sheet.tsx:272
 #: src/lib/components/data-table/views-sheet.tsx:298
 msgid "Delete"
@@ -1639,11 +1734,11 @@ msgstr "Elimina indirizzo"
 msgid "Delete column"
 msgstr "Elimina colonna"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:308
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:305
 msgid "Delete draft"
 msgstr "Elimina bozza"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:301
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:298
 msgid "Delete draft order"
 msgstr "Elimina bozza ordine"
 
@@ -1667,18 +1762,19 @@ msgstr "Eliminato {deleted} {entityName}"
 msgid "Deleted {selectionLength} assets"
 msgstr "Eliminati {selectionLength} file"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:323
+#: src/lib/components/data-table/use-generated-columns.tsx:355
 msgid "Deleted successfully"
 msgstr "Eliminato con successo"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:167
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:163
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:77
 #: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:14
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:164
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:155
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:167
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:98
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:157
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:118
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:160
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:162
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:163
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:94
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:155
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:114
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:110
 msgid "Description"
 msgstr "Descrizione"
@@ -1687,7 +1783,7 @@ msgstr "Descrizione"
 msgid "Description (alt)"
 msgstr "Descrizione (testo alternativo)"
 
-#: src/lib/components/layout/dev-mode-indicator.tsx:12
+#: src/lib/components/layout/dev-mode-indicator.tsx:15
 #: src/lib/components/layout/nav-user.tsx:149
 msgid "Dev Mode"
 msgstr "Modalità sviluppatore"
@@ -1697,20 +1793,20 @@ msgid "Disable"
 msgstr "Disabilita"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:121
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:59
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:58
 #: src/lib/components/layout/nav-user.tsx:161
 msgid "Disabled"
 msgstr "Disabilitato"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:35
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:38
 msgid "Discount"
 msgstr "Sconto"
 
-#: src/lib/components/layout/language-dialog.tsx:42
+#: src/lib/components/layout/language-dialog.tsx:55
 msgid "Display language"
 msgstr "Lingua di visualizzazione"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:344
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:341
 msgid "Do not track"
 msgstr "Non tracciare"
 
@@ -1718,16 +1814,16 @@ msgstr "Non tracciare"
 msgid "does not contain"
 msgstr "non contiene"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:295
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:293
 #: src/app/routes/_authenticated/_orders/orders.tsx:115
 msgid "Draft order"
 msgstr "Bozza ordine"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:256
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:254
 msgid "Draft order completed"
 msgstr "Bozza ordine completata"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:273
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:271
 msgid "Draft order deleted"
 msgstr "Bozza ordine eliminata"
 
@@ -1764,9 +1860,9 @@ msgstr "es. Piccolo"
 msgid "e.g., Red, Large, Cotton"
 msgstr "es. Rosso, Grande, Cotone"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:241
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:267
-#: src/lib/components/shared/asset/asset-gallery.tsx:462
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:249
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:275
+#: src/lib/components/shared/asset/asset-gallery.tsx:468
 #: src/lib/components/shared/history-timeline/history-note-entry.tsx:48
 msgid "Edit"
 msgstr "Modifica"
@@ -1775,7 +1871,7 @@ msgstr "Modifica"
 msgid "Edit Address"
 msgstr "Modifica indirizzo"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:95
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:93
 msgid "Edit asset"
 msgstr "Modifica file"
 
@@ -1789,7 +1885,7 @@ msgstr "Modifica valori attributo"
 msgid "Edit image"
 msgstr "Modifica immagine"
 
-#: src/app/routes/_authenticated/index.tsx:194
+#: src/app/routes/_authenticated/index.tsx:190
 msgid "Edit Layout"
 msgstr "Modifica layout"
 
@@ -1822,12 +1918,12 @@ msgstr "Modifica i dettagli dell'indirizzo di seguito."
 msgid "Email"
 msgstr "Email"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:185
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:181
 msgid "Email address"
 msgstr "Indirizzo email"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:131
-#: src/app/routes/_authenticated/_profile/profile.tsx:104
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:127
+#: src/app/routes/_authenticated/_profile/profile.tsx:103
 msgid "Email Address or identifier"
 msgstr "Indirizzo email o identificativo"
 
@@ -1843,24 +1939,29 @@ msgstr "Aggiornamento email verificato"
 msgid "Enable"
 msgstr "Abilita"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:96
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:140
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:43
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:226
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:121
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:146
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:92
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:136
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:42
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:223
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:128
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:142
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:113
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:117
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:105
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:56
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:58
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:102
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:55
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:57
+#: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx:57
 #: src/lib/components/layout/nav-user.tsx:158
 msgid "Enabled"
 msgstr "Abilitato"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:187
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:183
 msgid "Ends at"
 msgstr "Termina il"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:232
+msgid "Enter custom reason..."
+msgstr "Inserisci un motivo personalizzato..."
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:306
 msgid "Enter refund note"
@@ -1878,7 +1979,7 @@ msgstr "Inserisci l'ID transazione per questo completamento rimborso"
 msgid "Enter transaction ID"
 msgstr "Inserisci ID transazione"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:377
+#: src/lib/framework/layout-engine/page-layout.tsx:589
 msgid "Entity Information"
 msgstr "Informazioni entità"
 
@@ -1900,7 +2001,7 @@ msgstr "Errore caricamento cronologia ordine: {0}"
 msgid "Error message"
 msgstr "Messaggio di errore"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:125
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:124
 msgid "Error transitioning to state"
 msgstr "Errore transizione allo stato"
 
@@ -1928,33 +2029,33 @@ msgstr "IVA escl.:"
 msgid "Explore Enterprise Edition"
 msgstr "Esplora Enterprise Edition"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:123
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:119
 msgid "Facet"
 msgstr "Attributo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:145
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:141
 msgid "Facet values"
 msgstr "Valori attributo"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:426
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:199
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:423
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:206
 msgid "Facet Values"
 msgstr "Valori attributo"
 
-#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:32
+#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:33
 msgid "Facet values for {facetName}"
 msgstr "Valori attributo per {facetName}"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:40
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:37
-#: src/app/routes/_authenticated/_facets/facets.tsx:24
-#: src/app/routes/_authenticated/_facets/facets.tsx:64
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:38
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:35
+#: src/app/routes/_authenticated/_facets/facets.tsx:21
+#: src/app/routes/_authenticated/_facets/facets.tsx:28
 #: src/lib/components/shared/facet-value-selector.tsx:405
 msgid "Facets"
 msgstr "Facette"
 
 #: src/app/routes/_authenticated/_customer-groups/components/customer-group-members-table.tsx:61
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:129
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:127
 msgid "Failed to add customer to group"
 msgstr "Impossibile aggiungere cliente al gruppo"
 
@@ -1967,6 +2068,14 @@ msgstr "Impossibile aggiungere valore opzione"
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx:86
 msgid "Failed to add payment"
 msgstr "Impossibile aggiungere pagamento"
+
+#: src/lib/components/shared/assign-to-channel-dialog.tsx:73
+msgid "Failed to assign {entityIdsLength} {entityType} to channel"
+msgstr "Impossibile assegnare {entityIdsLength} {entityType} al canale"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:259
+msgid "Failed to cancel order items"
+msgstr "Impossibile annullare gli articoli dell'ordine"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:78
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:82
@@ -1981,41 +2090,41 @@ msgstr "Impossibile convertire vista globale in vista personale"
 msgid "Failed to convert view to global"
 msgstr "Impossibile convertire vista in globale"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:119
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:117
 msgid "Failed to create address"
 msgstr "Impossibile creare indirizzo"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:88
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:86
 msgid "Failed to create administrator"
 msgstr "Creazione amministratore non riuscita"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:92
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:98
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:90
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:96
 msgid "Failed to create channel"
 msgstr "Impossibile creare canale"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:100
 msgid "Failed to create collection"
 msgstr "Impossibile creare collezione"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:69
 msgid "Failed to create country"
 msgstr "Impossibile creare paese"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:100
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:106
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:98
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:104
 msgid "Failed to create customer"
 msgstr "Impossibile creare cliente"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:76
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:74
 msgid "Failed to create customer group"
 msgstr "Impossibile creare gruppo clienti"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:84
 msgid "Failed to create facet"
 msgstr "Impossibile creare attributo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:95
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:93
 msgid "Failed to create facet value"
 msgstr "Impossibile creare valore attributo"
 
@@ -2023,19 +2132,19 @@ msgstr "Impossibile creare valore attributo"
 msgid "Failed to create option group"
 msgstr "Impossibile creare gruppo di opzioni"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:110
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:108
 msgid "Failed to create payment method"
 msgstr "Impossibile creare metodo di pagamento"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:95
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:104
 msgid "Failed to create product"
 msgstr "Impossibile creare prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:139
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:137
 msgid "Failed to create product option"
 msgstr "Impossibile creare l'opzione prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:117
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:115
 msgid "Failed to create product option group"
 msgstr "Impossibile creare il gruppo di opzioni prodotto"
 
@@ -2044,46 +2153,46 @@ msgstr "Impossibile creare il gruppo di opzioni prodotto"
 msgid "Failed to create product options"
 msgstr "Impossibile creare opzioni prodotto"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:127
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:126
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:174
 msgid "Failed to create product variant"
 msgstr "Impossibile creare variante prodotto"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:112
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:120
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:110
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:118
 msgid "Failed to create promotion"
 msgstr "Impossibile creare promozione"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:71
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:69
 msgid "Failed to create role"
 msgstr "Impossibile creare ruolo"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:63
 msgid "Failed to create seller"
 msgstr "Impossibile creare venditore"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:100
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:98
 msgid "Failed to create shipping method"
 msgstr "Impossibile creare il metodo di spedizione"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:79
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:77
 msgid "Failed to create stock location"
 msgstr "Impossibile creare ubicazione magazzino"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:79
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:77
 msgid "Failed to create tax category"
 msgstr "Impossibile creare categoria fiscale"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:79
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:78
 msgid "Failed to create tax rate"
 msgstr "Impossibile creare aliquota fiscale"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:69
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:68
 msgid "Failed to create zone"
 msgstr "Impossibile creare zona"
 
-#: src/lib/components/data-table/use-generated-columns.tsx:325
-#: src/lib/components/data-table/use-generated-columns.tsx:331
+#: src/lib/components/data-table/use-generated-columns.tsx:357
+#: src/lib/components/data-table/use-generated-columns.tsx:363
 msgid "Failed to delete"
 msgstr "Impossibile eliminare"
 
@@ -2125,25 +2234,38 @@ msgstr "Impossibile duplicare vista"
 msgid "Failed to fulfill order"
 msgstr "Impossibile evadere ordine"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:290
+#: src/lib/components/layout/manage-languages-dialog.tsx:272
 msgid "Failed to load global settings"
 msgstr "Impossibile caricare impostazioni globali"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:136
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:140
 msgid "Failed to modify order"
 msgstr "Impossibile modificare ordine"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:289
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:293
 msgid "Failed to move collections"
 msgstr "Impossibile spostare collezioni"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:139
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:289
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:302
+msgid "Failed to process refund"
+msgstr "Impossibile elaborare il rimborso"
+
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:36
+msgid "Failed to remove countries from zone"
+msgstr "Impossibile rimuovere i paesi dalla zona"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:137
 msgid "Failed to remove customer from group"
 msgstr "Impossibile rimuovere cliente dal gruppo"
 
 #: src/app/routes/_authenticated/_facets/components/facet-bulk-actions.tsx:73
 msgid "Failed to remove facet from channel: {message}"
 msgstr "Impossibile rimuovere attributo dal canale: {message}"
+
+#: src/lib/components/shared/assigned-channels.tsx:43
+msgid "Failed to remove product from channel"
+msgstr "Impossibile rimuovere il prodotto dal canale"
 
 #: src/lib/components/data-table/views-sheet.tsx:68
 msgid "Failed to rename global view"
@@ -2152,6 +2274,10 @@ msgstr "Impossibile rinominare vista globale"
 #: src/lib/components/data-table/views-sheet.tsx:68
 msgid "Failed to rename view"
 msgstr "Impossibile rinominare vista"
+
+#: src/lib/components/data-table/data-table.tsx:213
+msgid "Failed to reorder items"
+msgstr "Impossibile riordinare gli articoli"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:48
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:52
@@ -2163,7 +2289,7 @@ msgstr "Impossibile completare pagamento"
 msgid "Failed to settle refund"
 msgstr "Impossibile completare rimborso"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:112
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:116
 msgid "Failed to transition order to state"
 msgstr "Impossibile effettuare transizione ordine allo stato"
 
@@ -2171,41 +2297,45 @@ msgstr "Impossibile effettuare transizione ordine allo stato"
 msgid "Failed to update address"
 msgstr "Impossibile aggiornare indirizzo"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:88
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:86
 msgid "Failed to update administrator"
 msgstr "Aggiornamento amministratore non riuscito"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:74
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:72
 msgid "Failed to update asset"
 msgstr "Impossibile aggiornare file"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:92
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:98
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:90
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:96
 msgid "Failed to update channel"
 msgstr "Impossibile aggiornare canale"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:102
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:100
 msgid "Failed to update collection"
 msgstr "Impossibile aggiornare collezione"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:71
+#: src/app/routes/_authenticated/_collections/collections.tsx:157
+msgid "Failed to update collection position"
+msgstr "Impossibile aggiornare la posizione della collezione"
+
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:69
 msgid "Failed to update country"
 msgstr "Impossibile aggiornare paese"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:100
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:106
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:98
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:104
 msgid "Failed to update customer"
 msgstr "Impossibile aggiornare cliente"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:76
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:74
 msgid "Failed to update customer group"
 msgstr "Impossibile aggiornare gruppo clienti"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:86
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:84
 msgid "Failed to update facet"
 msgstr "Impossibile aggiornare attributo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:95
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:93
 msgid "Failed to update facet value"
 msgstr "Impossibile aggiornare valore attributo"
 
@@ -2214,17 +2344,17 @@ msgstr "Impossibile aggiornare valore attributo"
 msgid "Failed to update fulfillment state"
 msgstr "Impossibile aggiornare stato evasione"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:77
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:83
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:75
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:81
 msgid "Failed to update global settings"
 msgstr "Impossibile aggiornare impostazioni globali"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:89
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:92
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:59
 msgid "Failed to update order"
 msgstr "Impossibile aggiornare ordine"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:110
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:108
 msgid "Failed to update payment method"
 msgstr "Impossibile aggiornare metodo di pagamento"
 
@@ -2233,56 +2363,56 @@ msgstr "Impossibile aggiornare metodo di pagamento"
 msgid "Failed to update payment state"
 msgstr "Impossibile aggiornare stato pagamento"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:95
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:104
 msgid "Failed to update product"
 msgstr "Impossibile aggiornare prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:139
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:137
 msgid "Failed to update product option"
 msgstr "Impossibile aggiornare l'opzione prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:118
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:116
 msgid "Failed to update product option group"
 msgstr "Impossibile aggiornare il gruppo di opzioni prodotto"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:127
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:126
 msgid "Failed to update product variant"
 msgstr "Impossibile aggiornare variante prodotto"
 
-#: src/app/routes/_authenticated/_profile/profile.tsx:65
+#: src/app/routes/_authenticated/_profile/profile.tsx:64
 msgid "Failed to update profile"
 msgstr "Impossibile aggiornare profilo"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:112
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:120
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:110
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:118
 msgid "Failed to update promotion"
 msgstr "Impossibile aggiornare promozione"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:71
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:69
 msgid "Failed to update role"
 msgstr "Impossibile aggiornare ruolo"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:65
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:63
 msgid "Failed to update seller"
 msgstr "Impossibile aggiornare venditore"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:100
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:98
 msgid "Failed to update shipping method"
 msgstr "Impossibile aggiornare il metodo di spedizione"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:79
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:77
 msgid "Failed to update stock location"
 msgstr "Impossibile aggiornare ubicazione magazzino"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:79
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:77
 msgid "Failed to update tax category"
 msgstr "Impossibile aggiornare categoria fiscale"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:79
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:78
 msgid "Failed to update tax rate"
 msgstr "Impossibile aggiornare aliquota fiscale"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:69
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:68
 msgid "Failed to update zone"
 msgstr "Impossibile aggiornare zona"
 
@@ -2294,7 +2424,7 @@ msgstr "Falso"
 msgid "Filter by {columnId}"
 msgstr "Filtra per {columnId}"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:365
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:369
 msgid "Filter by collection name"
 msgstr "Filtra per nome collezione"
 
@@ -2302,21 +2432,21 @@ msgstr "Filtra per nome collezione"
 msgid "Filter by tags"
 msgstr "Filtra per tag"
 
-#: src/lib/components/data-table/data-table.tsx:244
+#: src/lib/components/data-table/data-table.tsx:344
 msgid "Filter..."
 msgstr "Filtra..."
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:172
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:168
 msgid "Filters"
 msgstr "Filtri"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:119
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:173
-#: src/app/routes/_authenticated/_profile/profile.tsx:92
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:115
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:169
+#: src/app/routes/_authenticated/_profile/profile.tsx:91
 msgid "First name"
 msgstr "Nome"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:152
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:148
 msgid "Focal Point"
 msgstr "Punto focale"
 
@@ -2334,7 +2464,7 @@ msgstr "Da {0} a {1}"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:219
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:225
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:310
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:312
 msgid "Fulfill order"
 msgstr "Evadi ordine"
 
@@ -2343,7 +2473,7 @@ msgstr "Evadi ordine"
 msgid "Fulfilled items ({0})"
 msgstr "Articoli evasi ({0})"
 
-#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:308
+#: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:310
 msgid "Fulfilling..."
 msgstr "Evasione in corso..."
 
@@ -2363,12 +2493,12 @@ msgstr "Evasione #{0} da {1} a {2}"
 msgid "Fulfillment created"
 msgstr "Evasione creata"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:277
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:303
 msgid "Fulfillment details"
 msgstr "Dettagli evasione"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:289
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:165
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:163
 msgid "Fulfillment handler"
 msgstr "Gestore evasione"
 
@@ -2384,13 +2514,13 @@ msgstr "Stato evasione aggiornato con successo"
 msgid "Fulfillment transitioned"
 msgstr "Evasione transitata"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:108
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:109
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:159
-#: src/lib/components/shared/customer-address-form.tsx:99
+#: src/lib/components/shared/customer-address-form.tsx:100
 msgid "Full Name"
 msgstr "Nome completo"
 
-#: src/lib/components/shared/custom-fields-form.tsx:100
+#: src/lib/components/shared/custom-fields-form.tsx:101
 msgid "General"
 msgstr "Generale"
 
@@ -2399,16 +2529,16 @@ msgstr "Generale"
 msgid "Generate slug automatically"
 msgstr "Genera slug automaticamente"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:270
+#: src/lib/components/layout/manage-languages-dialog.tsx:252
 msgid "Global Languages"
 msgstr "Lingue globali"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:131
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:127
 msgid "Global out of stock threshold"
 msgstr "Soglia globale esaurimento scorte"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:42
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:92
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:40
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:90
 msgid "Global Settings"
 msgstr "Impostazioni globali"
 
@@ -2480,7 +2610,7 @@ msgstr "Intestazione 5"
 msgid "Heading 6"
 msgstr "Intestazione 6"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:43
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:42
 msgid "Health checks"
 msgstr "Controlli stato"
 
@@ -2500,15 +2630,16 @@ msgstr "Nascondi password"
 msgid "ID"
 msgstr "ID"
 
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:74
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:73
 msgid "Identifier"
 msgstr "Identificativo"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:178
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:174
 msgid "If enabled, the filters will be inherited from the parent collection and combined with the filters set on this collection."
 msgstr "Se abilitato, i filtri saranno ereditati dalla collezione padre e combinati con i filtri impostati su questa collezione."
 
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:33
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:90
 msgid "Image"
 msgstr "Immagine"
 
@@ -2516,11 +2647,15 @@ msgstr "Immagine"
 msgid "in"
 msgstr "in"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:176
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:102
+msgid "Includes tax at {taxRate}%"
+msgstr "IVA inclusa al {taxRate}%"
+
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:172
 msgid "Inherit filters"
 msgstr "Eredita filtri"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:338
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:335
 msgid "Inherit from global settings"
 msgstr "Eredita da impostazioni globali"
 
@@ -2533,7 +2668,7 @@ msgstr "Inserisci immagine"
 msgid "Insert link"
 msgstr "Inserisci link"
 
-#: src/app/routes/_authenticated/index.tsx:181
+#: src/app/routes/_authenticated/index.tsx:175
 msgid "Insights"
 msgstr "Approfondimenti"
 
@@ -2549,7 +2684,7 @@ msgstr "è prima"
 msgid "is between"
 msgstr "è tra"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:116
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:112
 msgid "Is default tax category"
 msgstr "È categoria fiscale predefinita"
 
@@ -2589,12 +2724,12 @@ msgstr "non è in"
 msgid "is null"
 msgstr "è nullo"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:106
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:104
 msgid "Item added to order"
 msgstr "Articolo aggiunto all'ordine"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx:33
-#: src/app/routes/_authenticated/_system/job-queue.tsx:97
+#: src/app/routes/_authenticated/_system/job-queue.tsx:102
 msgid "Job Queue"
 msgstr "Coda lavori"
 
@@ -2603,7 +2738,7 @@ msgid "Language"
 msgstr "Lingua"
 
 #. placeholder {0}: formatLanguageName(contentLanguage)
-#: src/lib/components/layout/channel-switcher.tsx:103
+#: src/lib/components/layout/channel-switcher.tsx:130
 msgid "Language: {0}"
 msgstr "Lingua: {0}"
 
@@ -2626,9 +2761,9 @@ msgctxt "date-range"
 msgid "Last month"
 msgstr "Mese scorso"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:125
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:179
-#: src/app/routes/_authenticated/_profile/profile.tsx:98
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:121
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:175
+#: src/app/routes/_authenticated/_profile/profile.tsx:97
 msgid "Last name"
 msgstr "Cognome"
 
@@ -2637,11 +2772,11 @@ msgid "Last Result"
 msgstr "Ultimo risultato"
 
 #. placeholder {0}: formatRelative(dataUpdatedAt, new Date())
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:58
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:57
 msgid "Last updated {0}"
 msgstr "Ultimo aggiornamento {0}"
 
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:58
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:77
 msgid "Latest Orders"
 msgstr "Ultimi ordini"
 
@@ -2679,11 +2814,11 @@ msgstr "Carica altro"
 msgid "Loading addresses..."
 msgstr "Caricamento indirizzi..."
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:374
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:378
 msgid "Loading collections..."
 msgstr "Caricamento collezioni..."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:284
+#: src/lib/components/layout/manage-languages-dialog.tsx:266
 msgid "Loading global settings..."
 msgstr "Caricamento impostazioni globali..."
 
@@ -2706,7 +2841,7 @@ msgstr "Caricamento tag..."
 msgid "Loading..."
 msgstr "Caricamento..."
 
-#: src/lib/components/layout/language-dialog.tsx:60
+#: src/lib/components/layout/language-dialog.tsx:73
 msgid "Locale"
 msgstr "Locale"
 
@@ -2730,8 +2865,8 @@ msgstr "Gestisci viste globali"
 msgid "Manage Global Views"
 msgstr "Gestisci viste globali"
 
-#: src/lib/components/layout/channel-switcher.tsx:181
-#: src/lib/components/layout/manage-languages-dialog.tsx:258
+#: src/lib/components/layout/channel-switcher.tsx:193
+#: src/lib/components/layout/manage-languages-dialog.tsx:240
 msgid "Manage Languages"
 msgstr "Gestisci lingue"
 
@@ -2744,7 +2879,7 @@ msgid "Manage Tags"
 msgstr "Gestisci tag"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:252
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:173
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:180
 msgid "Manage variants"
 msgstr "Gestisci varianti"
 
@@ -2760,7 +2895,7 @@ msgstr "Gestisci le tue viste salvate personali per questa tabella"
 msgid "matches regex"
 msgstr "corrisponde a regex"
 
-#: src/lib/components/layout/language-dialog.tsx:96
+#: src/lib/components/layout/language-dialog.tsx:109
 msgid "Medium date"
 msgstr "Data media"
 
@@ -2776,16 +2911,16 @@ msgstr "Metodo"
 msgid "Metrics"
 msgstr "Metriche"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:166
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:171
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:75
 msgid "Modify"
 msgstr "Modifica"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:159
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:161
 msgid "Modify order"
 msgstr "Modifica ordine"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:83
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:82
 msgid "Monitored Resources"
 msgstr "Risorse monitorate"
 
@@ -2798,27 +2933,27 @@ msgstr "Mese corrente"
 msgid "More views"
 msgstr "Altre viste"
 
-#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:111
+#: src/app/routes/_authenticated/_collections/components/collection-bulk-actions.tsx:118
 msgid "Move"
 msgstr "Sposta"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:335
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:422
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:339
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:426
 msgid "Move Collections"
 msgstr "Sposta collezioni"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:106
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:107
 msgid "Move to the top level"
 msgstr "Sposta al livello superiore"
 
 #. placeholder {0}: collectionsToMove.length
 #. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
 #. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:74
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:75
 msgid "Moving {0} collection{1} into {2}"
 msgstr "Spostamento di {0} collezione/i in {2}"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:420
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:424
 msgid "Moving..."
 msgstr "Spostamento in corso..."
 
@@ -2830,26 +2965,25 @@ msgstr "Le mie viste salvate"
 msgid "My Saved Views"
 msgstr "Le mie viste salvate"
 
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:46
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:146
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:108
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:107
-#: src/app/routes/_authenticated/_customers/customers.tsx:72
-#: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:104
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:135
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:124
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:151
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:45
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:142
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:104
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:103
+#: src/app/routes/_authenticated/_customers/customers.tsx:71
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:131
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:120
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:147
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:328
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:303
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:149
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:181
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:158
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:96
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:143
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:109
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:110
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:116
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:96
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:145
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:177
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:154
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:92
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:141
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:105
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:106
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:113
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:93
 msgid "Name"
 msgstr "Nome"
 
@@ -2858,53 +2992,53 @@ msgstr "Nome"
 msgid "Never"
 msgstr "Mai"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:40
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:99
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:38
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:97
 msgid "New administrator"
 msgstr "Nuovo amministratore"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:39
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:37
 msgid "New asset"
 msgstr "Nuovo file"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:41
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:113
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:39
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:111
 msgid "New channel"
 msgstr "Nuovo canale"
 
-#: src/app/routes/_authenticated/_channels/channels.tsx:74
+#: src/app/routes/_authenticated/_channels/channels.tsx:72
 msgid "New Channel"
 msgstr "Nuovo canale"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:46
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:116
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:44
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:114
 msgid "New collection"
 msgstr "Nuova collezione"
 
-#: src/app/routes/_authenticated/_collections/collections.tsx:247
+#: src/app/routes/_authenticated/_collections/collections.tsx:334
 msgid "New Collection"
 msgstr "Nuova collezione"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:35
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:79
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:33
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:77
 msgid "New country"
 msgstr "Nuovo paese"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:59
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:147
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:57
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:145
 msgid "New customer"
 msgstr "Nuovo cliente"
 
-#: src/app/routes/_authenticated/_customers/customers.tsx:97
+#: src/app/routes/_authenticated/_customers/customers.tsx:95
 msgid "New Customer"
 msgstr "Nuovo cliente"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:38
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:87
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:36
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:85
 msgid "New customer group"
 msgstr "Nuovo gruppo clienti"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:65
+#: src/app/routes/_authenticated/_customer-groups/customer-groups.tsx:63
 msgid "New Customer Group"
 msgstr "Nuovo gruppo clienti"
 
@@ -2912,17 +3046,17 @@ msgstr "Nuovo gruppo clienti"
 msgid "New email:"
 msgstr "Nuova email:"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:38
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:94
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:36
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:92
 msgid "New facet"
 msgstr "Nuovo attributo"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:130
+#: src/app/routes/_authenticated/_facets/facets.tsx:112
 msgid "New Facet"
 msgstr "Nuovo attributo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:42
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:104
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:40
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:102
 msgid "New facet value"
 msgstr "Nuovo valore attributo"
 
@@ -2930,69 +3064,69 @@ msgstr "Nuovo valore attributo"
 msgid "New facet values to add:"
 msgstr "Nuovi valori attributo da aggiungere:"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:86
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:84
 msgid "New option"
 msgstr "Nuova opzione"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:43
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:121
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:41
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:119
 msgid "New payment method"
 msgstr "Nuovo metodo di pagamento"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:81
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:79
 msgid "New Payment Method"
 msgstr "Nuovo metodo di pagamento"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:46
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:103
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:53
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:112
 msgid "New product"
 msgstr "Nuovo prodotto"
 
-#: src/app/routes/_authenticated/_products/products.tsx:114
+#: src/app/routes/_authenticated/_products/products.tsx:112
 msgid "New Product"
 msgstr "Nuovo prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:150
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:148
 msgid "New product option"
 msgstr "Nuova opzione prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:129
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:127
 msgid "New product option group"
 msgstr "Nuovo gruppo opzioni prodotto"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:207
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:206
 msgid "New product variant"
 msgstr "Nuova variante prodotto"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:45
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:128
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:43
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:126
 msgid "New promotion"
 msgstr "Nuova promozione"
 
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:87
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:85
 msgid "New Promotion"
 msgstr "Nuova promozione"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:35
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:79
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:33
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:77
 msgid "New role"
 msgstr "Nuovo ruolo"
 
-#: src/app/routes/_authenticated/_roles/roles.tsx:92
+#: src/app/routes/_authenticated/_roles/roles.tsx:90
 msgid "New Role"
 msgstr "Nuovo ruolo"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:32
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:73
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:30
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:71
 msgid "New seller"
 msgstr "Nuovo venditore"
 
-#: src/app/routes/_authenticated/_sellers/sellers.tsx:49
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:47
 msgid "New Seller"
 msgstr "Nuovo venditore"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:44
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:114
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:42
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:112
 msgid "New shipping method"
 msgstr "Nuovo metodo di spedizione"
 
@@ -3000,30 +3134,30 @@ msgstr "Nuovo metodo di spedizione"
 msgid "New Shipping Method"
 msgstr "Nuovo metodo di spedizione"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:39
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:90
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:37
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:88
 msgid "New stock location"
 msgstr "Nuova ubicazione magazzino"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:58
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:56
 msgid "New Stock Location"
 msgstr "Nuova ubicazione magazzino"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:39
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:90
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:37
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:88
 msgid "New tax category"
 msgstr "Nuova categoria fiscale"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:62
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:60
 msgid "New Tax Category"
 msgstr "Nuova categoria fiscale"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:38
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:87
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:37
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:86
 msgid "New tax rate"
 msgstr "Nuova aliquota fiscale"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:112
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:110
 msgid "New Tax Rate"
 msgstr "Nuova aliquota fiscale"
 
@@ -3031,12 +3165,12 @@ msgstr "Nuova aliquota fiscale"
 msgid "New window"
 msgstr "Nuova finestra"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:35
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:77
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:34
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:76
 msgid "New zone"
 msgstr "Nuova zona"
 
-#: src/app/routes/_authenticated/_zones/zones.tsx:56
+#: src/app/routes/_authenticated/_zones/zones.tsx:55
 msgid "New Zone"
 msgstr "Nuova zona"
 
@@ -3044,7 +3178,7 @@ msgstr "Nuova zona"
 msgid "Next Execution"
 msgstr "Prossima esecuzione"
 
-#: src/lib/components/data-table/data-table-bulk-actions.tsx:92
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:93
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:102
 msgid "No actions available"
 msgstr "Nessuna azione disponibile"
@@ -3057,11 +3191,11 @@ msgstr "Nessun indirizzo"
 msgid "No addresses found"
 msgstr "Nessun indirizzo trovato"
 
-#: src/lib/components/shared/alerts.tsx:43
+#: src/lib/components/shared/alerts.tsx:45
 msgid "No alerts"
 msgstr "Nessun avviso"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:280
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:288
 msgid "No billing address"
 msgstr "Nessun indirizzo di fatturazione"
 
@@ -3069,8 +3203,8 @@ msgstr "Nessun indirizzo di fatturazione"
 msgid "No countries found"
 msgstr "Nessun paese trovato"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:252
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:227
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:278
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:235
 msgid "No customer"
 msgstr "Nessun cliente"
 
@@ -3090,11 +3224,11 @@ msgstr "Nessun metodo di spedizione idoneo trovato per questo ordine."
 msgid "No facet values"
 msgstr "Nessun valore attributo"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:297
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:323
 msgid "No fulfillments"
 msgstr "Nessuna evasione"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:354
+#: src/lib/components/layout/manage-languages-dialog.tsx:336
 msgid "No global languages configured"
 msgstr "Nessuna lingua globale configurata"
 
@@ -3110,7 +3244,7 @@ msgstr "Nessun articolo trovato"
 msgid "No items selected"
 msgstr "Nessun articolo selezionato"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:218
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:246
 msgid "No modifications made"
 msgstr "Nessuna modifica effettuata"
 
@@ -3135,12 +3269,12 @@ msgstr "Nessun pagamento o rimborso è richiesto per queste modifiche."
 msgid "No payment or refund required"
 msgstr "Nessun pagamento o rimborso richiesto"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:141
+#: src/app/routes/_authenticated/_system/job-queue.tsx:148
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:184
 msgid "No result yet"
 msgstr "Nessun risultato ancora"
 
-#: src/lib/components/data-table/data-table.tsx:366
+#: src/lib/components/data-table/data-table.tsx:493
 #: src/lib/components/shared/customer-group-selector.tsx:58
 msgid "No results"
 msgstr "Nessun risultato"
@@ -3154,7 +3288,7 @@ msgstr "Nessun risultato trovato"
 msgid "No sellers found"
 msgstr "Nessun venditore trovato"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:254
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:262
 msgid "No shipping address"
 msgstr "Nessun indirizzo di spedizione"
 
@@ -3162,7 +3296,7 @@ msgstr "Nessun indirizzo di spedizione"
 msgid "No shipping methods available"
 msgstr "Nessun metodo di spedizione disponibile"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:171
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:174
 msgid "No stock locations available on current channel"
 msgstr "Nessuna ubicazione magazzino disponibile sul canale corrente"
 
@@ -3193,9 +3327,13 @@ msgstr "non in"
 msgid "Not Running"
 msgstr "Non in esecuzione"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:158
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:154
 msgid "Not set"
 msgstr "Non impostato"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:251
+msgid "Note"
+msgstr "Nota"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx:43
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:69
@@ -3236,8 +3374,8 @@ msgid "Option group removed"
 msgstr "Gruppo opzioni rimosso"
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:255
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:63
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:81
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
 msgid "Option Groups"
 msgstr "Gruppi opzioni"
 
@@ -3271,7 +3409,7 @@ msgstr "Ordine annullato"
 msgid "Order Count"
 msgstr "Numero di ordini"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:89
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:87
 msgid "Order custom fields updated"
 msgstr "Campi personalizzati ordine aggiornati"
 
@@ -3283,21 +3421,22 @@ msgstr "Ordine consegnato"
 msgid "Order fulfilled"
 msgstr "Ordine evaso"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:230
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:256
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx:30
 msgid "Order history"
 msgstr "Cronologia ordine"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:143
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:141
 msgid "Order line removed"
 msgstr "Riga ordine rimossa"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:127
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:125
 msgid "Order line updated"
 msgstr "Riga ordine aggiornata"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:241
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:169
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:83
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:171
 msgid "Order lines"
 msgstr "Righe ordine"
 
@@ -3335,7 +3474,7 @@ msgstr "Totale ordine"
 msgid "Order transitioned"
 msgstr "Ordine transitato"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:246
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:242
 #: src/app/routes/_authenticated/_orders/orders.tsx:21
 #: src/app/routes/_authenticated/_orders/orders.tsx:37
 #: src/app/routes/_authenticated/_orders/utils/order-detail-loaders.tsx:45
@@ -3349,9 +3488,13 @@ msgstr "Ordini"
 msgid "Orders Summary"
 msgstr "Riepilogo ordini"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:353
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:350
 msgid "Out-of-stock threshold"
 msgstr "Soglia esaurimento scorte"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:258
+msgid "Override"
+msgstr "Sovrascrivi"
 
 #. placeholder {0}: table.getState().pagination.pageIndex + 1
 #. placeholder {1}: table.getPageCount() || 1
@@ -3359,12 +3502,16 @@ msgstr "Soglia esaurimento scorte"
 msgid "Page {0} of {1}"
 msgstr "Pagina {0} di {1}"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:436
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:433
 msgid "Parent product"
 msgstr "Prodotto principale"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:137
-#: src/app/routes/_authenticated/_profile/profile.tsx:110
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:285
+msgid "Partial refund completed"
+msgstr "Rimborso parziale completato"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:133
+#: src/app/routes/_authenticated/_profile/profile.tsx:109
 #: src/lib/components/login/login-form.tsx:96
 msgid "Password"
 msgstr "Password"
@@ -3398,11 +3545,11 @@ msgstr "Pagamento autorizzato"
 msgid "Payment cancelled successfully"
 msgstr "Pagamento annullato con successo"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:218
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:244
 msgid "Payment details"
 msgstr "Dettagli pagamento"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:172
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:168
 msgid "Payment eligibility checker"
 msgstr "Controllo idoneità pagamento"
 
@@ -3423,9 +3570,9 @@ msgstr "Metodo di pagamento"
 msgid "Payment method is required"
 msgstr "Il metodo di pagamento è obbligatorio"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:42
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:20
-#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:30
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:40
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:19
+#: src/app/routes/_authenticated/_payment-methods/payment-methods.tsx:29
 msgid "Payment Methods"
 msgstr "Metodi di pagamento"
 
@@ -3445,25 +3592,25 @@ msgstr "Stato pagamento aggiornato con successo"
 msgid "Payment transitioned"
 msgstr "Pagamento transitato"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:205
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:201
 msgid "Per customer usage limit"
 msgstr "Limite utilizzo per cliente"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:133
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:129
 msgid "Permissions"
 msgstr "Permessi"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:191
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:187
 msgid "Phone number"
 msgstr "Numero di telefono"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:272
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:273
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:241
-#: src/lib/components/shared/customer-address-form.tsx:263
+#: src/lib/components/shared/customer-address-form.tsx:264
 msgid "Phone Number"
 msgstr "Numero di telefono"
 
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:88
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:107
 msgid "Placed At"
 msgstr "Effettuato il"
 
@@ -3471,13 +3618,13 @@ msgstr "Effettuato il"
 msgid "Please add products and complete the shipping address to run the test."
 msgstr "Aggiungi prodotti e completa l'indirizzo di spedizione per eseguire il test."
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:307
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:311
 msgid "Please select a target collection"
 msgstr "Seleziona una collezione di destinazione"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:222
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:223
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:208
-#: src/lib/components/shared/customer-address-form.tsx:213
+#: src/lib/components/shared/customer-address-form.tsx:214
 msgid "Postal Code"
 msgstr "Codice postale"
 
@@ -3486,7 +3633,7 @@ msgstr "Codice postale"
 msgid "Preview"
 msgstr "Anteprima"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:206
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:214
 msgid "Preview changes"
 msgstr "Anteprima modifiche"
 
@@ -3494,15 +3641,16 @@ msgstr "Anteprima modifiche"
 msgid "Preview order modifications"
 msgstr "Anteprima modifiche ordine"
 
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:89
 #: src/app/routes/_authenticated/_orders/components/shipping-method-selector.tsx:49
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:272
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:269
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:340
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
-#: src/lib/components/layout/language-dialog.tsx:108
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+#: src/lib/components/layout/language-dialog.tsx:121
 msgid "Price"
 msgstr "Prezzo"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:252
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:249
 msgid "Price and tax"
 msgstr "Prezzo e IVA"
 
@@ -3510,37 +3658,42 @@ msgstr "Prezzo e IVA"
 msgid "Price conversion factor"
 msgstr "Fattore conversione prezzo"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:234
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:230
 msgid "Prices include tax for default tax zone"
 msgstr "I prezzi includono l'IVA per la zona fiscale predefinita"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:82
+#: src/app/routes/_authenticated/_facets/facets.tsx:44
 msgid "private"
 msgstr "privato"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:134
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:112
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:130
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:108
 msgid "Private"
 msgstr "Privato"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:135
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:131
 msgid "Private collections are not visible in the shop"
 msgstr "Le collezioni private non sono visibili nel negozio"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:113
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:109
 msgid "Private facets are not visible in the shop"
 msgstr "Gli attributi privati non sono visibili nel negozio"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:360
+msgid "Processing..."
+msgstr "Elaborazione in corso..."
+
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:87
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:44
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:93
 msgid "Product"
 msgstr "Prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:133
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:140
 msgid "Product name"
 msgstr "Nome prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:169
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:165
 msgid "Product Option Group"
 msgstr "Gruppo opzioni prodotto"
 
@@ -3548,42 +3701,46 @@ msgstr "Gruppo opzioni prodotto"
 msgid "Product options"
 msgstr "Opzioni prodotto"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:191
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:170
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:198
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:166
 msgid "Product Options"
 msgstr "Opzioni prodotto"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:62
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:60
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:18
 #: src/app/routes/_authenticated/_product-variants/product-variants.tsx:26
 msgid "Product Variants"
 msgstr "Varianti prodotto"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:57
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:55
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:54
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:45
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:61
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:79
-#: src/app/routes/_authenticated/_products/products.tsx:24
-#: src/app/routes/_authenticated/_products/products.tsx:47
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:52
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:59
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:77
+#: src/app/routes/_authenticated/_products/products.tsx:23
+#: src/app/routes/_authenticated/_products/products.tsx:46
 msgid "Products"
 msgstr "Prodotti"
 
-#: src/app/routes/_authenticated/_profile/profile.tsx:30
-#: src/app/routes/_authenticated/_profile/profile.tsx:74
+#: src/app/routes/_authenticated/_profile/profile.tsx:29
+#: src/app/routes/_authenticated/_profile/profile.tsx:73
 #: src/lib/components/layout/nav-user.tsx:108
 msgid "Profile"
 msgstr "Profilo"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:44
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:21
-#: src/app/routes/_authenticated/_promotions/promotions.tsx:30
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:42
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:20
+#: src/app/routes/_authenticated/_promotions/promotions.tsx:29
 msgid "Promotions"
 msgstr "Promozioni"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:82
+#: src/app/routes/_authenticated/_facets/facets.tsx:44
 msgid "public"
 msgstr "pubblico"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:99
+msgid "Qty"
+msgstr "Qtà"
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:111
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:265
@@ -3591,23 +3748,24 @@ msgstr "pubblico"
 msgid "Quantity"
 msgstr "Quantità"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:211
+#: src/app/routes/_authenticated/_system/job-queue.tsx:220
 msgid "Queue"
 msgstr "Coda"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:122
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:119
 msgid "Rate"
 msgstr "Aliquota"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:233
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:216
 msgid "Reason"
 msgstr "Motivo"
 
-#: src/app/routes/_authenticated/_products/products.tsx:107
+#: src/app/routes/_authenticated/_products/products.tsx:105
 msgid "Rebuild search index"
 msgstr "Ricostruisci indice di ricerca"
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:47
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:46
 msgid "Refresh"
 msgstr "Aggiorna"
 
@@ -3615,11 +3773,28 @@ msgstr "Aggiorna"
 msgid "Refresh data"
 msgstr "Aggiorna dati"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:102
+msgid "Refund"
+msgstr "Rimborso"
+
+#. placeholder {0}: formatCurrency(refund.amountToRefundTotal, order.currencyCode)
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:362
+msgid "Refund {0}"
+msgstr "Rimborsa {0}"
+
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:184
+msgid "Refund & Cancel"
+msgstr "Rimborsa e annulla"
+
 #. placeholder {0}: entry.data.refundId
 #. placeholder {1}: entry.data.to
 #: src/app/routes/_authenticated/_orders/components/order-history/default-order-history-components.tsx:37
 msgid "Refund #{0} transitioned to {1}"
 msgstr "Rimborso #{0} transitato a {1}"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:72
+msgid "Refund and cancel order"
+msgstr "Rimborsa e annulla ordine"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:229
 msgid "Refund from this method"
@@ -3628,6 +3803,10 @@ msgstr "Rimborso da questo metodo"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:215
 msgid "Refund ID"
 msgstr "ID rimborso"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:299
+msgid "Refund processed successfully"
+msgstr "Rimborso elaborato con successo"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:170
 msgid "Refund required"
@@ -3640,6 +3819,23 @@ msgstr "Rimborso completato"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:90
 msgid "Refund settled successfully"
 msgstr "Rimborso completato con successo"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:200
+msgid "Refund shipping"
+msgstr "Rimborsa spedizione"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:244
+msgid "Refund total"
+msgstr "Totale rimborso"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:200
+msgid "Refund total cannot be negative"
+msgstr "Il totale del rimborso non può essere negativo"
+
+#. placeholder {0}: formatCurrency(totalRefundableAmount, order.currencyCode)
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:205
+msgid "Refund total exceeds maximum refundable amount of {0}"
+msgstr "Il totale del rimborso supera l'importo massimo rimborsabile di {0}"
 
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx:67
 msgid "Refund transitioned"
@@ -3667,13 +3863,17 @@ msgstr "Registrato"
 msgid "Remaining:"
 msgstr "Rimanente:"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:491
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:487
 msgid "Remove"
 msgstr "Rimuovi"
 
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx:82
 msgid "Remove from current channel"
 msgstr "Rimuovi dal canale corrente"
+
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:49
+msgid "Remove from zone"
+msgstr "Rimuovi dalla zona"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:278
 msgid "Remove group"
@@ -3687,7 +3887,13 @@ msgstr "Rimuovi articolo"
 msgid "Remove link"
 msgstr "Rimuovi link"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:200
+#. placeholder {0}: selection.length
+#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx:31
+msgid "Removed {0} {1} from zone"
+msgstr "{0} {1} rimossi dalla zona"
+
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:218
 msgid "Removed coupon codes"
 msgstr "Codici coupon rimossi"
 
@@ -3696,7 +3902,7 @@ msgid "Removed from group"
 msgstr "Rimosso dal gruppo"
 
 #. placeholder {0}: removedLines.length
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:176
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:194
 msgid "Removing {0} item(s)"
 msgstr "Rimozione di {0} articolo/i"
 
@@ -3708,15 +3914,19 @@ msgstr "Rinomina"
 msgid "Reset"
 msgstr "Reimposta"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:105
+msgid "Return to stock"
+msgstr "Restituisci a magazzino"
+
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:152
 msgid "Review the changes before applying them to the order."
 msgstr "Rivedi le modifiche prima di applicarle all'ordine."
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:143
-#: src/app/routes/_authenticated/_administrators/administrators.tsx:56
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:34
-#: src/app/routes/_authenticated/_roles/roles.tsx:19
-#: src/app/routes/_authenticated/_roles/roles.tsx:28
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:139
+#: src/app/routes/_authenticated/_administrators/administrators.tsx:55
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:32
+#: src/app/routes/_authenticated/_roles/roles.tsx:18
+#: src/app/routes/_authenticated/_roles/roles.tsx:27
 msgid "Roles"
 msgstr "Ruoli"
 
@@ -3741,11 +3951,11 @@ msgstr "In esecuzione"
 msgid "Same window"
 msgstr "Stessa finestra"
 
-#: src/lib/components/layout/language-dialog.tsx:79
+#: src/lib/components/layout/language-dialog.tsx:92
 msgid "Sample Formatting"
 msgstr "Formattazione di esempio"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:213
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:239
 #: src/lib/components/data-table/views-sheet.tsx:210
 #: src/lib/components/shared/history-timeline/history-note-editor.tsx:54
 msgid "Save"
@@ -3755,21 +3965,21 @@ msgstr "Salva"
 msgid "Save a view as \"Global\" to make it available to all users."
 msgstr "Salva una vista come \"Globale\" per renderla disponibile a tutti gli utenti."
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:338
-#: src/lib/components/shared/customer-address-form.tsx:329
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:341
+#: src/lib/components/shared/customer-address-form.tsx:332
 msgid "Save Address"
 msgstr "Salva indirizzo"
 
 #: src/app/routes/_authenticated/_facets/components/edit-facet-value.tsx:122
-msgid "Save changes"
-msgstr "Salva modifiche"
+#~ msgid "Save changes"
+#~ msgstr "Salva modifiche"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:399
+#: src/lib/components/layout/manage-languages-dialog.tsx:380
 msgid "Save Changes"
 msgstr "Salva modifiche"
 
-#: src/app/routes/_authenticated/index.tsx:194
+#: src/app/routes/_authenticated/index.tsx:190
 msgid "Save Layout"
 msgstr "Salva layout"
 
@@ -3782,7 +3992,7 @@ msgid "Save View"
 msgstr "Salva vista"
 
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx:206
-#: src/lib/components/layout/manage-languages-dialog.tsx:399
+#: src/lib/components/layout/manage-languages-dialog.tsx:380
 msgid "Saving..."
 msgstr "Salvataggio in corso..."
 
@@ -3823,15 +4033,15 @@ msgstr "Cerca valute..."
 msgid "Search facet values..."
 msgstr "Cerca valori facet..."
 
-#: src/app/routes/_authenticated/_products/products.tsx:35
+#: src/app/routes/_authenticated/_products/products.tsx:34
 msgid "Search index rebuild could not be started"
 msgstr "La ricostruzione dell'indice di ricerca non può essere avviata"
 
-#: src/app/routes/_authenticated/_products/products.tsx:32
+#: src/app/routes/_authenticated/_products/products.tsx:31
 msgid "Search index rebuild started"
 msgstr "Ricostruzione indice di ricerca avviata"
 
-#: src/lib/components/shared/language-selector.tsx:45
+#: src/lib/components/shared/language-selector.tsx:53
 msgid "Search languages..."
 msgstr "Cerca lingue..."
 
@@ -3870,8 +4080,8 @@ msgstr "Seleziona un canale"
 msgid "Select a channel to assign {0} {entityType} to"
 msgstr "Seleziona un canale a cui assegnare {0} {entityType}"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:249
-#: src/lib/components/shared/customer-address-form.tsx:240
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:250
+#: src/lib/components/shared/customer-address-form.tsx:241
 msgid "Select a country"
 msgstr "Seleziona un paese"
 
@@ -3879,20 +4089,24 @@ msgstr "Seleziona un paese"
 msgid "Select a currency"
 msgstr "Seleziona una valuta"
 
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:82
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:83
 msgid "Select a destination collection"
 msgstr "Seleziona una collezione di destinazione"
 
-#: src/lib/components/shared/language-selector.tsx:44
+#: src/lib/components/shared/language-selector.tsx:52
 msgid "Select a language"
 msgstr "Seleziona una lingua"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:220
+msgid "Select a reason..."
+msgstr "Seleziona un motivo..."
 
 #: src/lib/components/shared/role-selector.tsx:52
 msgid "Select a role"
 msgstr "Seleziona un ruolo"
 
 #. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
-#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:338
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx:342
 msgid "Select a target collection to move {0} to."
 msgstr "Seleziona una collezione di destinazione in cui spostare {0}."
 
@@ -3912,11 +4126,11 @@ msgstr "Seleziona indirizzo"
 msgid "Select an address"
 msgstr "Seleziona un indirizzo"
 
-#: src/lib/components/data-input/select-with-options.tsx:81
+#: src/lib/components/data-input/select-with-options.tsx:97
 msgid "Select an option"
 msgstr "Seleziona un'opzione"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:296
+#: src/lib/components/layout/manage-languages-dialog.tsx:278
 msgid "Select Available Languages"
 msgstr "Seleziona lingue disponibili"
 
@@ -3932,11 +4146,11 @@ msgstr "Seleziona cliente"
 msgid "Select date range"
 msgstr "Seleziona intervallo di date"
 
-#: src/lib/components/layout/language-dialog.tsx:36
+#: src/lib/components/layout/language-dialog.tsx:49
 msgid "Select display language"
 msgstr "Seleziona lingua di visualizzazione"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:358
+#: src/lib/components/layout/manage-languages-dialog.tsx:340
 msgid "Select from globally available languages for this channel"
 msgstr "Seleziona tra le lingue disponibili globalmente per questo canale"
 
@@ -3948,9 +4162,17 @@ msgstr "Seleziona articolo"
 msgid "Select items"
 msgstr "Seleziona articoli"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:104
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:75
+msgid "Select items to refund and optionally return to stock"
+msgstr "Seleziona gli articoli da rimborsare e facoltativamente restituire a magazzino"
+
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:103
 msgid "Select next state"
 msgstr "Seleziona stato successivo"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:285
+msgid "Select payments to refund"
+msgstr "Seleziona i pagamenti da rimborsare"
 
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx:228
 msgid "Select quantities to fulfill and configure the fulfillment handler"
@@ -3960,7 +4182,7 @@ msgstr "Seleziona le quantità da evadere e configura il gestore evasione"
 msgid "Select seller"
 msgstr "Seleziona venditore"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:108
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:107
 msgid "Select the next state for the order"
 msgstr "Seleziona lo stato successivo per l'ordine"
 
@@ -3973,7 +4195,7 @@ msgstr "Seleziona quali opzioni devono applicarsi alla variante esistente \"{0}\
 msgid "Selected Items"
 msgstr "Articoli selezionati"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:156
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:152
 msgid "Seller"
 msgstr "Venditore"
 
@@ -3985,13 +4207,13 @@ msgstr "Ordine venditore"
 msgid "Seller orders"
 msgstr "Ordini venditore"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:31
-#: src/app/routes/_authenticated/_sellers/sellers.tsx:14
-#: src/app/routes/_authenticated/_sellers/sellers.tsx:23
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:29
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:13
+#: src/app/routes/_authenticated/_sellers/sellers.tsx:22
 msgid "Sellers"
 msgstr "Venditori"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:398
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:394
 msgid "Set custom fields"
 msgstr "Imposta campi personalizzati"
 
@@ -4003,16 +4225,16 @@ msgstr "Imposta punto focale"
 msgid "Set link"
 msgstr "Imposta link"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:114
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:110
 msgid "Sets the languages that are available for all channels. Individual channels can then support a subset of these languages."
 msgstr "Imposta le lingue disponibili per tutti i canali. I singoli canali possono quindi supportare un sottoinsieme di queste lingue."
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:133
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:129
 msgid "Sets the stock level at which this a variant is considered to be out of stock. Using a negative value enables backorder support. Can be overridden by product variants."
 msgstr "Imposta il livello di scorta al quale questa variante è considerata esaurita. L'utilizzo di un valore negativo abilita il supporto per ordini arretrati. Può essere sostituito dalle varianti prodotto."
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:355
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:373
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:352
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:370
 msgid "Sets the stock level at which this variant is considered to be out of stock. Using a negative value enables backorder support."
 msgstr "Imposta il livello di scorta al quale questa variante è considerata esaurita. L'utilizzo di un valore negativo abilita il supporto per ordini arretrati."
 
@@ -4026,14 +4248,15 @@ msgstr "Completa pagamento"
 msgid "Settle refund"
 msgstr "Completa rimborso"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:61
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:66
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:188
 #: src/app/routes/_authenticated/_orders/orders.tsx:85
 msgid "Shipping"
 msgstr "Spedizione"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:259
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:234
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:418
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:285
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:242
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:414
 msgid "Shipping address"
 msgstr "Indirizzo di spedizione"
 
@@ -4041,19 +4264,19 @@ msgstr "Indirizzo di spedizione"
 msgid "Shipping Address"
 msgstr "Indirizzo di spedizione"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:110
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:128
 msgid "Shipping address changed"
 msgstr "Indirizzo di spedizione modificato"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:181
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:179
 msgid "Shipping address set for order"
 msgstr "Indirizzo di spedizione impostato per l'ordine"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:197
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:195
 msgid "Shipping address unset for order"
 msgstr "Indirizzo di spedizione rimosso per l'ordine"
 
-#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:124
+#: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx:142
 msgid "Shipping method changed"
 msgstr "Metodo di spedizione modificato"
 
@@ -4065,17 +4288,17 @@ msgstr "Il metodo di spedizione è idoneo per questo ordine"
 msgid "Shipping method is not eligible for this order"
 msgstr "Il metodo di spedizione non è idoneo per questo ordine"
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:216
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:214
 msgid "Shipping method set for order"
 msgstr "Metodo di spedizione impostato per l'ordine"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:43
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:20
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:29
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:41
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:19
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods.tsx:28
 msgid "Shipping Methods"
 msgstr "Metodi di spedizione"
 
-#: src/lib/components/layout/language-dialog.tsx:102
+#: src/lib/components/layout/language-dialog.tsx:115
 msgid "Short date"
 msgstr "Data breve"
 
@@ -4096,17 +4319,18 @@ msgstr "Accedi"
 msgid "Sign in to access the admin dashboard"
 msgstr "Accedi per accedere al pannello di amministrazione"
 
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:83
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:96
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:245
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:242
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:334
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:195
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:206
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:209
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx:306
 msgid "SKU"
 msgstr "SKU"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:152
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:139
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:148
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:146
 msgid "Slug"
 msgstr "Slug"
 
@@ -4118,7 +4342,7 @@ msgstr "Lo slug è impostato"
 msgid "Slug will be generated automatically..."
 msgstr "Lo slug sarà generato automaticamente..."
 
-#: src/app/routes/_authenticated/_system/healthchecks.tsx:74
+#: src/app/routes/_authenticated/_system/healthchecks.tsx:73
 msgid "Some resources are down"
 msgstr "Alcune risorse non sono disponibili"
 
@@ -4126,14 +4350,14 @@ msgstr "Alcune risorse non sono disponibili"
 msgid "Source"
 msgstr "Sorgente"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:175
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:171
 msgid "Starts at"
 msgstr "Inizia il"
 
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:108
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:217
 #: src/app/routes/_authenticated/_orders/orders.tsx:101
-#: src/app/routes/_authenticated/_system/job-queue.tsx:222
+#: src/app/routes/_authenticated/_system/job-queue.tsx:231
 msgid "State"
 msgstr "Stato"
 
@@ -4141,17 +4365,17 @@ msgstr "Stato"
 msgid "State / Province"
 msgstr "Stato / Provincia"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:201
-#: src/lib/components/shared/customer-address-form.tsx:192
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:202
+#: src/lib/components/shared/customer-address-form.tsx:193
 msgid "State/Province"
 msgstr "Stato/Provincia"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:252
-#: src/app/routes/_authenticated/_customers/customers.tsx:46
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:248
+#: src/app/routes/_authenticated/_customers/customers.tsx:45
 msgid "Status"
 msgstr "Stato"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:316
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:313
 msgid "Stock"
 msgstr "Scorta"
 
@@ -4159,18 +4383,18 @@ msgstr "Scorta"
 msgid "Stock allocated"
 msgstr "Scorta allocata"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:396
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:393
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:353
 msgid "Stock level"
 msgstr "Livello scorta"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:321
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:318
 msgid "Stock levels"
 msgstr "Livelli scorta"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:38
-#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:18
-#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:25
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:36
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:17
+#: src/app/routes/_authenticated/_stock-locations/stock-locations.tsx:24
 msgid "Stock Locations"
 msgstr "Ubicazioni stock"
 
@@ -4178,13 +4402,13 @@ msgstr "Ubicazioni stock"
 msgid "Stock on hand"
 msgstr "Scorta disponibile"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:212
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:215
 msgid "Stock on Hand"
 msgstr "Scorta disponibile"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:146
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:147
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx:175
-#: src/lib/components/shared/customer-address-form.tsx:137
+#: src/lib/components/shared/customer-address-form.tsx:138
 msgid "Street Address"
 msgstr "Indirizzo"
 
@@ -4192,7 +4416,7 @@ msgstr "Indirizzo"
 msgid "Street Address 2"
 msgstr "Indirizzo 2"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:49
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:52
 msgid "Sub total"
 msgstr "Subtotale"
 
@@ -4212,35 +4436,35 @@ msgstr "Pagamento aggiunto all'ordine con successo"
 msgid "Successfully assigned {entityIdsLength} {entityType} to channel"
 msgstr "{entityIdsLength} {entityType} assegnati al canale con successo"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:79
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:77
 msgid "Successfully created administrator"
 msgstr "Amministratore creato con successo"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:85
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:83
 msgid "Successfully created channel"
 msgstr "Canale creato con successo"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:92
 msgid "Successfully created collection"
 msgstr "Collezione creata con successo"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:62
 msgid "Successfully created country"
 msgstr "Paese creato con successo"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:93
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:91
 msgid "Successfully created customer"
 msgstr "Cliente creato con successo"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:66
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:64
 msgid "Successfully created customer group"
 msgstr "Gruppo clienti creato con successo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:77
 msgid "Successfully created facet"
 msgstr "Attributo creato con successo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:84
 msgid "Successfully created facet value"
 msgstr "Valore attributo creato con successo"
 
@@ -4248,19 +4472,19 @@ msgstr "Valore attributo creato con successo"
 msgid "Successfully created option group"
 msgstr "Gruppo opzioni creato con successo"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:100
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:98
 msgid "Successfully created payment method"
 msgstr "Metodo di pagamento creato con successo"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:87
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:96
 msgid "Successfully created product"
 msgstr "Prodotto creato con successo"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:128
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:126
 msgid "Successfully created product option"
 msgstr "Opzione prodotto creata con successo"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:106
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:104
 msgid "Successfully created product option group"
 msgstr "Gruppo di opzioni prodotto creato con successo"
 
@@ -4268,40 +4492,40 @@ msgstr "Gruppo di opzioni prodotto creato con successo"
 msgid "Successfully created product options"
 msgstr "Opzioni prodotto create con successo"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:117
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:116
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:169
 msgid "Successfully created product variant"
 msgstr "Variante prodotto creata con successo"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:104
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:102
 msgid "Successfully created promotion"
 msgstr "Promozione creata con successo"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:64
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:62
 msgid "Successfully created role"
 msgstr "Ruolo creato con successo"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:56
 msgid "Successfully created seller"
 msgstr "Venditore creato con successo"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:90
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:88
 msgid "Successfully created shipping method"
 msgstr "Metodo di spedizione creato con successo"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:69
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:67
 msgid "Successfully created stock location"
 msgstr "Ubicazione magazzino creata con successo"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:69
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:67
 msgid "Successfully created tax category"
 msgstr "Categoria fiscale creata con successo"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:71
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:70
 msgid "Successfully created tax rate"
 msgstr "Aliquota fiscale creata con successo"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:62
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:61
 msgid "Successfully created zone"
 msgstr "Zona creata con successo"
 
@@ -4321,39 +4545,43 @@ msgstr "{selectionLength} {entityType} rimossi dal canale con successo"
 msgid "Successfully removed {successCount} facets from channel"
 msgstr "{successCount} attributi rimossi dal canale con successo"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:80
+#: src/lib/components/shared/assigned-channels.tsx:39
+msgid "Successfully removed product from channel"
+msgstr "Prodotto rimosso dal canale con successo"
+
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:78
 msgid "Successfully updated administrator"
 msgstr "Amministratore aggiornato con successo"
 
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:70
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:68
 msgid "Successfully updated asset"
 msgstr "File aggiornato con successo"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:85
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:83
 msgid "Successfully updated channel"
 msgstr "Canale aggiornato con successo"
 
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:94
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:92
 msgid "Successfully updated collection"
 msgstr "Collezione aggiornata con successo"
 
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:64
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:62
 msgid "Successfully updated country"
 msgstr "Paese aggiornato con successo"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:93
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:91
 msgid "Successfully updated customer"
 msgstr "Cliente aggiornato con successo"
 
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:67
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:65
 msgid "Successfully updated customer group"
 msgstr "Gruppo clienti aggiornato con successo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:79
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:77
 msgid "Successfully updated facet"
 msgstr "Attributo aggiornato con successo"
 
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:86
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:84
 msgid "Successfully updated facet value"
 msgstr "Valore attributo aggiornato con successo"
 
@@ -4361,72 +4589,72 @@ msgstr "Valore attributo aggiornato con successo"
 msgid "Successfully updated facet values for {entityIdsLength} {entityType}"
 msgstr "Valori attributo aggiornati con successo per {entityIdsLength} {entityType}"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:71
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:69
 msgid "Successfully updated global settings"
 msgstr "Impostazioni globali aggiornate con successo"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:85
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:88
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:55
 msgid "Successfully updated order"
 msgstr "Ordine aggiornato con successo"
 
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:101
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:99
 msgid "Successfully updated payment method"
 msgstr "Metodo di pagamento aggiornato con successo"
 
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:87
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:96
 msgid "Successfully updated product"
 msgstr "Prodotto aggiornato con successo"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:129
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:127
 msgid "Successfully updated product option"
 msgstr "Opzione prodotto aggiornata con successo"
 
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:107
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:105
 msgid "Successfully updated product option group"
 msgstr "Gruppo di opzioni prodotto aggiornato con successo"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:118
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:117
 msgid "Successfully updated product variant"
 msgstr "Variante prodotto aggiornata con successo"
 
-#: src/app/routes/_authenticated/_profile/profile.tsx:61
+#: src/app/routes/_authenticated/_profile/profile.tsx:60
 msgid "Successfully updated profile"
 msgstr "Profilo aggiornato con successo"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:104
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:102
 msgid "Successfully updated promotion"
 msgstr "Promozione aggiornata con successo"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:64
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:62
 msgid "Successfully updated role"
 msgstr "Ruolo aggiornato con successo"
 
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:58
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:56
 msgid "Successfully updated seller"
 msgstr "Venditore aggiornato con successo"
 
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:91
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:89
 msgid "Successfully updated shipping method"
 msgstr "Metodo di spedizione aggiornato con successo"
 
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:70
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:68
 msgid "Successfully updated stock location"
 msgstr "Ubicazione magazzino aggiornata con successo"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:70
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:68
 msgid "Successfully updated tax category"
 msgstr "Categoria fiscale aggiornata con successo"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:71
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:70
 msgid "Successfully updated tax rate"
 msgstr "Aliquota fiscale aggiornata con successo"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:62
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:61
 msgid "Successfully updated zone"
 msgstr "Zona aggiornata con successo"
 
-#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:187
+#: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx:194
 msgid "Summary of modifications"
 msgstr "Riepilogo modifiche"
 
@@ -4434,7 +4662,7 @@ msgstr "Riepilogo modifiche"
 msgid "Super Admin"
 msgstr "Super amministratore"
 
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:19
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:22
 msgid "Surcharge"
 msgstr "Supplemento"
 
@@ -4451,17 +4679,22 @@ msgstr "Tag"
 msgid "Tax base"
 msgstr "Base imponibile"
 
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:38
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:15
-#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:24
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:36
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:14
+#: src/app/routes/_authenticated/_tax-categories/tax-categories.tsx:23
 msgid "Tax Categories"
 msgstr "Categorie fiscali"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:257
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:137
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:254
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:127
 msgid "Tax category"
 msgstr "Categoria fiscale"
 
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:124
+msgid "Tax description"
+msgstr "Descrizione imposta"
+
+#: src/app/routes/_authenticated/_orders/components/add-surcharge-form.tsx:110
 #: src/app/routes/_authenticated/_orders/components/order-tax-summary.tsx:17
 msgid "Tax rate"
 msgstr "Aliquota fiscale"
@@ -4470,13 +4703,13 @@ msgstr "Aliquota fiscale"
 msgid "Tax rate: {taxRate}%"
 msgstr "Aliquota fiscale: {taxRate}%"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:37
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:19
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:29
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:36
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:18
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:28
 msgid "Tax Rates"
 msgstr "Aliquote fiscali"
 
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:202
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:228
 msgid "Tax summary"
 msgstr "Riepilogo fiscale"
 
@@ -4526,24 +4759,24 @@ msgstr "Test metodo di spedizione in corso..."
 msgid "Testing shipping methods..."
 msgstr "Test metodi di spedizione in corso..."
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:114
+#: src/app/routes/_authenticated/_system/job-queue.tsx:120
 msgid "The data that has been passed to the job"
 msgstr "I dati che sono stati passati al lavoro"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:132
+#: src/app/routes/_authenticated/_system/job-queue.tsx:139
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:175
 msgid "The result of the job"
 msgstr "Il risultato del lavoro"
 
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:117
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:113
 msgid "The selected permissions will be applied to the these channels."
 msgstr "I permessi selezionati saranno applicati a questi canali."
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:147
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:143
 msgid "The token is used to specify the channel when making API requests."
 msgstr "Il token viene utilizzato per specificare il canale quando si effettuano richieste API."
 
-#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:116
+#: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx:114
 msgid "The variant could not be added. Ensure the parent product is enabled."
 msgstr "Impossibile aggiungere la variante. Assicurati che il prodotto principale sia abilitato."
 
@@ -4555,15 +4788,15 @@ msgstr "Tema"
 msgid "These are the customers in the <0>{customerGroupName}</0> customer group."
 msgstr "Questi sono i clienti nel gruppo clienti <0>{customerGroupName}</0>."
 
-#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:35
+#: src/app/routes/_authenticated/_facets/components/facet-values-sheet.tsx:36
 msgid "These are the facet values for the <0>{facetName}</0> facet."
 msgstr "Questi sono i valori attributo per l'attributo <0>{facetName}</0>."
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:311
+#: src/lib/components/layout/manage-languages-dialog.tsx:293
 msgid "These languages will be available for all channels to use"
 msgstr "Queste lingue saranno disponibili per l'uso di tutti i canali"
 
-#: src/app/routes/_authenticated/_roles/roles.tsx:54
+#: src/app/routes/_authenticated/_roles/roles.tsx:53
 msgid "This is a default Role and cannot be modified"
 msgstr "Questo è un ruolo predefinito e non può essere modificato"
 
@@ -4593,7 +4826,7 @@ msgctxt "date-range"
 msgid "This week"
 msgstr "Questa settimana"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:166
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:162
 #: src/lib/components/shared/rich-text-editor/image-dialog.tsx:154
 msgid "Title"
 msgstr "Titolo"
@@ -4616,15 +4849,15 @@ msgstr "Attiva/Disattiva colonna intestazione"
 msgid "Toggle header row"
 msgstr "Attiva/Disattiva riga intestazione"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:145
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:141
 msgid "Token"
 msgstr "Token"
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:157
-#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:73
+#: src/app/routes/_authenticated/_orders/components/order-table-totals.tsx:88
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:114
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:228
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:98
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:120
 msgid "Total"
 msgstr "Totale"
 
@@ -4640,11 +4873,11 @@ msgstr "Rimborso totale:"
 msgid "Total Revenue"
 msgstr "Ricavi totali"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:341
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:338
 msgid "Track"
 msgstr "Traccia"
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:144
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:140
 msgid "Track inventory by default"
 msgstr "Traccia inventario per impostazione predefinita"
 
@@ -4667,7 +4900,7 @@ msgstr "L'ID transazione è obbligatorio"
 #. placeholder {0}: getTranslatedOrderState(state)
 #. placeholder {0}: getTranslatedPaymentState(state)
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx:92
-#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:107
+#: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx:111
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx:154
 msgid "Transition to {0}"
 msgstr "Transizione a {0}"
@@ -4676,7 +4909,7 @@ msgstr "Transizione a {0}"
 msgid "Transition to {suggestedState}"
 msgstr "Transizione a {suggestedState}"
 
-#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:131
+#: src/app/routes/_authenticated/_orders/components/use-transition-order-to-state.tsx:130
 msgid "Transition to selected state"
 msgstr "Transizione allo stato selezionato"
 
@@ -4690,10 +4923,12 @@ msgstr "Digita almeno 2 caratteri per cercare..."
 
 #: src/app/routes/_authenticated/_orders/components/edit-order-table.tsx:100
 #: src/app/routes/_authenticated/_orders/components/order-table.tsx:57
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx:96
 msgid "Unit price"
 msgstr "Prezzo unitario"
 
 #: src/app/routes/_authenticated/_orders/components/order-modification-preview-dialog.tsx:102
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts:303
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx:87
 #: src/app/routes/_authenticated/_products/components/add-product-variant-dialog.tsx:175
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx:125
@@ -4706,32 +4941,32 @@ msgstr "Errore sconosciuto"
 msgid "Unverified"
 msgstr "Non verificato"
 
-#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:108
-#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:101
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:125
-#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:124
-#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:87
-#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:96
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:155
-#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:113
-#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:102
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:101
+#: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx:105
+#: src/app/routes/_authenticated/_assets/assets_.$id.tsx:98
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:122
+#: src/app/routes/_authenticated/_collections/collections_.$id.tsx:121
+#: src/app/routes/_authenticated/_countries/countries_.$id.tsx:84
+#: src/app/routes/_authenticated/_customer-groups/customer-groups_.$id.tsx:93
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx:152
+#: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx:110
+#: src/app/routes/_authenticated/_facets/facets_.$id.tsx:99
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:98
 #: src/app/routes/_authenticated/_orders/components/order-line-custom-fields-form.tsx:46
-#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:130
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:216
+#: src/app/routes/_authenticated/_payment-methods/payment-methods_.$id.tsx:127
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:214
 #: src/app/routes/_authenticated/_products/components/assign-facet-values-dialog.tsx:276
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:111
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:138
-#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:159
-#: src/app/routes/_authenticated/_profile/profile.tsx:82
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:136
-#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:87
-#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:81
-#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:132
-#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:99
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:95
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:85
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:119
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$id.tsx:135
+#: src/app/routes/_authenticated/_products/products_.$productId.option-groups.$productOptionGroupId.options_.$id.tsx:156
+#: src/app/routes/_authenticated/_profile/profile.tsx:81
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:133
+#: src/app/routes/_authenticated/_roles/roles_.$id.tsx:84
+#: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx:78
+#: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx:131
+#: src/app/routes/_authenticated/_stock-locations/stock-locations_.$id.tsx:96
+#: src/app/routes/_authenticated/_tax-categories/tax-categories_.$id.tsx:96
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:93
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:83
 #: src/lib/framework/page/detail-page.tsx:202
 msgid "Update"
 msgstr "Aggiorna"
@@ -4740,29 +4975,29 @@ msgstr "Aggiorna"
 msgid "Update the note content or visibility"
 msgstr "Aggiorna il contenuto o la visibilità della nota"
 
-#: src/lib/framework/layout-engine/page-layout.tsx:417
+#: src/lib/framework/layout-engine/page-layout.tsx:629
 msgid "Updated"
 msgstr "Aggiornato"
 
-#: src/lib/components/shared/asset/asset-gallery.tsx:361
+#: src/lib/components/shared/asset/asset-gallery.tsx:365
 msgid "Upload"
 msgstr "Carica"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:213
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:209
 msgid "Usage limit"
 msgstr "Limite utilizzo"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:322
-#: src/lib/components/shared/customer-address-form.tsx:313
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:325
+#: src/lib/components/shared/customer-address-form.tsx:316
 msgid "Use as the default billing address"
 msgstr "Usa come indirizzo di fatturazione predefinito"
 
-#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:302
-#: src/lib/components/shared/customer-address-form.tsx:293
+#: src/app/routes/_authenticated/_customers/components/customer-address-form.tsx:305
+#: src/lib/components/shared/customer-address-form.tsx:296
 msgid "Use as the default shipping address"
 msgstr "Usa come indirizzo di spedizione predefinito"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:371
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:368
 msgid "Use global out-of-stock threshold"
 msgstr "Usa soglia globale esaurimento scorte"
 
@@ -4782,11 +5017,11 @@ msgstr "Utilizzo strategia di autenticazione esterna: {strategy}"
 msgid "Using native authentication strategy"
 msgstr "Utilizzo strategia di autenticazione nativa"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:88
+#: src/app/routes/_authenticated/_facets/facets.tsx:50
 msgid "Values"
 msgstr "Valori"
 
-#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:202
+#: src/app/routes/_authenticated/_products/components/create-product-variants.tsx:205
 msgid "Variant"
 msgstr "Variante"
 
@@ -4794,7 +5029,7 @@ msgstr "Variante"
 msgid "Variant deleted successfully"
 msgstr "Variante eliminata con successo"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:238
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:235
 msgid "Variant name"
 msgstr "Nome variante"
 
@@ -4819,7 +5054,7 @@ msgstr "Visualizza modifiche"
 msgid "View converted to global successfully"
 msgstr "Vista convertita in globale con successo"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:117
+#: src/app/routes/_authenticated/_system/job-queue.tsx:123
 msgid "View data"
 msgstr "Visualizza dati"
 
@@ -4835,11 +5070,11 @@ msgstr "Visualizza dettagli"
 msgid "View duplicated successfully"
 msgstr "Vista duplicata con successo"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:113
+#: src/app/routes/_authenticated/_system/job-queue.tsx:118
 msgid "View job data"
 msgstr "Visualizza dati lavoro"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:131
+#: src/app/routes/_authenticated/_system/job-queue.tsx:137
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:174
 msgid "View job result"
 msgstr "Visualizza risultato lavoro"
@@ -4848,16 +5083,16 @@ msgstr "Visualizza risultato lavoro"
 msgid "View renamed successfully"
 msgstr "Vista rinominata con successo"
 
-#: src/app/routes/_authenticated/_system/job-queue.tsx:135
+#: src/app/routes/_authenticated/_system/job-queue.tsx:142
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx:178
 msgid "View result"
 msgstr "Visualizza risultato"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:53
+#: src/app/routes/_authenticated/_facets/facets.tsx:67
 msgid "View values"
 msgstr "Visualizza valori"
 
-#: src/app/routes/_authenticated/_facets/facets.tsx:77
+#: src/app/routes/_authenticated/_facets/facets.tsx:39
 msgid "Visibility"
 msgstr "Visibilità"
 
@@ -4873,20 +5108,20 @@ msgstr "Visibile al cliente"
 msgid "Welcome to Vendure"
 msgstr "Benvenuto su Vendure"
 
-#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:227
-#: src/app/routes/_authenticated/_products/products_.$id.tsx:122
+#: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx:224
+#: src/app/routes/_authenticated/_products/products_.$id.tsx:129
 msgid "When enabled, a product is available in the shop"
 msgstr "Quando abilitato, un prodotto è disponibile nel negozio"
 
-#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:147
+#: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx:143
 msgid "When enabled, a promotion is available in the shop"
 msgstr "Quando abilitata, una promozione è disponibile nel negozio"
 
-#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:236
+#: src/app/routes/_authenticated/_channels/channels_.$id.tsx:232
 msgid "When this is enabled, the prices entered in the product catalog will be included in the tax for the default tax zone."
 msgstr "Quando abilitato, i prezzi inseriti nel catalogo prodotti includeranno l'IVA per la zona fiscale predefinita."
 
-#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:146
+#: src/app/routes/_authenticated/_global-settings/global-settings.tsx:142
 msgid "When tracked, product variant stock levels will be automatically adjusted when sold. This setting can be overridden by individual product variants."
 msgstr "Quando tracciato, i livelli di scorta delle varianti prodotto saranno automaticamente adeguati quando venduti. Questa impostazione può essere sostituita dalle singole varianti prodotto."
 
@@ -4894,7 +5129,7 @@ msgstr "Quando tracciato, i livelli di scorta delle varianti prodotto saranno au
 msgid "Width"
 msgstr "Larghezza"
 
-#: src/lib/components/data-table/data-table-bulk-actions.tsx:77
+#: src/lib/components/data-table/data-table-bulk-actions.tsx:78
 #: src/lib/components/shared/asset/asset-bulk-actions.tsx:87
 msgid "With selected..."
 msgstr "Con selezionati..."
@@ -4904,11 +5139,11 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Ieri"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:333
+#: src/lib/components/layout/manage-languages-dialog.tsx:315
 msgid "You don't have permission to view channel settings"
 msgstr "Non hai il permesso di visualizzare le impostazioni del canale"
 
-#: src/lib/components/layout/manage-languages-dialog.tsx:279
+#: src/lib/components/layout/manage-languages-dialog.tsx:261
 msgid "You don't have permission to view global language settings"
 msgstr "Non hai il permesso di visualizzare le impostazioni linguistiche globali"
 
@@ -4916,7 +5151,7 @@ msgstr "Non hai il permesso di visualizzare le impostazioni linguistiche globali
 msgid "You haven't saved any views yet."
 msgstr "Non hai ancora salvato nessuna vista."
 
-#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:58
+#: src/lib/framework/dashboard-widget/latest-orders-widget/index.tsx:77
 msgid "Your latest orders"
 msgstr "I tuoi ultimi ordini"
 
@@ -4924,13 +5159,13 @@ msgstr "I tuoi ultimi ordini"
 msgid "Your orders summary"
 msgstr "Riepilogo dei tuoi ordini"
 
-#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:145
-#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:73
+#: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx:135
+#: src/app/routes/_authenticated/_tax-rates/tax-rates.tsx:72
 msgid "Zone"
 msgstr "Zona"
 
-#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:34
-#: src/app/routes/_authenticated/_zones/zones.tsx:15
-#: src/app/routes/_authenticated/_zones/zones.tsx:25
+#: src/app/routes/_authenticated/_zones/zones_.$id.tsx:33
+#: src/app/routes/_authenticated/_zones/zones.tsx:14
+#: src/app/routes/_authenticated/_zones/zones.tsx:24
 msgid "Zones"
 msgstr "Zone"

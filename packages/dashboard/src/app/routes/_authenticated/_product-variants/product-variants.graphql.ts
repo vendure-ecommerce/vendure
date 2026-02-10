@@ -32,6 +32,13 @@ export const productVariantListDocument = graphql(
     [assetFragment],
 );
 
+export const productVariantPriceFragment = graphql(`
+    fragment ProductVariantPrice on ProductVariantPrice {
+        currencyCode
+        price
+    }
+`);
+
 export const productVariantDetailDocument = graphql(
     `
         query ProductVariantDetail($id: ID!) {
@@ -86,12 +93,11 @@ export const productVariantDetailDocument = graphql(
                 price
                 priceWithTax
                 prices {
-                    currencyCode
-                    price
-                    customFields
+                    ...ProductVariantPrice
                 }
                 trackInventory
                 outOfStockThreshold
+                useGlobalOutOfStockThreshold
                 stockLevels {
                     id
                     stockOnHand
@@ -105,7 +111,7 @@ export const productVariantDetailDocument = graphql(
             }
         }
     `,
-    [assetFragment],
+    [assetFragment, productVariantPriceFragment],
 );
 
 export const createProductVariantDocument = graphql(`

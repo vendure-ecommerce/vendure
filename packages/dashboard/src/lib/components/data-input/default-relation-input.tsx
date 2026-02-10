@@ -567,11 +567,11 @@ export function DefaultRelationInput({
     entityType,
 }: Readonly<DefaultRelationInputProps>) {
     const { t } = useLingui();
+    const ENTITY_CONFIGS = useMemo(() => createEntityConfigs(t), [t]);
     if (!fieldDef || (!isRelationCustomFieldConfig(fieldDef) && !entityType)) {
         return null;
     }
     const entityName = entityType ?? (fieldDef as RelationCustomFieldConfig).entity;
-    const ENTITY_CONFIGS = useMemo(() => createEntityConfigs(t), [t]);
     const config = ENTITY_CONFIGS[entityName as keyof typeof ENTITY_CONFIGS];
 
     if (!config) {
@@ -611,7 +611,7 @@ export function DefaultRelationInput({
                 onBlur={onBlur}
                 name={name}
                 ref={ref}
-                value={value ?? ''}
+                value={value}
                 onChange={onChange}
                 config={config}
                 disabled={disabled}

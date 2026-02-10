@@ -16,6 +16,12 @@ type Constructor<T = any> = new (...args: any[]) => T;
  * variable (exported from the `@vendure/core` package as `ENABLE_INSTRUMENTATION_ENV_VAR`) must be set to `true`.
  * This is done to avoid the overhead of instrumentation in environments where it is not needed.
  *
+ * :::warning
+ * You should _not_ decorate GraphQL resolvers & REST controllers with this decorator. Those will
+ * already be instrumented, and adding the `@Instrument()` decorator will potentially
+ * interfere with other NestJS decorators on your resolver methods.
+ * :::
+ *
  * For more information on how instrumentation is used, see docs on the TelemetryPlugin.
  *
  * @example
@@ -24,8 +30,7 @@ type Constructor<T = any> = new (...args: any[]) => T;
  * import { Injectable } from '\@nestjs/common';
  *
  * \@Injectable()
- * // highlight-next-line
- * \@Instrument()
+ * \@Instrument() // [!code highlight]
  * export class MyService {
  *
  *   // Calls to this method will be instrumented

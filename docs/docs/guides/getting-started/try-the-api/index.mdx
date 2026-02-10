@@ -2,10 +2,7 @@
 title: 'Try the API'
 ---
 
-
-import Playground from '@site/src/components/Playground';
-
-Once you have successfully installed Vendure locally following the [installation guide](/guides/getting-started/installation),
+Once you have successfully installed Vendure locally following the [installation guide](/getting-started/installation),
 it's time to try out the API!
 
 :::note
@@ -165,7 +162,7 @@ if the response is an `ErrorResult`, we want to include the `errorCode` and `mes
 Running this mutation a second time should show that the quantity of the product in the order has increased by 1.
 
 :::info
-For more information about `ErrorResult` and the handling of errors in Vendure, see the [Error Handling guide](/guides/developer-guide/error-handling).
+For more information about `ErrorResult` and the handling of errors in Vendure, see the [Error Handling guide](/developer-guide/error-handling).
 :::
 
 ## Admin API
@@ -206,25 +203,21 @@ The Admin API exposes a lot more information about products than you can get fro
 ```graphql title="Admin API"
 query GetProduct {
   product(id: 42) {
-    // highlight-next-line
-    enabled
+    enabled # [!code highlight]
     name
     variants {
       id
       name
-      // highlight-next-line
-      enabled
+      enabled # [!code highlight]
       prices {
         currencyCode
         price
       }
-      // highlight-start
-      stockLevels {
-        stockLocationId
-        stockOnHand
-        stockAllocated
-      }
-      // highlight-end
+      stockLevels { # [!code highlight]
+        stockLocationId # [!code highlight]
+        stockOnHand # [!code highlight]
+        stockAllocated # [!code highlight]
+      } # [!code highlight]
     }
   }
 }
@@ -232,7 +225,7 @@ query GetProduct {
 
 :::info
 GraphQL is statically typed and uses a **schema** containing information about all the available queries, mutations and types. In GraphiQL,
-you can explore the schema by clicking the Docs icon (first icon from the top) on the right side of the interface.
+you can explore the schema by clicking the Docs icon (first icon from the top) on the left side of the interface.
 
 ![GraphiQL docs explorer](./graphiql-docs.jpeg)
 :::

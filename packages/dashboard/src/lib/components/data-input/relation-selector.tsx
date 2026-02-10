@@ -10,8 +10,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
 import { getQueryName } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Trans } from '@lingui/react/macro';
 import { cn } from '@/vdb/lib/utils.js';
+import { Trans } from '@lingui/react/macro';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import type { DocumentNode } from 'graphql';
@@ -28,7 +28,7 @@ export interface RelationSelectorConfig<T = any> {
     /** Number of items to load per page */
     pageSize?: number;
     /** Placeholder text for the search input */
-    placeholder?: React.ReactNode;
+    placeholder?: string;
     /** Whether to enable multi-select mode */
     multiple?: boolean;
     /** Custom filter function for search */
@@ -48,7 +48,7 @@ export interface RelationSelectorProps<T = any> {
      */
     selectorLabel?: React.ReactNode;
     value?: string | string[];
-    onChange: (value: string | string[]) => void;
+    onChange: (value: string | string[] | undefined) => void;
     disabled?: boolean;
     className?: string;
 }
@@ -344,7 +344,7 @@ export function RelationSelector<T>({
         } else {
             // Clear cache for single select
             setSelectedItemsCache([]);
-            onChange('');
+            onChange(undefined);
         }
     };
 

@@ -39,6 +39,13 @@ const commonI18nString = {
         /* i18n*/ 'orderState.Modifying',
         /* i18n*/ 'orderState.ArrangingAdditionalPayment',
     ],
+    refundReason: [
+        /* i18n*/ 'refundReason.CustomerRequest',
+        /* i18n*/ 'refundReason.NotAvailable',
+        /* i18n*/ 'refundReason.DamagedInShipping',
+        /* i18n*/ 'refundReason.WrongItem',
+        /* i18n*/ 'refundReason.Other',
+    ],
     fieldName: [
         /* i18n*/ 'fieldName.attempts',
         /* i18n*/ 'fieldName.availableCurrencyCodes',

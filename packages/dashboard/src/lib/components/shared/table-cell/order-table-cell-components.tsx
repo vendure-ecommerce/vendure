@@ -47,10 +47,10 @@ export const RichTextDescriptionCell: DataTableCellComponent<{ description: stri
 
     // Strip HTML tags and decode HTML entities
     const textContent = useMemo(() => {
-        const stripped = value?.replace(/<[^>]*>/g, '') || '';
-        const textArea = document.createElement('textarea');
-        textArea.innerHTML = stripped;
-        return textArea.value;
+        if (!value) return '';
+        const div = document.createElement('div');
+        div.innerHTML = value;
+        return div.textContent ?? '';
     }, [value]);
 
     const shortLength = 100;

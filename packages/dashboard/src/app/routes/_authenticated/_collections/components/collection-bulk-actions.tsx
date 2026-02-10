@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
-import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { usePaginatedList } from '@/vdb/hooks/use-paginated-list.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
 import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
 import { api } from '@/vdb/graphql/api.js';
@@ -103,6 +103,13 @@ export const MoveCollectionsBulkAction: BulkActionComponent<any> = ({ selection,
         table.resetRowSelection();
     };
 
+    const handleResetExpanded = () => {
+        const resetExpanded = (table.options.meta as { resetExpanded: () => void })?.resetExpanded;
+        if (resetExpanded) {
+            resetExpanded();
+        }
+    };
+
     return (
         <>
             <DataTableBulkActionItem
@@ -116,6 +123,7 @@ export const MoveCollectionsBulkAction: BulkActionComponent<any> = ({ selection,
                 onOpenChange={setDialogOpen}
                 collectionsToMove={selection}
                 onSuccess={handleSuccess}
+                onResetExpanded={handleResetExpanded}
             />
         </>
     );

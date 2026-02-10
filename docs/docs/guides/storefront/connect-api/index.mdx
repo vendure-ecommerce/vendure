@@ -2,10 +2,6 @@
 title: Connect to the API
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-import Stackblitz from '@site/src/components/Stackblitz';
-
 The first thing you'll need to do is to connect your storefront app to the **Shop API**. The Shop API is a GraphQL API
 that provides access to the products, collections, customer data, and exposes mutations that allow you to add items to
 the cart, checkout, manage customer accounts, and more.
@@ -36,8 +32,7 @@ import { VendureConfig } from '@vendure/core';
 export const config: VendureConfig = {
     // ...
     authOptions: {
-        // highlight-next-line
-        tokenMethod: ['bearer', 'cookie'],
+        tokenMethod: ['bearer', 'cookie'], // [!code highlight]
     },
 };
 ```
@@ -59,11 +54,9 @@ Using cookies is the simpler approach for browser-based applications, since the 
         // ...
         authOptions: {
             tokenMethod: ['bearer', 'cookie'],
-            // highlight-start
-            cookieOptions: {
-                secret: process.env.COOKIE_SESSION_SECRET
-            }
-            // highlight-end
+            cookieOptions: { // [!code highlight]
+                secret: process.env.COOKIE_SESSION_SECRET // [!code highlight]
+            } // [!code highlight]
         }
     }
     ```
@@ -117,7 +110,7 @@ length of time that a session will stay valid since the last API call.
 
 ## Specifying a channel
 
-If your project has multiple [channels](/guides/core-concepts/channels/), you can specify the active channel by setting
+If your project has multiple [channels](/core-concepts/channels/), you can specify the active channel by setting
 the `vendure-token` header on each request to match the `channelToken` for the desired channel.
 
 Let's say you have a channel with the token `uk-channel` and you want to make a request to the Shop API to get the
@@ -129,9 +122,7 @@ export function query(document: string, variables: Record<string, any> = {}) {
         method: 'POST',
         headers: {
             'content-type': 'application/json',
-            // highlight-start
-            'vendure-token': 'uk-channel',
-            // highlight-end
+            'vendure-token': 'uk-channel', // [!code highlight]
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -165,7 +156,7 @@ POST http://localhost:3000/shop-api?languageCode=de
 If you are building your storefront with TypeScript, we highly recommend you set up code generation to ensure
 that the responses from your queries & mutation are always correctly typed according the fields you request.
 
-See the [GraphQL Code Generation guide](/guides/storefront/codegen/) for more information.
+See the [GraphQL Code Generation guide](/storefront/codegen/) for more information.
 
 ## Examples
 
@@ -217,16 +208,14 @@ export function query(document: string, variables: Record<string, any> = {}) {
     if (languageCode) {
         endpoint += `?languageCode=${languageCode}`;
     }
-    // highlight-start
-    return fetch(endpoint, {
-        method: 'POST',
-        headers,
-        credentials: 'include',
-        body: JSON.stringify({
-            query: document,
-            variables,
-        }),
-    // highlight-end
+    return fetch(endpoint, { // [!code highlight]
+        method: 'POST', // [!code highlight]
+        headers, // [!code highlight]
+        credentials: 'include', // [!code highlight]
+        body: JSON.stringify({ // [!code highlight]
+            query: document, // [!code highlight]
+            variables, // [!code highlight]
+        }), // [!code highlight]
     }).then((res) => {
         if (!res.ok) {
             throw new Error(`An error ocurred, HTTP status: ${res.status}`);

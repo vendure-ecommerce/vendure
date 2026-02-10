@@ -34,6 +34,7 @@ interface MoveCollectionsDialogProps {
     onOpenChange: (open: boolean) => void;
     collectionsToMove: Collection[];
     onSuccess?: () => void;
+    onResetExpanded?: () => void;
 }
 
 interface CollectionTreeNodeProps {
@@ -209,6 +210,7 @@ export function MoveCollectionsDialog({
     onOpenChange,
     collectionsToMove,
     onSuccess,
+    onResetExpanded,
 }: Readonly<MoveCollectionsDialogProps>) {
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
     const [selectedCollectionId, setSelectedCollectionId] = useState<string>();
@@ -282,6 +284,8 @@ export function MoveCollectionsDialog({
             toast.success(t`Collections moved successfully`);
             queryClient.invalidateQueries({ queryKey: collectionForMoveKey });
             queryClient.invalidateQueries({ queryKey: childCollectionsForMoveKey() });
+            queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] });
+            onResetExpanded?.();
             onSuccess?.();
             onOpenChange(false);
         },

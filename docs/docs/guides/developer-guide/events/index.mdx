@@ -101,17 +101,14 @@ import { StorefrontBuildService } from './services/storefront-build.service';
 })
 export class StorefrontBuildPlugin implements OnModuleInit {
     constructor(
-        // highlight-next-line
-        private eventBus: EventBus,
+        private eventBus: EventBus, // [!code highlight]
         private storefrontBuildService: StorefrontBuildService,
     ) {}
 
     onModuleInit() {
-        // highlight-start
-        this.eventBus.ofType(ProductEvent).subscribe(event => {
-            this.storefrontBuildService.triggerBuild();
-        });
-        // highlight-end
+        this.eventBus.ofType(ProductEvent).subscribe(event => { // [!code highlight]
+            this.storefrontBuildService.triggerBuild(); // [!code highlight]
+        }); // [!code highlight]
     }
 }
 ```
@@ -123,15 +120,13 @@ This means that you can use any of the [RxJS operators](https://rxjs-dev.firebas
 For example, to debounce the stream of events, you could do this:
 
 ```ts
-// highlight-next-line
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators'; // [!code highlight]
 
 // ...
 
 this.eventBus
     .ofType(ProductEvent)
-    // highlight-next-line
-    .pipe(debounceTime(1000))
+    .pipe(debounceTime(1000)) // [!code highlight]
     .subscribe(event => {
         this.storefrontBuildService.triggerBuild();
     });
@@ -161,9 +156,7 @@ export class MyPluginPlugin implements OnModuleInit {
 
     onModuleInit() {
         this.eventBus
-            // highlight-start
-            .filter(event => event instanceof ProductEvent || event instanceof ProductVariantEvent)
-            // highlight-end
+            .filter(event => event instanceof ProductEvent || event instanceof ProductVariantEvent) // [!code highlight]
             .subscribe(event => {
                 // the event will be a ProductEvent or ProductVariantEvent
             });
@@ -187,8 +180,7 @@ export class MyPluginService {
 
     async doSomethingWithProduct(ctx: RequestContext, product: Product) {
         // ... do something
-        // highlight-next-line
-        await this.eventBus.publish(new ProductEvent(ctx, product, 'updated'));
+        await this.eventBus.publish(new ProductEvent(ctx, product, 'updated')); // [!code highlight]
     }
 }
 ```
@@ -232,8 +224,7 @@ export class ProductReviewService {
     ) {}
 
     async submitReview(ctx: RequestContext, input: ProductReviewInput) {
-        // highlight-next-line
-        this.eventBus.publish(new ReviewSubmittedEvent(ctx, input));
+        this.eventBus.publish(new ReviewSubmittedEvent(ctx, input)); // [!code highlight]
         // handle creation of the new review
         // ...
     }
@@ -242,7 +233,7 @@ export class ProductReviewService {
 
 ### Entity events
 
-There is a special event class [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event) for events relating to the creation, update or deletion of entities. Let's say you have a custom entity (see [defining a database entity](/guides/developer-guide/database-entity)) `BlogPost` and you want to trigger an event whenever a new `BlogPost` is created, updated or deleted:
+There is a special event class [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event) for events relating to the creation, update or deletion of entities. Let's say you have a custom entity (see [defining a database entity](/developer-guide/database-entity)) `BlogPost` and you want to trigger an event whenever a new `BlogPost` is created, updated or deleted:
 
 ```ts title="src/plugins/blog/events/blog-post-event.ts"
 import { ID, RequestContext, VendureEntityEvent } from '@vendure/core';
@@ -285,14 +276,12 @@ export class BlogPlugin implements OnModuleInit {
 
     onModuleInit() {
         this.eventBus
-            // highlight-start
-            .ofType(BlogPostEvent)
-            .pipe(filter(event => event.type === 'created'))
-            .subscribe(event => {
-                const blogPost = event.entity;
-                // do something with the newly created BlogPost
-            });
-        // highlight-end
+            .ofType(BlogPostEvent) // [!code highlight]
+            .pipe(filter(event => event.type === 'created')) // [!code highlight]
+            .subscribe(event => { // [!code highlight]
+                const blogPost = event.entity; // [!code highlight]
+                // do something with the newly created BlogPost // [!code highlight]
+            }); // [!code highlight]
     }
 }
 ```
@@ -339,20 +328,18 @@ export class MyPluginPlugin implements OnModuleInit {
     ) {}
 
     onModuleInit() {
-        // highlight-start
-        this.eventBus.registerBlockingEventHandler({
-            event: CustomerEvent,
-            id: 'sync-customer-details-handler',
-            handler: async event => {
-                // This hypothetical service method would do nothing
-                // more than adding a new job to the job queue. This gives us
-                // the guarantee that the job is added before the publishing
-                // code is able to continue, while minimizing the time spent
-                // in the event handler.
-                await this.customerSyncService.triggerCustomerSyncJob(event);
-            },
-        });
-        // highlight-end
+        this.eventBus.registerBlockingEventHandler({ // [!code highlight]
+            event: CustomerEvent, // [!code highlight]
+            id: 'sync-customer-details-handler', // [!code highlight]
+            handler: async event => { // [!code highlight]
+                // This hypothetical service method would do nothing // [!code highlight]
+                // more than adding a new job to the job queue. This gives us // [!code highlight]
+                // the guarantee that the job is added before the publishing // [!code highlight]
+                // code is able to continue, while minimizing the time spent // [!code highlight]
+                // in the event handler. // [!code highlight]
+                await this.customerSyncService.triggerCustomerSyncJob(event); // [!code highlight]
+            }, // [!code highlight]
+        }); // [!code highlight]
     }
 }
 ```
@@ -400,7 +387,6 @@ this.eventBus.registerBlockingEventHandler({
     handler: async event => {
         // ...
     },
-    // highlight-next-line
-    before: 'sync-customer-details-handler',
+    before: 'sync-customer-details-handler', // [!code highlight]
 });
 ```

@@ -21,7 +21,7 @@ import { TelemetryPluginOptions } from './types';
  *
  * :::info
  * For a complete guide to setting up and working with Open Telemetry, see
- * the [Implementing Open Telemetry guide](/guides/how-to/telemetry/).
+ * the [Implementing Open Telemetry guide](/how-to/telemetry/).
  * :::
  *
  * ## Configuration
@@ -40,7 +40,7 @@ import { TelemetryPluginOptions } from './types';
  *     TelemetryPlugin.init({
  *       loggerOptions: {
  *         // Log to the console at the verbose level
- *         console: LogLevel.Verbose,
+ *         logToConsole: LogLevel.Verbose,
  *       },
  *     }),
  *   ],

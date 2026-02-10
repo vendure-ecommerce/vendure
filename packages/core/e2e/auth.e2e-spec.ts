@@ -324,7 +324,7 @@ describe('Authorization & permissions', () => {
             ]);
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/730
+        // https://github.com/vendurehq/vendure/issues/730
         it('protects against deep query data leakage', async () => {
             await adminClient.asSuperAdmin();
             const { createCustomerGroup } = await adminClient.query<
@@ -389,7 +389,7 @@ describe('Authorization & permissions', () => {
             }
         });
 
-        // https://github.com/vendure-ecommerce/vendure/issues/2097
+        // https://github.com/vendurehq/vendure/issues/2097
         it('does not overwrite ctx.authorizedAsOwnerOnly with multiple parallel top-level queries', async () => {
             // We run this multiple times since the error is based on a race condition that does not
             // show up consistently.

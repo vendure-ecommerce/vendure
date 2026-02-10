@@ -10,6 +10,7 @@ import { Logger, PathAdapter, PluginInfo } from '../types.js';
 
 import { findConfigExport } from './ast-utils.js';
 import { noopLogger } from './logger.js';
+import { createPathTransformer } from './path-transformer.js';
 import { discoverPlugins } from './plugin-discovery.js';
 import { findTsConfigPaths } from './tsconfig-utils.js';
 
@@ -28,6 +29,7 @@ export interface CompilerOptions {
     pathAdapter?: PathAdapter;
     logger?: Logger;
     pluginPackageScanner?: PackageScannerConfig;
+    module?: 'commonjs' | 'esm';
 }
 
 export interface CompileResult {
@@ -57,6 +59,7 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
         outputPath,
         logger,
         transformTsConfigPathMappings,
+        module: options.module ?? 'commonjs',
     });
     logger.info(`TypeScript compilation completed in ${Date.now() - compileStart}ms`);
 
@@ -86,7 +89,7 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     // Create package.json with type commonjs
     await fs.writeFile(
         path.join(outputPath, 'package.json'),
-        JSON.stringify({ type: 'commonjs', private: true }, null, 2),
+        JSON.stringify({ type: options.module === 'esm' ? 'module' : 'commonjs', private: true }, null, 2),
     );
 
     // Find the exported config symbol
@@ -116,8 +119,10 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
     let config: any;
     try {
         config = await import(compiledConfigFilePath).then(m => m[exportedSymbolName]);
-    } catch (e) {
-        logger.error(`Error loading config: ${e instanceof Error ? e.message : String(e)}`);
+    } catch (e: any) {
+        const errorMessage =
+            e instanceof Error ? `${e.message}\n${e.stack ?? ''}` : JSON.stringify(e, null, 2);
+        logger.error(`Error loading config: ${errorMessage}`);
     }
     if (!config) {
         throw new Error(
@@ -137,25 +142,35 @@ async function compileTypeScript({
     outputPath,
     logger,
     transformTsConfigPathMappings,
+    module,
 }: {
     inputPath: string;
     outputPath: string;
     logger: Logger;
     transformTsConfigPathMappings: Required<PathAdapter>['transformTsConfigPathMappings'];
+    module: 'commonjs' | 'esm';
 }): Promise<void> {
     await fs.ensureDir(outputPath);
 
-    // Find tsconfig paths first
-    const tsConfigInfo = await findTsConfigPaths(
+    // Find tsconfig paths - we need BOTH original and transformed versions
+    // Original paths: Used by TypeScript for module resolution during compilation
+    // Transformed paths: Used by the path transformer for rewriting output imports
+    const originalTsConfigInfo = await findTsConfigPaths(
         inputPath,
         logger,
         'compiling',
-        transformTsConfigPathMappings,
+        ({ patterns }) => patterns, // No transformation - use original paths
+    );
+    const transformedTsConfigInfo = await findTsConfigPaths(
+        inputPath,
+        logger,
+        'compiling',
+        transformTsConfigPathMappings, // Apply user's transformation
     );
 
     const compilerOptions: ts.CompilerOptions = {
         target: ts.ScriptTarget.ES2020,
-        module: ts.ModuleKind.CommonJS,
+        module: module === 'esm' ? ts.ModuleKind.ESNext : ts.ModuleKind.CommonJS,
         moduleResolution: ts.ModuleResolutionKind.Node10, // More explicit CJS resolution
         experimentalDecorators: true,
         emitDecoratorMetadata: true,
@@ -179,32 +194,58 @@ async function compileTypeScript({
 
     logger.debug(`Compiling ${inputPath} to ${outputPath} using TypeScript...`);
 
-    // Add path mappings if found
-    if (tsConfigInfo) {
+    // Add path mappings if found - use ORIGINAL paths for TypeScript module resolution
+    if (originalTsConfigInfo) {
         // We need to set baseUrl and paths for TypeScript to resolve the imports
-        compilerOptions.baseUrl = tsConfigInfo.baseUrl;
-        compilerOptions.paths = tsConfigInfo.paths;
+        compilerOptions.baseUrl = originalTsConfigInfo.baseUrl;
+        compilerOptions.paths = originalTsConfigInfo.paths;
         // This is critical - it tells TypeScript to preserve the paths in the output
-        // compilerOptions.rootDir = tsConfigInfo.baseUrl;
+        // compilerOptions.rootDir = originalTsConfigInfo.baseUrl;
     }
 
-    logger.debug(`tsConfig paths: ${JSON.stringify(tsConfigInfo?.paths, null, 2)}`);
-    logger.debug(`tsConfig baseUrl: ${tsConfigInfo?.baseUrl ?? 'UNKNOWN'}`);
+    logger.debug(`tsConfig original paths: ${JSON.stringify(originalTsConfigInfo?.paths, null, 2)}`);
+    logger.debug(`tsConfig transformed paths: ${JSON.stringify(transformedTsConfigInfo?.paths, null, 2)}`);
+    logger.debug(`tsConfig baseUrl: ${originalTsConfigInfo?.baseUrl ?? 'UNKNOWN'}`);
 
-    // Create a custom transformer to rewrite the output paths
+    // Build custom transformers
+    const afterTransformers: Array<ts.TransformerFactory<ts.SourceFile>> = [];
+
+    // Add path transformer for ESM mode when there are path mappings
+    // This is necessary because tsconfig-paths.register() only works for CommonJS require(),
+    // not for ESM import(). We need to transform the import paths during compilation.
+    //
+    // IMPORTANT: We use 'after' transformers because:
+    // 1. 'before' runs before TypeScript resolves modules - changing paths there breaks resolution
+    // 2. 'after' runs after module resolution but before emit - paths are transformed in output only
+    //
+    // We use ORIGINAL (untransformed) paths here because the transformer resolves aliases
+    // relative to the source file's directory using path.relative(). Since TypeScript preserves
+    // directory nesting in output, the relative relationships between source files are the same
+    // in both the source and output trees.
+    if (module === 'esm' && originalTsConfigInfo) {
+        logger.debug('Adding path transformer for ESM mode');
+        afterTransformers.push(
+            createPathTransformer({
+                baseUrl: originalTsConfigInfo.baseUrl,
+                paths: originalTsConfigInfo.paths,
+            }),
+        );
+    }
+
+    // Add the existing transformer for non-entry-point files
+    afterTransformers.push(context => {
+        return sourceFile => {
+            // Only transform files that are not the entry point
+            if (sourceFile.fileName === inputPath) {
+                return sourceFile;
+            }
+            sourceFile.fileName = path.join(outputPath, path.basename(sourceFile.fileName));
+            return sourceFile;
+        };
+    });
+
     const customTransformers: ts.CustomTransformers = {
-        after: [
-            context => {
-                return sourceFile => {
-                    // Only transform files that are not the entry point
-                    if (sourceFile.fileName === inputPath) {
-                        return sourceFile;
-                    }
-                    sourceFile.fileName = path.join(outputPath, path.basename(sourceFile.fileName));
-                    return sourceFile;
-                };
-            },
-        ],
+        after: afterTransformers,
     };
 
     const program = ts.createProgram([inputPath], compilerOptions);

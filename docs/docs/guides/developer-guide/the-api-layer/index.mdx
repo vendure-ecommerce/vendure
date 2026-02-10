@@ -3,9 +3,6 @@ title: 'The API Layer'
 sidebar_position: 1
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 Vendure is a headless platform, which means that all functionality is exposed via GraphQL APIs. The API can be thought of
 as a number of layers through which a request will pass, each of which is responsible for a different aspect of the
 request/response lifecycle.
@@ -147,7 +144,7 @@ data transformation.
 
 Guards, interceptors, pipes and filters can be added to your own custom resolvers and controllers
 using the NestJS decorators as given in the NestJS docs. However, a common pattern is to register them globally via a
-[Vendure plugin](/guides/developer-guide/plugins/):
+[Vendure plugin](/developer-guide/plugins/):
 
 ```ts title="src/plugins/my-plugin/my-plugin.ts"
 import { VendurePlugin } from '@vendure/core';
@@ -261,8 +258,7 @@ to resolve the fields of a GraphQL query or mutation.
 ```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
 import { Resolver } from '@nestjs/graphql';
 
-// highlight-next-line
-@Resolver()
+@Resolver() // [!code highlight]
 export class WishlistResolver {
     // ...
 }
@@ -280,8 +276,7 @@ import { Query, Resolver } from '@nestjs/graphql';
 @Resolver()
 export class WishlistResolver {
 
-    // highlight-next-line
-    @Query()
+    @Query() // [!code highlight]
     wishlist() {
         // ...
     }
@@ -300,8 +295,7 @@ import { Mutation, Resolver } from '@nestjs/graphql';
 @Resolver()
 export class WishlistResolver {
 
-    // highlight-next-line
-    @Mutation()
+    @Mutation() // [!code highlight]
     addItemToWishlist() {
         // ...
     }
@@ -322,8 +316,7 @@ import { Allow, Permission } from '@vendure/core';
 export class WishlistResolver {
 
     @Mutation()
-    // highlight-next-line
-    @Allow(Permission.UpdateCustomer)
+    @Allow(Permission.UpdateCustomer) // [!code highlight]
     updateCustomerWishlist() {
         // ...
     }
@@ -342,8 +335,7 @@ import { Transaction } from '@vendure/core';
 @Resolver()
 export class WishlistResolver {
 
-    // highlight-next-line
-    @Transaction()
+    @Transaction() // [!code highlight]
     @Mutation()
     addItemToWishlist() {
         // if an error is thrown here, the
@@ -374,8 +366,7 @@ import { Ctx, RequestContext } from '@vendure/core';
 export class WishlistResolver {
 
     @Mutation()
-    // highlight-next-line
-    addItemToWishlist(@Ctx() ctx: RequestContext) {
+    addItemToWishlist(@Ctx() ctx: RequestContext) { // [!code highlight]
         // ...
     }
 }
@@ -389,7 +380,7 @@ As a general rule, _always_ use the `@Ctx()` decorator to inject the `RequestCon
 
 This is exported by the `@nestjs/graphql` package. It is used to inject the arguments passed to a query or mutation.
 
-Given the a schema definition like this:
+Given a schema definition like this:
 
 ```graphql
 extend type Mutation {
@@ -409,8 +400,7 @@ export class WishlistResolver {
     @Mutation()
     addItemToWishlist(
         @Ctx() ctx: RequestContext,
-        // highlight-next-line
-        @Args() args: { variantId: ID }
+        @Args() args: { variantId: ID } // [!code highlight]
     ) {
         // ...
     }
@@ -427,8 +417,7 @@ used to resolve the fields of a type. For example, given the following schema de
 ```graphql
 type WishlistItem {
     id: ID!
-    // highlight-next-line
-    product: Product!
+    product: Product! # [!code highlight]
 }
 ```
 
@@ -441,16 +430,13 @@ import { Ctx, RequestContext } from '@vendure/core';
 
 import { WishlistItem } from '../entities/wishlist-item.entity';
 
-// highlight-next-line
-@Resolver('WishlistItem')
+@Resolver('WishlistItem') // [!code highlight]
 export class WishlistItemResolver {
 
-    // highlight-next-line
-    @ResolveField()
+    @ResolveField() // [!code highlight]
     product(
         @Ctx() ctx: RequestContext,
-        // highlight-next-line
-        @Parent() wishlistItem: WishlistItem
+        @Parent() wishlistItem: WishlistItem // [!code highlight]
     ) {
         // ...
     }
@@ -471,4 +457,4 @@ Although Vendure is primarily a GraphQL-based API, it is possible to add REST en
 you need to integrate with a third-party service or client application which only supports REST, for example.
 
 Creating a REST endpoint is covered in detail in the [Add a REST endpoint
-guide](/guides/developer-guide/rest-endpoint/).
+guide](/developer-guide/rest-endpoint/).
