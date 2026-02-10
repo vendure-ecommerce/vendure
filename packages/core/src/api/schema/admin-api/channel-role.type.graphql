@@ -1,0 +1,12 @@
+type ChannelRole implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    user: User!
+    channel: Channel!
+    role: Role!
+}
+
+extend type User {
+    channelRoles: [ChannelRole!]!
+}

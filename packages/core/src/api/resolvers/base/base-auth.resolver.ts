@@ -154,11 +154,15 @@ export class BaseAuthResolver {
     /**
      * Exposes a subset of the User properties which we want to expose to the public API.
      */
-    protected publiclyAccessibleUser(user: User): CurrentUser {
+    protected async publiclyAccessibleUser(user: User): Promise<CurrentUser> {
+        const strategy = this.configService.authOptions.rolePermissionResolverStrategy;
+        const channelPermissions = strategy
+            ? await strategy.resolvePermissions(user)
+            : getUserChannelsPermissions(user);
         return {
             id: user.id,
             identifier: user.identifier,
-            channels: getUserChannelsPermissions(user) as CurrentUserChannel[],
+            channels: channelPermissions as CurrentUserChannel[],
         };
     }
 }

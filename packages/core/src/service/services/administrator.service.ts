@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import {
     CreateAdministratorInput,
+    CreateChannelAdministratorInput,
     DeletionResult,
     UpdateAdministratorInput,
+    UpdateChannelAdministratorInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { In, IsNull } from 'typeorm';
@@ -14,6 +16,7 @@ import { EntityNotFoundError, InternalServerError, UserInputError } from '../../
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config';
+import { ChannelRolePermissionResolverStrategy } from '../../config/role-permission-resolver/channel-role-permission-resolver-strategy';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
@@ -29,6 +32,7 @@ import { RequestContextService } from '../helpers/request-context/request-contex
 import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+import { ChannelRoleService } from './channel-role.service';
 import { RoleService } from './role.service';
 import { UserService } from './user.service';
 
@@ -48,6 +52,7 @@ export class AdministratorService {
         private passwordCipher: PasswordCipher,
         private userService: UserService,
         private roleService: RoleService,
+        private channelRoleService: ChannelRoleService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private requestContextService: RequestContextService,
@@ -206,6 +211,84 @@ export class AdministratorService {
         );
         await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
         return updatedAdministrator;
+    }
+
+    /**
+     * @description
+     * Create a new Administrator with channel-role assignments.
+     * Requires the `ChannelRolePermissionResolverStrategy` to be configured.
+     *
+     * @since 3.3.0
+     */
+    async createChannelAdministrator(
+        ctx: RequestContext,
+        input: CreateChannelAdministratorInput,
+    ): Promise<Administrator> {
+        this.ensureChannelRoleStrategyActive();
+        const administrator = new Administrator(input);
+        administrator.emailAddress = normalizeEmailAddress(input.emailAddress);
+        administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
+        const createdAdministrator = await this.connection
+            .getRepository(ctx, Administrator)
+            .save(administrator);
+        await this.channelRoleService.setChannelRolesForUser(
+            ctx,
+            createdAdministrator.user.id,
+            input.channelRoles,
+        );
+        await this.eventBus.publish(new AdministratorEvent(ctx, createdAdministrator, 'created', input));
+        return createdAdministrator;
+    }
+
+    /**
+     * @description
+     * Update an existing Administrator's channel-role assignments.
+     * Requires the `ChannelRolePermissionResolverStrategy` to be configured.
+     *
+     * @since 3.3.0
+     */
+    async updateChannelAdministrator(
+        ctx: RequestContext,
+        input: UpdateChannelAdministratorInput,
+    ): Promise<Administrator> {
+        this.ensureChannelRoleStrategyActive();
+        const administrator = await this.findOne(ctx, input.id);
+        if (!administrator) {
+            throw new EntityNotFoundError('Administrator', input.id);
+        }
+        const updatedAdministrator = patchEntity(administrator, input);
+        await this.connection.getRepository(ctx, Administrator).save(administrator, { reload: false });
+
+        if (input.emailAddress) {
+            updatedAdministrator.user.identifier = input.emailAddress;
+            await this.connection.getRepository(ctx, User).save(updatedAdministrator.user);
+        }
+        if (input.password) {
+            const user = await this.userService.getUserById(ctx, administrator.user.id);
+            if (user) {
+                const nativeAuthMethod = user.getNativeAuthenticationMethod();
+                nativeAuthMethod.passwordHash = await this.passwordCipher.hash(input.password);
+                await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
+            }
+        }
+        if (input.channelRoles) {
+            await this.channelRoleService.setChannelRolesForUser(
+                ctx,
+                administrator.user.id,
+                input.channelRoles,
+            );
+        }
+        await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
+        return updatedAdministrator;
+    }
+
+    private ensureChannelRoleStrategyActive(): void {
+        const strategy = this.configService.authOptions.rolePermissionResolverStrategy;
+        if (!(strategy instanceof ChannelRolePermissionResolverStrategy)) {
+            throw new UserInputError(
+                'Channel-role mutations require the ChannelRolePermissionResolverStrategy to be configured',
+            );
+        }
     }
 
     /**

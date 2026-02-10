@@ -85,6 +85,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             verificationTokenStrategy,
             adminApiKeyStrategy,
             shopApiKeyStrategy,
+            rolePermissionResolverStrategy,
         } = this.configService.authOptions;
         const { taxZoneStrategy, taxLineCalculationStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy, jobBufferStorageStrategy } = this.configService.jobQueueOptions;
@@ -162,6 +163,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             schedulerStrategy,
             adminApiKeyStrategy,
             shopApiKeyStrategy,
+            ...(rolePermissionResolverStrategy ? [rolePermissionResolverStrategy] : []),
         ];
     }
 

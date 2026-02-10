@@ -276,6 +276,7 @@ export type CustomFields = {
     ApiKey?: CustomFieldConfig[];
     Asset?: CustomFieldConfig[];
     Channel?: CustomFieldConfig[];
+    ChannelRole?: CustomFieldConfig[];
     Collection?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];
     CustomerGroup?: CustomFieldConfig[];

@@ -230,6 +230,7 @@ export const getServerConfigDocument = graphql(
                         name
                         to
                     }
+                    permissionResolverStrategy
                     permittedAssetTypes
                     permissions {
                         name
@@ -256,6 +257,7 @@ export interface ServerConfig {
     availableLanguages: string[];
     moneyStrategyPrecision: QueryResult['moneyStrategyPrecision'];
     orderProcess: QueryResult['orderProcess'];
+    permissionResolverStrategy: QueryResult['permissionResolverStrategy'];
     permittedAssetTypes: QueryResult['permittedAssetTypes'];
     permissions: QueryResult['permissions'];
     entityCustomFields: QueryResult['entityCustomFields'];
@@ -277,6 +279,8 @@ export const ServerConfigProvider = ({ children }: { children: React.ReactNode }
               availableLanguages: data?.globalSettings.availableLanguages ?? [],
               moneyStrategyPrecision: data?.globalSettings.serverConfig.moneyStrategyPrecision ?? 2,
               orderProcess: data?.globalSettings.serverConfig.orderProcess ?? [],
+              permissionResolverStrategy:
+                  data?.globalSettings.serverConfig.permissionResolverStrategy ?? 'default',
               permittedAssetTypes: data?.globalSettings.serverConfig.permittedAssetTypes ?? [],
               permissions: data?.globalSettings.serverConfig.permissions ?? [],
               entityCustomFields: data?.globalSettings.serverConfig.entityCustomFields ?? [],

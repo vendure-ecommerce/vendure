@@ -14,14 +14,18 @@ import {    CustomFieldsPageBlock,
 import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
 import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
     administratorDetailDocument,
     createAdministratorDocument,
+    createChannelAdministratorDocument,
     updateAdministratorDocument,
+    updateChannelAdministratorDocument,
 } from './administrators.graphql.js';
+import { ChannelRoleAssignment } from './components/channel-role-assignment.js';
 import { RolePermissionsDisplay } from './components/role-permissions-display.js';
 
 const pageId = 'administrator-detail';
@@ -43,6 +47,16 @@ export const Route = createFileRoute('/_authenticated/_administrators/administra
 });
 
 function AdministratorDetailPage() {
+    const serverConfig = useServerConfig();
+    const isChannelRoleStrategy = serverConfig?.permissionResolverStrategy === 'channel-role';
+
+    if (isChannelRoleStrategy) {
+        return <ChannelRoleAdministratorDetail />;
+    }
+    return <DefaultAdministratorDetail />;
+}
+
+function DefaultAdministratorDetail() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
@@ -149,6 +163,123 @@ function AdministratorDetailPage() {
                         )}
                     />
                     <RolePermissionsDisplay value={roleIds ?? []} />
+                </PageBlock>
+            </PageLayout>
+        </Page>
+    );
+}
+
+function ChannelRoleAdministratorDetail() {
+    const params = Route.useParams();
+    const navigate = useNavigate();
+    const creatingNewEntity = params.id === NEW_ENTITY_PATH;
+    const { t } = useLingui();
+
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
+        queryDocument: administratorDetailDocument,
+        createDocument: createChannelAdministratorDocument,
+        updateDocument: updateChannelAdministratorDocument,
+        setValuesForUpdate: entity => {
+            const channelRoles = entity.user.channelRoles?.map(cr => ({
+                channelId: cr.channel.id,
+                roleId: cr.role.id,
+            })) ?? [];
+            return {
+                id: entity.id,
+                firstName: entity.firstName,
+                lastName: entity.lastName,
+                emailAddress: entity.emailAddress,
+                password: '',
+                channelRoles,
+            };
+        },
+        transformUpdateInput: input => {
+            return {
+                ...input,
+                password: input.password || undefined,
+            };
+        },
+        params: { id: params.id },
+        onSuccess: async data => {
+            toast(
+                creatingNewEntity
+                    ? t`Successfully created administrator`
+                    : t`Successfully updated administrator`,
+            );
+            resetForm();
+            if (creatingNewEntity) {
+                await navigate({ to: `../$id`, params: { id: data.id } });
+            }
+        },
+        onError: err => {
+            toast(creatingNewEntity ? t`Failed to create administrator` : t`Failed to update administrator`, {
+                description: err instanceof Error ? err.message : 'Unknown error',
+            });
+        },
+    });
+
+    const name = `${entity?.firstName} ${entity?.lastName}`;
+    const channelRoles = form.watch('channelRoles');
+
+    return (
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
+            <PageTitle>{creatingNewEntity ? <Trans>New administrator</Trans> : name}</PageTitle>
+
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateAdministrator']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <div className="md:grid md:grid-cols-2 gap-4">
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="firstName"
+                            label={<Trans>First name</Trans>}
+                            render={({ field }) => <Input placeholder="" {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="lastName"
+                            label={<Trans>Last name</Trans>}
+                            render={({ field }) => <Input placeholder="" {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="emailAddress"
+                            label={<Trans>Email Address or identifier</Trans>}
+                            render={({ field }) => <Input placeholder="" {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="password"
+                            label={<Trans>Password</Trans>}
+                            render={({ field }) => <Input placeholder="" type="password" {...field} />}
+                        />
+                    </div>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Administrator" control={form.control} />
+                <PageBlock column="main" blockId="channel-roles" title={<Trans>Channel roles</Trans>}>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="channelRoles"
+                        render={({ field }) => (
+                            <ChannelRoleAssignment
+                                value={field.value ?? []}
+                                onChange={field.onChange}
+                            />
+                        )}
+                    />
+                    <RolePermissionsDisplay channelRoles={channelRoles ?? []} />
                 </PageBlock>
             </PageLayout>
         </Page>

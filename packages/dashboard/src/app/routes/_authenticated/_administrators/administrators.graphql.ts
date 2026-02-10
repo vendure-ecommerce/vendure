@@ -23,6 +23,19 @@ export const administratorItemFragment = graphql(`
                     code
                 }
             }
+            channelRoles {
+                id
+                channel {
+                    id
+                    code
+                }
+                role {
+                    id
+                    code
+                    description
+                    permissions
+                }
+            }
         }
     }
 `);
@@ -64,6 +77,22 @@ export const createAdministratorDocument = graphql(`
 export const updateAdministratorDocument = graphql(`
     mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
         updateAdministrator(input: $input) {
+            id
+        }
+    }
+`);
+
+export const createChannelAdministratorDocument = graphql(`
+    mutation CreateChannelAdministrator($input: CreateChannelAdministratorInput!) {
+        createChannelAdministrator(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateChannelAdministratorDocument = graphql(`
+    mutation UpdateChannelAdministrator($input: UpdateChannelAdministratorInput!) {
+        updateChannelAdministrator(input: $input) {
             id
         }
     }

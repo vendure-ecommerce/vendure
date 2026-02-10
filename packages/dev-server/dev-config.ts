@@ -10,7 +10,8 @@ import {
     dummyPaymentHandler,
     LogLevel,
     SettingsStoreScopes,
-    VendureConfig
+    VendureConfig,
+    ChannelRolePermissionResolverStrategy,
 } from '@vendure/core';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -46,6 +47,7 @@ export const devConfig: VendureConfig = {
         shopApiDebug: true,
     },
     authOptions: {
+        rolePermissionResolverStrategy: new ChannelRolePermissionResolverStrategy(),
         disableAuth: false,
         tokenMethod: ['bearer', 'cookie', 'api-key'] as const,
         requireVerification: true,

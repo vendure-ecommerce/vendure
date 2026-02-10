@@ -24,12 +24,34 @@ const rolesByIdDocument = graphql(`
     }
 `);
 
-interface RolePermissionsDisplayProps {
-    value: string[];
+const channelsByIdDocument = graphql(`
+    query ChannelRolePermChannels($options: ChannelListOptions) {
+        channels(options: $options) {
+            items {
+                id
+                code
+            }
+        }
+    }
+`);
+
+interface ChannelRoleValue {
+    channelId: string;
+    roleId: string;
 }
 
-export function RolePermissionsDisplay({ value = [] }: Readonly<RolePermissionsDisplayProps>) {
-    const { i18n } = useLingui();
+type RolePermissionsDisplayProps =
+    | { value: string[]; channelRoles?: never }
+    | { value?: never; channelRoles: ChannelRoleValue[] };
+
+export function RolePermissionsDisplay(props: Readonly<RolePermissionsDisplayProps>) {
+    if (props.channelRoles) {
+        return <ChannelRolePermissionsDisplay channelRoles={props.channelRoles} />;
+    }
+    return <DefaultRolePermissionsDisplay value={props.value ?? []} />;
+}
+
+function DefaultRolePermissionsDisplay({ value = [] }: Readonly<{ value: string[] }>) {
     const groupedPermissions = useGroupedPermissions();
 
     const { data } = useQuery({
@@ -69,6 +91,85 @@ export function RolePermissionsDisplay({ value = [] }: Readonly<RolePermissionsD
     };
 
     if (!allChannels.length) return null;
+
+    return (
+        <PermissionsTable
+            allChannels={allChannels}
+            groupedPermissions={groupedPermissions}
+            isPermissionEnabled={isPermissionEnabled}
+        />
+    );
+}
+
+function ChannelRolePermissionsDisplay({ channelRoles }: Readonly<{ channelRoles: ChannelRoleValue[] }>) {
+    const groupedPermissions = useGroupedPermissions();
+
+    const roleIds = [...new Set(channelRoles.map(cr => cr.roleId).filter(Boolean))];
+    const channelIds = [...new Set(channelRoles.map(cr => cr.channelId).filter(Boolean))];
+
+    const { data: rolesData } = useQuery({
+        queryKey: ['rolesById', roleIds],
+        queryFn: () =>
+            api.query(rolesByIdDocument, {
+                options: {
+                    filter: {
+                        id: { in: roleIds },
+                    },
+                },
+            }),
+        enabled: roleIds.length > 0,
+    });
+
+    const { data: channelsData } = useQuery({
+        queryKey: ['channelRolePermChannels', channelIds],
+        queryFn: () =>
+            api.query(channelsByIdDocument, {
+                options: {
+                    filter: {
+                        id: { in: channelIds },
+                    },
+                },
+            }),
+        enabled: channelIds.length > 0,
+    });
+
+    const roles = rolesData?.roles.items ?? [];
+    const channels = channelsData?.channels.items ?? [];
+
+    const isPermissionEnabled = (permissionName: string, channelCode: string) => {
+        const channel = channels.find(c => c.code === channelCode);
+        if (!channel) return false;
+
+        // Find all role assignments for this channel
+        const roleIdsForChannel = channelRoles
+            .filter(cr => cr.channelId === channel.id)
+            .map(cr => cr.roleId);
+
+        // Check if any of those roles have this permission
+        return roles.some(
+            role => roleIdsForChannel.includes(role.id) && role.permissions.includes(permissionName as any),
+        );
+    };
+
+    if (!channels.length) return null;
+
+    return (
+        <PermissionsTable
+            allChannels={channels}
+            groupedPermissions={groupedPermissions}
+            isPermissionEnabled={isPermissionEnabled}
+        />
+    );
+}
+
+interface PermissionsTableProps {
+    allChannels: Array<{ id: string; code: string }>;
+    groupedPermissions: ReturnType<typeof useGroupedPermissions>;
+    isPermissionEnabled: (permissionName: string, channelCode: string) => boolean;
+}
+
+function PermissionsTable({ allChannels, groupedPermissions, isPermissionEnabled }: PermissionsTableProps) {
+    const { i18n } = useLingui();
 
     return (
         <Tabs defaultValue={allChannels[0].code} className="w-full mt-4">

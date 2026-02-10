@@ -4,8 +4,10 @@ import { AuthenticationMethod as AuthenticationMethodType } from '@vendure/commo
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { AuthenticationMethod } from '../../../entity/authentication-method/authentication-method.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
+import { ChannelRole } from '../../../entity/role/channel-role.entity';
 import { Role } from '../../../entity/role/role.entity';
 import { User } from '../../../entity/user/user.entity';
+import { ChannelRoleService } from '../../../service/services/channel-role.service';
 import { UserService } from '../../../service/services/user.service';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
@@ -42,5 +44,15 @@ export class UserEntityResolver {
         let roles: Role[] = [];
         roles = await this.userService.getUserById(ctx, user.id).then(u => u?.roles ?? []);
         return roles;
+    }
+}
+
+@Resolver('User')
+export class UserAdminEntityResolver {
+    constructor(private channelRoleService: ChannelRoleService) {}
+
+    @ResolveField()
+    async channelRoles(@Ctx() ctx: RequestContext, @Parent() user: User): Promise<ChannelRole[]> {
+        return this.channelRoleService.findByUserId(ctx, user.id);
     }
 }

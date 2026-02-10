@@ -839,6 +839,21 @@ export type CreateAddressInput = {
   streetLine2?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type ChannelRole = Node & {
+  __typename?: 'ChannelRole';
+  channel: Channel;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  role: Role;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+};
+
+export type ChannelRoleInput = {
+  channelId: Scalars['ID']['input'];
+  roleId: Scalars['ID']['input'];
+};
+
 export type CreateAdministratorInput = {
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   emailAddress: Scalars['String']['input'];
@@ -875,6 +890,14 @@ export type CreateApiKeyTranslationInput = {
   languageCode: LanguageCode;
   /** A descriptive name so you can remind yourself where the API-Key gets used */
   name: Scalars['String']['input'];
+};
+
+export type CreateChannelAdministratorInput = {
+  channelRoles: Array<ChannelRoleInput>;
+  emailAddress: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 };
 
 export type CreateAssetInput = {
@@ -3356,6 +3379,10 @@ export type MutationCreateAdministratorArgs = {
   input: CreateAdministratorInput;
 };
 
+export type MutationCreateChannelAdministratorArgs = {
+  input: CreateChannelAdministratorInput;
+};
+
 
 export type MutationCreateApiKeyArgs = {
   input: CreateApiKeyInput;
@@ -3949,6 +3976,10 @@ export type MutationUpdateActiveAdministratorArgs = {
 
 export type MutationUpdateAdministratorArgs = {
   input: UpdateAdministratorInput;
+};
+
+export type MutationUpdateChannelAdministratorArgs = {
+  input: UpdateChannelAdministratorInput;
 };
 
 
@@ -6169,6 +6200,7 @@ export type ServerConfig = {
   entityCustomFields: Array<EntityCustomFields>;
   moneyStrategyPrecision: Scalars['Int']['output'];
   orderProcess: Array<OrderProcessState>;
+  permissionResolverStrategy: Scalars['String']['output'];
   permissions: Array<PermissionDefinition>;
   permittedAssetTypes: Array<Scalars['String']['output']>;
 };
@@ -6821,6 +6853,15 @@ export type UpdateApiKeyTranslationInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateChannelAdministratorInput = {
+  channelRoles?: InputMaybe<Array<ChannelRoleInput>>;
+  emailAddress?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateAssetInput = {
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   focalPoint?: InputMaybe<CoordinateInput>;
@@ -7114,6 +7155,7 @@ export type UpdateZoneInput = {
 export type User = Node & {
   __typename?: 'User';
   authenticationMethods: Array<AuthenticationMethod>;
+  channelRoles: Array<ChannelRole>;
   createdAt: Scalars['DateTime']['output'];
   customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];

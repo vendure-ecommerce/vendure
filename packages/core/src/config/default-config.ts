@@ -51,6 +51,7 @@ import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { defaultRefundProcess } from './refund/default-refund-process';
+import { DefaultRolePermissionResolverStrategy } from './role-permission-resolver/default-role-permission-resolver-strategy';
 import { DefaultSessionCacheStrategy } from './session-cache/default-session-cache-strategy';
 import { cleanOrphanedSettingsStoreTask } from './settings-store/clean-orphaned-settings-store-task';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
@@ -123,6 +124,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
         passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4, maxLength: 72 }),
         verificationTokenStrategy: new DefaultVerificationTokenStrategy(),
+        rolePermissionResolverStrategy: new DefaultRolePermissionResolverStrategy(),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
@@ -216,6 +218,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         ApiKey: [],
         Asset: [],
         Channel: [],
+        ChannelRole: [],
         Collection: [],
         Customer: [],
         CustomerGroup: [],
