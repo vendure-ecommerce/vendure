@@ -952,11 +952,40 @@ const manifestInput: DocsPackageManifestInput = {
                     title: 'Catalog',
                     slug: 'catalog',
                     file: file('docs/user-guide/catalog/index.mdx'),
+                    children: [
+                        {
+                            title: 'Products',
+                            slug: 'products',
+                            file: file('docs/user-guide/catalog/products.mdx'),
+                        },
+                        {
+                            title: 'Facets',
+                            slug: 'facets',
+                            file: file('docs/user-guide/catalog/facets.mdx'),
+                        },
+                        {
+                            title: 'Collections',
+                            slug: 'collections',
+                            file: file('docs/user-guide/catalog/collections.mdx'),
+                        },
+                    ],
                 },
                 {
                     title: 'Orders',
                     slug: 'orders',
                     file: file('docs/user-guide/orders/index.mdx'),
+                    children: [
+                        {
+                            title: 'Orders',
+                            slug: 'orders',
+                            file: file('docs/user-guide/orders/orders.mdx'),
+                        },
+                        {
+                            title: 'Draft Orders',
+                            slug: 'draft-orders',
+                            file: file('docs/user-guide/orders/draft-orders.mdx'),
+                        },
+                    ],
                 },
                 {
                     title: 'Customers',
@@ -972,6 +1001,48 @@ const manifestInput: DocsPackageManifestInput = {
                     title: 'Settings',
                     slug: 'settings',
                     file: file('docs/user-guide/settings/index.mdx'),
+                    children: [
+                        {
+                            title: 'Global Settings',
+                            slug: 'global-settings',
+                            file: file('docs/user-guide/settings/global-settings.mdx'),
+                        },
+                        {
+                            title: 'Administrators & Roles',
+                            slug: 'administrators-roles',
+                            file: file('docs/user-guide/settings/administrators-roles.mdx'),
+                        },
+                        {
+                            title: 'Channels',
+                            slug: 'channels',
+                            file: file('docs/user-guide/settings/channels.mdx'),
+                        },
+                        {
+                            title: 'Countries & Zones',
+                            slug: 'countries-zones',
+                            file: file('docs/user-guide/settings/countries-zones.mdx'),
+                        },
+                        {
+                            title: 'Payment Methods',
+                            slug: 'payment-methods',
+                            file: file('docs/user-guide/settings/payment-methods.mdx'),
+                        },
+                        {
+                            title: 'Shipping Methods',
+                            slug: 'shipping-methods',
+                            file: file('docs/user-guide/settings/shipping-methods.mdx'),
+                        },
+                        {
+                            title: 'Taxes',
+                            slug: 'taxes',
+                            file: file('docs/user-guide/settings/taxes.mdx'),
+                        },
+                    ],
+                },
+                {
+                    title: 'Localization',
+                    slug: 'localization',
+                    file: file('docs/user-guide/localization/index.mdx'),
                 },
             ],
         },
