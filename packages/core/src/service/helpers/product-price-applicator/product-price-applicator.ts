@@ -77,8 +77,10 @@ export class ProductPriceApplicator {
         const zones = await this.requestCache.get(ctx, CacheKey.AllZones, () =>
             this.zoneService.getAllWithMembers(ctx),
         );
-        const activeTaxZone = await this.requestCache.get(ctx, CacheKey.ActiveTaxZone_PPA, () =>
-            taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
+        const activeTaxZone = await this.requestCache.get(
+            ctx,
+            CacheKey.ActiveTaxZone_PPA(ctx.channelId),
+            () => taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
         if (!activeTaxZone) {
             throw new InternalServerError('error.no-active-tax-zone');
