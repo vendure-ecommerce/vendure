@@ -120,6 +120,35 @@ export function removeEmptyIdFields<T extends Record<string, any>>(values: T, fi
     return result;
 }
 
+/**
+ * Converts empty string values to null for nullable non-string fields before submission.
+ * This handles cases where user interaction (e.g. clearing a date picker) leaves
+ * empty strings that are invalid for non-string GraphQL types like DateTime or Enums.
+ */
+export function convertEmptyStringsToNull<T extends Record<string, any>>(values: T, fields: FieldInfo[]): T {
+    const result = structuredClone(values);
+
+    function processFields(obj: any, fieldDefs: FieldInfo[]) {
+        for (const field of fieldDefs) {
+            if (field.nullable && obj[field.name] === '' && field.type !== 'String') {
+                obj[field.name] = null;
+            }
+            if (field.typeInfo && typeof obj[field.name] === 'object' && obj[field.name] !== null) {
+                if (Array.isArray(obj[field.name])) {
+                    for (const item of obj[field.name]) {
+                        processFields(item, field.typeInfo);
+                    }
+                } else {
+                    processFields(obj[field.name], field.typeInfo);
+                }
+            }
+        }
+    }
+
+    processFields(result, fields);
+    return result;
+}
+
 // =============================================================================
 // TYPE GUARDS FOR CONFIGURABLE FIELD DEFINITIONS
 // =============================================================================

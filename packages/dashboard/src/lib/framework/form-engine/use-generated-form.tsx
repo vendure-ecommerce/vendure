@@ -7,7 +7,7 @@ import { useChannel } from '../../hooks/use-channel.js';
 import { useServerConfig } from '../../hooks/use-server-config.js';
 import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 import { createFormSchemaFromFields, getDefaultValuesFromFields } from './form-schema-tools.js';
-import { removeEmptyIdFields, transformRelationFields } from './utils.js';
+import { convertEmptyStringsToNull, removeEmptyIdFields, transformRelationFields } from './utils.js';
 
 export type WithLooseCustomFields<T> = T extends { customFields?: any }
     ? Omit<T, 'customFields'> & { customFields?: T['customFields'] | unknown }
@@ -135,7 +135,7 @@ export function useGeneratedForm<
             }
 
             const onSubmitWrapper = (values: any) => {
-                onSubmit(removeEmptyIdFields(values, updateFields));
+                onSubmit(convertEmptyStringsToNull(removeEmptyIdFields(values, updateFields), updateFields));
             };
             form.handleSubmit(onSubmitWrapper)(event);
         };
