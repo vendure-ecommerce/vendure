@@ -153,11 +153,20 @@ function ChannelRolePermissionsDisplay({ channelRoles }: Readonly<{ channelRoles
 
     if (!channels.length) return null;
 
+    const channelRoleLabels = new Map<string, string>();
+    for (const cr of channelRoles) {
+        const role = roles.find(r => r.id === cr.roleId);
+        if (role) {
+            channelRoleLabels.set(cr.channelId, role.code);
+        }
+    }
+
     return (
         <PermissionsTable
             allChannels={channels}
             groupedPermissions={groupedPermissions}
             isPermissionEnabled={isPermissionEnabled}
+            channelRoleLabels={channelRoleLabels}
         />
     );
 }
@@ -166,19 +175,24 @@ interface PermissionsTableProps {
     allChannels: Array<{ id: string; code: string }>;
     groupedPermissions: ReturnType<typeof useGroupedPermissions>;
     isPermissionEnabled: (permissionName: string, channelCode: string) => boolean;
+    channelRoleLabels?: Map<string, string>;
 }
 
-function PermissionsTable({ allChannels, groupedPermissions, isPermissionEnabled }: PermissionsTableProps) {
+function PermissionsTable({ allChannels, groupedPermissions, isPermissionEnabled, channelRoleLabels }: PermissionsTableProps) {
     const { i18n } = useLingui();
 
     return (
         <Tabs defaultValue={allChannels[0].code} className="w-full mt-4">
             <TabsList>
-                {allChannels.map(channel => (
-                    <TabsTrigger key={channel.code} value={channel.code}>
-                        <ChannelCodeLabel code={channel.code} />
-                    </TabsTrigger>
-                ))}
+                {allChannels.map(channel => {
+                    const roleLabel = channelRoleLabels?.get(channel.id);
+                    return (
+                        <TabsTrigger key={channel.code} value={channel.code} type="button" className="cursor-pointer">
+                            <ChannelCodeLabel code={channel.code} />
+                            {roleLabel && <span className="ml-1 text-muted-foreground">({roleLabel})</span>}
+                        </TabsTrigger>
+                    );
+                })}
             </TabsList>
             {allChannels.map(channel => (
                 <TabsContent key={channel.code} value={channel.code} className="mt-0">

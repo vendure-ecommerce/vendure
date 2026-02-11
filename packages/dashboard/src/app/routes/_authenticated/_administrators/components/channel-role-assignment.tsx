@@ -66,6 +66,7 @@ export function ChannelRoleAssignment({ value, onChange }: Readonly<ChannelRoleA
 
     const channels = channelsData?.channels.items ?? [];
     const roles = rolesData?.roles.items ?? [];
+    const allChannelsUsed = channels.length > 0 && value.length >= channels.length;
 
     const addRow = () => {
         onChange([...value, { channelId: '', roleId: '' }]);
@@ -100,11 +101,18 @@ export function ChannelRoleAssignment({ value, onChange }: Readonly<ChannelRoleA
                             </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                            {channels.map(channel => (
-                                <SelectItem key={channel.id} value={channel.id}>
-                                    <ChannelCodeLabel code={channel.code} />
-                                </SelectItem>
-                            ))}
+                            {channels
+                                .filter(channel => {
+                                    const usedByOtherRow = value.some(
+                                        (v, i) => i !== index && v.channelId === channel.id,
+                                    );
+                                    return !usedByOtherRow;
+                                })
+                                .map(channel => (
+                                    <SelectItem key={channel.id} value={channel.id}>
+                                        <ChannelCodeLabel code={channel.code} />
+                                    </SelectItem>
+                                ))}
                         </SelectContent>
                     </Select>
 
@@ -141,10 +149,12 @@ export function ChannelRoleAssignment({ value, onChange }: Readonly<ChannelRoleA
                     </Button>
                 </div>
             ))}
-            <Button type="button" variant="outline" size="sm" onClick={addRow}>
-                <Plus className="h-4 w-4 mr-1" />
-                <Trans>Add channel-role</Trans>
-            </Button>
+            {!allChannelsUsed && (
+                <Button type="button" variant="outline" size="sm" onClick={addRow}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    <Trans>Add channel-role</Trans>
+                </Button>
+            )}
         </div>
     );
 }

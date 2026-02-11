@@ -194,10 +194,21 @@ function ChannelRoleAdministratorDetail() {
                 channelRoles,
             };
         },
+        transformCreateInput: input => {
+            return {
+                ...input,
+                channelRoles: input.channelRoles?.filter(
+                    (cr: any) => cr.channelId && cr.roleId,
+                ),
+            };
+        },
         transformUpdateInput: input => {
             return {
                 ...input,
                 password: input.password || undefined,
+                channelRoles: input.channelRoles?.filter(
+                    (cr: any) => cr.channelId && cr.roleId,
+                ),
             };
         },
         params: { id: params.id },
