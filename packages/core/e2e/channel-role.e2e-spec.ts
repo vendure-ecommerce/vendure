@@ -8,9 +8,13 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import * as Codegen from './graphql/generated-e2e-admin-types';
 import { CurrencyCode, LanguageCode, Permission } from './graphql/generated-e2e-admin-types';
-import { CREATE_CHANNEL, CREATE_ROLE, GET_CHANNELS, ME } from './graphql/shared-definitions';
+import {
+    createChannelDocument,
+    createRoleDocument,
+    getChannelsDocument,
+    MeDocument,
+} from './graphql/shared-definitions';
 
 describe('ChannelRole permission resolver', () => {
     const { server, adminClient } = createTestEnvironment(
@@ -36,15 +40,12 @@ describe('ChannelRole permission resolver', () => {
         await adminClient.asSuperAdmin();
 
         // Get channels
-        const { channels } = await adminClient.query<Codegen.GetChannelsQuery>(GET_CHANNELS);
+        const { channels } = await adminClient.query(getChannelsDocument);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         defaultChannel = channels.items.find(c => c.token === E2E_DEFAULT_CHANNEL_TOKEN)!;
 
         // Create a second channel
-        const { createChannel } = await adminClient.query<
-            Codegen.CreateChannelMutation,
-            Codegen.CreateChannelMutationVariables
-        >(CREATE_CHANNEL, {
+        const { createChannel } = await adminClient.query(createChannelDocument, {
             input: {
                 code: 'second-channel',
                 token: 'second-channel-token',
@@ -58,10 +59,7 @@ describe('ChannelRole permission resolver', () => {
         secondChannel = createChannel as any;
 
         // Create roles (without channel assignments — channels are now assigned per user)
-        const { createRole: role1 } = await adminClient.query<
-            Codegen.CreateRoleMutation,
-            Codegen.CreateRoleMutationVariables
-        >(CREATE_ROLE, {
+        const { createRole: role1 } = await adminClient.query(createRoleDocument, {
             input: {
                 code: 'read-customer',
                 description: 'Can read customers',
@@ -71,10 +69,7 @@ describe('ChannelRole permission resolver', () => {
         });
         readCustomerRole = role1;
 
-        const { createRole: role2 } = await adminClient.query<
-            Codegen.CreateRoleMutation,
-            Codegen.CreateRoleMutationVariables
-        >(CREATE_ROLE, {
+        const { createRole: role2 } = await adminClient.query(createRoleDocument, {
             input: {
                 code: 'read-order',
                 description: 'Can read orders',
@@ -141,7 +136,7 @@ describe('ChannelRole permission resolver', () => {
 
             // Check permissions on the default channel
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const meDefault = await adminClient.query(ME);
+            const meDefault = await adminClient.query(MeDocument);
             const defaultChannelPerms = meDefault.me.channels.find(
                 (c: any) => c.code === DEFAULT_CHANNEL_CODE,
             );
@@ -186,7 +181,7 @@ describe('ChannelRole permission resolver', () => {
         it('updated permissions are reflected in session', async () => {
             await adminClient.asUserWithCredentials('channel-admin@test.com', 'test');
 
-            const me = await adminClient.query(ME);
+            const me = await adminClient.query(MeDocument);
             const defaultChannelPerms = me.me.channels.find((c: any) => c.code === DEFAULT_CHANNEL_CODE);
             expect(defaultChannelPerms).toBeDefined();
             expect(defaultChannelPerms.permissions).toContain(Permission.ReadOrder);
@@ -249,7 +244,7 @@ describe('ChannelRole permission resolver', () => {
         it('merges permissions from multiple roles on the same channel', async () => {
             await adminClient.asUserWithCredentials('multi-role@test.com', 'test');
 
-            const me = await adminClient.query(ME);
+            const me = await adminClient.query(MeDocument);
             const defaultPerms = me.me.channels.find((c: any) => c.code === DEFAULT_CHANNEL_CODE);
             expect(defaultPerms).toBeDefined();
             // Both ReadCustomer and ReadOrder should be present from the two roles

@@ -19,6 +19,6 @@ import { RolePermissionResolverStrategy } from './role-permission-resolver-strat
  */
 export class DefaultRolePermissionResolverStrategy implements RolePermissionResolverStrategy {
     resolvePermissions(user: User): UserChannelPermissions[] {
-        return getUserChannelsPermissions(user);
+        return user.roles ? getUserChannelsPermissions(user) : [];
     }
 }
