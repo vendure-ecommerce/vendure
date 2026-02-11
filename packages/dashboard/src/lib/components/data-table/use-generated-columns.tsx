@@ -13,10 +13,9 @@ import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { api } from '@/vdb/graphql/api.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
-import { usePaginatedList } from '@/vdb/hooks/use-paginated-list.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     AccessorFnColumnDef,
     AccessorKeyColumnDef,
@@ -337,7 +336,10 @@ function DeleteMutationRowAction({
     deleteMutation: TypedDocumentNode<any, any>;
     row: Row<{ id: string }>;
 }>) {
-    const { refetchPaginatedList } = usePaginatedList();
+    // We use useQueryClient directly instead of usePaginatedList() because the React Context
+    // that usePaginatedList relies on breaks when rendered inside dashboard extension page blocks
+    // due to Vite module duplication (vitejs/vite#13538).
+    const queryClient = useQueryClient();
     const { t } = useLingui();
 
     // Inspect the mutation variables to determine if it expects 'id' or 'ids'
@@ -358,7 +360,7 @@ function DeleteMutationRowAction({
             // Handle both single result and array of results
             const resultToCheck = Array.isArray(unwrappedResult) ? unwrappedResult[0] : unwrappedResult;
             if (resultToCheck.result === 'DELETED') {
-                refetchPaginatedList();
+                queryClient.invalidateQueries({ queryKey: ['PaginatedListDataTable'] });
                 toast.success(t`Deleted successfully`);
             } else {
                 toast.error(t`Failed to delete`, {
