@@ -1,5 +1,7 @@
 ---
 title: "Customers"
+metaTitle: "Managing Customers and Customer Groups in Vendure"
+metaDescription: "How Vendure models customers, addresses, guest checkouts, and customer groups for promotions, shipping rules, and B2B segmentation."
 ---
 
 A [`Customer`](/reference/typescript-api/entities/customer/) is a person who can buy from your shop. A customer can have one or more
@@ -9,7 +11,7 @@ If a customer has registered an account, they will have an associated [`User`](/
 entity is used for authentication and authorization. **Guest checkouts** are also possible, in which case a customer will not have a user.
 
 :::info
-See the [Auth guide](/core-concepts/auth/#customer-auth) for a detailed explanation of the relationship between
+See the [User Management](/core-concepts/user-management/) guide for a detailed explanation of the relationship between
 customers and users.
 :::
 
