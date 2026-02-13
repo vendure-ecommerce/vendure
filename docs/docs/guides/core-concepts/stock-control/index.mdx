@@ -1,5 +1,7 @@
 ---
-title: "Stock Control"
+title: "Inventory"
+metaTitle: "Inventory and Stock Management in Vendure"
+metaDescription: "Vendure inventory management explained: stock locations, allocation strategies, back orders, stock movements, and how saleable quantities are calculated."
 ---
 
 Vendure includes features to help manage your stock levels, stock allocations and back orders. The basic purpose is to help you keep track of how many of a given ProductVariant you have available to sell.
@@ -85,6 +87,40 @@ Stock on hand | Allocated | Out-of-stock threshold | Saleable
 
 The saleable value is what determines whether the customer is able to add a variant to an order. If there is 0 saleable stock, then any attempt to add to the order will result in an [`InsufficientStockError`](/reference/graphql-api/admin/object-types/#insufficientstockerror).
 
+### Stock allocation
+
+Allocation mean we are setting stock aside because it has been purchased but not yet shipped. It prevents us from selling more of a particular item than we are able to deliver. 
+
+By default, stock gets allocated to an order once the order transitions to the `PaymentAuthorized` or `PaymentSettled` state. This is defined by the [`DefaultStockAllocationStrategy`](/reference/typescript-api/orders/default-stock-allocation-strategy). Using a custom [`StockAllocationStrategy`](/reference/typescript-api/orders/stock-allocation-strategy/) you can define your own rules for when stock is allocated.
+
+With the [`defaultFulfillmentProcess`](/reference/typescript-api/fulfillment/fulfillment-process/#defaultfulfillmentprocess), allocated stock will be converted to **sales** and minused from the `stockOnHand` value when a Fulfillment is created.
+
+
+### Back orders
+
+You may have noticed that the `outOfStockThreshold` value can be set to a negative number. This allows you to sell variants even when you don't physically have them in stock. This is known as a "back order". 
+
+Back orders can be really useful to allow orders to keep flowing even when stockOnHand temporarily drops to zero. For many businesses with predictable re-supply schedules they make a lot of sense.
+
+Once a customer completes checkout, those variants in the order are marked as `allocated`. When a Fulfillment is created, those allocations are converted to Sales and the `stockOnHand` of each variant is adjusted. Fulfillments may only be created if there is sufficient stock on hand.
+
+### Stock movements
+
+There is a [`StockMovement`](/reference/typescript-api/entities/stock-movement/) entity which records the history of stock changes. `StockMovement` is actually an abstract class, with the following concrete implementations:
+
+- [`Allocation`](/reference/typescript-api/entities/stock-movement/#allocation): When stock is allocated to an order, before the order is fulfilled. Adds stock to `allocated`, which reduces the saleable stock.
+- [`Sale`](/reference/typescript-api/entities/stock-movement/#sale): When allocated stock gets fulfilled. Removes stock from `allocated` as well as `stockOnHand`.
+- [`Cancellation`](/reference/typescript-api/entities/stock-movement/#cancellation): When items from a fulfilled order are cancelled, the stock is returned to `stockOnHand`. Adds stock to `stockOnHand`.
+- [`Release`](/reference/typescript-api/entities/stock-movement/#release): When items which have been allocated (but not yet converted to sales via the creation of a Fulfillment) are cancelled. Removes stock from `allocated`.
+- [`StockAdjustment`](/reference/typescript-api/entities/stock-movement/#stockadjustment): A general-purpose stock adjustment. Adds or removes stock from `stockOnHand`. Used when manually setting stock levels via the Dashboard, for example.
+
+Stock movements can be queried via the `ProductVariant.stockMovements` field in the Admin API.
+
+## Code Examples
+
+### InsufficientStockError
+
+If there is 0 saleable stock, any attempt to add to the order will result in an `InsufficientStockError`:
 
 <Tabs>
 <TabItem value="Request" label="Request" default>
@@ -136,35 +172,9 @@ query AddItemToOrder {
 </TabItem>
 </Tabs>
 
-### Stock allocation
-
-Allocation mean we are setting stock aside because it has been purchased but not yet shipped. It prevents us from selling more of a particular item than we are able to deliver. 
-
-By default, stock gets allocated to an order once the order transitions to the `PaymentAuthorized` or `PaymentSettled` state. This is defined by the [`DefaultStockAllocationStrategy`](/reference/typescript-api/orders/default-stock-allocation-strategy). Using a custom [`StockAllocationStrategy`](/reference/typescript-api/orders/stock-allocation-strategy/) you can define your own rules for when stock is allocated.
-
-With the [`defaultFulfillmentProcess`](/reference/typescript-api/fulfillment/fulfillment-process/#defaultfulfillmentprocess), allocated stock will be converted to **sales** and minused from the `stockOnHand` value when a Fulfillment is created.
-
-
-### Back orders
-
-You may have noticed that the `outOfStockThreshold` value can be set to a negative number. This allows you to sell variants even when you don't physically have them in stock. This is known as a "back order". 
-
-Back orders can be really useful to allow orders to keep flowing even when stockOnHand temporarily drops to zero. For many businesses with predictable re-supply schedules they make a lot of sense.
-
-Once a customer completes checkout, those variants in the order are marked as `allocated`. When a Fulfillment is created, those allocations are converted to Sales and the `stockOnHand` of each variant is adjusted. Fulfillments may only be created if there is sufficient stock on hand.
-
-### Stock movements
-
-There is a [`StockMovement`](/reference/typescript-api/entities/stock-movement/) entity which records the history of stock changes. `StockMovement` is actually an abstract class, with the following concrete implementations:
-
-- [`Allocation`](/reference/typescript-api/entities/stock-movement/#allocation): When stock is allocated to an order, before the order is fulfilled. Adds stock to `allocated`, which reduces the saleable stock.
-- [`Sale`](/reference/typescript-api/entities/stock-movement/#sale): When allocated stock gets fulfilled. Removes stock from `allocated` as well as `stockOnHand`.
-- [`Cancellation`](/reference/typescript-api/entities/stock-movement/#cancellation): When items from a fulfilled order are cancelled, the stock is returned to `stockOnHand`. Adds stock to `stockOnHand`.
-- [`Release`](/reference/typescript-api/entities/stock-movement/#release): When items which have been allocated (but not yet converted to sales via the creation of a Fulfillment) are cancelled. Removes stock from `allocated`.
-- [`StockAdjustment`](/reference/typescript-api/entities/stock-movement/#stockadjustment): A general-purpose stock adjustment. Adds or removes stock from `stockOnHand`. Used when manually setting stock levels via the Dashboard, for example.
+### Stock movements query
 
 Stock movements can be queried via the `ProductVariant.stockMovements`. Here's an example where we query the stock levels and stock movements of a particular variant:
-
 
 <Tabs>
 <TabItem value="Request" label="Request" default>

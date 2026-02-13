@@ -30,8 +30,7 @@ type Constructor<T = any> = new (...args: any[]) => T;
  * import { Injectable } from '\@nestjs/common';
  *
  * \@Injectable()
- * // highlight-next-line
- * \@Instrument()
+ * \@Instrument() // [!code highlight]
  * export class MyService {
  *
  *   // Calls to this method will be instrumented

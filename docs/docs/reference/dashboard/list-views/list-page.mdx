@@ -2,7 +2,7 @@
 title: "ListPage"
 generated: true
 ---
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="475" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="483" packageName="@vendure/dashboard" since="3.3.0" />
 
 Auto-generates a list page with columns generated based on the provided query document fields.
 
@@ -255,6 +255,7 @@ For instance, when you want the term to filter on specific fields.
      };
    }}
  />
+```
 ### customizeColumns
 
 <MemberInfo kind="property" type={`CustomizeColumnConfig<T>`}   />
@@ -308,6 +309,13 @@ more control over how the column data is rendered.
           </div>
           );
       },
+    },
+    // Use `meta.disabled` to completely exclude a column from the table,
+    // including the column visibility toggle. This is useful when you need
+    // to fetch certain fields for use in custom cell renderers, but don't
+    // want those fields to appear as their own columns.
+    productVariantCount: {
+      meta: { disabled: true },
     },
 ```
 ### additionalColumns

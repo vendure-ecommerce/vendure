@@ -1,5 +1,7 @@
 ---
-title: "Money & Currency"
+title: "Currency"
+metaTitle: "Currency Handling in Vendure"
+metaDescription: "Vendure stores monetary values as integers in minor units to avoid rounding errors. Covers multi-currency support and how currencies relate to channels."
 ---
 
 In Vendure, monetary values are stored as **integers** using the **minor unit** of the selected currency.
@@ -43,7 +45,22 @@ holds true for most common programming languages), we will instead get `$2.42999
 For a more in-depth explanation of this issue, see [this StackOverflow answer](https://stackoverflow.com/a/3730040/772859)
 :::
 
-## Displaying monetary values
+## Support for multiple currencies
+
+Vendure supports multiple currencies out-of-the-box. The available currencies must first be set at the Channel level
+(see the [Channels, Currencies & Prices section](/core-concepts/channels/#channels-currencies--prices)), and then
+a price may be set on a `ProductVariant` in each of the available currencies.
+
+When using multiple currencies, the [ProductVariantPriceSelectionStrategy](/reference/typescript-api/configuration/product-variant-price-selection-strategy/)
+is used to determine which of the available prices to return when fetching the details of a `ProductVariant`. The default strategy
+is to return the price in the currency of the current session request context, which is determined firstly by any `?currencyCode=XXX` query parameter
+on the request, and secondly by the `defaultCurrencyCode` of the Channel.
+
+Currencies are configured at the Channel level. Each channel defines which currencies are available and which is the default. This means different channels can operate in different currencies, making it straightforward to support multi-region stores. For more details, see the [Channels guide](/core-concepts/channels/).
+
+## Code Examples
+
+### Displaying monetary values
 
 When you are building your storefront, or any other client that needs to display monetary values in a human-readable form,
 you need to divide by 100 to convert to the major currency unit and then format with the correct decimal & grouping dividers.
@@ -84,18 +101,7 @@ export function MyComponent({ variant }: MyComponentProps) {
 }
 ```
 
-## Support for multiple currencies
-
-Vendure supports multiple currencies out-of-the-box. The available currencies must first be set at the Channel level
-(see the [Channels, Currencies & Prices section](/core-concepts/channels/#channels-currencies--prices)), and then
-a price may be set on a `ProductVariant` in each of the available currencies.
-
-When using multiple currencies, the [ProductVariantPriceSelectionStrategy](/reference/typescript-api/configuration/product-variant-price-selection-strategy/)
-is used to determine which of the available prices to return when fetching the details of a `ProductVariant`. The default strategy
-is to return the price in the currency of the current session request context, which is determined firstly by any `?currencyCode=XXX` query parameter
-on the request, and secondly by the `defaultCurrencyCode` of the Channel.
-
-## The GraphQL `Money` scalar
+### The GraphQL `Money` scalar
 
 In the GraphQL APIs, we use a custom [`Money` scalar type](/reference/graphql-api/admin/object-types/#money) to represent
 all monetary values. We do this for two reasons:
@@ -122,8 +128,7 @@ type ShippingLine {
 If you are defining custom GraphQL types, or adding fields to existing types (see the [Extending the GraphQL API doc](/developer-guide/extend-graphql-api/)),
 then you should also use the `Money` scalar for any monetary values.
 
-
-## The `@Money()` decorator
+### The `@Money()` decorator
 
 When [defining new database entities](/developer-guide/database-entity), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
 decorator, you should use Vendure's [`@Money()` decorator](/reference/typescript-api/money/money-decorator).
@@ -165,7 +170,7 @@ class Quote extends VendureEntity {
 }
 ```
 
-## Advanced configuration: MoneyStrategy
+### MoneyStrategy configuration
 
 For advanced use-cases, it is possible to configure aspects of how Vendure handles monetary values internally by defining
 a custom [`MoneyStrategy`](/reference/typescript-api/money/money-strategy/).
@@ -193,7 +198,7 @@ export const config: VendureConfig = {
 }
 ```
 
-### Example: supporting three decimal places
+#### Example: supporting three decimal places
 
 Let's say you have a B2B store which sells products in bulk, and you want to support prices with three decimal places.
 For example, you want to be able to sell a product for `$1.234` per unit. To do this, you would need to:

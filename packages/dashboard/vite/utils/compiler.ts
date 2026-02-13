@@ -218,13 +218,16 @@ async function compileTypeScript({
     // 1. 'before' runs before TypeScript resolves modules - changing paths there breaks resolution
     // 2. 'after' runs after module resolution but before emit - paths are transformed in output only
     //
-    // We use TRANSFORMED paths here because the output directory structure may differ from source
-    if (module === 'esm' && transformedTsConfigInfo) {
+    // We use ORIGINAL (untransformed) paths here because the transformer resolves aliases
+    // relative to the source file's directory using path.relative(). Since TypeScript preserves
+    // directory nesting in output, the relative relationships between source files are the same
+    // in both the source and output trees.
+    if (module === 'esm' && originalTsConfigInfo) {
         logger.debug('Adding path transformer for ESM mode');
         afterTransformers.push(
             createPathTransformer({
-                baseUrl: transformedTsConfigInfo.baseUrl,
-                paths: transformedTsConfigInfo.paths,
+                baseUrl: originalTsConfigInfo.baseUrl,
+                paths: originalTsConfigInfo.paths,
             }),
         );
     }

@@ -1,5 +1,7 @@
 ---
 title: 'Payment'
+metaTitle: "Payment Integration and Workflows in Vendure"
+metaDescription: "Understand payment workflows in Vendure, including authorization, settlement, single-step and two-step flows."
 ---
 
 Vendure can support many kinds of payment workflows, such as authorizing and capturing payment in a single step upon checkout or authorizing on checkout and then capturing on fulfillment.
@@ -19,7 +21,45 @@ Some merchants do both of these steps at once, when the customer checks out of t
 
 This two-step workflow can also be applied to other non-card forms of payment: e.g. if providing a "payment on delivery" option, the authorization step would occur on checkout, and the settlement step would be triggered upon delivery, either manually by an administrator of via an app integration with the Admin API.
 
-## Creating an integration
+## The PaymentMethod entity
+
+A [`PaymentMethod`](/reference/typescript-api/entities/payment-method/) can be created via the Dashboard (_Settings_ -> _Payment methods_, then _Create new payment method_) or via the Admin API `createPaymentMethod` mutation.
+
+A payment method consists of an optional [`PaymentMethodEligibilityChecker`](/reference/typescript-api/payment/payment-method-eligibility-checker/), which is used to determine whether the payment method is available to the customer, and a [`PaymentMethodHandler`](/reference/typescript-api/payment/payment-method-handler).
+
+The payment method also has a **code**, which is a string identifier used to specify this method when adding a payment to an order.
+
+![Payment method](./payment-method.webp)
+
+## Payment flow
+
+### Eligible payment methods
+
+Once the active Order has been transitioned to the `ArrangingPayment` state (see the [Order guide](/core-concepts/orders/)), the available payment methods can be queried using the [`eligiblePaymentMethods` query](/reference/graphql-api/shop/queries#eligiblepaymentmethods).
+
+### Add payment to order
+
+One or more Payments are created by executing the [`addPaymentToOrder` mutation](/reference/graphql-api/shop/mutations#addpaymenttoorder). This mutation has a required `method` input field, which must match the `code` of an eligible `PaymentMethod`.
+
+This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function](/reference/typescript-api/payment/payment-method-config-options/#createpayment), which returns a [CreatePaymentResult object](/reference/typescript-api/payment/payment-method-types#createpaymentfn) used to create a new [Payment](/reference/typescript-api/entities/payment). If the Payment amount equals the order total, the Order is transitioned to either the `PaymentAuthorized` or `PaymentSettled` state and the customer checkout flow is complete.
+
+### Single-step
+
+If the `createPayment()` function returns a result with the state set to `'Settled'`, then this is a single-step ("authorize & capture") flow, as illustrated below:
+
+![./payment_sequence_one_step.png](./payment_sequence_one_step.png)
+
+### Two-step
+
+If the `createPayment()` function returns a result with the state set to `'Authorized'`, then this is a two-step flow, and the settlement / capture part is performed at some later point, e.g. when shipping the goods, or on confirmation of payment-on-delivery.
+
+![./payment_sequence_two_step.png](./payment_sequence_two_step.png)
+
+For details on creating custom payment integrations and custom payment flows, see the [Developer Guide](/developer-guide/strategies-configurable-operations/).
+
+## Code Examples
+
+### Creating a PaymentMethodHandler
 
 Payment integrations are created by defining a new [PaymentMethodHandler](/reference/typescript-api/payment/payment-method-handler/) and passing that handler into the [`paymentOptions.paymentMethodHandlers`](/reference/typescript-api/payment/payment-options#paymentmethodhandlers) array in the VendureConfig.
 
@@ -136,21 +176,7 @@ export const config: VendureConfig = {
 If your PaymentMethodHandler needs access to the database or other providers, see the [configurable operation dependency injection guide](/developer-guide/strategies-configurable-operations/#injecting-dependencies).
 :::
 
-## The PaymentMethod entity
-
-Once the PaymentMethodHandler is defined as above, you can use it to create a new [`PaymentMethod`](/reference/typescript-api/entities/payment-method/) via the Dashboard (_Settings_ -> _Payment methods_, then _Create new payment method_) or via the Admin API `createPaymentMethod` mutation.
-
-A payment method consists of an optional [`PaymentMethodEligibilityChecker`](/reference/typescript-api/payment/payment-method-eligibility-checker/), which is used to determine whether the payment method is available to the customer, and a [`PaymentMethodHandler`](/reference/typescript-api/payment/payment-method-handler).
-
-The payment method also has a **code**, which is a string identifier used to specify this method when adding a payment to an order.
-
-![Payment method](./payment-method.webp)
-
-## Payment flow
-
-### Eligible payment methods
-
-Once the active Order has been transitioned to the `ArrangingPayment` state (see the [Order guide](/core-concepts/orders/)), we can query the available payment methods by executing the [`eligiblePaymentMethods` query](/reference/graphql-api/shop/queries#eligiblepaymentmethods).
+### Querying eligible payment methods
 
 <Tabs>
 <TabItem value="Request" label="Request" default>
@@ -187,11 +213,7 @@ query GetEligiblePaymentMethods {
 </TabItem>
 </Tabs>
 
-
-### Add payment to order
-
-One or more Payments are created by executing the [`addPaymentToOrder` mutation](/reference/graphql-api/shop/mutations#addpaymenttoorder). This mutation has a required `method` input field, which _must_ match the `code` of an eligible `PaymentMethod`. In the case above, this would be set to `"my-payment-method"`.
- 
+### Adding payment to order
 
 <Tabs>
 <TabItem value="Request" label="Request" default>
@@ -252,34 +274,11 @@ The `metadata` field is used to store the specific data required by the payment 
 The `metadata` field is required, so if your payment provider does not require any additional data, you can simply pass an empty object: `metadata: {}`.
 :::
 
-3. This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function](/reference/typescript-api/payment/payment-method-config-options/#createpayment). This function returns a [CreatePaymentResult object](/reference/typescript-api/payment/payment-method-types#createpaymentfn) which is used to create a new [Payment](/reference/typescript-api/entities/payment). If the Payment amount equals the order total, then the Order is transitioned to either the `PaymentAuthorized` or `PaymentSettled` state and the customer checkout flow is complete.
-
-### Single-step
-
-If the `createPayment()` function returns a result with the state set to `'Settled'`, then this is a single-step ("authorize & capture") flow, as illustrated below:
-
-![./payment_sequence_one_step.png](./payment_sequence_one_step.png)
-
-### Two-step
-
-If the `createPayment()` function returns a result with the state set to `'Authorized'`, then this is a two-step flow, and the settlement / capture part is performed at some later point, e.g. when shipping the goods, or on confirmation of payment-on-delivery.
-
-![./payment_sequence_two_step.png](./payment_sequence_two_step.png)
-
-## Custom Payment Flows
+### Custom payment flows
 
 If you need to support an entirely different payment flow than the above, it is also possible to do so by configuring a [PaymentProcess](/reference/typescript-api/payment/payment-process). This allows new Payment states and transitions to be defined, as well as allowing custom logic to run on Payment state transitions.
 
 Here's an example which adds a new "Validating" state to the Payment state machine, and combines it with a [OrderProcess](/reference/typescript-api/orders/order-process), [PaymentMethodHandler](/reference/typescript-api/payment/payment-method-handler) and [OrderPlacedStrategy](/reference/typescript-api/orders/order-placed-strategy).
-
-```text
-├── plugins
-    └── my-payment-plugin
-        ├── payment-process.ts
-        ├── payment-method-handler.ts
-        ├── order-process.ts
-        └── order-placed-strategy.ts
-```
 
 ```ts title="src/plugins/my-payment-plugin/payment-process.ts"
 import { PaymentProcess } from '@vendure/core';
@@ -391,7 +390,7 @@ export const config: VendureConfig = {
 };
 ```
 
-### Integration with hosted payment pages
+### Hosted payment pages
 
 A hosted payment page is a system that works similar to [Stripe checkout](https://stripe.com/payments/checkout). The idea behind this flow is that the customer does not enter any credit card data anywhere on the merchant's site which waives the merchant from the responsibility to take care of sensitive data.
 

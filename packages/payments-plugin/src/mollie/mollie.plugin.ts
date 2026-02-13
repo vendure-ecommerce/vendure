@@ -196,6 +196,9 @@ export interface MolliePluginOptions {
  * You should check if there is still an active order with status `ArrangingAdditionalPayment` on your order confirmation page,
  * and if so, allow your customer to pay for the additional items by creating another Mollie payment.
  *
+ * @deprecated This plugin is moving to `@vendure-community/payments-plugin`.
+ * The `@vendure/payments-plugin` package will be removed in Vendure v3.6.0.
+ *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin
  * @docsWeight 0

@@ -140,11 +140,9 @@ const StellateOptionsProvider = {
  * export const searchProductsDocument = graphql(`
  *     query SearchProducts($input: SearchInput!) {
  *         search(input: $input) {
- *             // highlight-start
- *             cacheIdentifier {
- *                 collectionSlug
- *             }
- *             // highlight-end
+ *             cacheIdentifier { // [!code highlight]
+ *                 collectionSlug // [!code highlight]
+ *             } // [!code highlight]
  *             items {
  *                # ...
  *             }
@@ -239,6 +237,9 @@ const StellateOptionsProvider = {
  * };
  * ```
  *
+ *
+ * @deprecated This plugin is moving to `@vendure-community/stellate-plugin`.
+ * The `@vendure/stellate-plugin` package will be removed in Vendure v3.6.0.
  *
  * @since 2.1.5
  * @docsCategory core plugins/StellatePlugin
