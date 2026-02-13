@@ -204,7 +204,7 @@ export class AdministratorService {
             input,
             updatedAdministrator,
         );
-        await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
+        await this.eventBus.publish(new AdministratorEvent(ctx, updatedAdministrator, 'updated', input));
         return updatedAdministrator;
     }
 
