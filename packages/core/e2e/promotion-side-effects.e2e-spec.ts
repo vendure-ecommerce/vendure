@@ -94,7 +94,7 @@ const customConfig = mergeConfig(testConfig(), {
 });
 
 const ORDER_WITH_MODIFICATIONS_FRAGMENT = gql`
-    fragment OrderWithMods on Order {
+    fragment OrderWithModsPromoSideEffects on Order {
         id
         state
         lines {
@@ -113,9 +113,9 @@ const ORDER_WITH_MODIFICATIONS_FRAGMENT = gql`
 `;
 
 const MODIFY_ORDER = gql`
-    mutation ModifyOrder($input: ModifyOrderInput!) {
+    mutation ModifyOrderPromoSideEffects($input: ModifyOrderInput!) {
         modifyOrder(input: $input) {
-            ...OrderWithMods
+            ...OrderWithModsPromoSideEffects
             ... on ErrorResult {
                 errorCode
                 message
