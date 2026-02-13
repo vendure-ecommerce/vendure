@@ -399,6 +399,10 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 }
                 return;
             }
+            Logger.warn(
+                `Could not build EXISTS subquery for custom property "${condition.isExistsCondition.customPropertyKey}". Skipping condition.`,
+            );
+            return;
         }
 
         // Standard WHERE clause handling
