@@ -19,7 +19,7 @@ async function runDashboardTests() {
 
         // Navigate to the dashboard
         console.log('Navigating to dashboard...');
-        await page.goto('http://localhost:5173');
+        await page.goto('http://localhost:5173/dashboard');
 
         // Wait for the page to load
         await page.waitForLoadState('networkidle');
