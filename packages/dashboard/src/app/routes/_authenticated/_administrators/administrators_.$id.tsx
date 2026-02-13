@@ -218,7 +218,9 @@ function ChannelRoleAdministratorDetail() {
                     ? t`Successfully created administrator`
                     : t`Successfully updated administrator`,
             );
-            resetForm();
+            // Don't call resetForm() — the query refetch (triggered by useDetailPage's
+            // internal onSuccess) will update the `values` prop, which causes RHF to
+            // call form.reset() internally, syncing form values AND clearing dirty state.
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
