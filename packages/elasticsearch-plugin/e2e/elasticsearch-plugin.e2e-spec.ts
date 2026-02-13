@@ -1672,6 +1672,21 @@ describe('Elasticsearch plugin', () => {
             );
             expect(result.search.items.map(i => i.productName)).not.toContain('Stock Test Product');
         });
+
+        it('product appears when filtering inStock: false in second channel', async () => {
+            shopClient.setChannelToken(STOCK_CHANNEL_TOKEN);
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        term: 'Stock Test Product',
+                        groupByProduct: true,
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.items.map(i => i.productName)).toContain('Stock Test Product');
+        });
     });
 });
 
