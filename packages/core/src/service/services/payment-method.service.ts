@@ -142,8 +142,8 @@ export class PaymentMethodService {
             input,
             updatedPaymentMethod,
         );
-        await this.eventBus.publish(new PaymentMethodEvent(ctx, updatedPaymentMethod, 'updated', input));
         await this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod, { reload: false });
+        await this.eventBus.publish(new PaymentMethodEvent(ctx, updatedPaymentMethod, 'updated', input));
         return assertFound(this.findOne(ctx, updatedPaymentMethod.id));
     }
 
