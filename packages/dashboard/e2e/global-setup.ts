@@ -1,4 +1,4 @@
-import { mergeConfig } from '@vendure/core';
+import { dummyPaymentHandler, mergeConfig } from '@vendure/core';
 import {
     createTestEnvironment,
     testConfig as defaultTestConfig,
@@ -18,6 +18,9 @@ registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__
 const config = mergeConfig(defaultTestConfig, {
     apiOptions: {
         port: VENDURE_PORT,
+    },
+    paymentOptions: {
+        paymentMethodHandlers: [dummyPaymentHandler],
     },
 });
 
