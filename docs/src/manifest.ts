@@ -40,6 +40,7 @@ const manifestInput: DocsPackageManifestInput = {
         {
             title: 'Core Concepts',
             slug: 'core-concepts',
+            file: file('docs/guides/core-concepts/index.mdx'),
             children: [
                 // Merchandising
                 {
