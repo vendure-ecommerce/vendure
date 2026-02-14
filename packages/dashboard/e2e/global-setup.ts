@@ -77,6 +77,68 @@ const config = mergeConfig(defaultTestConfig, {
                 label: [{ languageCode: LanguageCode.en, value: 'Detail Notes' }],
                 ui: { tab: 'Details', fullWidth: true },
             },
+            // ── Lists tab ──
+            {
+                name: 'tags',
+                type: 'string',
+                list: true,
+                label: [{ languageCode: LanguageCode.en, value: 'Tags' }],
+                ui: { tab: 'Lists' },
+            },
+            // ── Struct tab ──
+            {
+                name: 'specifications',
+                type: 'struct',
+                label: [{ languageCode: LanguageCode.en, value: 'Specifications' }],
+                ui: { tab: 'Struct' },
+                fields: [
+                    {
+                        name: 'material',
+                        type: 'string',
+                        label: [{ languageCode: LanguageCode.en, value: 'Material' }],
+                    },
+                    {
+                        name: 'height',
+                        type: 'float',
+                        label: [{ languageCode: LanguageCode.en, value: 'Height' }],
+                    },
+                    {
+                        name: 'isRecyclable',
+                        type: 'boolean',
+                        label: [{ languageCode: LanguageCode.en, value: 'Recyclable' }],
+                    },
+                    {
+                        name: 'certifications',
+                        type: 'string',
+                        list: true,
+                        label: [{ languageCode: LanguageCode.en, value: 'Certifications' }],
+                    },
+                ],
+            },
+            {
+                name: 'dimensions',
+                type: 'struct',
+                list: true,
+                label: [{ languageCode: LanguageCode.en, value: 'Dimensions' }],
+                ui: { tab: 'Struct' },
+                fields: [
+                    {
+                        name: 'dimensionName',
+                        type: 'string',
+                        label: [{ languageCode: LanguageCode.en, value: 'Dimension Name' }],
+                    },
+                    {
+                        name: 'dimensionValue',
+                        type: 'float',
+                        label: [{ languageCode: LanguageCode.en, value: 'Dimension Value' }],
+                    },
+                    {
+                        name: 'dimensionUnit',
+                        type: 'string',
+                        label: [{ languageCode: LanguageCode.en, value: 'Dimension Unit' }],
+                    },
+                ],
+            },
         ],
     },
 });
