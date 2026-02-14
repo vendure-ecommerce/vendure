@@ -1,4 +1,4 @@
-import { dummyPaymentHandler, mergeConfig } from '@vendure/core';
+import { dummyPaymentHandler, LanguageCode, mergeConfig } from '@vendure/core';
 import {
     createTestEnvironment,
     testConfig as defaultTestConfig,
@@ -21,6 +21,63 @@ const config = mergeConfig(defaultTestConfig, {
     },
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
+    },
+    customFields: {
+        Product: [
+            // ── General tab (default) ──
+            {
+                name: 'infoUrl',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+            },
+            { name: 'weight', type: 'float', label: [{ languageCode: LanguageCode.en, value: 'Weight' }] },
+            {
+                name: 'reviewRating',
+                type: 'int',
+                label: [{ languageCode: LanguageCode.en, value: 'Review Rating' }],
+            },
+            {
+                name: 'isDownloadable',
+                type: 'boolean',
+                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+            },
+            {
+                name: 'releaseDate',
+                type: 'datetime',
+                label: [{ languageCode: LanguageCode.en, value: 'Release Date' }],
+            },
+            {
+                name: 'additionalInfo',
+                type: 'text',
+                label: [{ languageCode: LanguageCode.en, value: 'Additional Info' }],
+            },
+            {
+                name: 'priority',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Priority' }],
+                options: [{ value: 'low' }, { value: 'medium' }, { value: 'high' }],
+            },
+            // ── SEO tab ──
+            {
+                name: 'seoTitle',
+                type: 'localeString',
+                label: [{ languageCode: LanguageCode.en, value: 'SEO Title' }],
+                ui: { tab: 'SEO' },
+            },
+            {
+                name: 'seoDescription',
+                type: 'localeText',
+                label: [{ languageCode: LanguageCode.en, value: 'SEO Description' }],
+                ui: { tab: 'SEO', fullWidth: true },
+            },
+            // ── Details tab ──
+            {
+                name: 'detailNotes',
+                type: 'text',
+                label: [{ languageCode: LanguageCode.en, value: 'Detail Notes' }],
+                ui: { tab: 'Details', fullWidth: true },
+            },
+        ],
     },
 });
 
