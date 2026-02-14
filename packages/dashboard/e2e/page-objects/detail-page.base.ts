@@ -15,7 +15,7 @@ export interface FieldInput {
     /** The value to type/set. For 'select', this is the visible option text to choose. */
     value: string | boolean;
     /** Field type — defaults to 'input' */
-    type?: 'input' | 'switch' | 'select' | 'number';
+    type?: 'input' | 'switch' | 'select' | 'number' | 'password';
 }
 
 /**
@@ -77,6 +77,24 @@ export class BaseDetailPage {
         await this.formItem(label).getByRole('spinbutton').fill(value);
     }
 
+    /** Fill a password field identified by its label (type="password" has no ARIA textbox role). */
+    async fillPassword(label: string, value: string) {
+        await this.formItem(label).locator('input[type="password"]').fill(value);
+    }
+
+    /**
+     * Select an option from a MultiSelect/Popover-based picker.
+     * Unlike `selectOption` (which targets `role="option"` in a Radix Select),
+     * this targets buttons inside a Popover — used by RoleSelector, etc.
+     *
+     * @param triggerLocator Locator for the combobox trigger button
+     * @param optionText The visible text of the option to click
+     */
+    async selectPopoverOption(triggerLocator: Locator, optionText: string) {
+        await triggerLocator.click();
+        await this.page.getByRole('button', { name: optionText, exact: true }).click();
+    }
+
     /** Toggle a switch field identified by its label. */
     async toggleSwitch(label: string, checked: boolean) {
         const switchEl = this.formItem(label).getByRole('switch');
@@ -109,6 +127,9 @@ export class BaseDetailPage {
                     break;
                 case 'number':
                     await this.fillNumber(field.label, field.value as string);
+                    break;
+                case 'password':
+                    await this.fillPassword(field.label, field.value as string);
                     break;
                 default:
                     await this.fillInput(field.label, field.value as string);
