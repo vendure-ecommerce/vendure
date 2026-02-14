@@ -12,10 +12,10 @@ export interface DetailPageConfig {
 export interface FieldInput {
     /** The label text as it appears in the <label> element */
     label: string;
-    /** The value to type/set */
+    /** The value to type/set. For 'select', this is the visible option text to choose. */
     value: string | boolean;
     /** Field type — defaults to 'input' */
-    type?: 'input' | 'switch';
+    type?: 'input' | 'switch' | 'select' | 'number';
 }
 
 /**
@@ -72,6 +72,11 @@ export class BaseDetailPage {
         await this.formItem(label).getByRole('textbox').fill(value);
     }
 
+    /** Fill a number input field identified by its label (uses spinbutton role). */
+    async fillNumber(label: string, value: string) {
+        await this.formItem(label).getByRole('spinbutton').fill(value);
+    }
+
     /** Toggle a switch field identified by its label. */
     async toggleSwitch(label: string, checked: boolean) {
         const switchEl = this.formItem(label).getByRole('switch');
@@ -81,13 +86,33 @@ export class BaseDetailPage {
         }
     }
 
+    /**
+     * Select an option from a combobox/select field identified by its label.
+     * Opens the dropdown within the form-item, then clicks the option by text.
+     */
+    async selectOption(label: string, optionText: string) {
+        const container = this.formItem(label);
+        await container.getByRole('combobox').click();
+        // Options render in a portal outside the form-item, so scope to the page
+        await this.page.getByRole('option', { name: optionText }).click();
+    }
+
     /** Fill multiple fields at once from a config array. */
     async fillFields(fields: FieldInput[]) {
         for (const field of fields) {
-            if (field.type === 'switch') {
-                await this.toggleSwitch(field.label, field.value as boolean);
-            } else {
-                await this.fillInput(field.label, field.value as string);
+            switch (field.type) {
+                case 'switch':
+                    await this.toggleSwitch(field.label, field.value as boolean);
+                    break;
+                case 'select':
+                    await this.selectOption(field.label, field.value as string);
+                    break;
+                case 'number':
+                    await this.fillNumber(field.label, field.value as string);
+                    break;
+                default:
+                    await this.fillInput(field.label, field.value as string);
+                    break;
             }
         }
     }
