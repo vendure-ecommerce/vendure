@@ -1,4 +1,3 @@
-import { Type } from '@vendure/common/lib/shared-types';
 import {
     AdministratorEvent,
     defaultShippingCalculator,
@@ -11,12 +10,11 @@ import {
     PromotionEvent,
     PromotionOrderAction,
     ShippingMethodEvent,
-    VendureEvent,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { Subscription } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -51,87 +49,12 @@ const testPromoAction = new PromotionOrderAction({
     },
 });
 
-const PAYMENT_METHOD_FRAGMENT = gql`
-    fragment PaymentMethodTest on PaymentMethod {
-        id
-        code
-        name
-        description
-        enabled
-        checker {
-            code
-            args {
-                name
-                value
-            }
-        }
-        handler {
-            code
-            args {
-                name
-                value
-            }
-        }
-        translations {
-            id
-            languageCode
-            name
-            description
-        }
-    }
-`;
-
-const CREATE_PAYMENT_METHOD = gql`
-    mutation CreatePaymentMethodEventTest($input: CreatePaymentMethodInput!) {
-        createPaymentMethod(input: $input) {
-            ...PaymentMethodTest
-        }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
-`;
-
-const UPDATE_PAYMENT_METHOD = gql`
-    mutation UpdatePaymentMethodEventTest($input: UpdatePaymentMethodInput!) {
-        updatePaymentMethod(input: $input) {
-            ...PaymentMethodTest
-        }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
-`;
-
-const UPDATE_PROMOTION = gql`
-    mutation UpdatePromotionEventTest($input: UpdatePromotionInput!) {
-        updatePromotion(input: $input) {
-            ...Promotion
-            ... on ErrorResult {
-                errorCode
-                message
-            }
-        }
-    }
-    ${PROMOTION_FRAGMENT}
-`;
-
 /**
- * Helper to subscribe to an event and return a promise that resolves with the event data.
+ * Tests that VendureEntityEvent subclasses emit the post-update entity state,
+ * not the pre-update state.
+ *
+ * See https://github.com/vendurehq/vendure/issues/4351
  */
-function awaitEvent<T extends VendureEvent>(
-    eventBus: EventBus,
-    eventType: Type<T>,
-): {
-    eventReceived: Promise<T>;
-    subscription: Subscription;
-} {
-    let resolveFn: (value: T) => void;
-    const eventReceived = new Promise<T>(resolve => {
-        resolveFn = resolve;
-    });
-    const subscription = eventBus.ofType(eventType).subscribe(event => {
-        resolveFn(event);
-    });
-    return { eventReceived, subscription };
-}
-
 describe('Entity event updated state', () => {
     const { server, adminClient } = createTestEnvironment({
         ...testConfig(),
@@ -200,7 +123,7 @@ describe('Entity event updated state', () => {
         });
 
         it('emits post-update entity when enabled is changed', async () => {
-            const { eventReceived, subscription } = awaitEvent(eventBus, PromotionEvent);
+            const eventPromise = firstValueFrom(eventBus.ofType(PromotionEvent));
 
             await adminClient.query(UPDATE_PROMOTION, {
                 input: {
@@ -209,16 +132,14 @@ describe('Entity event updated state', () => {
                 },
             });
 
-            const event = await eventReceived;
-            subscription.unsubscribe();
+            const event = await eventPromise;
 
             expect(event.type).toBe('updated');
-            // The entity should reflect the UPDATED state (enabled: false)
             expect(event.entity.enabled).toBe(false);
         });
 
         it('emits post-update entity when name is changed', async () => {
-            const { eventReceived, subscription } = awaitEvent(eventBus, PromotionEvent);
+            const eventPromise = firstValueFrom(eventBus.ofType(PromotionEvent));
 
             await adminClient.query(UPDATE_PROMOTION, {
                 input: {
@@ -232,8 +153,7 @@ describe('Entity event updated state', () => {
                 },
             });
 
-            const event = await eventReceived;
-            subscription.unsubscribe();
+            const event = await eventPromise;
 
             expect(event.type).toBe('updated');
             const enTranslation = event.entity.translations.find(t => t.languageCode === LanguageCode.en);
@@ -278,7 +198,7 @@ describe('Entity event updated state', () => {
         });
 
         it('emits post-update entity when name is changed', async () => {
-            const { eventReceived, subscription } = awaitEvent(eventBus, ShippingMethodEvent);
+            const eventPromise = firstValueFrom(eventBus.ofType(ShippingMethodEvent));
 
             await adminClient.query<
                 Codegen.UpdateShippingMethodMutation,
@@ -296,8 +216,7 @@ describe('Entity event updated state', () => {
                 },
             });
 
-            const event = await eventReceived;
-            subscription.unsubscribe();
+            const event = await eventPromise;
 
             expect(event.type).toBe('updated');
             const enTranslation = event.entity.translations.find(t => t.languageCode === LanguageCode.en);
@@ -305,7 +224,7 @@ describe('Entity event updated state', () => {
         });
 
         it('emits post-update entity when calculator is changed', async () => {
-            const { eventReceived, subscription } = awaitEvent(eventBus, ShippingMethodEvent);
+            const eventPromise = firstValueFrom(eventBus.ofType(ShippingMethodEvent));
 
             await adminClient.query<
                 Codegen.UpdateShippingMethodMutation,
@@ -331,8 +250,7 @@ describe('Entity event updated state', () => {
                 },
             });
 
-            const event = await eventReceived;
-            subscription.unsubscribe();
+            const event = await eventPromise;
 
             expect(event.type).toBe('updated');
             const rateArg = event.entity.calculator.args.find(a => a.name === 'rate');
@@ -374,7 +292,7 @@ describe('Entity event updated state', () => {
         });
 
         it('emits post-update entity when name is changed', async () => {
-            const { eventReceived, subscription } = awaitEvent(eventBus, AdministratorEvent);
+            const eventPromise = firstValueFrom(eventBus.ofType(AdministratorEvent));
 
             await adminClient.query<
                 Codegen.UpdateAdministratorMutation,
@@ -386,15 +304,13 @@ describe('Entity event updated state', () => {
                 },
             });
 
-            const event = await eventReceived;
-            subscription.unsubscribe();
+            const event = await eventPromise;
 
             expect(event.type).toBe('updated');
             expect(event.entity.lastName).toBe('UpdatedLastName');
         });
 
         it('emits post-update entity when roles are changed', async () => {
-            // Create a second role to assign
             const { createRole } = await adminClient.query<
                 Codegen.CreateRoleMutation,
                 Codegen.CreateRoleMutationVariables
@@ -407,7 +323,7 @@ describe('Entity event updated state', () => {
             });
             const secondRoleId = createRole.id;
 
-            const { eventReceived, subscription } = awaitEvent(eventBus, AdministratorEvent);
+            const eventPromise = firstValueFrom(eventBus.ofType(AdministratorEvent));
 
             await adminClient.query<
                 Codegen.UpdateAdministratorMutation,
@@ -419,11 +335,9 @@ describe('Entity event updated state', () => {
                 },
             });
 
-            const event = await eventReceived;
-            subscription.unsubscribe();
+            const event = await eventPromise;
 
             expect(event.type).toBe('updated');
-            // The entity should have the updated roles
             const roleCodes = event.entity.user.roles.map(r => r.code);
             expect(roleCodes).toContain('event-test-role');
             expect(roleCodes).toContain('event-test-role-2');
@@ -456,7 +370,7 @@ describe('Entity event updated state', () => {
         });
 
         it('emits event after entity is fully persisted', async () => {
-            const { eventReceived, subscription } = awaitEvent(eventBus, PaymentMethodEvent);
+            const eventPromise = firstValueFrom(eventBus.ofType(PaymentMethodEvent));
 
             await adminClient.query(UPDATE_PAYMENT_METHOD, {
                 input: {
@@ -472,11 +386,71 @@ describe('Entity event updated state', () => {
                 },
             });
 
-            const event = await eventReceived;
-            subscription.unsubscribe();
+            const event = await eventPromise;
 
             expect(event.type).toBe('updated');
             expect(event.entity.enabled).toBe(false);
         });
     });
 });
+
+const PAYMENT_METHOD_FRAGMENT = gql`
+    fragment PaymentMethodTest on PaymentMethod {
+        id
+        code
+        name
+        description
+        enabled
+        checker {
+            code
+            args {
+                name
+                value
+            }
+        }
+        handler {
+            code
+            args {
+                name
+                value
+            }
+        }
+        translations {
+            id
+            languageCode
+            name
+            description
+        }
+    }
+`;
+
+const CREATE_PAYMENT_METHOD = gql`
+    mutation CreatePaymentMethodEventTest($input: CreatePaymentMethodInput!) {
+        createPaymentMethod(input: $input) {
+            ...PaymentMethodTest
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+const UPDATE_PAYMENT_METHOD = gql`
+    mutation UpdatePaymentMethodEventTest($input: UpdatePaymentMethodInput!) {
+        updatePaymentMethod(input: $input) {
+            ...PaymentMethodTest
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+const UPDATE_PROMOTION = gql`
+    mutation UpdatePromotionEventTest($input: UpdatePromotionInput!) {
+        updatePromotion(input: $input) {
+            ...Promotion
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;
