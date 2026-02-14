@@ -1,3 +1,4 @@
+import { Type } from '@vendure/common/lib/shared-types';
 import {
     AdministratorEvent,
     defaultShippingCalculator,
@@ -10,6 +11,7 @@ import {
     PromotionEvent,
     PromotionOrderAction,
     ShippingMethodEvent,
+    VendureEvent,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -113,9 +115,9 @@ const UPDATE_PROMOTION = gql`
 /**
  * Helper to subscribe to an event and return a promise that resolves with the event data.
  */
-function awaitEvent<T>(
+function awaitEvent<T extends VendureEvent>(
     eventBus: EventBus,
-    eventType: new (...args: any[]) => T,
+    eventType: Type<T>,
 ): {
     eventReceived: Promise<T>;
     subscription: Subscription;
