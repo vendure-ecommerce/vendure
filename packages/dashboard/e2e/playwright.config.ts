@@ -2,9 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { VENDURE_PORT } from './constants.js';
 
-const VENDURE_PORT = 3050;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const VITE_PORT = 5174;
 
 export default defineConfig({

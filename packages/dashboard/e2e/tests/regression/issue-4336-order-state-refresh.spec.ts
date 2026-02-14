@@ -61,7 +61,7 @@ test.describe('Issue #4336: Order state refresh after transition', () => {
         }
 
         // Wait for the mutation to complete
-        await page.waitForTimeout(2000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // The state badge should now show the new state (NOT "Arranging payment")
         await expect(page.getByText('Arranging payment')).not.toBeVisible({ timeout: 5_000 });

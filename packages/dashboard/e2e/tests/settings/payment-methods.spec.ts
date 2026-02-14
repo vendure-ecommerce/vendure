@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 import { BaseListPage } from '../../page-objects/list-page.base.js';
@@ -9,14 +9,14 @@ import { BaseListPage } from '../../page-objects/list-page.base.js';
 test.describe('Payment Methods CRUD', () => {
     test.describe.configure({ mode: 'serial' });
 
-    const listPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const listPage = (page: Page) =>
         new BaseListPage(page, {
             path: '/payment-methods',
             title: 'Payment Methods',
             newButtonLabel: 'New Payment Method',
         });
 
-    const detailPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const detailPage = (page: Page) =>
         new BaseDetailPage(page, {
             newPath: '/payment-methods/new',
             pathPrefix: '/payment-methods/',

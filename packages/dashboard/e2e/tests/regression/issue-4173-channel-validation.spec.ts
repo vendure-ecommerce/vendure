@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 
@@ -9,7 +9,7 @@ import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 // toast instead of inline validation messages on the form fields.
 
 test.describe('Issue #4173: Channel form validation', () => {
-    const detailPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const detailPage = (page: Page) =>
         new BaseDetailPage(page, {
             newPath: '/channels/new',
             pathPrefix: '/channels/',

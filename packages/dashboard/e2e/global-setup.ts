@@ -8,10 +8,10 @@ import {
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { VENDURE_PORT } from './constants.js';
 import { initialData } from './fixtures/initial-data.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const VENDURE_PORT = 3050;
 
 registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
 

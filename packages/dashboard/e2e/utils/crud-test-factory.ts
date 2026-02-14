@@ -31,6 +31,10 @@ export interface CrudTestConfig {
     hasSearch?: boolean;
     /** The title shown on the new entity page, e.g. 'New tax category'. */
     newPageTitle: string;
+    /** Runs after fillFields in the create flow (e.g. for slug debounce waits). */
+    afterFillCreate?: (page: Page, detail: BaseDetailPage) => Promise<void>;
+    /** Runs after fillFields in the update flow. Falls back to afterFillCreate if not provided. */
+    afterFillUpdate?: (page: Page, detail: BaseDetailPage) => Promise<void>;
 }
 
 /**
@@ -99,160 +103,172 @@ export function createCrudTestSuite(config: CrudTestConfig) {
         }
     }
 
-    // ──────────────────────────────────────────────
-    // Test: List page
-    // ──────────────────────────────────────────────
+    // Tests are serial because each step depends on the previous one
+    // (create → search → update → delete).
+    test.describe(`${entityNamePlural} CRUD`, () => {
+        test.describe.configure({ mode: 'serial' });
 
-    test(`should display the ${entityNamePlural} list page`, async ({ page }) => {
-        const listPage = getListPage(page);
-        await listPage.goto();
-        await listPage.expectLoaded();
-    });
+        // ──────────────────────────────────────────────
+        // Test: List page
+        // ──────────────────────────────────────────────
 
-    test(`should display the "New" button`, async ({ page }) => {
-        const listPage = getListPage(page);
-        await listPage.goto();
-        await listPage.expectLoaded();
-        await expect(listPage.newButton).toBeVisible();
-    });
-
-    // ──────────────────────────────────────────────
-    // Test: Create
-    // ──────────────────────────────────────────────
-
-    test(`should navigate to the create ${entityName} form`, async ({ page }) => {
-        const listPage = getListPage(page);
-        await listPage.goto();
-        await listPage.expectLoaded();
-        await listPage.clickNewButton();
-        await expect(page).toHaveURL(new RegExp(`${listPath}/new`));
-    });
-
-    test(`should create a new ${entityName}`, async ({ page }) => {
-        const detail = getDetailPage(page);
-        await detail.gotoNew();
-        await detail.expectNewPageLoaded();
-        await detail.fillFields(createFields);
-        await detail.clickCreate();
-        await detail.expectSuccessToast(/created/i);
-        await detail.expectNavigatedToExisting();
-    });
-
-    // ──────────────────────────────────────────────
-    // Test: Search
-    // ──────────────────────────────────────────────
-
-    if (hasSearch) {
-        test(`should find the created ${entityName} via search`, async ({ page }) => {
+        test(`should display the ${entityNamePlural} list page`, async ({ page }) => {
             const listPage = getListPage(page);
             await listPage.goto();
             await listPage.expectLoaded();
-            await listPage.search(searchTerm);
-            const rows = listPage.getRows();
-            await expect(rows.first()).toBeVisible();
-            await expect(rows.first()).toContainText(searchTerm);
         });
-    }
 
-    // ──────────────────────────────────────────────
-    // Test: Navigate to detail
-    // ──────────────────────────────────────────────
-
-    test(`should navigate to ${entityName} detail page`, async ({ page }) => {
-        const listPage = getListPage(page);
-        await listPage.goto();
-        await listPage.expectLoaded();
-        await narrowList(listPage, searchTerm);
-        await listPage.clickEntity(searchTerm);
-        await expect(page).toHaveURL(new RegExp(`${listPath}/[^/]+$`));
-    });
-
-    // ──────────────────────────────────────────────
-    // Test: Update
-    // ──────────────────────────────────────────────
-
-    test(`should update the ${entityName}`, async ({ page }) => {
-        // Navigate to the entity via list
-        const listPage = getListPage(page);
-        await listPage.goto();
-        await listPage.expectLoaded();
-        await narrowList(listPage, searchTerm);
-        await listPage.clickEntity(searchTerm);
-        await expect(page).toHaveURL(new RegExp(`${listPath}/[^/]+$`));
-
-        // Update the fields
-        const detail = getDetailPage(page);
-        await detail.fillFields(updateFields);
-        await detail.clickUpdate();
-        await detail.expectSuccessToast(/updated/i);
-    });
-
-    // ──────────────────────────────────────────────
-    // Test: Verify update
-    // ──────────────────────────────────────────────
-
-    test(`should show updated ${entityName} in the list`, async ({ page }) => {
-        const listPage = getListPage(page);
-        await listPage.goto();
-        await listPage.expectLoaded();
-        await narrowList(listPage, updatedSearchTerm);
-        const rows = listPage.getRows();
-        await expect(rows.first()).toBeVisible();
-        // Find the row containing the updated name
-        await expect(listPage.getRows().filter({ hasText: updatedSearchTerm }).first()).toBeVisible();
-    });
-
-    // ──────────────────────────────────────────────
-    // Test: Bulk delete
-    // ──────────────────────────────────────────────
-
-    if (hasBulkDelete) {
-        test(`should bulk-delete ${entityNamePlural}`, async ({ page }) => {
+        test(`should display the "New" button`, async ({ page }) => {
             const listPage = getListPage(page);
             await listPage.goto();
             await listPage.expectLoaded();
-            await narrowList(listPage, updatedSearchTerm);
-            // Find the row index of our entity to select the right checkbox
-            if (hasSearch) {
-                // After search, our entity should be the first/only row
-                await expect(listPage.getRows().first()).toBeVisible();
-                await listPage.bulkDelete([0]);
-            } else {
-                // Without search, find and select the specific row
-                const targetRow = listPage.getRows().filter({ hasText: updatedSearchTerm });
-                await expect(targetRow.first()).toBeVisible();
-                await targetRow.first().getByRole('checkbox').click();
-                await page.getByRole('button', { name: /With selected/i }).click();
-                await page.getByRole('menuitem').filter({ hasText: 'Delete' }).click();
-                await page.locator('[role="alertdialog"]').getByRole('button', { name: 'Continue' }).click();
-            }
-            await listPage.expectSuccessToast();
+            await expect(listPage.newButton).toBeVisible();
         });
-    }
 
-    // ──────────────────────────────────────────────
-    // Test: Row-level delete
-    // ──────────────────────────────────────────────
+        // ──────────────────────────────────────────────
+        // Test: Create
+        // ──────────────────────────────────────────────
 
-    if (hasRowDelete) {
-        test(`should delete a ${entityName} via row action`, async ({ page }) => {
-            // First create a throwaway entity to delete
+        test(`should navigate to the create ${entityName} form`, async ({ page }) => {
+            const listPage = getListPage(page);
+            await listPage.goto();
+            await listPage.expectLoaded();
+            await listPage.clickNewButton();
+            await expect(page).toHaveURL(new RegExp(`${listPath}/new`));
+        });
+
+        test(`should create a new ${entityName}`, async ({ page }) => {
             const detail = getDetailPage(page);
             await detail.gotoNew();
             await detail.expectNewPageLoaded();
             await detail.fillFields(createFields);
+            await config.afterFillCreate?.(page, detail);
             await detail.clickCreate();
             await detail.expectSuccessToast(/created/i);
             await detail.expectNavigatedToExisting();
+        });
 
-            // Go back to list, find it, delete via row action
+        // ──────────────────────────────────────────────
+        // Test: Search
+        // ──────────────────────────────────────────────
+
+        if (hasSearch) {
+            test(`should find the created ${entityName} via search`, async ({ page }) => {
+                const listPage = getListPage(page);
+                await listPage.goto();
+                await listPage.expectLoaded();
+                await listPage.search(searchTerm);
+                const rows = listPage.getRows();
+                await expect(rows.first()).toBeVisible();
+                await expect(rows.first()).toContainText(searchTerm);
+            });
+        }
+
+        // ──────────────────────────────────────────────
+        // Test: Navigate to detail
+        // ──────────────────────────────────────────────
+
+        test(`should navigate to ${entityName} detail page`, async ({ page }) => {
             const listPage = getListPage(page);
             await listPage.goto();
             await listPage.expectLoaded();
             await narrowList(listPage, searchTerm);
-            await expect(listPage.getRows().first()).toBeVisible();
-            await listPage.deleteRowByIndex(0);
-            await listPage.expectSuccessToast();
+            await listPage.clickEntity(searchTerm);
+            await expect(page).toHaveURL(new RegExp(`${listPath}/[^/]+$`));
         });
-    }
+
+        // ──────────────────────────────────────────────
+        // Test: Update
+        // ──────────────────────────────────────────────
+
+        test(`should update the ${entityName}`, async ({ page }) => {
+            // Navigate to the entity via list
+            const listPage = getListPage(page);
+            await listPage.goto();
+            await listPage.expectLoaded();
+            await narrowList(listPage, searchTerm);
+            await listPage.clickEntity(searchTerm);
+            await expect(page).toHaveURL(new RegExp(`${listPath}/[^/]+$`));
+
+            // Update the fields
+            const detail = getDetailPage(page);
+            await detail.fillFields(updateFields);
+            await (config.afterFillUpdate ?? config.afterFillCreate)?.(page, detail);
+            await detail.clickUpdate();
+            await detail.expectSuccessToast(/updated/i);
+        });
+
+        // ──────────────────────────────────────────────
+        // Test: Verify update
+        // ──────────────────────────────────────────────
+
+        test(`should show updated ${entityName} in the list`, async ({ page }) => {
+            const listPage = getListPage(page);
+            await listPage.goto();
+            await listPage.expectLoaded();
+            await narrowList(listPage, updatedSearchTerm);
+            const rows = listPage.getRows();
+            await expect(rows.first()).toBeVisible();
+            // Find the row containing the updated name
+            await expect(listPage.getRows().filter({ hasText: updatedSearchTerm }).first()).toBeVisible();
+        });
+
+        // ──────────────────────────────────────────────
+        // Test: Bulk delete
+        // ──────────────────────────────────────────────
+
+        if (hasBulkDelete) {
+            test(`should bulk-delete ${entityNamePlural}`, async ({ page }) => {
+                const listPage = getListPage(page);
+                await listPage.goto();
+                await listPage.expectLoaded();
+                await narrowList(listPage, updatedSearchTerm);
+                // Find the row index of our entity to select the right checkbox
+                if (hasSearch) {
+                    // After search, our entity should be the first/only row
+                    await expect(listPage.getRows().first()).toBeVisible();
+                    await listPage.bulkDelete([0]);
+                } else {
+                    // Without search, find and select the specific row
+                    const targetRow = listPage.getRows().filter({ hasText: updatedSearchTerm });
+                    await expect(targetRow.first()).toBeVisible();
+                    await targetRow.first().getByRole('checkbox').click();
+                    await page.getByRole('button', { name: /With selected/i }).click();
+                    await page.getByRole('menuitem').filter({ hasText: 'Delete' }).click();
+                    await page
+                        .locator('[role="alertdialog"]')
+                        .getByRole('button', { name: 'Continue' })
+                        .click();
+                }
+                await listPage.expectSuccessToast();
+            });
+        }
+
+        // ──────────────────────────────────────────────
+        // Test: Row-level delete
+        // ──────────────────────────────────────────────
+
+        if (hasRowDelete) {
+            test(`should delete a ${entityName} via row action`, async ({ page }) => {
+                // First create a throwaway entity to delete
+                const detail = getDetailPage(page);
+                await detail.gotoNew();
+                await detail.expectNewPageLoaded();
+                await detail.fillFields(createFields);
+                await config.afterFillCreate?.(page, detail);
+                await detail.clickCreate();
+                await detail.expectSuccessToast(/created/i);
+                await detail.expectNavigatedToExisting();
+
+                // Go back to list, find it, delete via row action
+                const listPage = getListPage(page);
+                await listPage.goto();
+                await listPage.expectLoaded();
+                await narrowList(listPage, searchTerm);
+                await expect(listPage.getRows().first()).toBeVisible();
+                await listPage.deleteRowByIndex(0);
+                await listPage.expectSuccessToast();
+            });
+        }
+    }); // end test.describe
 }

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 import { BaseListPage } from '../../page-objects/list-page.base.js';
 
@@ -12,7 +12,7 @@ import { BaseListPage } from '../../page-objects/list-page.base.js';
 test.describe('Issue #4162: Draft order quantity editing', () => {
     test.describe.configure({ mode: 'serial' });
 
-    const listPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const listPage = (page: Page) =>
         new BaseListPage(page, {
             path: '/orders',
             title: 'Orders',
@@ -35,7 +35,7 @@ test.describe('Issue #4162: Draft order quantity editing', () => {
         await page.getByPlaceholder('Search customers...').fill('hayden');
         await expect(page.getByRole('option').first()).toBeVisible({ timeout: 5_000 });
         await page.getByRole('option').first().click();
-        await page.waitForTimeout(1000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // Add a product
         const addItemButton = page.locator('[role="combobox"]').filter({ hasText: 'Add item to order' });
@@ -44,7 +44,7 @@ test.describe('Issue #4162: Draft order quantity editing', () => {
         await page.getByPlaceholder('Add item to order...').fill('laptop');
         await expect(page.getByRole('option').first()).toBeVisible({ timeout: 5_000 });
         await page.getByRole('option').first().click();
-        await page.waitForTimeout(1000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // Verify the product is in the table
         await expect(page.getByText('Laptop', { exact: false })).toBeVisible();
@@ -57,7 +57,7 @@ test.describe('Issue #4162: Draft order quantity editing', () => {
 
         // Click elsewhere to blur — the product should NOT be removed
         await page.getByRole('heading', { level: 1 }).click();
-        await page.waitForTimeout(1000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // The product should still be visible (quantity reverts to previous value on blur)
         await expect(page.getByText('Laptop', { exact: false })).toBeVisible();

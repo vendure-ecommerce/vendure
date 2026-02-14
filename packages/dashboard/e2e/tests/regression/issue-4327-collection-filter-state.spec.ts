@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 
@@ -9,7 +9,7 @@ import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 // values in one filter causes all filters with the same code to update.
 
 test.describe('Issue #4327: Collection filters with same type share state', () => {
-    const detailPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const detailPage = (page: Page) =>
         new BaseDetailPage(page, {
             newPath: '/collections/new',
             pathPrefix: '/collections/',
@@ -22,7 +22,7 @@ test.describe('Issue #4327: Collection filters with same type share state', () =
         await dp.expectNewPageLoaded();
 
         await dp.fillInput('Name', 'Filter State Test Collection');
-        await page.waitForTimeout(500); // slug auto-generates
+        await expect(dp.formItem('Slug').getByRole('textbox')).not.toHaveValue('', { timeout: 5_000 });
 
         // Add first "Filter by product variant name" filter
         await page.getByRole('button', { name: /Add collection filter/i }).click();

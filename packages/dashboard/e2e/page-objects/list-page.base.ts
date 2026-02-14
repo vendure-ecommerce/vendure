@@ -58,13 +58,12 @@ export class BaseListPage {
 
     async search(term: string) {
         await this.searchInput.fill(term);
-        // The list debounces search input; wait for the request to settle.
-        await this.page.waitForTimeout(500);
+        await this.page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
     }
 
     async clearSearch() {
         await this.searchInput.clear();
-        await this.page.waitForTimeout(500);
+        await this.page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
     }
 
     /**
@@ -111,11 +110,16 @@ export class BaseListPage {
         expect(await this.getRows().count()).toBeGreaterThan(min);
     }
 
-    /** Wait for the success toast (any type — some entities use toast.success, some use toast). */
-    async expectSuccessToast() {
-        // Wait for a Sonner toast that is either type="success" or the default type
-        await expect(
-            this.page.locator('[data-sonner-toast]').filter({ hasNotText: /error/i }).first(),
-        ).toBeVisible({ timeout: 10_000 });
+    /** Wait for a success toast to appear (handles both toast.success and toast with text). */
+    async expectSuccessToast(textMatch?: string | RegExp) {
+        if (textMatch) {
+            await expect(
+                this.page.locator('[data-sonner-toast]').filter({ hasText: textMatch }).first(),
+            ).toBeVisible({ timeout: 10_000 });
+        } else {
+            await expect(
+                this.page.locator('[data-sonner-toast]').filter({ hasNotText: /error/i }).first(),
+            ).toBeVisible({ timeout: 10_000 });
+        }
     }
 }

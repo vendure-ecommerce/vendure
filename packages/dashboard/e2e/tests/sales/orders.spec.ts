@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 import { BaseListPage } from '../../page-objects/list-page.base.js';
 
@@ -10,7 +10,7 @@ import { BaseListPage } from '../../page-objects/list-page.base.js';
 test.describe('Orders', () => {
     test.describe.configure({ mode: 'serial' });
 
-    const listPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const listPage = (page: Page) =>
         new BaseListPage(page, {
             path: '/orders',
             title: 'Orders',
@@ -48,7 +48,7 @@ test.describe('Orders', () => {
         await expect(page.getByRole('option').first()).toBeVisible({ timeout: 5_000 });
         await page.getByRole('option').first().click();
         // Wait for the set-customer mutation to complete and re-render
-        await page.waitForTimeout(1000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // Step 3: Add a product variant — ProductVariantSelector uses Command/Popover
         // The button has role="combobox" but no aria-label, so we match by role + text content
@@ -59,7 +59,7 @@ test.describe('Orders', () => {
         await expect(page.getByRole('option').first()).toBeVisible({ timeout: 5_000 });
         await page.getByRole('option').first().click();
         // Wait for add-line mutation — the combobox should close
-        await page.waitForTimeout(1000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // Step 4: Set shipping address — CustomerAddressSelector uses Popover with Card elements
         // There are two "Select address" buttons (shipping + billing); target the first one
@@ -70,7 +70,7 @@ test.describe('Orders', () => {
         // Address cards are plain divs in the popover — click the first one
         await page.locator('[data-slot="popover-content"]').locator('[data-slot="card"]').first().click();
         // Wait for set-address mutation
-        await page.waitForTimeout(1000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // Step 5: Select a shipping method — inline cards (not a popover)
         // Shipping methods appear after address is set; wait for them
@@ -80,7 +80,7 @@ test.describe('Orders', () => {
         await expect(shippingLabel).toBeVisible({ timeout: 5_000 });
         await shippingLabel.click();
         // Wait for set-shipping-method mutation
-        await page.waitForTimeout(1000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // Step 6: Complete the draft order
         const completeDraftButton = page.getByRole('button', { name: /Complete draft/i });

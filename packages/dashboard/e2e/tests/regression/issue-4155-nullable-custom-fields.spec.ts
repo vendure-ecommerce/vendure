@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 
@@ -26,7 +26,7 @@ import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 test.describe('Issue #4155: Nullable non-string custom field defaults', () => {
     test.describe.configure({ mode: 'serial' });
 
-    const detailPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const detailPage = (page: Page) =>
         new BaseDetailPage(page, {
             newPath: '/products/new',
             pathPrefix: '/products/',
@@ -42,7 +42,7 @@ test.describe('Issue #4155: Nullable non-string custom field defaults', () => {
 
         // Only fill required fields — leave nullable custom fields empty
         await dp.fillInput('Product name', 'Issue 4155 Test Product');
-        await page.waitForTimeout(500); // slug auto-generates
+        await expect(dp.formItem('Slug').getByRole('textbox')).not.toHaveValue('', { timeout: 5_000 });
 
         // This should succeed: nullable fields should default to null, not ''
         await dp.clickCreate();

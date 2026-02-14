@@ -1,4 +1,4 @@
-import { type Locator, expect, test } from '@playwright/test';
+import { type Locator, type Page, expect, test } from '@playwright/test';
 
 import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 import { BaseListPage } from '../../page-objects/list-page.base.js';
@@ -10,8 +10,6 @@ import { BaseListPage } from '../../page-objects/list-page.base.js';
 //
 // IMPORTANT: All tests share a single "Laptop" product, so the outer describe
 // must be serial to prevent concurrent mutations.
-
-type Page = Parameters<Parameters<typeof test>[1]>[0]['page'];
 
 const listPage = (page: Page) =>
     new BaseListPage(page, {

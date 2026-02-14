@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
 
 import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 import { BaseListPage } from '../../page-objects/list-page.base.js';
@@ -12,14 +12,14 @@ import { BaseListPage } from '../../page-objects/list-page.base.js';
 test.describe('Issue #3941: Customer group member removal', () => {
     test.describe.configure({ mode: 'serial' });
 
-    const listPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const listPage = (page: Page) =>
         new BaseListPage(page, {
             path: '/customer-groups',
-            title: 'Customer groups',
-            newButtonLabel: 'New Customer group',
+            title: 'Customer Groups',
+            newButtonLabel: 'New Customer Group',
         });
 
-    const detailPage = (page: Parameters<Parameters<typeof test>[1]>[0]['page']) =>
+    const detailPage = (page: Page) =>
         new BaseDetailPage(page, {
             newPath: '/customer-groups/new',
             pathPrefix: '/customer-groups/',
@@ -44,7 +44,7 @@ test.describe('Issue #3941: Customer group member removal', () => {
         await page.getByPlaceholder('Search customers...').fill('e');
         await expect(page.getByRole('option').first()).toBeVisible({ timeout: 5_000 });
         await page.getByRole('option').first().click();
-        await page.waitForTimeout(1000);
+        await page.waitForResponse(resp => resp.url().includes('/admin-api') && resp.status() === 200);
 
         // Verify customer appears in the members table
         const membersTable = page.getByRole('table').last();
