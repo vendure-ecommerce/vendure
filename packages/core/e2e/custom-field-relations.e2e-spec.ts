@@ -710,6 +710,44 @@ describe('Custom field relations', () => {
                 `);
                 assertCustomFieldIds(updateGlobalSettings.customFields, 'T_2', ['T_3', 'T_4']);
             });
+
+            it('updating scalar custom fields persists alongside relational ones', async () => {
+                await adminClient.query(gql`
+                    mutation {
+                        updateGlobalSettings(
+                            input: {
+                                customFields: {
+                                    primitive: "updated_value"
+                                    singleId: "T_2"
+                                    multiIds: ["T_3", "T_4"]
+                                }
+                            }
+                        ) {
+                            ... on GlobalSettings {
+                                id
+                            }
+                        }
+                    }
+                `);
+
+                const { updateGlobalSettings } = await adminClient.query(gql`
+                    mutation {
+                        updateGlobalSettings(
+                            input: {
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            ... on GlobalSettings {
+                                id
+                                ${customFieldsSelection}
+                            }
+                        }
+                    }
+                `);
+
+                expect(updateGlobalSettings.customFields.single).toEqual({ id: 'T_3' });
+                expect(updateGlobalSettings.customFields.primitive).toBe('updated_value');
+            });
         });
 
         describe('Order entity', () => {
