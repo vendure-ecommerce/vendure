@@ -80,7 +80,7 @@ const PAYMENT_METHOD_FRAGMENT = gql`
 `;
 
 const CREATE_PAYMENT_METHOD = gql`
-    mutation CreatePaymentMethod($input: CreatePaymentMethodInput!) {
+    mutation CreatePaymentMethodEventTest($input: CreatePaymentMethodInput!) {
         createPaymentMethod(input: $input) {
             ...PaymentMethodTest
         }
@@ -89,7 +89,7 @@ const CREATE_PAYMENT_METHOD = gql`
 `;
 
 const UPDATE_PAYMENT_METHOD = gql`
-    mutation UpdatePaymentMethod($input: UpdatePaymentMethodInput!) {
+    mutation UpdatePaymentMethodEventTest($input: UpdatePaymentMethodInput!) {
         updatePaymentMethod(input: $input) {
             ...PaymentMethodTest
         }
@@ -98,7 +98,7 @@ const UPDATE_PAYMENT_METHOD = gql`
 `;
 
 const UPDATE_PROMOTION = gql`
-    mutation UpdatePromotion($input: UpdatePromotionInput!) {
+    mutation UpdatePromotionEventTest($input: UpdatePromotionInput!) {
         updatePromotion(input: $input) {
             ...Promotion
             ... on ErrorResult {
