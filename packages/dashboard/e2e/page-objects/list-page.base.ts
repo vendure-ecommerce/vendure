@@ -7,6 +7,8 @@ export interface ListPageConfig {
     title: string;
     /** "New" button label, e.g. 'New Tax Category' */
     newButtonLabel: string;
+    /** Whether the "new" element is a link (default) or a button. Most pages use a link. */
+    newButtonRole?: 'link' | 'button';
 }
 
 /**
@@ -29,7 +31,7 @@ export class BaseListPage {
         this.heading = page.getByRole('heading', { name: config.title });
         this.searchInput = page.getByPlaceholder('Filter...');
         this.dataTable = page.locator('table');
-        this.newButton = page.getByRole('link', { name: config.newButtonLabel });
+        this.newButton = page.getByRole(config.newButtonRole ?? 'link', { name: config.newButtonLabel });
     }
 
     async goto() {
