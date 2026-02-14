@@ -30,8 +30,7 @@ import { mergeDeep } from './merge-deep';
  * export class MyService {
  *
  *   constructor(
- *      // highlight-next-line
- *      private entityHydrator: EntityHydrator,
+ *      private entityHydrator: EntityHydrator, // [!code highlight]
  *      private productVariantService: ProductVariantService,
  *   ) {}
  *
@@ -42,12 +41,10 @@ import { mergeDeep } from './merge-deep';
  *     // at this stage, we don't know which of the Product relations
  *     // will be joined at runtime.
  *
- *     // highlight-start
- *     await this.entityHydrator
- *       .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+ *     await this.entityHydrator // [!code highlight]
+ *       .hydrate(ctx, product, { relations: ['facetValues.facet' ]}); // [!code highlight]
  *
- *     // You can be sure now that the `facetValues` & `facetValues.facet` relations are populated
- *     // highlight-end
+ *     // You can be sure now that the `facetValues` & `facetValues.facet` relations are populated // [!code highlight]
  *   }
  * }
  *```

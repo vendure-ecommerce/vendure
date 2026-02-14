@@ -44,6 +44,7 @@ export function FulfillOrderDialog({ order, onSuccess }: Readonly<FulfillOrderDi
     const [fulfillmentQuantities, setFulfillmentQuantities] = useState<{
         [lineId: string]: FulfillmentQuantity;
     }>({});
+    const [handlerArgsValid, setHandlerArgsValid] = useState(true);
 
     // Get fulfillment handlers
     const { data: fulfillmentHandlersData } = useQuery({
@@ -161,7 +162,7 @@ export function FulfillOrderDialog({ order, onSuccess }: Readonly<FulfillOrderDi
             ({ fulfillCount, max }) => fulfillCount <= max && fulfillCount >= 0,
         );
         const formIsValid = form.formState.isValid;
-        return formIsValid && totalCount > 0 && fulfillmentQuantityIsValid;
+        return formIsValid && totalCount > 0 && fulfillmentQuantityIsValid && handlerArgsValid;
     };
 
     const handleSubmit = async (data: FormData) => {
@@ -195,6 +196,7 @@ export function FulfillOrderDialog({ order, onSuccess }: Readonly<FulfillOrderDi
     const handleCancel = () => {
         form.reset();
         setFulfillmentQuantities({});
+        setHandlerArgsValid(true);
         setOpen(false);
     };
 
@@ -296,6 +298,7 @@ export function FulfillOrderDialog({ order, onSuccess }: Readonly<FulfillOrderDi
                                             onChange={field.onChange}
                                             readonly={false}
                                             removable={false}
+                                            onValidityChange={setHandlerArgsValid}
                                         />
                                     )}
                                 />

@@ -110,11 +110,9 @@ export type DashboardFormComponentProps<
  *   // implementation omitted
  * }
  *
- * // highlight-start
- * MyCustomInput.metadata = {
- *   isListInput: true
- * }
- * // highlight-end
+ * MyCustomInput.metadata = { // [!code highlight]
+ *   isListInput: true // [!code highlight]
+ * } // [!code highlight]
  * ```
  *
  * @docsCategory extensions-api

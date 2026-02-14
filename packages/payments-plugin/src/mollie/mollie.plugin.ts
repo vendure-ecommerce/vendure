@@ -224,6 +224,9 @@ export interface MolliePluginOptions {
  * To finalize an order in `ArrangingAdditionalPayment` status, you can use call the `createMolliePaymentIntent` mutation again with an additional `orderId` as input.
  * The `orderId` argument is needed, because an order in `ArrangingAdditionalPayment` status is not an active order anymore.
  *
+ * @deprecated This plugin is moving to `@vendure-community/payments-plugin`.
+ * The `@vendure/payments-plugin` package will be removed in Vendure v3.6.0.
+ *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin
  * @docsWeight 0

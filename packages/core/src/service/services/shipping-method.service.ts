@@ -179,7 +179,7 @@ export class ShippingMethodService {
         await this.connection
             .getRepository(ctx, ShippingMethod)
             .save(updatedShippingMethod, { reload: false });
-        await this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'updated', input));
+        await this.eventBus.publish(new ShippingMethodEvent(ctx, updatedShippingMethod, 'updated', input));
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }
 
