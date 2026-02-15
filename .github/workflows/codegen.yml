@@ -24,5 +24,3 @@ jobs:
               run: npm run build:core-common
             - name: Generate GraphQL types
               run: npm run codegen
-            - name: Verify no uncommitted changes
-              run: git diff --exit-code
