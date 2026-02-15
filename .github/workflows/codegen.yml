@@ -17,9 +17,12 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 22
+                  cache: 'npm'
             - name: Install dependencies
               run: npm install
             - name: Build core and common packages
               run: npm run build:core-common
             - name: Generate GraphQL types
               run: npm run codegen
+            - name: Verify no uncommitted changes
+              run: git diff --exit-code
