@@ -397,11 +397,11 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 } else {
                     qb.orWhere(existsClause.clause, existsClause.parameters);
                 }
-                return;
+            } else {
+                Logger.warn(
+                    `Could not build EXISTS subquery for custom property "${condition.isExistsCondition.customPropertyKey}". Skipping filter condition.`,
+                );
             }
-            Logger.warn(
-                `Could not build EXISTS subquery for custom property "${condition.isExistsCondition.customPropertyKey}". Skipping condition.`,
-            );
             return;
         }
 
