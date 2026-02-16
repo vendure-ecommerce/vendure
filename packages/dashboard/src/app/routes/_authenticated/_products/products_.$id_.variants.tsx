@@ -112,9 +112,7 @@ function AddOptionValueDialog({
         const trimmedValue = values.name.trim();
 
         // Prevent duplicates
-        const currentValues = existingValues ?? [];
-
-        if (currentValues.includes(trimmedValue)) {
+        if (existingValues.includes(trimmedValue)) {
             toast.error(t`Option value already exists`);
             return;
         }
@@ -134,8 +132,7 @@ function AddOptionValueDialog({
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen} >
-
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button size="icon" variant="ghost">
                     <Plus className="h-3 w-3" />
