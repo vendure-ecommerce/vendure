@@ -21,6 +21,7 @@ import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-lo
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { PromotionActionsSelector } from './components/promotion-actions-selector.js';
 import { PromotionConditionsSelector } from './components/promotion-conditions-selector.js';
@@ -122,6 +123,9 @@ function PromotionDetailPage() {
         },
     });
 
+    const [conditionsArgsValid, setConditionsArgsValid] = useState(true);
+    const [actionsArgsValid, setActionsArgsValid] = useState(true);
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New promotion</Trans> : (entity?.name ?? '')}</PageTitle>
@@ -129,7 +133,13 @@ function PromotionDetailPage() {
                 <ActionBarItem itemId="save-button" requiresPermission={['UpdatePromotion']}>
                     <Button
                         type="submit"
-                        disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        disabled={
+                            !form.formState.isDirty ||
+                            !form.formState.isValid ||
+                            isPending ||
+                            !conditionsArgsValid ||
+                            !actionsArgsValid
+                        }
                     >
                         {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                     </Button>
@@ -223,6 +233,7 @@ function PromotionDetailPage() {
                             <PromotionConditionsSelector
                                 value={field.value ?? []}
                                 onChange={field.onChange}
+                                onValidityChange={setConditionsArgsValid}
                             />
                         )}
                     />
@@ -232,7 +243,11 @@ function PromotionDetailPage() {
                         control={form.control}
                         name="actions"
                         render={({ field }) => (
-                            <PromotionActionsSelector value={field.value ?? []} onChange={field.onChange} />
+                            <PromotionActionsSelector
+                                value={field.value ?? []}
+                                onChange={field.onChange}
+                                onValidityChange={setActionsArgsValid}
+                            />
                         )}
                     />
                 </PageBlock>

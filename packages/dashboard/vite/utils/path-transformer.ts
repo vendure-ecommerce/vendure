@@ -1,3 +1,4 @@
+import * as path from 'node:path';
 import * as ts from 'typescript';
 
 export interface PathTransformerOptions {
@@ -19,17 +20,15 @@ interface PathMatcher {
  * This is necessary for ESM mode where tsconfig-paths.register() doesn't work
  * because it only hooks into CommonJS require(), not ESM import().
  *
- * The transformer assumes that both the importing file and imported file compile
- * to the same flat output directory. For complex monorepo setups with nested output
- * structures, the `pathAdapter.transformTsConfigPathMappings` callback should be
- * used to adjust paths appropriately.
+ * The transformer uses the source file's location and the tsconfig baseUrl to
+ * compute correct relative paths, even for files in nested directories.
  *
  * Known limitations:
  * - Only the first path target is used when multiple fallbacks are configured
  * - `require()` calls via `createRequire` are not transformed
  */
 export function createPathTransformer(options: PathTransformerOptions): ts.TransformerFactory<ts.SourceFile> {
-    const { paths } = options;
+    const { baseUrl, paths } = options;
 
     // Compile the path patterns into matchers
     const pathMatchers = Object.entries(paths).map(([pattern, targets]) => {
@@ -47,72 +46,98 @@ export function createPathTransformer(options: PathTransformerOptions): ts.Trans
     });
 
     return context => {
-        const visitor: ts.Visitor = node => {
-            // Handle import declarations: import { X } from 'module';
-            if (
-                ts.isImportDeclaration(node) &&
-                node.moduleSpecifier &&
-                ts.isStringLiteral(node.moduleSpecifier)
-            ) {
-                const resolvedPath = resolvePathAlias(node.moduleSpecifier.text, pathMatchers);
-                if (resolvedPath) {
-                    return context.factory.updateImportDeclaration(
-                        node,
-                        node.modifiers,
-                        node.importClause,
-                        context.factory.createStringLiteral(resolvedPath),
-                        node.attributes,
+        return sourceFile => {
+            const sourceDir = path.dirname(sourceFile.fileName);
+
+            const visitor: ts.Visitor = node => {
+                // Handle import declarations: import { X } from 'module';
+                if (
+                    ts.isImportDeclaration(node) &&
+                    node.moduleSpecifier &&
+                    ts.isStringLiteral(node.moduleSpecifier)
+                ) {
+                    const resolvedPath = resolvePathAlias(
+                        node.moduleSpecifier.text,
+                        pathMatchers,
+                        baseUrl,
+                        sourceDir,
                     );
+                    if (resolvedPath) {
+                        return context.factory.updateImportDeclaration(
+                            node,
+                            node.modifiers,
+                            node.importClause,
+                            context.factory.createStringLiteral(resolvedPath),
+                            node.attributes,
+                        );
+                    }
                 }
-            }
 
-            // Handle export declarations: export { X } from 'module';
-            if (
-                ts.isExportDeclaration(node) &&
-                node.moduleSpecifier &&
-                ts.isStringLiteral(node.moduleSpecifier)
-            ) {
-                const resolvedPath = resolvePathAlias(node.moduleSpecifier.text, pathMatchers);
-                if (resolvedPath) {
-                    return context.factory.updateExportDeclaration(
-                        node,
-                        node.modifiers,
-                        node.isTypeOnly,
-                        node.exportClause,
-                        context.factory.createStringLiteral(resolvedPath),
-                        node.attributes,
+                // Handle export declarations: export { X } from 'module';
+                if (
+                    ts.isExportDeclaration(node) &&
+                    node.moduleSpecifier &&
+                    ts.isStringLiteral(node.moduleSpecifier)
+                ) {
+                    const resolvedPath = resolvePathAlias(
+                        node.moduleSpecifier.text,
+                        pathMatchers,
+                        baseUrl,
+                        sourceDir,
                     );
+                    if (resolvedPath) {
+                        return context.factory.updateExportDeclaration(
+                            node,
+                            node.modifiers,
+                            node.isTypeOnly,
+                            node.exportClause,
+                            context.factory.createStringLiteral(resolvedPath),
+                            node.attributes,
+                        );
+                    }
                 }
-            }
 
-            // Handle dynamic imports: import('module')
-            if (
-                ts.isCallExpression(node) &&
-                node.expression.kind === ts.SyntaxKind.ImportKeyword &&
-                node.arguments.length > 0 &&
-                ts.isStringLiteral(node.arguments[0])
-            ) {
-                const resolvedPath = resolvePathAlias(node.arguments[0].text, pathMatchers);
-                if (resolvedPath) {
-                    return context.factory.updateCallExpression(node, node.expression, node.typeArguments, [
-                        context.factory.createStringLiteral(resolvedPath),
-                        ...node.arguments.slice(1),
-                    ]);
+                // Handle dynamic imports: import('module')
+                if (
+                    ts.isCallExpression(node) &&
+                    node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+                    node.arguments.length > 0 &&
+                    ts.isStringLiteral(node.arguments[0])
+                ) {
+                    const resolvedPath = resolvePathAlias(
+                        node.arguments[0].text,
+                        pathMatchers,
+                        baseUrl,
+                        sourceDir,
+                    );
+                    if (resolvedPath) {
+                        return context.factory.updateCallExpression(
+                            node,
+                            node.expression,
+                            node.typeArguments,
+                            [context.factory.createStringLiteral(resolvedPath), ...node.arguments.slice(1)],
+                        );
+                    }
                 }
-            }
 
-            return ts.visitEachChild(node, visitor, context);
+                return ts.visitEachChild(node, visitor, context);
+            };
+
+            return ts.visitNode(sourceFile, visitor) as ts.SourceFile;
         };
-
-        return sourceFile => ts.visitNode(sourceFile, visitor) as ts.SourceFile;
     };
 }
 
 /**
- * Resolves a path alias to its actual path.
+ * Resolves a path alias to its actual path, computed relative to the source file's directory.
  * Returns undefined if the module specifier doesn't match any path alias.
  */
-function resolvePathAlias(moduleSpecifier: string, pathMatchers: PathMatcher[]): string | undefined {
+function resolvePathAlias(
+    moduleSpecifier: string,
+    pathMatchers: PathMatcher[],
+    baseUrl: string,
+    sourceDir: string,
+): string | undefined {
     if (moduleSpecifier.startsWith('.') || moduleSpecifier.startsWith('/')) {
         return undefined;
     }
@@ -123,25 +148,24 @@ function resolvePathAlias(moduleSpecifier: string, pathMatchers: PathMatcher[]):
             const target = targets[0];
             const resolved = hasWildcard && match[1] ? target.split('*').join(match[1]) : target;
 
-            return normalizeResolvedPath(resolved);
+            // Compute absolute target path from baseUrl, then get relative path from source dir
+            const absoluteTarget = path.resolve(baseUrl, resolved);
+            let relativePath = path.relative(sourceDir, absoluteTarget);
+
+            // Normalize path separators to forward slashes
+            relativePath = relativePath.split('\\').join('/');
+
+            // Ensure relative path has ./ or ../ prefix
+            if (!relativePath.startsWith('.')) {
+                relativePath = './' + relativePath;
+            }
+
+            // Convert TypeScript extensions to JavaScript equivalents for ESM
+            return convertExtension(relativePath);
         }
     }
 
     return undefined;
-}
-
-/**
- * Normalizes a resolved path to a relative path with ./ prefix
- * and converts TypeScript extensions to JavaScript equivalents.
- */
-function normalizeResolvedPath(resolved: string): string {
-    // Normalize to relative path with ./ prefix
-    let result = resolved.startsWith('./') ? resolved.substring(2) : resolved;
-    result = `./${result}`;
-    result = result.split('\\').join('/');
-
-    // Convert TypeScript extensions to JavaScript equivalents for ESM
-    return convertExtension(result);
 }
 
 /**

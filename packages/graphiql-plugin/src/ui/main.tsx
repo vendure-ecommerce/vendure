@@ -4,6 +4,14 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './styles.css';
 
+// Check for embedded mode and apply body classes
+const params = new URLSearchParams(window.location.search);
+const embeddedMode = params.get('embeddedMode') === 'true';
+
+if (embeddedMode) {
+    document.body.classList.add('embedded-mode', 'graphiql-dark');
+}
+
 // Get the API URL and name from the URL path
 const path = window.location.pathname;
 const isAdminApi = path.includes('/admin');

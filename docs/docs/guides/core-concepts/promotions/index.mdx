@@ -1,5 +1,7 @@
 ---
 title: 'Promotions'
+metaTitle: "Creating Promotions and Discounts in Vendure"
+metaDescription: "Understand how promotions work in Vendure, including constraints, conditions, and actions for order-level, item-level, and shipping discounts."
 ---
 
 Promotions are a means of offering discounts on an order based on various criteria. A Promotion consists of _conditions_ and _actions_.
@@ -21,18 +23,21 @@ All Promotions can have the following constraints applied to them:
 
 A Promotion may be additionally constrained by one or more conditions. When evaluating whether a Promotion should be applied, each of the defined conditions is checked in turn. If all the conditions evaluate to `true`, then any defined actions are applied to the order.
 
-Vendure comes with some built-in conditions, but you can also create your own conditions (see section below).
+Vendure comes with some built-in conditions, and you can also create your own.
 
 ### Actions
 
 A promotion action defines exactly how the order discount should be calculated. **At least one** action must be specified for a valid Promotion.
 
-Vendure comes with some built-in actions, but you can also create your own actions (see section below).
+Vendure comes with some built-in actions, and you can also create your own.
 
-## Creating custom conditions
+For details on creating custom conditions and actions, see the [Developer Guide](/developer-guide/strategies-configurable-operations/).
+
+## Code Examples
+
+### Custom conditions
 
 To create a custom condition, you need to define a new [`PromotionCondition` object](/reference/typescript-api/promotions/promotion-condition/).
-A promotion condition is an example of a [configurable operation](/developer-guide/strategies-configurable-operations/#configurable-operations).
 Here is an annotated example of one of the built-in PromotionConditions.
 
 ```ts
@@ -97,15 +102,13 @@ export const config: VendureConfig = {
 }
 ```
 
-## Creating custom actions
+### Custom actions
 
 There are three kinds of PromotionAction:
 
 - [`PromotionItemAction`](/reference/typescript-api/promotions/promotion-action#promotionitemaction) applies a discount on the `OrderLine` level, i.e. it would be used for a promotion like "50% off USB cables".
 - [`PromotionOrderAction`](/reference/typescript-api/promotions/promotion-action#promotionorderaction) applies a discount on the `Order` level, i.e. it would be used for a promotion like "5% off the order total".
 - [`PromotionShippingAction`](/reference/typescript-api/promotions/promotion-action#promotionshippingaction) applies a discount on the shipping, i.e. it would be used for a promotion like "free shipping".
-
-The implementations of each type is similar, with the difference being the arguments passed to the `execute()`.
 
 Here's an example of a simple PromotionOrderAction.
 
@@ -156,9 +159,9 @@ export const config: VendureConfig = {
 };
 ```
 
-## Free gift promotions
+### Free gift promotions
 
-Vendure v1.8 introduced a new **side effect API** to PromotionActions, which allow you to define some additional action to be performed when a Promotion becomes active or inactive.
+PromotionActions support a **side effect API** with `onActivate`/`onDeactivate` hooks, which allow you to define additional actions to be performed when a Promotion becomes active or inactive.
 
 A primary use-case of this API is to add a free gift to the Order. Here's an example of a plugin which implements a "free gift" action:
 
@@ -257,7 +260,7 @@ function lineContainsIds(ids: ID[], line: OrderLine): boolean {
 export class FreeGiftPromotionPlugin {}
 ```
 
-## Dependency relationships
+### Dependency relationships
 
 It is possible to establish dependency relationships between a PromotionAction and one or more PromotionConditions.
 
@@ -266,11 +269,7 @@ For example, if we want to set up a "buy 1, get 1 free" offer, we need to:
 1. Establish whether the Order contains the particular ProductVariant under offer (done in the PromotionCondition)
 2. Apply a discount to the qualifying OrderLine (done in the PromotionAction)
 
-In this scenario, we would have to repeat the logic for checking the Order contents in _both_ the PromotionCondition _and_ the PromotionAction. Not only is this duplicated work for the server, it also means that setting up the promotion relies on the same parameters being input into the PromotionCondition and the PromotionAction.
-
-Note the use of `PromotionItemAction` to get a reference to the `OrderLine` as opposed to the `Order`.
-
-Instead, we can say that the PromotionAction _depends_ on the PromotionCondition:
+In this scenario, we would have to repeat the logic for checking the Order contents in _both_ the PromotionCondition _and_ the PromotionAction. Instead, we can say that the PromotionAction _depends_ on the PromotionCondition:
 
 ```ts
 export const buy1Get1FreeAction = new PromotionItemAction({
@@ -316,6 +315,6 @@ export const buyXGetYFreeCondition = new PromotionCondition({
 });
 ```
 
-## Injecting providers
+### Injecting providers
 
 If your PromotionCondition or PromotionAction needs access to the database or other providers, they can be injected by defining an `init()` function in your PromotionAction or PromotionCondition. See the [configurable operation guide](/developer-guide/strategies-configurable-operations/#injecting-dependencies) for details.
