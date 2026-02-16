@@ -17,9 +17,14 @@ export const promotionActionsDocument = graphql(
 interface PromotionActionsSelectorProps {
     value: ConfigurableOperationInputType[];
     onChange: (value: ConfigurableOperationInputType[]) => void;
+    onValidityChange?: (isValid: boolean) => void;
 }
 
-export function PromotionActionsSelector({ value, onChange }: Readonly<PromotionActionsSelectorProps>) {
+export function PromotionActionsSelector({
+    value,
+    onChange,
+    onValidityChange,
+}: Readonly<PromotionActionsSelectorProps>) {
     return (
         <ConfigurableOperationMultiSelector
             value={value}
@@ -30,6 +35,7 @@ export function PromotionActionsSelector({ value, onChange }: Readonly<Promotion
             buttonText="Add action"
             dropdownTitle="Available Actions"
             showEnhancedDropdown={true}
+            onValidityChange={onValidityChange}
         />
     );
 }

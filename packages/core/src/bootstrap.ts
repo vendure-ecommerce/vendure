@@ -122,11 +122,9 @@ export interface BootstrapWorkerOptions {
  * import { config } from './vendure-config';
  *
  * bootstrap(config, {
- *   // highlight-start
- *   nestApplicationOptions: {
- *     snapshot: true,
- *   }
- *   // highlight-end
+ *   nestApplicationOptions: { // [!code highlight]
+ *     snapshot: true, // [!code highlight]
+ *   } // [!code highlight]
  * }).catch(err => {
  *   console.log(err);
  *   process.exit(1);

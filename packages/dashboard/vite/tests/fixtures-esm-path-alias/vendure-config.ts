@@ -1,6 +1,8 @@
 import { MyPlugin } from '@esm-plugins/my-plugin';
 import { VendureConfig } from '@vendure/core';
 
+import { plugin } from './services/helper.js';
+
 const somePath = import.meta.url;
 
 export const config: VendureConfig = {
@@ -16,5 +18,5 @@ export const config: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [],
     },
-    plugins: [MyPlugin],
+    plugins: [MyPlugin, plugin],
 };

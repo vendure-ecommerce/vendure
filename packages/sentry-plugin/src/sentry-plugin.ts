@@ -85,12 +85,10 @@ const SentryOptionsProvider = {
  *     // ...
  *     plugins: [
  *         // ...
- *         // highlight-start
- *         SentryPlugin.init({
- *             // Optional configuration
- *             includeErrorTestMutation: true,
- *         }),
- *         // highlight-end
+ *         SentryPlugin.init({ // [!code highlight]
+ *             // Optional configuration // [!code highlight]
+ *             includeErrorTestMutation: true, // [!code highlight]
+ *         }), // [!code highlight]
  *     ],
  * };
  *```
@@ -140,6 +138,9 @@ const SentryOptionsProvider = {
  * ```
  *
  * You should then be able to see the error in your Sentry dashboard (it may take a couple of minutes to appear).
+ *
+ * @deprecated This plugin is moving to `@vendure-community/sentry-plugin`.
+ * The `@vendure/sentry-plugin` package will be removed in Vendure v3.6.0.
  *
  * @docsCategory core plugins/SentryPlugin
  */

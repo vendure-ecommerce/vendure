@@ -1,5 +1,7 @@
 ---
-title: "Images & Assets"
+title: "Assets"
+metaTitle: "Asset Management in Vendure"
+metaDescription: "Manage product images, videos, and files in Vendure with customizable naming, preview, and storage strategies plus the AssetServerPlugin."
 ---
 
 [`Assets`](/reference/typescript-api/entities/asset/) are used to store files such as images, videos, PDFs, etc. Assets can be
@@ -21,15 +23,7 @@ read the file from the storage location.
 
 ## AssetServerPlugin
 
-Vendure comes with the `@vendure/asset-server-plugin` package pre-installed. This provides the [`AssetServerPlugin`](/reference/core-plugins/asset-server-plugin/) which provides many advanced features to make working with
-assets easier.
-
-The plugin provides a ready-made set of strategies for handling assets, but also allows you to replace these defaults with
-your own implementations. For example, here are instructions on how to replace the default storage strategy with one
-that stores your assets on AWS S3 or Minio: [configure S3 asset storage](/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#configures3assetstorage)
-
-It also features a powerful image transformation API, which allows you to specify the dimensions, crop, and image format
-using query parameters.
+Vendure comes with the [`AssetServerPlugin`](/reference/core-plugins/asset-server-plugin/) pre-installed, which provides ready-made strategies for asset handling, a powerful image transformation API (resize, crop, format conversion via query parameters), and support for custom storage backends such as AWS S3 or Minio.
 
 :::info
 See the [AssetServerPlugin docs](/reference/core-plugins/asset-server-plugin/) for a detailed description of all the features.

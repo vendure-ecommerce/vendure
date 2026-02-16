@@ -26,7 +26,10 @@
         "generate-index": "node scripts/generate-index.js",
         "i18n:extract": "lingui extract && node ./scripts/translate/i18n-tool.js extract",
         "i18n:apply": "node ./scripts/translate/i18n-tool.js apply",
+        "i18n:check": "node ./scripts/translate/check-translations.js",
         "storybook": "storybook dev -p 6006",
+        "e2e:pw": "playwright test --config e2e/playwright.config.ts",
+        "e2e:ui": "playwright test --config e2e/playwright.config.ts --ui",
         "storybook:build": "storybook build",
         "storybook:deploy": "npm run build --prefix ../common && npm run build --prefix ../core && npm run build:vite && storybook build"
     },
@@ -152,6 +155,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
+        "@playwright/test": "^1.58.2",
         "@storybook/addon-a11y": "^10.0.0-beta.9",
         "@storybook/addon-docs": "^10.0.0-beta.9",
         "@storybook/addon-vitest": "^10.0.0-beta.9",
