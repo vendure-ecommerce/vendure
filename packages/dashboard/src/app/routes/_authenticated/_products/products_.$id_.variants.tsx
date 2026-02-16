@@ -22,7 +22,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Plus, Save, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
@@ -75,10 +75,12 @@ type Variant = NonNullable<ResultOf<typeof productDetailWithVariantsDocument>['p
 function AddOptionValueDialog({
     groupId,
     groupName,
+    existingValues,
     onSuccess,
 }: Readonly<{
     groupId: string;
     groupName: string;
+    existingValues: string[];
     onSuccess?: () => void;
 }>) {
     const [open, setOpen] = useState(false);
@@ -107,6 +109,14 @@ function AddOptionValueDialog({
     });
 
     const onSubmit = (values: AddOptionValueFormValues) => {
+        const trimmedValue = values.name.trim();
+
+        // Prevent duplicates
+        if (existingValues.includes(trimmedValue)) {
+            toast.error(t`Option value already exists`);
+            return;
+        }
+
         createOptionMutation.mutate({
             input: {
                 productOptionGroupId: groupId,
@@ -283,6 +293,7 @@ function ManageProductVariants() {
                                             <AddOptionValueDialog
                                                 groupId={group.id}
                                                 groupName={group.name}
+                                                existingValues={group.options.map(o => o.name)}
                                                 onSuccess={() => refetch()}
                                             />
                                         </div>
@@ -329,7 +340,7 @@ function ManageProductVariants() {
                                                             <Select
                                                                 value={
                                                                     optionsToAddToVariant[variant.id]?.[
-                                                                        group.id
+                                                                    group.id
                                                                     ] || ''
                                                                 }
                                                                 onValueChange={value =>
@@ -365,7 +376,7 @@ function ManageProductVariants() {
                                                                 }
                                                                 disabled={
                                                                     !optionsToAddToVariant[variant.id]?.[
-                                                                        group.id
+                                                                    group.id
                                                                     ]
                                                                 }
                                                                 onClick={() => addOptionToVariant(variant)}
