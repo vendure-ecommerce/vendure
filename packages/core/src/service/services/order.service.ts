@@ -12,7 +12,6 @@ import {
     AddFulfillmentToOrderResult,
     AddManualPaymentToOrderResult,
     AddNoteToOrderInput,
-    AdjustmentType,
     CancelOrderInput,
     CancelOrderResult,
     CancelPaymentResult,
@@ -1028,14 +1027,6 @@ export class OrderService {
     async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {
-            // When removing a couponCode which has triggered an Order-level discount
-            // we need to make sure we persist the changes to the adjustments array of
-            // any affected OrderLines.
-            const affectedOrderLines = order.lines.filter(
-                line =>
-                    line.adjustments.filter(a => a.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
-                        .length,
-            );
             order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
             await this.historyService.createHistoryEntryForOrder({
                 ctx,
@@ -1044,9 +1035,7 @@ export class OrderService {
                 data: { couponCode },
             });
             await this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'removed'));
-            const result = await this.applyPriceAdjustments(ctx, order);
-            await this.connection.getRepository(ctx, OrderLine).save(affectedOrderLines);
-            return result;
+            return this.applyPriceAdjustments(ctx, order);
         } else {
             return order;
         }
@@ -1091,8 +1080,8 @@ export class OrderService {
         // Since a changed ShippingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone(ctx.channelId), undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA(ctx.channelId), undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -1115,8 +1104,8 @@ export class OrderService {
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone(ctx.channelId), undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA(ctx.channelId), undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -1139,8 +1128,8 @@ export class OrderService {
         // Since a changed ShippingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone(ctx.channelId), undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA(ctx.channelId), undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -1163,8 +1152,8 @@ export class OrderService {
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone(ctx.channelId), undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA(ctx.channelId), undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 

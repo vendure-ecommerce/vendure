@@ -1,6 +1,7 @@
 ---
 title: "Testing"
-showtoc: true
+metaTitle: "Writing E2E Tests for Vendure Plugins"
+metaDescription: "Set up end-to-end testing for Vendure plugins using the @vendure/testing package and Vitest, with real API requests against a test server and database."
 ---
 
 Vendure plugins allow you to extend all aspects of the standard Vendure server. When a plugin gets somewhat complex (defining new entities, extending the GraphQL schema, implementing custom resolvers), you may wish to create automated tests to ensure your plugin is correct.
@@ -204,11 +205,9 @@ import { MyPlugin } from '../my-plugin.ts';
 describe('my plugin', () => {
 
     const {server, adminClient, shopClient} = createTestEnvironment(mergeConfig(testConfig, {
-        // highlight-start
-        apiOptions: {
-            port: 3051,
-        },
-        // highlight-end
+        apiOptions: { // [!code highlight]
+            port: 3051, // [!code highlight]
+        }, // [!code highlight]
         plugins: [MyPlugin],
     }));
 
@@ -234,8 +233,7 @@ describe('my plugin', () => {
         plugins: [MyPlugin],
     });
     
-    // highlight-next-line
-    let productService: ProductService;
+    let productService: ProductService; // [!code highlight]
     
     beforeAll(async () => {
         await server.init({
@@ -244,8 +242,7 @@ describe('my plugin', () => {
             customerCount: 2,
         });
         await adminClient.asSuperAdmin();
-        // highlight-next-line
-        productService = server.app.get(ProductService);
+        productService = server.app.get(ProductService); // [!code highlight]
     }, 60000);
 
 });

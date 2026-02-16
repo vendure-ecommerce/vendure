@@ -1,5 +1,7 @@
 ---
 title: "Migrations"
+metaTitle: "Database Migrations in Vendure - Generate, Run, and Revert"
+metaDescription: "Manage database schema changes in Vendure with TypeORM migrations. Covers generating, running, and reverting migrations for custom fields and plugins."
 ---
 
 Database migrations are needed whenever the database schema changes. This can be caused by:
@@ -21,8 +23,7 @@ export const config: VendureConfig = {
     // ...
     dbConnectionOptions: {
         // ...
-        // highlight-next-line
-        synchronize: false,
+        synchronize: false, // [!code highlight]
     }
 };
 ```
@@ -81,8 +82,7 @@ be run automatically. This is because the `runMigrations` function is called in 
 import { bootstrap, runMigrations } from '@vendure/core';
 import { config } from './vendure-config';
 
-// highlight-next-line
-runMigrations(config)
+runMigrations(config) // [!code highlight]
     .then(() => bootstrap(config))
     .catch(err => {
         console.log(err);
@@ -169,8 +169,7 @@ export const config: VendureConfig = {
     // ...
     dbConnectionOptions: {
         // ...
-        // highlight-next-line
-        migrations: [path.join(__dirname, './migrations/*.+(js|ts)')],
+        migrations: [path.join(__dirname, './migrations/*.+(js|ts)')], // [!code highlight]
     }
 };
 ```

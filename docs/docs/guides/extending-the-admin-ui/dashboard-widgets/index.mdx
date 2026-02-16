@@ -1,5 +1,7 @@
 ---
 title: 'Dashboard Widgets'
+metaTitle: "Creating Dashboard Widgets for the Vendure Admin UI"
+metaDescription: "Build custom Angular dashboard widgets to display summaries, notifications, or charts, and configure default widget layouts and permission controls."
 ---
 
 Dashboard widgets are components which can be added to the Admin UI dashboard. These widgets are useful for displaying information which is commonly required by administrations, such as sales summaries, lists of incomplete orders, notifications, etc.
@@ -80,17 +82,15 @@ Our widget now needs to be registered in our [providers file](/extending-the-adm
 import { registerDashboardWidget } from '@vendure/admin-ui/core';
 
 export default [
-    // highlight-start
-    registerDashboardWidget('reviews', {
-        title: 'Latest reviews',
-        supportedWidths: [4, 6, 8, 12],
-        requiresPermissions: ['ReadReview'],
-        loadComponent: () =>
-            import('./reviews-widget/reviews-widget.component').then(
-                m => m.ReviewsWidgetComponent,
-            ),
-    }),
-    // highlight-end
+    registerDashboardWidget('reviews', { // [!code highlight]
+        title: 'Latest reviews', // [!code highlight]
+        supportedWidths: [4, 6, 8, 12], // [!code highlight]
+        requiresPermissions: ['ReadReview'], // [!code highlight]
+        loadComponent: () => // [!code highlight]
+            import('./reviews-widget/reviews-widget.component').then( // [!code highlight]
+                m => m.ReviewsWidgetComponent, // [!code highlight]
+            ), // [!code highlight]
+    }), // [!code highlight]
 ];
 ```
 
@@ -112,14 +112,12 @@ export default [
     registerDashboardWidget('reviews', {
         // omitted for brevity
     }),
-    // highlight-start
-    setDashboardWidgetLayout([
-        { id: 'welcome', width: 12 },
-        { id: 'orderSummary', width: 4 },
-        { id: 'latestOrders', width: 8 },
-        { id: 'reviews', width: 6 },
-    ]),
-    // highlight-end
+    setDashboardWidgetLayout([ // [!code highlight]
+        { id: 'welcome', width: 12 }, // [!code highlight]
+        { id: 'orderSummary', width: 4 }, // [!code highlight]
+        { id: 'latestOrders', width: 8 }, // [!code highlight]
+        { id: 'reviews', width: 6 }, // [!code highlight]
+    ]), // [!code highlight]
 ];
 ```
 
@@ -138,12 +136,10 @@ import { registerDashboardWidget } from '@vendure/admin-ui/core';
 import { OrderSummaryWidgetComponent } from '@vendure/admin-ui/dashboard';
 
 export default [
-    // highlight-start
-    registerDashboardWidget('orderSummary', {
-        title: 'dashboard.orders-summary',
-        loadComponent: () => OrderSummaryWidgetComponent,
-        requiresPermissions: ['SuperAdmin'],
-    }),
-    // highlight-end
+    registerDashboardWidget('orderSummary', { // [!code highlight]
+        title: 'dashboard.orders-summary', // [!code highlight]
+        loadComponent: () => OrderSummaryWidgetComponent, // [!code highlight]
+        requiresPermissions: ['SuperAdmin'], // [!code highlight]
+    }), // [!code highlight]
 ];
 ```

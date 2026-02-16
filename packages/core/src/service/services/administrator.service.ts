@@ -195,8 +195,8 @@ export class AdministratorService {
             for (const roleId of input.roleIds) {
                 updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
             }
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
+            await this.eventBus.publish(new RoleChangeEvent(ctx, updatedAdministrator, addIds, 'assigned'));
+            await this.eventBus.publish(new RoleChangeEvent(ctx, updatedAdministrator, removeIds, 'removed'));
         }
         await this.customFieldRelationService.updateRelations(
             ctx,
@@ -204,7 +204,7 @@ export class AdministratorService {
             input,
             updatedAdministrator,
         );
-        await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
+        await this.eventBus.publish(new AdministratorEvent(ctx, updatedAdministrator, 'updated', input));
         return updatedAdministrator;
     }
 

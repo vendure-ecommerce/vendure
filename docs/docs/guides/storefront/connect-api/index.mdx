@@ -1,5 +1,7 @@
 ---
 title: Connect to the API
+metaTitle: "Connecting Your Storefront to the Vendure Shop API"
+metaDescription: "Configure a GraphQL client to connect to Vendure's Shop API with session management, channel tokens, and language settings. Includes Fetch, Apollo, and TanStack examples."
 ---
 
 The first thing you'll need to do is to connect your storefront app to the **Shop API**. The Shop API is a GraphQL API
@@ -32,8 +34,7 @@ import { VendureConfig } from '@vendure/core';
 export const config: VendureConfig = {
     // ...
     authOptions: {
-        // highlight-next-line
-        tokenMethod: ['bearer', 'cookie'],
+        tokenMethod: ['bearer', 'cookie'], // [!code highlight]
     },
 };
 ```
@@ -55,11 +56,9 @@ Using cookies is the simpler approach for browser-based applications, since the 
         // ...
         authOptions: {
             tokenMethod: ['bearer', 'cookie'],
-            // highlight-start
-            cookieOptions: {
-                secret: process.env.COOKIE_SESSION_SECRET
-            }
-            // highlight-end
+            cookieOptions: { // [!code highlight]
+                secret: process.env.COOKIE_SESSION_SECRET // [!code highlight]
+            } // [!code highlight]
         }
     }
     ```
@@ -125,9 +124,7 @@ export function query(document: string, variables: Record<string, any> = {}) {
         method: 'POST',
         headers: {
             'content-type': 'application/json',
-            // highlight-start
-            'vendure-token': 'uk-channel',
-            // highlight-end
+            'vendure-token': 'uk-channel', // [!code highlight]
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -213,16 +210,14 @@ export function query(document: string, variables: Record<string, any> = {}) {
     if (languageCode) {
         endpoint += `?languageCode=${languageCode}`;
     }
-    // highlight-start
-    return fetch(endpoint, {
-        method: 'POST',
-        headers,
-        credentials: 'include',
-        body: JSON.stringify({
-            query: document,
-            variables,
-        }),
-    // highlight-end
+    return fetch(endpoint, { // [!code highlight]
+        method: 'POST', // [!code highlight]
+        headers, // [!code highlight]
+        credentials: 'include', // [!code highlight]
+        body: JSON.stringify({ // [!code highlight]
+            query: document, // [!code highlight]
+            variables, // [!code highlight]
+        }), // [!code highlight]
     }).then((res) => {
         if (!res.ok) {
             throw new Error(`An error ocurred, HTTP status: ${res.status}`);

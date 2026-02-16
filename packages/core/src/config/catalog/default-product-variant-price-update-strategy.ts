@@ -39,11 +39,9 @@ export interface DefaultProductVariantPriceUpdateStrategyOptions {
  * export const config: VendureConfig = {
  *   // ...
  *   catalogOptions: {
- *     // highlight-start
- *     productVariantPriceUpdateStrategy: new DefaultProductVariantPriceUpdateStrategy({
- *       syncPricesAcrossChannels: true,
- *     }),
- *     // highlight-end
+ *     productVariantPriceUpdateStrategy: new DefaultProductVariantPriceUpdateStrategy({ // [!code highlight]
+ *       syncPricesAcrossChannels: true, // [!code highlight]
+ *     }), // [!code highlight]
  *   },
  *   // ...
  * };

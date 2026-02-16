@@ -1,6 +1,7 @@
 ---
 title: "Implementing Translatable"
-showtoc: true
+metaTitle: "Making Custom Entities Translatable in Vendure"
+metaDescription: "Add multi-language support to custom Vendure entities by implementing the Translatable interface with translation entities and the TranslatorService."
 ---
 
 ## Defining translatable entities
@@ -20,9 +21,7 @@ class ProductRequest extends VendureEntity implements Translatable {
     constructor(input?: DeepPartial<ProductRequest>) {
         super(input);
     }
-// highlight-start
-    text: LocaleString;
-// highlight-end
+    text: LocaleString; // [!code highlight]
     
     @ManyToOne(type => Product)
     product: Product;
@@ -31,10 +30,8 @@ class ProductRequest extends VendureEntity implements Translatable {
     productId: ID;
 
 
-// highlight-start
-    @OneToMany(() => ProductRequestTranslation, translation => translation.base, { eager: true })
-    translations: Array<Translation<ProductRequest>>;
-// highlight-end
+    @OneToMany(() => ProductRequestTranslation, translation => translation.base, { eager: true }) // [!code highlight]
+    translations: Array<Translation<ProductRequest>>; // [!code highlight]
 }
 ```
 
@@ -61,9 +58,7 @@ export class ProductRequestTranslation
     languageCode: LanguageCode;
 
     @Column('varchar')
-// highlight-start
-    text: string; // same name as the translatable field in the base entity
-// highlight-end
+    text: string; // same name as the translatable field in the base entity // [!code highlight]
     @Index()
     @ManyToOne(() => ProductRequest, base => base.translations, { onDelete: 'CASCADE' })
     base: ProductRequest;
@@ -80,10 +75,8 @@ type ProductRequestTranslation {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-// highlight-start
-    languageCode: LanguageCode!
-    text: String!
-// highlight-end
+    languageCode: LanguageCode! # [!code highlight]
+    text: String! # [!code highlight]
 }
 
 type ProductRequest implements Node {
@@ -92,8 +85,7 @@ type ProductRequest implements Node {
     updatedAt: DateTime!
     # Will be filled with the translation for the current language
     text: String!
-// highlight-next-line
-    translations: [ProductRequestTranslation!]!
+    translations: [ProductRequestTranslation!]! # [!code highlight]
 }
 
 ```
@@ -129,16 +121,13 @@ by defining the types like `CreateRequestInput` inside the GraphQL schema:
 input ProductRequestTranslationInput {
     # Only defined for update mutations
     id: ID
-// highlight-start
-    languageCode: LanguageCode!
-    text: String!
-// highlight-end
+    languageCode: LanguageCode! # [!code highlight]
+    text: String! # [!code highlight]
 }
 
 input CreateProductRequestInput {
     text: String!
-// highlight-next-line
-    translations: [ProductRequestTranslationInput!]!
+    translations: [ProductRequestTranslationInput!]! # [!code highlight]
 }
 ```
 
@@ -172,8 +161,7 @@ Once again it's important to provide the `translations` array in the input objec
 
 input UpdateProductRequestInput {
     text: String
-// highlight-next-line
-    translations: [ProductRequestTranslationInput!]
+    translations: [ProductRequestTranslationInput!] # [!code highlight]
 }
 ```
 
@@ -199,8 +187,7 @@ export class RequestService {
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {
-// highlight-next-line
-                    items: items.map(item => this.translator.translate(item, ctx)),
+                    items: items.map(item => this.translator.translate(item, ctx)), // [!code highlight]
                     totalItems,
                 };
             });
@@ -217,8 +204,7 @@ export class RequestService {
                 where: { id },
                 relations,
             })
-// highlight-next-line
-            .then(entity => entity && this.translator.translate(entity, ctx));
+            .then(entity => entity && this.translator.translate(entity, ctx)); // [!code highlight]
     }
 }
 ```

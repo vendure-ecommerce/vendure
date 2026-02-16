@@ -1,5 +1,7 @@
 ---
 title: 'Navigation'
+metaTitle: "Dashboard Navigation and Sidebar Configuration in Vendure"
+metaDescription: "Configure sidebar navigation sections, menu items, ordering, placement, unauthenticated routes, and Lucide icons in the Vendure Dashboard."
 ---
 
 The dashboard provides a flexible navigation system that allows you to add custom navigation sections and menu items. Navigation items are organized into sections that can be placed in either the "Platform" (top) or "Administration" (bottom) areas of the sidebar.
@@ -182,8 +184,7 @@ defineDashboardExtension({
             component: () => (
                 <div className="flex h-screen items-center justify-center text-2xl">This is a public page!</div>
             ),
-            // highlight-next-line
-            authenticated: false
+            authenticated: false // [!code highlight]
         },
     ]
 });

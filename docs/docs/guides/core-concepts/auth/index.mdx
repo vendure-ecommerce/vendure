@@ -1,5 +1,7 @@
 ---
 title: 'Auth'
+metaTitle: "Authentication and Authorization in Vendure"
+metaDescription: "Overview of Vendure's authentication and authorization system, covering user management, role-based access control, and permissions."
 ---
 
 **Authentication** is the process of determining the identity of a user. Common ways of authenticating a user are by asking the user for secret credentials (username & password) or by a third-party authentication provider such as Facebook or Google login.
@@ -10,60 +12,19 @@ The term **auth** is shorthand for _both_ authentication and authorization.
 
 Auth in Vendure applies to both **administrators** and **customers**. Authentication is controlled by the configured `AuthenticationStrategies`, and authorization is controlled by the configured `Roles` and `Permissions`.
 
-## Administrator auth
+## The three pillars
 
-Administrators are required to authenticate before they can perform any operations in the Admin API.
+Vendure's authentication and authorization system is built on three pillars:
 
-Here is a diagram of the parts that make up Administrator authentication:
+- **[User Management](/core-concepts/user-management/)**: How administrators and customers are represented, verified, and authenticated — including native login, external providers, and guest checkout.
+- **[Role-based Access Control](/core-concepts/roles/)**: Named collections of permissions that control what each user can do, from SuperAdmin down to custom roles like "Inventory Manager".
+- **[Permissions](/core-concepts/permissions/)**: The atomic units of authorization that protect every API operation, determining exactly which actions a given role is allowed to perform.
 
-![Administrator authentication](./admin.webp)
+For diagrams, code examples, and detailed explanations of each area, see the dedicated pages linked above.
 
-Roles can be created to allow fine-grained control over what a particular administrator has access to (see the section below).
+## Code Examples
 
-## Customer auth
-
-Customer only need to authenticate if they want to access a restricted operation related to their account, such as 
-viewing past orders or updating an address.
-
-Here are the parts that make up Customer authentication:
-
-![Customer authentication](./customer.webp)
-
-### Guest customers
-
-Vendure also supports **guest customers**, meaning that a customer can place an order without needing to register an account, and thus not getting an
-associated user or role. A guest customer, having no roles and thus no permissions, is then unable to view past orders or access any other restricted API
-operations.
-
-However, a guest customer can at a later point register an account using the same email address, at which point they will get a user with the "Customer" role,
-and be able to view their past orders.
-
-
-## Roles & Permissions
-
-Both the `Customer` and `Administrator` entities relate to a single [`User`](/reference/typescript-api/entities/user/) entity which in turn has one or more [`Roles`](/reference/typescript-api/entities/role/) for controlling permissions.
-
-
-![Administrators & Roles](./admin-role.webp)
-
-In the example above, the administrator Sam Bailey has two roles assigned: "Order Manager" and "Catalog Manager". An administrator
-can have any number of roles assigned, and the permissions of all roles are combined to determine the permissions of the
-administrator. In this way, you can have fine-grained control over which administrators can perform which actions.
-
-There are 2 special roles which are created by default and cannot be changed:
-
-- **SuperAdmin**: This role has all permissions, and cannot be edited or deleted. It is assigned to the first administrator
-  created when the server is started.
-- **Customer**: This role is assigned to all registered customers.
-
-
-All other roles can be user-defined. Here's an example of an "Inventory Manager" role being defined in the Admin UI:
-
-![Inventory Manager role](./roles.webp)
-
-
-
-## Native authentication
+### Login mutation
 
 By default, Vendure uses a username/email address and password to authenticate users, which is implemented by the [`NativeAuthenticationStrategy`](/reference/typescript-api/auth/native-authentication-strategy/).
 
@@ -89,13 +50,7 @@ mutation {
 See the [Managing Sessions guide](/storefront/connect-api/#managing-sessions) for how to manage authenticated sessions in your storefront/client applications.
 :::
 
-## External authentication
-
-In addition to the built-in `NativeAuthenticationStrategy`, it is possible to define a custom [`AuthenticationStrategy`](/reference/typescript-api/auth/authentication-strategy) which allows your Vendure server to support other authentication methods such as:
-
-- Social logins (Facebook, Google, GitHub, etc.)
-- Single Sign-On (SSO) providers such as Keycloak, Auth0, etc.
-- Alternative factors such as SMS, TOTP, etc.
+### Configuring multiple authentication strategies
 
 Custom authentication strategies are set via the [`VendureConfig.authOptions` object](/reference/typescript-api/auth/auth-options/#shopauthenticationstrategy):
 
@@ -125,13 +80,7 @@ In the above example, we define the strategies available for authenticating in t
 
 The other strategies would be custom-built (or provided by future npm packages) by creating classes that implement the [`AuthenticationStrategy` interface](/reference/typescript-api/auth/authentication-strategy).
 
-Let's take a look at a couple of examples of what a custom AuthenticationStrategy implementation would look like.
-
-## Custom authentication examples
-
 ### Google authentication
-
-This example demonstrates how to implement a Google login flow.
 
 #### Storefront setup
 
@@ -247,11 +196,9 @@ export class GoogleAuthenticationStrategy implements AuthenticationStrategy<Goog
 
 ### Facebook authentication
 
-This example demonstrates how to implement a Facebook login flow.
-
 #### Storefront setup
 
-In this example, we are assuming the use of the [Facebook SDK for JavaScript](https://developers.facebook.com/docs/javascript/) in the storefront.
+This example assumes the use of the [Facebook SDK for JavaScript](https://developers.facebook.com/docs/javascript/) in the storefront.
 
 An implementation in React might look like this:
 

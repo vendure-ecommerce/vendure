@@ -4,6 +4,7 @@ import {
     CustomerGroupInput,
     FacetValueInput,
     MoneyInput,
+    NumberInput,
     ProductMultiInput,
     RichTextInput,
     SelectWithOptions,
@@ -39,6 +40,7 @@ inputComponents.set('relation-form-input', DefaultRelationInput);
 inputComponents.set('select-form-input', SelectWithOptions);
 inputComponents.set('product-multi-form-input', ProductMultiInput);
 inputComponents.set('combination-mode-form-input', CombinationModeInput);
+inputComponents.set('number-form-input', NumberInput);
 inputComponents.set('text-form-input', TextInput);
 
 export function getInputComponent(id: string | undefined): DashboardFormComponent | undefined {

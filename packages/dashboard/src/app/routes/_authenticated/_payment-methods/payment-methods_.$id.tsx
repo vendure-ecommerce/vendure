@@ -21,6 +21,7 @@ import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-lo
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { PaymentEligibilityCheckerSelector } from './components/payment-eligibility-checker-selector.js';
 import { PaymentHandlerSelector } from './components/payment-handler-selector.js';
@@ -82,6 +83,7 @@ function PaymentMethodDetailPage() {
                     languageCode: translation.languageCode,
                     name: translation.name,
                     description: translation.description,
+                    customFields: (translation as any).customFields,
                 })),
                 customFields: entity.customFields,
             };
@@ -115,6 +117,9 @@ function PaymentMethodDetailPage() {
         },
     });
 
+    const [checkerArgsValid, setCheckerArgsValid] = useState(true);
+    const [handlerArgsValid, setHandlerArgsValid] = useState(true);
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
@@ -125,7 +130,13 @@ function PaymentMethodDetailPage() {
                     <PermissionGuard requires={['UpdatePaymentMethod']}>
                         <Button
                             type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                            disabled={
+                                !form.formState.isDirty ||
+                                !form.formState.isValid ||
+                                isPending ||
+                                !checkerArgsValid ||
+                                !handlerArgsValid
+                            }
                         >
                             {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
                         </Button>
@@ -178,6 +189,7 @@ function PaymentMethodDetailPage() {
                             <PaymentEligibilityCheckerSelector
                                 value={field.value}
                                 onChange={field.onChange}
+                                onValidityChange={setCheckerArgsValid}
                             />
                         )}
                     />
@@ -187,7 +199,11 @@ function PaymentMethodDetailPage() {
                         control={form.control}
                         name="handler"
                         render={({ field }) => (
-                            <PaymentHandlerSelector value={field.value} onChange={field.onChange} />
+                            <PaymentHandlerSelector
+                                value={field.value}
+                                onChange={field.onChange}
+                                onValidityChange={setHandlerArgsValid}
+                            />
                         )}
                     />
                 </PageBlock>

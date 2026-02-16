@@ -1,5 +1,7 @@
 ---
 title: 'Custom Detail Components'
+metaTitle: "Custom Detail Components for the Vendure Admin UI"
+metaDescription: "Embed custom Angular or React components into Admin UI detail pages to display additional data and interact with the detail form."
 ---
 
 Detail views can be extended with custom Angular or React components using the [`registerCustomDetailComponent`](/reference/admin-ui-api/custom-detail-components/register-custom-detail-component/) and [`registerReactCustomDetailComponent`](/reference/admin-ui-api/react-extensions/register-react-custom-detail-component) functions.
@@ -153,15 +155,13 @@ export class ProductInfoComponent implements CustomDetailComponent, OnInit {
     entity$: Observable<any>
     detailForm: FormGroup;
     
-    // highlight-start
-    updateDescription() {
-        const descriptionControl = this.detailForm.get('description');
-        if (descriptionControl) {
-            descriptionControl.setValue('New description');
-            descriptionControl.markAsDirty();
-        }        
-    }
-    // highlight-end
+    updateDescription() { // [!code highlight]
+        const descriptionControl = this.detailForm.get('description'); // [!code highlight]
+        if (descriptionControl) { // [!code highlight]
+            descriptionControl.setValue('New description'); // [!code highlight]
+            descriptionControl.markAsDirty(); // [!code highlight]
+        } // [!code highlight]
+    } // [!code highlight]
 }
 ```
 
@@ -175,15 +175,13 @@ import { Card, useDetailComponentData } from '@vendure/admin-ui/react';
 export function ProductInfo() {
     const { detailForm } = useDetailComponentData();
 
-    // highlight-start
-    const updateDescription = () => {
-        const descriptionControl = detailForm.get('description');
-        if (descriptionControl) {
-            descriptionControl.setValue('New description');
-            descriptionControl.markAsDirty();
-        }
-    };
-    // highlight-end
+    const updateDescription = () => { // [!code highlight]
+        const descriptionControl = detailForm.get('description'); // [!code highlight]
+        if (descriptionControl) { // [!code highlight]
+            descriptionControl.setValue('New description'); // [!code highlight]
+            descriptionControl.markAsDirty(); // [!code highlight]
+        } // [!code highlight]
+    }; // [!code highlight]
 
     return (
         <button className="button secondary" onClick={updateDescription}>Update description</button>

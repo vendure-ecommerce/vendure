@@ -1,6 +1,8 @@
 ---
 title: 'Page ActionBar Buttons'
-weight: 5
+metaTitle: "Adding ActionBar Buttons to Vendure Admin UI Pages"
+metaDescription: "Add custom buttons and dropdown menu items to the Admin UI ActionBar using addActionBarItem, with click handlers, visibility control, and permissions."
+order: 5
 ---
 
 The `ActionBar` is the horizontal area at the top of each list or detail page, which contains the main buttons for that page.
@@ -90,10 +92,8 @@ export default [
         id: 'print-invoice',
         label: 'Print invoice',
         locationId: 'order-detail',
-        // highlight-start
-        // The route can be a constant value...
-        routerLink: ['./extensions/order-invoices'],
-        // highlight-end
+        // The route can be a constant value... // [!code highlight]
+        routerLink: ['./extensions/order-invoices'], // [!code highlight]
     }),
 ];
 ```
@@ -109,13 +109,11 @@ export default [
         id: 'print-invoice',
         label: 'Print invoice',
         locationId: 'order-detail',
-        // highlight-start
-        // The route can be a function
-        routerLink: route => {
-            const id = route.snapshot.params.id;
-            return ['./extensions/order-invoices', id];
-        },
-        // highlight-end
+        // The route can be a function // [!code highlight]
+        routerLink: route => { // [!code highlight]
+            const id = route.snapshot.params.id; // [!code highlight]
+            return ['./extensions/order-invoices', id]; // [!code highlight]
+        }, // [!code highlight]
     }),
 ];
 ```
@@ -147,16 +145,14 @@ export default [
         id: 'myButtonId',
         label: 'My Button Label',
         locationId: 'order-detail',
-        // highlight-start
-        onClick: async (event, context) => {
-            try {
-                const orderId = context.route.snapshot.params.id;
-                await firstValueFrom(context.dataService.mutate(mutation, { orderId }));
-            } catch (error) {
-                context.notificationService.error('Error executing mutation: ' + error.message);
-            }
-        },
-        // highlight-end
+        onClick: async (event, context) => { // [!code highlight]
+            try { // [!code highlight]
+                const orderId = context.route.snapshot.params.id; // [!code highlight]
+                await firstValueFrom(context.dataService.mutate(mutation, { orderId })); // [!code highlight]
+            } catch (error) { // [!code highlight]
+                context.notificationService.error('Error executing mutation: ' + error.message); // [!code highlight]
+            } // [!code highlight]
+        }, // [!code highlight]
     }),
 ];
 ```
@@ -223,8 +219,7 @@ export default [
         label: 'Print invoice',
         locationId: 'order-detail',
         routerLink: ['./extensions/order-invoices'],
-        // highlight-next-line
-        requiresPermission: 'CreateInvoice',
+        requiresPermission: 'CreateInvoice', // [!code highlight]
     }),
 ];
 ```

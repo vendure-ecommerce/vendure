@@ -1,5 +1,7 @@
 ---
 title: "Deploying to Railway"
+metaTitle: "Deploying Vendure to Railway with Postgres and Volumes"
+metaDescription: "Set up a Vendure server, worker, and Postgres database on Railway with persistent volume storage, environment variables, and GitHub-based deploys."
 ---
 
 ![Deploy to Railway](./deploy-to-railway.webp)
@@ -36,8 +38,7 @@ import { VendureConfig } from '@vendure/core';
 
 export const config: VendureConfig = {
     apiOptions: {
-        // highlight-next-line
-        port: +(process.env.PORT || 3000),
+        port: +(process.env.PORT || 3000), // [!code highlight]
         // ...
     },
     // ...
@@ -85,8 +86,7 @@ export const config: VendureConfig = {
     plugins: [
         AssetServerPlugin.init({
             route: 'assets',
-            // highlight-next-line
-            assetUploadDir: process.env.ASSET_UPLOAD_DIR || path.join(__dirname, '../static/assets'),
+            assetUploadDir: process.env.ASSET_UPLOAD_DIR || path.join(__dirname, '../static/assets'), // [!code highlight]
         }),
     ],
     // ...
@@ -140,11 +140,9 @@ DB_PASSWORD=${{Postgres.PGPASSWORD}}
 DB_HOST=${{Postgres.PGHOST}}
 DB_PORT=${{Postgres.PGPORT}}
 ASSET_UPLOAD_DIR=/vendure-assets
-// highlight-next-line
-COOKIE_SECRET=<add some random characters>
+COOKIE_SECRET=<add some random characters> # [!code highlight]
 SUPERADMIN_USERNAME=superadmin
-// highlight-next-line
-SUPERADMIN_PASSWORD=<create some strong password>
+SUPERADMIN_PASSWORD=<create some strong password> # [!code highlight]
 ```
 
 ![Setting env vars](./02-env-vars.webp) 

@@ -1,5 +1,7 @@
 ---
 title: 'Custom Form Elements'
+metaTitle: "Custom Form Elements for the Vendure Dashboard"
+metaDescription: "Create custom field components, detail form inputs, and configurable operation components for the Vendure Dashboard using the DashboardFormComponent API."
 ---
 
 The dashboard allows you to create custom form elements that provide complete control over how data is rendered and how users
@@ -97,12 +99,10 @@ defineDashboardExtension({
         // Custom field components for custom fields
         customFields: [
             {
-                // highlight-start
-                // The "id" is a global identifier for this custom component. We will
-                // reference it in the next step.
-                id: 'color-picker',
-                component: ColorPickerComponent,
-                // highlight-end
+                // The "id" is a global identifier for this custom component. We will // [!code highlight]
+                // reference it in the next step. // [!code highlight]
+                id: 'color-picker', // [!code highlight]
+                component: ColorPickerComponent, // [!code highlight]
             },
         ],
     },
@@ -123,11 +123,9 @@ Now that we've registered it as a custom field component, we can use it in our c
             label: [{ languageCode: LanguageCode.en, value: 'Color' }],
             description: [{ languageCode: LanguageCode.en, value: 'Main color for this product' }],
             ui: {
-                // highlight-start
-                // This is the ID of the custom field
-                // component we registered above.
-                component: 'color-picker',
-                // highlight-end
+                // This is the ID of the custom field // [!code highlight]
+                // component we registered above. // [!code highlight]
+                component: 'color-picker', // [!code highlight]
             },
         });
         return config;
@@ -152,9 +150,7 @@ const customShippingCalculator = new ShippingCalculator({
             description: [
                 { languageCode: LanguageCode.en, value: 'Color code for this shipping calculator' },
             ],
-            // highlight-start
-            ui: { component: 'color-picker' },
-            // highlight-end
+            ui: { component: 'color-picker' }, // [!code highlight]
         },
     },
     calculate: (ctx, order, args) => {
@@ -198,16 +194,14 @@ import { MarkdownEditorComponent } from './components/markdown-editor';
 defineDashboardExtension({
     detailForms: [
         {
-            // highlight-start
-            pageId: 'product-detail',
-            inputs: [
-                {
-                    blockId: 'main-form',
-                    field: 'description',
-                    component: MarkdownEditorComponent,
-                },
-            ],
-            // highlight-end
+            pageId: 'product-detail', // [!code highlight]
+            inputs: [ // [!code highlight]
+                { // [!code highlight]
+                    blockId: 'main-form', // [!code highlight]
+                    field: 'description', // [!code highlight]
+                    component: MarkdownEditorComponent, // [!code highlight]
+                }, // [!code highlight]
+            ], // [!code highlight]
         },
     ],
 });

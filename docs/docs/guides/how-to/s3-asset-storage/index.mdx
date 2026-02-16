@@ -1,5 +1,7 @@
 ---
 title: "Integrating S3-Compatible Asset Storage"
+metaTitle: "S3-Compatible Asset Storage for Vendure"
+metaDescription: "Configure Vendure's AssetServerPlugin for S3-compatible storage with AWS S3, DigitalOcean Spaces, CloudFlare R2, MinIO, Supabase, and Hetzner."
 ---
 
 This guide demonstrates how to integrate S3-compatible asset storage into your Vendure application using multiple cloud storage platforms. You'll learn to configure a single, platform-agnostic storage solution that works seamlessly with AWS S3, DigitalOcean Spaces, MinIO, CloudFlare R2, and Supabase Storage.
@@ -379,12 +381,10 @@ Configure your Vendure application to use S3-compatible asset storage by modifyi
 
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
-// highlight-start
-import {
-  AssetServerPlugin,
-  configureS3AssetStorage
-} from '@vendure/asset-server-plugin';
-// highlight-end
+import { // [!code highlight]
+  AssetServerPlugin, // [!code highlight]
+  configureS3AssetStorage // [!code highlight]
+} from '@vendure/asset-server-plugin'; // [!code highlight]
 import 'dotenv/config';
 import path from 'path';
 
@@ -394,32 +394,30 @@ export const config: VendureConfig = {
   // ... other configuration options
 
   plugins: [
-    // highlight-start
-    AssetServerPlugin.init({
-      route: 'assets',
-      assetUploadDir: path.join(__dirname, '../static/assets'),
-      assetUrlPrefix: IS_DEV ? undefined : 'https://www.my-shop.com/assets/',
-
-      // S3-Compatible Storage Configuration
-      // Dynamically switches between local storage and S3 based on environment
-      storageStrategyFactory: process.env.S3_BUCKET
-        ? configureS3AssetStorage({
-            bucket: process.env.S3_BUCKET,
-            credentials: {
-              accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-              secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-            },
-            nativeS3Configuration: {
-              // Platform-specific endpoint configuration
-              endpoint: process.env.S3_ENDPOINT,
-              region: process.env.S3_REGION,
-              forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true',
-              signatureVersion: 'v4',
-            },
-          })
-        : undefined, // Fallback to local storage when S3 not configured
-    }),
-    // highlight-end
+    AssetServerPlugin.init({ // [!code highlight]
+      route: 'assets', // [!code highlight]
+      assetUploadDir: path.join(__dirname, '../static/assets'), // [!code highlight]
+      assetUrlPrefix: IS_DEV ? undefined : 'https://www.my-shop.com/assets/', // [!code highlight]
+ // [!code highlight]
+      // S3-Compatible Storage Configuration // [!code highlight]
+      // Dynamically switches between local storage and S3 based on environment // [!code highlight]
+      storageStrategyFactory: process.env.S3_BUCKET // [!code highlight]
+        ? configureS3AssetStorage({ // [!code highlight]
+            bucket: process.env.S3_BUCKET, // [!code highlight]
+            credentials: { // [!code highlight]
+              accessKeyId: process.env.S3_ACCESS_KEY_ID!, // [!code highlight]
+              secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!, // [!code highlight]
+            }, // [!code highlight]
+            nativeS3Configuration: { // [!code highlight]
+              // Platform-specific endpoint configuration // [!code highlight]
+              endpoint: process.env.S3_ENDPOINT, // [!code highlight]
+              region: process.env.S3_REGION, // [!code highlight]
+              forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true', // [!code highlight]
+              signatureVersion: 'v4', // [!code highlight]
+            }, // [!code highlight]
+          }) // [!code highlight]
+        : undefined, // Fallback to local storage when S3 not configured // [!code highlight]
+    }), // [!code highlight]
 
     // ... other plugins
   ],
@@ -487,8 +485,7 @@ For production deployments with CDN or custom domains:
 ```ts title="src/vendure-config.ts"
 AssetServerPlugin.init({
   route: 'assets',
-  // highlight-next-line
-  assetUrlPrefix: 'https://cdn.yourdomain.com/assets/',
+  assetUrlPrefix: 'https://cdn.yourdomain.com/assets/', // [!code highlight]
   storageStrategyFactory: process.env.S3_BUCKET
     ? configureS3AssetStorage({
         // ... S3 configuration

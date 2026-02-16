@@ -1,5 +1,7 @@
 ---
 title: 'Creating Detail Views'
+metaTitle: "Creating Detail Views in the Vendure Admin UI"
+metaDescription: "Build custom entity detail views by extending TypedBaseDetailComponent with forms, GraphQL queries, custom field support, and route configuration."
 ---
 
 The two most common type of components you'll be creating in your UI extensions are list components and detail components.
@@ -212,25 +214,23 @@ export default [
         component: ReviewListComponent,
         breadcrumb: 'Product reviews',
     }),
-    // highlight-start
-    // Detail view
-    registerRouteComponent({
-        path: ':id',
-        component: ReviewDetailComponent,
-        query: getReviewDetailDocument,
-        entityKey: 'productReview',
-        getBreadcrumbs: entity => [
-            {
-                label: 'Product reviews',
-                link: ['/extensions', 'product-reviews'],
-            },
-            {
-                label: `#${entity?.id} (${entity?.product.name})`,
-                link: [],
-            },
-        ],
-    }),
-    // highlight-end
+    // Detail view // [!code highlight]
+    registerRouteComponent({ // [!code highlight]
+        path: ':id', // [!code highlight]
+        component: ReviewDetailComponent, // [!code highlight]
+        query: getReviewDetailDocument, // [!code highlight]
+        entityKey: 'productReview', // [!code highlight]
+        getBreadcrumbs: entity => [ // [!code highlight]
+            { // [!code highlight]
+                label: 'Product reviews', // [!code highlight]
+                link: ['/extensions', 'product-reviews'], // [!code highlight]
+            }, // [!code highlight]
+            { // [!code highlight]
+                label: `#${entity?.id} (${entity?.product.name})`, // [!code highlight]
+                link: [], // [!code highlight]
+            }, // [!code highlight]
+        ], // [!code highlight]
+    }), // [!code highlight]
 ]
 ```
 
@@ -242,8 +242,7 @@ If you have set up your entity to support custom fields, and you want custom fie
 you need to add the following to your detail component:
 
 ```ts title="src/plugins/reviews/ui/components/review-detail/review-detail.component.ts"
-// highlight-next-line
-import { getCustomFieldsDefaults } from '@vendure/admin-ui/core';
+import { getCustomFieldsDefaults } from '@vendure/admin-ui/core'; // [!code highlight]
 
 @Component({
     selector: 'review-detail',
@@ -255,15 +254,13 @@ import { getCustomFieldsDefaults } from '@vendure/admin-ui/core';
 })
 export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof getReviewDetailDocument, 'review'> implements OnInit, OnDestroy {
 
-    // highlight-next-line
-    customFields = this.getCustomFieldConfig('ProductReview');
+    customFields = this.getCustomFieldConfig('ProductReview'); // [!code highlight]
 
     detailForm = this.formBuilder.group({
         title: [''],
         rating: [1],
         authorName: [''],
-        // highlight-next-line
-        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
+        customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)), // [!code highlight]
     });
 
     protected setFormValues(entity: NonNullable<ResultOf<typeof getReviewDetailDocument>['review']>, languageCode: LanguageCode): void {
@@ -273,11 +270,9 @@ export class ReviewDetailComponent extends TypedBaseDetailComponent<typeof getRe
             authorName: entity.authorName,
             productId: entity.productId,
         });
-        // highlight-start
-        if (this.customFields.length) {
-            this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity);
-        }
-        // highlight-end
+        if (this.customFields.length) { // [!code highlight]
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity); // [!code highlight]
+        } // [!code highlight]
     }
 }
 ```
@@ -311,19 +306,17 @@ Then add a card for your custom fields to the template:
                     <!-- etc -->
                 </div>
             </vdr-card>
-            // highlight-start
-            <vdr-card
-                    formGroupName="customFields"
-                    *ngIf="customFields.length"
-                    [title]="'common.custom-fields' | translate"
-            >
-                <vdr-tabbed-custom-fields
-                        entityName="ProductReview"
-                        [customFields]="customFields"
-                        [customFieldsFormGroup]="detailForm.get('customFields')"
-                ></vdr-tabbed-custom-fields>
-            </vdr-card>
-            // highlight-end
+            <vdr-card <!-- [!code highlight] -->
+                    formGroupName="customFields" <!-- [!code highlight] -->
+                    *ngIf="customFields.length" <!-- [!code highlight] -->
+                    [title]="'common.custom-fields' | translate" <!-- [!code highlight] -->
+            > <!-- [!code highlight] -->
+                <vdr-tabbed-custom-fields <!-- [!code highlight] -->
+                        entityName="ProductReview" <!-- [!code highlight] -->
+                        [customFields]="customFields" <!-- [!code highlight] -->
+                        [customFieldsFormGroup]="detailForm.get('customFields')" <!-- [!code highlight] -->
+                ></vdr-tabbed-custom-fields> <!-- [!code highlight] -->
+            </vdr-card> <!-- [!code highlight] -->
         </vdr-page-block>
     </vdr-page-detail-layout>
 </form>

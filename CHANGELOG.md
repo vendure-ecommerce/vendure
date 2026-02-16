@@ -1,3 +1,62 @@
+## <small>3.5.3 (2026-01-30)</small>
+
+#### Security
+
+* **core** Prevent account enumeration via timing attack in NativeAuthenticationStrategy ([7f0c555](https://github.com/vendurehq/vendure/commit/7f0c5556ecddb44a5d5208677a45fdd5923b0cc9)) [CVE-2026-25050] ([security advisory](https://github.com/vendurehq/vendure/security/advisories/GHSA-6f65-4fv2-wwch)). Responsibly disclosed by [Christbowel](https://github.com/Christbowel).
+
+#### Fixes
+
+* **admin-ui** Fix admin-ui publish dir in npm publish workflow (#4131) ([78a606b](https://github.com/vendurehq/vendure/commit/78a606b)), closes [#4131](https://github.com/vendurehq/vendure/issues/4131)
+* **core** Correctly publish ChangeChannelEvent with new channel IDs. (#4176) ([4f31ba3](https://github.com/vendurehq/vendure/commit/4f31ba3)), closes [#4176](https://github.com/vendurehq/vendure/issues/4176)
+* **core** Exclude seller orders when counting promotion usage (#4070) ([fe72cdb](https://github.com/vendurehq/vendure/commit/fe72cdb)), closes [#4070](https://github.com/vendurehq/vendure/issues/4070)
+* **core** Fix SubscribableJob.updates() completing after single emission (#4120) ([45c2e66](https://github.com/vendurehq/vendure/commit/45c2e66)), closes [#4120](https://github.com/vendurehq/vendure/issues/4120)
+* **core** Persist custom fields when creating new ProductVariantPrice (#4184) ([6f63965](https://github.com/vendurehq/vendure/commit/6f63965)), closes [#4184](https://github.com/vendurehq/vendure/issues/4184)
+* **core** Use previously unused relations filter in findByCustomerId (#4118) ([8859797](https://github.com/vendurehq/vendure/commit/8859797)), closes [#4118](https://github.com/vendurehq/vendure/issues/4118)
+* **create** add useDefineForClassFields to fix ES2022 (#4116) ([fe25af0](https://github.com/vendurehq/vendure/commit/fe25af0)), closes [#4116](https://github.com/vendurehq/vendure/issues/4116)
+* **create** Set api url to `auto` for newly created projects (#4102) ([82c165c](https://github.com/vendurehq/vendure/commit/82c165c)), closes [#4102](https://github.com/vendurehq/vendure/issues/4102)
+* **dashboard** Boolean fields in DetailPage now show correct value (#4186) ([58a7e4d](https://github.com/vendurehq/vendure/commit/58a7e4d)), closes [#4186](https://github.com/vendurehq/vendure/issues/4186)
+* **dashboard** Bump @tanstack/react-router to fix ID param error (#4153) ([dac5315](https://github.com/vendurehq/vendure/commit/dac5315)), closes [#4153](https://github.com/vendurehq/vendure/issues/4153)
+* **dashboard** Channel switcher not scrollable if list exceeds screen height (#4075) ([9c1081a](https://github.com/vendurehq/vendure/commit/9c1081a)), closes [#4075](https://github.com/vendurehq/vendure/issues/4075)
+* **dashboard** Clarify draft order completion UX (#4163) ([e72f822](https://github.com/vendurehq/vendure/commit/e72f822)), closes [#4163](https://github.com/vendurehq/vendure/issues/4163)
+* **dashboard** Collection contents not showing after saving filters (#4128) ([8593513](https://github.com/vendurehq/vendure/commit/8593513)), closes [#4128](https://github.com/vendurehq/vendure/issues/4128)
+* **dashboard** Dashboard plugin detection with pnpm (#4126) ([896dc62](https://github.com/vendurehq/vendure/commit/896dc62)), closes [#4126](https://github.com/vendurehq/vendure/issues/4126)
+* **dashboard** Display custom fields on product variant prices (#4180) ([11192d3](https://github.com/vendurehq/vendure/commit/11192d3)), closes [#4180](https://github.com/vendurehq/vendure/issues/4180)
+* **dashboard** Fallback to default input when custom form component not found (#4168) ([5ab2a5d](https://github.com/vendurehq/vendure/commit/5ab2a5d)), closes [#4168](https://github.com/vendurehq/vendure/issues/4168)
+* **dashboard** Fix compilation issues caused by SWC version issues (#4105) ([8f5496a](https://github.com/vendurehq/vendure/commit/8f5496a)), closes [#4105](https://github.com/vendurehq/vendure/issues/4105)
+* **dashboard** Fix displaying HistoryEntry for CustomerEmailUpdateComponent (#4167) ([bab3b5e](https://github.com/vendurehq/vendure/commit/bab3b5e)), closes [#4167](https://github.com/vendurehq/vendure/issues/4167)
+* **dashboard** Fix entity creation when using a non default language (#4157) ([5439d17](https://github.com/vendurehq/vendure/commit/5439d17)), closes [#4157](https://github.com/vendurehq/vendure/issues/4157)
+* **dashboard** Fix gross price display under price includes tax (#4138) ([37c2ff8](https://github.com/vendurehq/vendure/commit/37c2ff8)), closes [#4138](https://github.com/vendurehq/vendure/issues/4138)
+* **dashboard** Fix incorrect currency being displayed in latest orders widget (#4090) ([f3a47ef](https://github.com/vendurehq/vendure/commit/f3a47ef)), closes [#4090](https://github.com/vendurehq/vendure/issues/4090)
+* **dashboard** Fix struct custom fields not rendering options or custom components (#4115) ([27ba769](https://github.com/vendurehq/vendure/commit/27ba769)), closes [#4115](https://github.com/vendurehq/vendure/issues/4115)
+* **dashboard** Fix usePaginatedList context duplication in extensions (#4164) ([f07fee7](https://github.com/vendurehq/vendure/commit/f07fee7)), closes [#4164](https://github.com/vendurehq/vendure/issues/4164)
+* **dashboard** Hide "Add channel" button for users without CreateChannel permission (#4097) ([84d7733](https://github.com/vendurehq/vendure/commit/84d7733)), closes [#4097](https://github.com/vendurehq/vendure/issues/4097)
+* **dashboard** Hide bulk action bar when no selected items are visible (#4151) ([d1a514b](https://github.com/vendurehq/vendure/commit/d1a514b)), closes [#4151](https://github.com/vendurehq/vendure/issues/4151)
+* **dashboard** Persist localeString/localeText custom fields on translatable entities (#4185) ([b75aa3b](https://github.com/vendurehq/vendure/commit/b75aa3b)), closes [#4185](https://github.com/vendurehq/vendure/issues/4185)
+* **dashboard** Preserve string arg values without JSON parsing in form inputs (#4156) ([550242f](https://github.com/vendurehq/vendure/commit/550242f)), closes [#4156](https://github.com/vendurehq/vendure/issues/4156)
+* **dashboard** Prevent NaN or empty values in Latest Orders table (#4092) ([e1d277e](https://github.com/vendurehq/vendure/commit/e1d277e)), closes [#4092](https://github.com/vendurehq/vendure/issues/4092)
+* **dashboard** Re-sync channel token when activeChannelId persists but token is cleared (#4094) ([2f3ff85](https://github.com/vendurehq/vendure/commit/2f3ff85)), closes [#4094](https://github.com/vendurehq/vendure/issues/4094) [#4095](https://github.com/vendurehq/vendure/issues/4095)
+* **dashboard** Register text-form-input component (#4149) ([89550d3](https://github.com/vendurehq/vendure/commit/89550d3)), closes [#4149](https://github.com/vendurehq/vendure/issues/4149)
+* **dashboard** Resolve tsconfig path aliases in ESM mode (#4134) ([a99500d](https://github.com/vendurehq/vendure/commit/a99500d)), closes [#4134](https://github.com/vendurehq/vendure/issues/4134)
+* **dashboard** Show all items in the order details page (#4160) ([8cb0520](https://github.com/vendurehq/vendure/commit/8cb0520)), closes [#4160](https://github.com/vendurehq/vendure/issues/4160)
+* **dashboard** Support Bun package manager in plugin discovery (#4183) ([0934924](https://github.com/vendurehq/vendure/commit/0934924)), closes [#4183](https://github.com/vendurehq/vendure/issues/4183)
+* **dashboard** Transform Lingui macros in third-party npm packages (#4182) ([c940778](https://github.com/vendurehq/vendure/commit/c940778)), closes [#4182](https://github.com/vendurehq/vendure/issues/4182)
+* **payments-plugin** Mollie - allow overriding `immediateCapture` from the plugin level (#4142) ([dfda66d](https://github.com/vendurehq/vendure/commit/dfda66d)), closes [#4142](https://github.com/vendurehq/vendure/issues/4142)
+
+#### Features
+
+* **core** Expand userHasPermissions docstring; Add new userHasAllPermissions method  (#4107) ([f2d0359](https://github.com/vendurehq/vendure/commit/f2d0359)), closes [#4107](https://github.com/vendurehq/vendure/issues/4107)
+* **dashboard** Add disabled option to exclude columns in ListPage (#4170) ([3ad9b55](https://github.com/vendurehq/vendure/commit/3ad9b55)), closes [#4170](https://github.com/vendurehq/vendure/issues/4170)
+* **dashboard** Add pagination for sub-collections in collection list (#4154) ([2c837e0](https://github.com/vendurehq/vendure/commit/2c837e0)), closes [#4154](https://github.com/vendurehq/vendure/issues/4154)
+* **dashboard** Add refund order dialog (#4130) ([65afa02](https://github.com/vendurehq/vendure/commit/65afa02)), closes [#4130](https://github.com/vendurehq/vendure/issues/4130)
+* **dashboard** Customer list also filters on phoneNumber (#4100) ([6e49ea6](https://github.com/vendurehq/vendure/commit/6e49ea6)), closes [#4100](https://github.com/vendurehq/vendure/issues/4100)
+* **dashboard** Display authentication methods on profile page (#4179) ([09c52f4](https://github.com/vendurehq/vendure/commit/09c52f4)), closes [#4179](https://github.com/vendurehq/vendure/issues/4179)
+* **dashboard** Provide entity object to draft-order-detail Page component (#4073) ([bad41da](https://github.com/vendurehq/vendure/commit/bad41da)), closes [#4073](https://github.com/vendurehq/vendure/issues/4073)
+* **dashboard** Use dynamic schema-driven languages and currencies (#4111) ([888e946](https://github.com/vendurehq/vendure/commit/888e946)), closes [#4111](https://github.com/vendurehq/vendure/issues/4111)
+
+#### Perf
+
+* **core** Implement productVariantCount in collections query (#4132) ([44bad11](https://github.com/vendurehq/vendure/commit/44bad11)), closes [#4132](https://github.com/vendurehq/vendure/issues/4132)
+
 ## <small>3.5.2 (2025-12-19)</small>
 
 

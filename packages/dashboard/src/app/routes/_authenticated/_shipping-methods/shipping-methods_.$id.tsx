@@ -20,6 +20,7 @@ import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-lo
 import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { FulfillmentHandlerSelector } from './components/fulfillment-handler-selector.js';
 import { ShippingCalculatorSelector } from './components/shipping-calculator-selector.js';
@@ -79,6 +80,7 @@ function ShippingMethodDetailPage() {
                     languageCode: translation.languageCode,
                     name: translation.name,
                     description: translation.description,
+                    customFields: (translation as any).customFields,
                 })),
                 customFields: entity.customFields,
             };
@@ -108,6 +110,9 @@ function ShippingMethodDetailPage() {
     const checker = form.watch('checker');
     const calculator = form.watch('calculator');
 
+    const [checkerArgsValid, setCheckerArgsValid] = useState(true);
+    const [calculatorArgsValid, setCalculatorArgsValid] = useState(true);
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
@@ -126,7 +131,9 @@ function ShippingMethodDetailPage() {
                                 !form.formState.isValid ||
                                 isPending ||
                                 !checker?.code ||
-                                !calculator?.code
+                                !calculator?.code ||
+                                !checkerArgsValid ||
+                                !calculatorArgsValid
                             }
                         >
                             {creatingNewEntity ? <Trans>Create</Trans> : <Trans>Update</Trans>}
@@ -178,6 +185,7 @@ function ShippingMethodDetailPage() {
                             <ShippingEligibilityCheckerSelector
                                 value={field.value}
                                 onChange={field.onChange}
+                                onValidityChange={setCheckerArgsValid}
                             />
                         )}
                     />
@@ -187,7 +195,11 @@ function ShippingMethodDetailPage() {
                         control={form.control}
                         name="calculator"
                         render={({ field }) => (
-                            <ShippingCalculatorSelector value={field.value} onChange={field.onChange} />
+                            <ShippingCalculatorSelector
+                                value={field.value}
+                                onChange={field.onChange}
+                                onValidityChange={setCalculatorArgsValid}
+                            />
                         )}
                     />
                 </PageBlock>
