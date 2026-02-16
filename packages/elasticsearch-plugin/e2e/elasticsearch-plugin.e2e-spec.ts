@@ -1641,6 +1641,9 @@ describe('Elasticsearch plugin', () => {
             adminClient.setChannelToken(STOCK_CHANNEL_TOKEN);
             await adminClient.query<Codegen.ReindexMutation>(REINDEX);
             await awaitRunningJobs(adminClient);
+
+            // Reset admin token after reindexing second channel
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         });
 
         it('product is inStock in default channel', async () => {
@@ -1686,6 +1689,10 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             expect(result.search.items.map(i => i.productName)).toContain('Stock Test Product');
+        });
+
+        afterAll(() => {
+            shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         });
     });
 });
