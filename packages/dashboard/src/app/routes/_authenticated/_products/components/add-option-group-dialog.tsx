@@ -79,7 +79,7 @@ export function AddOptionGroupDialog({
                     translations: [
                         {
                             languageCode: 'en',
-                            name: formValue.name,
+                            name: trimmedName,
                         },
                     ],
                     options: formValue.values.map(value => ({
