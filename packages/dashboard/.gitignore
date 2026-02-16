@@ -29,3 +29,11 @@ vite/tests/__temp
 
 *storybook.log
 storybook-static
+
+# E2E tests (Playwright)
+e2e/.auth/
+e2e/__data__/
+e2e/test-results/
+e2e/playwright-report/
+test-results/
+playwright-report/
