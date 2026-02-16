@@ -22,7 +22,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Plus, Save, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
@@ -93,18 +93,12 @@ function AddOptionValueDialog({
         },
     });
 
-    useEffect(() => {
-        if (open) {
-            form.reset();
-        }
-    }, [open, form]);
-
     const createOptionMutation = useMutation({
         mutationFn: api.mutate(createProductOptionDocument),
         onSuccess: () => {
             toast.success(t`Successfully added option value`);
             setOpen(false);
-            form.reset({ name: '' });
+            form.reset();
             onSuccess?.();
         },
         onError: error => {
@@ -116,7 +110,6 @@ function AddOptionValueDialog({
 
     const onSubmit = (values: AddOptionValueFormValues) => {
         const trimmedValue = values.name.trim();
-
 
         // Prevent duplicates
         const currentValues = existingValues ?? [];
@@ -334,7 +327,9 @@ function ManageProductVariants() {
                             ))
                         )}
                     </div>
-                    <AddOptionGroupDialog productId={id} existingGroupNames={productData.product.optionGroups.map(g => g.name)} onSuccess={() => refetch()} />
+                    <AddOptionGroupDialog productId={id}
+                        existingGroupNames={productData.product.optionGroups.map(g => g.name)}
+                        onSuccess={() => refetch()} />
                 </PageBlock>
 
                 <PageBlock column="main" blockId="product-variants" title={<Trans>Variants</Trans>}>
