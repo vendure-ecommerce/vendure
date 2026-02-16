@@ -21,9 +21,11 @@ import { OptionGroup, optionGroupSchema, SingleOptionGroupEditor } from './optio
 
 export function AddOptionGroupDialog({
     productId,
+    existingGroupNames,
     onSuccess,
 }: Readonly<{
     productId: string;
+    existingGroupNames: string[];
     onSuccess?: () => void;
 }>) {
     const [open, setOpen] = useState(false);
@@ -62,6 +64,11 @@ export function AddOptionGroupDialog({
 
         if (!trimmedName || formValue.values.length === 0) {
             toast.error(t`Please fill in all required fields`);
+            return;
+        }
+        const existingNames = existingGroupNames ?? [];
+        if (existingNames.some(name => name.toLowerCase() === trimmedName.toLowerCase())) {
+            toast.error(t`An option group with this name already exists`);
             return;
         }
 

@@ -93,12 +93,18 @@ function AddOptionValueDialog({
         },
     });
 
+    useEffect(() => {
+        if (open) {
+            form.reset();
+        }
+    }, [open, form]);
+
     const createOptionMutation = useMutation({
         mutationFn: api.mutate(createProductOptionDocument),
         onSuccess: () => {
             toast.success(t`Successfully added option value`);
             setOpen(false);
-            form.reset();
+            form.reset({ name: '' });
             onSuccess?.();
         },
         onError: error => {
@@ -111,8 +117,11 @@ function AddOptionValueDialog({
     const onSubmit = (values: AddOptionValueFormValues) => {
         const trimmedValue = values.name.trim();
 
+
         // Prevent duplicates
-        if (existingValues.includes(trimmedValue)) {
+        const currentValues = existingValues ?? [];
+
+        if (currentValues.includes(trimmedValue)) {
             toast.error(t`Option value already exists`);
             return;
         }
@@ -132,7 +141,8 @@ function AddOptionValueDialog({
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={setOpen} >
+
             <DialogTrigger asChild>
                 <Button size="icon" variant="ghost">
                     <Plus className="h-3 w-3" />
@@ -302,7 +312,7 @@ function ManageProductVariants() {
                             ))
                         )}
                     </div>
-                    <AddOptionGroupDialog productId={id} onSuccess={() => refetch()} />
+                    <AddOptionGroupDialog productId={id} existingGroupNames={productData.product.optionGroups.map(g => g.name)} onSuccess={() => refetch()} />
                 </PageBlock>
 
                 <PageBlock column="main" blockId="product-variants" title={<Trans>Variants</Trans>}>
