@@ -308,6 +308,28 @@ function ManageProductVariants() {
                                             />
                                         </div>
                                     </div>
+                                    <div className="col-span-1 flex justify-end">
+                                        <Button
+                                            size="icon"
+                                            variant="ghost"
+                                            onClick={() => {
+                                                if (confirm(t`Are you sure you want to remove this option group? This will affect all variants using this option.`)) {
+                                                    removeOptionGroupMutation.mutate(
+                                                        { productId: id, optionGroupId: group.id },
+                                                        {
+                                                            onError: (error) => {
+                                                                toast.error(t`Failed to remove option group`, {
+                                                                    description: error instanceof Error ? error.message : t`Unknown error`,
+                                                                });
+                                                            }
+                                                        }
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    </div>
                                 </div>
                             ))
                         )}
