@@ -51,7 +51,7 @@ const sideEffectNoSaveAction = new PromotionItemAction({
     },
     onDeactivate: (ctx, order, args, promotion) => {
         for (const line of order.lines) {
-            (line.customFields as any).promoTag = null;
+            (line.customFields as any).promoTag = 'deactivated';
         }
     },
 });
@@ -75,7 +75,7 @@ const sideEffectWithSaveAction = new PromotionItemAction({
     },
     onDeactivate: async (ctx, order, args, promotion) => {
         for (const line of order.lines) {
-            (line.customFields as any).promoTag = null;
+            (line.customFields as any).promoTag = 'deactivated';
         }
         await connection.getRepository(ctx, OrderLine).save(order.lines, { reload: false });
     },
@@ -133,6 +133,7 @@ async function getOrderLineFromDb(lineId: number) {
     return connection.rawConnection.getRepository(OrderLine).findOneOrFail({ where: { id: lineId } });
 }
 
+// https://github.com/vendurehq/vendure/issues/3296
 describe('Promotion side effects on OrderLine customFields', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(customConfig);
 
@@ -246,7 +247,7 @@ describe('Promotion side effects on OrderLine customFields', () => {
             >(REMOVE_COUPON_CODE, { couponCode: COUPON_NO_SAVE });
 
             const orderLine = await getOrderLineFromDb(internalId(noSaveLineId));
-            expect((orderLine.customFields as any).promoTag).toBeNull();
+            expect((orderLine.customFields as any).promoTag).toBe('deactivated');
         });
     });
 
@@ -279,7 +280,7 @@ describe('Promotion side effects on OrderLine customFields', () => {
             >(REMOVE_COUPON_CODE, { couponCode: COUPON_WITH_SAVE });
 
             const orderLine = await getOrderLineFromDb(internalId(withSaveLineId));
-            expect((orderLine.customFields as any).promoTag).toBeNull();
+            expect((orderLine.customFields as any).promoTag).toBe('deactivated');
         });
     });
 
@@ -339,7 +340,7 @@ describe('Promotion side effects on OrderLine customFields', () => {
 
             // Verify the side effect's customField change was persisted
             const orderLine = await getOrderLineFromDb(internalId(orderLineId));
-            expect((orderLine.customFields as any).promoTag).toBeNull();
+            expect((orderLine.customFields as any).promoTag).toBe('deactivated');
         });
     });
 });
