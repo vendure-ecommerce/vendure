@@ -1,6 +1,7 @@
 ---
 title: "Uploading Files"
-showtoc: true
+metaTitle: "File Uploads in Vendure - GraphQL Multipart Requests"
+metaDescription: "Upload files to Vendure as assets using the GraphQL multipart request spec. Covers client setup, the createAssets mutation, and custom upload endpoints."
 ---
 
 Vendure handles file uploads with the [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec). Internally, we use the [graphql-upload package](https://github.com/jaydenseric/graphql-upload). Once uploaded, a file is known as an [Asset](/core-concepts/images-assets/). Assets are typically used for images, but can represent any kind of binary data such as PDF files or videos.

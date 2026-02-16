@@ -1,5 +1,7 @@
 ---
 title: "Products"
+metaTitle: "Products, Variants, and Facets in Vendure"
+metaDescription: "Understand Vendure's product catalog: products, variants with options and pricing, facet-based filtering, and how SKUs and stock relate to variants."
 ---
 
 Your catalog is composed of [`Products`](/reference/typescript-api/entities/product/) and [`ProductVariants`](/reference/typescript-api/entities/product-variant/).
@@ -40,20 +42,6 @@ one or more [`StockLevel`](/reference/typescript-api/entities/stock-level) entit
 
 ## Facets
 
-[`Facets`](/reference/typescript-api/entities/facet/) are used to add structured labels to products and variants. A facet has
-one or more [`FacetValues`](/reference/typescript-api/entities/facet-value/). Facet values can be assigned to products or
-product variants.
+[`Facets`](/reference/typescript-api/entities/facet/) are used to add structured labels to products and variants. Facet values can be assigned to products or product variants, and are commonly used for catalog organization, storefront filtering, and internal business logic.
 
-For example, a "Brand" facet could be used to label products with the brand name, with each facet value representing a different brand. You can
-also use facets to add other metadata to products and variants such as "New", "Sale", "Featured", etc.
-
-![Facets and FacetValues](./facets.webp)
-
-These are the typical uses of facets in Vendure:
-
-- As the **basis of [Collections](/core-concepts/collections)**, in order to categorize your catalog.
-- To **filter products** in the storefront, also known as "faceted search". For example, a customer is on the "hoodies" collection
-page and wants to filter to only show Nike hoodies.
-- For **internal logic**, such as a promotion that applies to all variants with the "Summer Sale" facet value, or a shipping calculation
-that applies a surcharge to all products with the "Fragile" facet value. Such facets can be set to be private so that they
-are not exposed to the storefront.
+For a detailed explanation of facets, filtering, and how they relate to collections, see the [Facets & Filters](/core-concepts/facets-filters/) guide.

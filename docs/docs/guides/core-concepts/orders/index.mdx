@@ -1,5 +1,7 @@
 ---
 title: 'Orders'
+metaTitle: "Order Lifecycle and State Machine in Vendure"
+metaDescription: "Vendure's order process from cart to delivery, powered by a finite state machine. Covers default states and transitions."
 ---
 
 In Vendure, the [`Order`](/reference/typescript-api/entities/order/) entity represents the entire lifecycle of an order, from the moment a customer adds an item to their cart, through to the point where the order is completed and the customer has received their goods.
@@ -21,6 +23,36 @@ Vendure defines an order process which is based on a [finite state machine](/ref
 In Vendure, there is no distinction between a "cart" and an "order". The same entity is used for both. A "cart" is simply an order
 which is still "active" according to its current state.
 :::
+
+The current state of an order is available via the `state` field on the `Order` type. The next possible states can be queried via the [`nextOrderStates`](/reference/graphql-api/shop/queries/#nextorderstates) query.
+
+The available states and the permissible transitions between them are defined by the configured [`OrderProcess`](/reference/typescript-api/orders/order-process/). By default, Vendure defines a [`DefaultOrderProcess`](/reference/typescript-api/orders/order-process/#defaultorderprocess) which is suitable for typical B2C use-cases. Here's a simplified diagram of the default order process:
+
+![Default order process](./order-process.webp)
+
+Let's take a look at each of these states, and the transitions between them:
+
+* **`AddingItems:`** All orders begin in the `AddingItems` state. This means that the customer is adding items to his or her shopping cart. This is the state an order would be in as long as the customer is still browsing the store.
+* **`ArrangingPayment:`** From there, the Order can transition to the `ArrangingPayment`, which will prevent any further modifications to the order, which ensures the price that is sent to the payment provider is the same as the price that the customer saw when they added the items to their cart. At this point, the storefront will execute the [`addPaymentToOrder` mutation](/reference/graphql-api/shop/mutations/#addpaymenttoorder).
+* **`PaymentAuthorized:`** Depending on the configured payment method, the order may then transition to the `PaymentAuthorized` state, which indicates that the payment has been successfully authorized by the payment provider. This is the state that the order will be in if the payment is not captured immediately. Once the payment is captured, the order will transition to the `PaymentSettled` state.
+* **`PaymentSettled:`** If the payment captured immediately, the order will transition to the `PaymentSettled` state once the payment succeeds.
+* At this point, one or more fulfillments can be created. A `Fulfillment` represents the process of shipping one or more items to the customer ("shipping" applies equally to physical or digital goods - it just means getting the product to the customer by any means). A fulfillment can be created via the [`addFulfillmentToOrder` mutation](/reference/graphql-api/admin/mutations/#addfulfillmenttoorder), or via the Dashboard. If multiple fulfillments are created, then the order can end up partial states - `PartiallyShipped` or `PartiallyDelivered`. If there is only a single fulfillment which includes the entire order, then partial states are not possible.
+* **`Shipped:`** When all fulfillments have been shipped, the order will transition to the `Shipped` state. This means the goods have left the warehouse and are en route to the customer.
+* **`Delivered:`** When all fulfillments have been delivered, the order will transition to the `Delivered` state. This means the goods have arrived at the customer's address. This is the final state of the order.
+
+## Order Interceptors
+
+[Order Interceptors](/reference/typescript-api/orders/order-interceptor/) allow you to intercept operations that add, modify, or remove order lines. Example use-cases include:
+
+* Preventing certain products from being added to the order based on custom criteria
+* Enforcing a minimum or maximum quantity of a given product in the order
+* Using a CAPTCHA to prevent automated order creation
+
+For details on customizing the order process, see the [Developer Guide](/developer-guide/strategies-configurable-operations/).
+
+## Code Examples
+
+### Querying order state
 
 You can see the current state of an order via `state` field on the `Order` type:
 
@@ -53,6 +85,8 @@ query ActiveOrder {
 </TabItem>
 </Tabs>
 
+### Querying next order states
+
 The next possible states can be queried via the [`nextOrderStates`](/reference/graphql-api/shop/queries/#nextorderstates) query:
 
 <Tabs>
@@ -81,23 +115,7 @@ query NextStates {
 </TabItem>
 </Tabs>
 
-
-
-The available states and the permissible transitions between them are defined by the configured [`OrderProcess`](/reference/typescript-api/orders/order-process/). By default, Vendure defines a [`DefaultOrderProcess`](/reference/typescript-api/orders/order-process/#defaultorderprocess) which is suitable for typical B2C use-cases. Here's a simplified diagram of the default order process:
-
-![Default order process](./order-process.webp)
-
-Let's take a look at each of these states, and the transitions between them:
-
-* **`AddingItems:`** All orders begin in the `AddingItems` state. This means that the customer is adding items to his or her shopping cart. This is the state an order would be in as long as the customer is still browsing the store.
-* **`ArrangingPayment:`** From there, the Order can transition to the `ArrangingPayment`, which will prevent any further modifications to the order, which ensures the price that is sent to the payment provider is the same as the price that the customer saw when they added the items to their cart. At this point, the storefront will execute the [`addPaymentToOrder` mutation](/reference/graphql-api/shop/mutations/#addpaymenttoorder).
-* **`PaymentAuthorized:`** Depending on the configured payment method, the order may then transition to the `PaymentAuthorized` state, which indicates that the payment has been successfully authorized by the payment provider. This is the state that the order will be in if the payment is not captured immediately. Once the payment is captured, the order will transition to the `PaymentSettled` state.
-* **`PaymentSettled:`** If the payment captured immediately, the order will transition to the `PaymentSettled` state once the payment succeeds.
-* At this point, one or more fulfillments can be created. A `Fulfillment` represents the process of shipping one or more items to the customer ("shipping" applies equally to physical or digital goods - it just means getting the product to the customer by any means). A fulfillment can be created via the [`addFulfillmentToOrder` mutation](/reference/graphql-api/admin/mutations/#addfulfillmenttoorder), or via the Dashboard. If multiple fulfillments are created, then the order can end up partial states - `PartiallyShipped` or `PartiallyDelivered`. If there is only a single fulfillment which includes the entire order, then partial states are not possible.
-* **`Shipped:`** When all fulfillments have been shipped, the order will transition to the `Shipped` state. This means the goods have left the warehouse and are en route to the customer.
-* **`Delivered:`** When all fulfillments have been delivered, the order will transition to the `Delivered` state. This means the goods have arrived at the customer's address. This is the final state of the order.
-
-## Customizing the Default Order Process
+### Configuring the default order process
 
 It is possible to customize the [defaultOrderProcess](/reference/typescript-api/orders/order-process/#defaultorderprocess) to better match your business needs. For example, you might want to disable some of the constraints that are imposed by the default process, such as the requirement that a customer must have a shipping address before the Order can be completed.
 
@@ -111,11 +129,11 @@ const myCustomOrderProcess = configureDefaultOrderProcess({
   // Orders to have a shipping method assigned
   // before payment.
   arrangingPaymentRequiresShipping: false,
-    
+
   // Other constraints which can be disabled. See the
   // DefaultOrderProcessOptions interface docs for full
   // explanations.
-  //  
+  //
   // checkModificationPayments: false,
   // checkAdditionalPaymentsAmount: false,
   // checkAllVariantsExist: false,
@@ -134,11 +152,11 @@ export const config: VendureConfig = {
 };
 ```
 
-## Custom Order Processes
+### Custom order processes
 
 Sometimes you might need to extend things beyond what is provided by the default Order process to better match your business needs. This is done by defining one or more [`OrderProcess`](/reference/typescript-api/orders/order-process#orderprocess) objects and passing them to the [`OrderOptions.process`](/reference/typescript-api/orders/order-options/#process) config property.
 
-### Adding a new state
+#### Adding a new state
 
 Let's say your company can only sell to customers with a valid EU tax ID. We'll assume that you've already used a [custom field](/developer-guide/custom-fields/) to store that code on the Customer entity.
 
@@ -176,7 +194,7 @@ export const customerValidationProcess: OrderProcess<'ValidatingCustomer'> = {
 
 This object means:
 
-* the `AddingItems` state may _only_ transition to the `ValidatingCustomer` state (`mergeStrategy: 'replace'` tells Vendure to discard any existing transition targets and replace with this one). 
+* the `AddingItems` state may _only_ transition to the `ValidatingCustomer` state (`mergeStrategy: 'replace'` tells Vendure to discard any existing transition targets and replace with this one).
 * the `ValidatingCustomer` may transition to the `ArrangingPayment` state (assuming the tax ID is valid) or back to the `AddingItems` state.
 
 And then add this configuration to our main VendureConfig:
@@ -204,7 +222,7 @@ export const customerValidationProcess: OrderProcess<'ValidatingCustomer'|'Anoth
  ```
 This way multiple custom states get defined.
 
-### Intercepting a state transition
+#### Intercepting a state transition
 
 Now we have defined our new `ValidatingCustomer` state, but there is as yet nothing to enforce that the tax ID is valid. To add this constraint, we'll use the [`onTransitionStart` state transition hook](/reference/typescript-api/state-machine/state-machine-config#ontransitionstart).
 
@@ -249,7 +267,7 @@ const customerValidationProcess: OrderProcess<'ValidatingCustomer'> = {
 For an explanation of the `init()` method and `injector` argument, see the guide on [injecting dependencies in configurable operations](/developer-guide/strategies-configurable-operations/#injecting-dependencies).
 :::
 
-### Responding to a state transition
+#### Responding to a state transition
 
 Once an order has successfully transitioned to a new state, the [`onTransitionEnd` state transition hook](/reference/typescript-api/state-machine/state-machine-config#ontransitionend) is called. This can be used to perform some action
 upon successful state transition.
@@ -320,7 +338,7 @@ export const myOrderProcess: OrderProcess<OrderState> = {
 
 :::
 
-## TypeScript Typings
+### TypeScript typings for custom states
 
 To make your custom states compatible with standard services you should declare your new states in the following way:
 
@@ -335,22 +353,3 @@ declare module '@vendure/core' {
 ```
 
 This technique uses advanced TypeScript features - [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces) and  [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#ambient-modules).
-
-## Controlling custom states in the Dashboard
-
-If you have defined custom order states, the Dashboard will allow you to manually transition an 
-order from one state to another:
-
-![./custom-order-ui.webp](./custom-order-ui.webp)
-
-## Order Interceptors
-
-Vendure v3.1 introduces the concept of [Order Interceptors](/reference/typescript-api/orders/order-interceptor/). 
-These are a way to intercept operations that add, modify or remove order lines. Examples use-cases include:
-
-* Preventing certain products from being added to the order based on some criteria, e.g. if the  product is already in another active order.
-* Enforcing a minimum or maximum quantity of a given product in the order
-* Using a CAPTCHA to prevent automated order creation
-
-Check the [Order Interceptor](/reference/typescript-api/orders/order-interceptor/) docs for more information as well as a complete
-example of how to implement an interceptor.
