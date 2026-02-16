@@ -188,7 +188,7 @@ export class PromotionService {
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Promotion, input, updatedPromotion);
-        await this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
+        await this.eventBus.publish(new PromotionEvent(ctx, updatedPromotion, 'updated', input));
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
 

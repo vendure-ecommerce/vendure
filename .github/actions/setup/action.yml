@@ -1,0 +1,19 @@
+name: 'Setup Vendure'
+description: 'Setup Node with npm cache and install dependencies'
+inputs:
+    node-version:
+        description: 'Node.js version'
+        required: false
+        default: '22.x'
+runs:
+    using: 'composite'
+    steps:
+        - uses: actions/setup-node@v4
+          with:
+              node-version: ${{ inputs.node-version }}
+              cache: 'npm'
+        - name: Install dependencies
+          shell: bash
+          run: |
+              npm install
+              npm install --os=linux --cpu=x64 sharp

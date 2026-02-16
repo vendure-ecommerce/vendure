@@ -1080,8 +1080,8 @@ export class OrderService {
         // Since a changed ShippingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone(ctx.channelId), undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA(ctx.channelId), undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -1104,8 +1104,8 @@ export class OrderService {
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone(ctx.channelId), undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA(ctx.channelId), undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -1128,8 +1128,8 @@ export class OrderService {
         // Since a changed ShippingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone(ctx.channelId), undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA(ctx.channelId), undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -1152,8 +1152,8 @@ export class OrderService {
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
-        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone(ctx.channelId), undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA(ctx.channelId), undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
