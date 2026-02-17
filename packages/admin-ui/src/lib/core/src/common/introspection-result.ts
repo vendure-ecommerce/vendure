@@ -134,6 +134,7 @@ const result: PossibleTypesResultData = {
             'AuthenticationMethod',
             'Cancellation',
             'Channel',
+            'ChannelRole',
             'Collection',
             'Country',
             'Customer',

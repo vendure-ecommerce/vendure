@@ -255,7 +255,8 @@ export class RoleService {
                 const user = await this.connection.getEntityOrThrow(ctx, User, activeUserId, {
                     relations: ['roles', 'roles.channels'],
                 });
-                return getUserChannelsPermissions(user);
+                const strategy = this.configService.authOptions.rolePermissionResolverStrategy;
+                return strategy ? strategy.resolvePermissions(user) : getUserChannelsPermissions(user);
             },
         );
 

@@ -226,9 +226,9 @@ export function ChannelProvider({ children }: Readonly<{ children: React.ReactNo
     const refreshChannels = React.useCallback(() => {
         refreshCurrentUser();
         queryClient.invalidateQueries({
-            queryKey: ['channels', isAuthenticated],
+            queryKey: ['channels'],
         });
-    }, [refreshCurrentUser, queryClient, isAuthenticated]);
+    }, [refreshCurrentUser, queryClient]);
 
     const contextValue: ChannelContext = React.useMemo(
         () => ({

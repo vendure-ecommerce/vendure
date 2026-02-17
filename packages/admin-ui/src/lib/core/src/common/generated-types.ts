@@ -552,6 +552,22 @@ export type ChannelListOptions = {
   take?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type ChannelRole = Node & {
+  __typename?: 'ChannelRole';
+  channel: Channel;
+  createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
+  id: Scalars['ID']['output'];
+  role: Role;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+};
+
+export type ChannelRoleInput = {
+  channelId: Scalars['ID']['input'];
+  roleId: Scalars['ID']['input'];
+};
+
 export type ChannelSortParameter = {
   code?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
@@ -886,6 +902,14 @@ export type CreateAssetInput = {
 };
 
 export type CreateAssetResult = Asset | MimeTypeError;
+
+export type CreateChannelAdministratorInput = {
+  channelRoles: Array<ChannelRoleInput>;
+  emailAddress: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
 
 export type CreateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
@@ -1495,6 +1519,7 @@ export type CustomFields = {
   ApiKey: Array<CustomFieldConfig>;
   Asset: Array<CustomFieldConfig>;
   Channel: Array<CustomFieldConfig>;
+  ChannelRole: Array<CustomFieldConfig>;
   Collection: Array<CustomFieldConfig>;
   Customer: Array<CustomFieldConfig>;
   CustomerGroup: Array<CustomFieldConfig>;
@@ -2943,6 +2968,8 @@ export type Mutation = {
   createAssets: Array<CreateAssetResult>;
   /** Create a new Channel */
   createChannel: CreateChannelResult;
+  /** Create a new Administrator with channel-role assignments (requires ChannelRolePermissionResolverStrategy) */
+  createChannelAdministrator: Administrator;
   /** Create a new Collection */
   createCollection: Collection;
   /** Create a new Country */
@@ -3188,6 +3215,8 @@ export type Mutation = {
   updateAsset: Asset;
   /** Update an existing Channel */
   updateChannel: UpdateChannelResult;
+  /** Update an existing Administrator's channel-role assignments (requires ChannelRolePermissionResolverStrategy) */
+  updateChannelAdministrator: Administrator;
   /** Update an existing Collection */
   updateCollection: Collection;
   /** Update an existing Country */
@@ -3389,6 +3418,11 @@ export type MutationCreateAssetsArgs = {
 
 export type MutationCreateChannelArgs = {
   input: CreateChannelInput;
+};
+
+
+export type MutationCreateChannelAdministratorArgs = {
+  input: CreateChannelAdministratorInput;
 };
 
 
@@ -4024,6 +4058,11 @@ export type MutationUpdateAssetArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput;
+};
+
+
+export type MutationUpdateChannelAdministratorArgs = {
+  input: UpdateChannelAdministratorInput;
 };
 
 
@@ -6243,6 +6282,7 @@ export type ServerConfig = {
   entityCustomFields: Array<EntityCustomFields>;
   moneyStrategyPrecision: Scalars['Int']['output'];
   orderProcess: Array<OrderProcessState>;
+  permissionResolverStrategy: Scalars['String']['output'];
   permissions: Array<PermissionDefinition>;
   permittedAssetTypes: Array<Scalars['String']['output']>;
 };
@@ -6914,6 +6954,15 @@ export type UpdateAssetInput = {
   translations?: InputMaybe<Array<AssetTranslationInput>>;
 };
 
+export type UpdateChannelAdministratorInput = {
+  channelRoles?: InputMaybe<Array<ChannelRoleInput>>;
+  emailAddress?: InputMaybe<Scalars['String']['input']>;
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateChannelInput = {
   availableCurrencyCodes?: InputMaybe<Array<CurrencyCode>>;
   availableLanguageCodes?: InputMaybe<Array<LanguageCode>>;
@@ -7198,6 +7247,7 @@ export type UpdateZoneInput = {
 export type User = Node & {
   __typename?: 'User';
   authenticationMethods: Array<AuthenticationMethod>;
+  channelRoles: Array<ChannelRole>;
   createdAt: Scalars['DateTime']['output'];
   customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];

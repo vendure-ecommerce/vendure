@@ -3,10 +3,12 @@ import {
     DeletionResponse,
     MutationAssignRoleToAdministratorArgs,
     MutationCreateAdministratorArgs,
+    MutationCreateChannelAdministratorArgs,
     MutationDeleteAdministratorArgs,
     MutationDeleteAdministratorsArgs,
     MutationUpdateActiveAdministratorArgs,
     MutationUpdateAdministratorArgs,
+    MutationUpdateChannelAdministratorArgs,
     Permission,
     QueryAdministratorArgs,
     QueryAdministratorsArgs,
@@ -120,5 +122,27 @@ export class AdministratorResolver {
         @Args() args: MutationDeleteAdministratorsArgs,
     ): Promise<DeletionResponse[]> {
         return Promise.all(args.ids.map(id => this.administratorService.softDelete(ctx, id)));
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateAdministrator)
+    createChannelAdministrator(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateChannelAdministratorArgs,
+    ): Promise<Administrator> {
+        const { input } = args;
+        return this.administratorService.createChannelAdministrator(ctx, input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateAdministrator)
+    updateChannelAdministrator(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateChannelAdministratorArgs,
+    ): Promise<Administrator> {
+        const { input } = args;
+        return this.administratorService.updateChannelAdministrator(ctx, input);
     }
 }

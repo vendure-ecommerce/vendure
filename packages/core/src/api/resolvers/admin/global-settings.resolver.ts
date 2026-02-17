@@ -32,6 +32,7 @@ import {
     RelationCustomFieldConfig,
     StructCustomFieldConfig,
 } from '../../../config/custom-field/custom-field-types';
+import { ChannelRolePermissionResolverStrategy } from '../../../config/role-permission-resolver/channel-role-permission-resolver-strategy';
 import { GlobalSettings } from '../../../entity/global-settings/global-settings.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';
@@ -64,6 +65,9 @@ export class GlobalSettingsResolver {
         const permissions = getAllPermissionsMetadata(
             this.configService.authOptions.customPermissions,
         ).filter(p => !p.internal);
+        const strategy = this.configService.authOptions.rolePermissionResolverStrategy;
+        const permissionResolverStrategy =
+            strategy instanceof ChannelRolePermissionResolverStrategy ? 'channel-role' : 'default';
         return {
             customFieldConfig: this.generateCustomFieldConfig(info),
             entityCustomFields: this.generateEntityCustomFieldConfig(info),
@@ -71,6 +75,7 @@ export class GlobalSettingsResolver {
             permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
             permissions,
             moneyStrategyPrecision: this.configService.entityOptions.moneyStrategy.precision ?? 2,
+            permissionResolverStrategy,
         };
     }
 

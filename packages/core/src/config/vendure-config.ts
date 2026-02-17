@@ -55,6 +55,7 @@ import { PaymentProcess } from './payment/payment-process';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { RefundProcess } from './refund/refund-process';
+import { RolePermissionResolverStrategy } from './role-permission-resolver/role-permission-resolver-strategy';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { SettingsStoreFields } from './settings-store/settings-store-types';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
@@ -536,6 +537,19 @@ export interface AuthOptions {
      * @since 3.2.0
      */
     verificationTokenStrategy?: VerificationTokenStrategy;
+    /**
+     * @description
+     * Defines how channel-specific permissions are resolved for a given User.
+     *
+     * The default strategy uses the existing User → Roles → Channels relationship.
+     * Use the {@link ChannelRolePermissionResolverStrategy} to enable per-user
+     * channel-role assignments via the ChannelRole bridge entity, which is useful
+     * for multi-vendor marketplaces.
+     *
+     * @default DefaultRolePermissionResolverStrategy
+     * @since 3.3.0
+     */
+    rolePermissionResolverStrategy?: RolePermissionResolverStrategy;
 }
 
 /**
