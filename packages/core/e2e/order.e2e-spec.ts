@@ -72,6 +72,7 @@ import {
     GET_STOCK_MOVEMENT,
     SETTLE_PAYMENT,
     TRANSIT_FULFILLMENT,
+    UPDATE_CHANNEL,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
@@ -2844,6 +2845,64 @@ describe('Orders resolver', () => {
                 id: order.id,
             });
             expect(order2?.state).toBe('PartiallyShipped');
+        });
+
+        // https://github.com/vendurehq/vendure/issues/4348
+        it('cancelShipping with pricesIncludeTax leaves zero shipping cost', async () => {
+            // Set channel to pricesIncludeTax = true
+            await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
+                UPDATE_CHANNEL,
+                {
+                    input: {
+                        id: 'T_1',
+                        pricesIncludeTax: true,
+                    },
+                },
+            );
+
+            const testOrder = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[0].emailAddress,
+                password,
+            );
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, failsToSettlePaymentMethod);
+            orderGuard.assertSuccess(order);
+            expect(order.state).toBe('PaymentAuthorized');
+
+            const { cancelOrder } = await adminClient.query<
+                Codegen.CancelOrderMutation,
+                Codegen.CancelOrderMutationVariables
+            >(CANCEL_ORDER, {
+                input: {
+                    orderId: testOrder.orderId,
+                    cancelShipping: true,
+                },
+            });
+            orderGuard.assertSuccess(cancelOrder);
+
+            const { order: cancelledOrder } = await adminClient.query<
+                Codegen.GetOrderQuery,
+                Codegen.GetOrderQueryVariables
+            >(GET_ORDER, {
+                id: testOrder.orderId,
+            });
+            expect(cancelledOrder!.state).toBe('Cancelled');
+            expect(cancelledOrder!.shipping).toBe(0);
+            expect(cancelledOrder!.shippingWithTax).toBe(0);
+            expect(cancelledOrder!.totalWithTax).toBe(0);
+
+            // Reset channel to pricesIncludeTax = false
+            await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
+                UPDATE_CHANNEL,
+                {
+                    input: {
+                        id: 'T_1',
+                        pricesIncludeTax: false,
+                    },
+                },
+            );
         });
     });
 
