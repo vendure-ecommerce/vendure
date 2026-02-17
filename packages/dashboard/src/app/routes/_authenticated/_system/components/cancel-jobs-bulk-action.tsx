@@ -2,16 +2,31 @@ import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-
 import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
 import { api } from '@/vdb/graphql/api.js';
 import { usePaginatedList } from '@/vdb/hooks/use-paginated-list.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { Ban } from 'lucide-react';
+import { toast } from 'sonner';
 import { cancelJobDocument } from '../job-queue.graphql.js';
 
 export const CancelJobsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
     const { refetchPaginatedList } = usePaginatedList();
+    const { t } = useLingui();
 
     const cancelSelectedJobs = async () => {
         const cancellableJobs = selection.filter(job => job.state === 'RUNNING' || job.state === 'PENDING');
-        await Promise.all(cancellableJobs.map(job => api.mutate(cancelJobDocument, { jobId: job.id })));
+        const results = await Promise.allSettled(
+            cancellableJobs.map(job => api.mutate(cancelJobDocument, { jobId: job.id })),
+        );
+
+        const fulfilled = results.filter(r => r.status === 'fulfilled').length;
+        const rejected = results.filter(r => r.status === 'rejected').length;
+
+        if (fulfilled > 0) {
+            toast.success(t`Successfully cancelled ${fulfilled} job(s)`);
+        }
+        if (rejected > 0) {
+            toast.error(t`Failed to cancel ${rejected} job(s)`);
+        }
+
         refetchPaginatedList();
         table.resetRowSelection();
     };
