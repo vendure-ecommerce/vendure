@@ -1,3 +1,27 @@
+## <small>3.5.4 (2026-02-17)</small>
+
+
+#### Fixes
+
+* **core** Emit post-update entity in VendureEntityEvent for updated events (#4352) ([7b6c421](https://github.com/vendurehq/vendure/commit/7b6c421)), closes [#4352](https://github.com/vendurehq/vendure/issues/4352)
+* **core** Fix coupon code removal not clearing adjustments ([bf397cc](https://github.com/vendurehq/vendure/commit/bf397cc)), closes [#4016](https://github.com/vendurehq/vendure/issues/4016)
+* **core** Run promotion side effects before OrderLine save (#4350) ([bb5fa6c](https://github.com/vendurehq/vendure/commit/bb5fa6c)), closes [#4350](https://github.com/vendurehq/vendure/issues/4350)
+* **core** Use channel-aware cache keys for active tax zone (#4329) ([eb13562](https://github.com/vendurehq/vendure/commit/eb13562)), closes [#4329](https://github.com/vendurehq/vendure/issues/4329)
+* **create** Add ts-node to scaffolded project devDependencies (#4212) ([4febc48](https://github.com/vendurehq/vendure/commit/4febc48)), closes [#4212](https://github.com/vendurehq/vendure/issues/4212)
+* **create** Fix welcome message on create (#4363) ([ab61ee7](https://github.com/vendurehq/vendure/commit/ab61ee7)), closes [#4363](https://github.com/vendurehq/vendure/issues/4363)
+* **create** Use explicit localhost API host in vite config template (#4349) ([6476fb9](https://github.com/vendurehq/vendure/commit/6476fb9)), closes [#4349](https://github.com/vendurehq/vendure/issues/4349)
+* **dashboard** Add missing translations and CI check script (#4207) ([0727ef4](https://github.com/vendurehq/vendure/commit/0727ef4)), closes [#4207](https://github.com/vendurehq/vendure/issues/4207)
+* **dashboard** Fix list relation custom fields not saving correctly (#4206) ([b28e64e](https://github.com/vendurehq/vendure/commit/b28e64e)), closes [#4206](https://github.com/vendurehq/vendure/issues/4206)
+* **dashboard** Pass native arrays from FacetValueInput onChange ([510ecc2](https://github.com/vendurehq/vendure/commit/510ecc2)), closes [#4146](https://github.com/vendurehq/vendure/issues/4146)
+* **dashboard** Refresh order entity and history after all mutations (#4338) ([e91671e](https://github.com/vendurehq/vendure/commit/e91671e)), closes [#4338](https://github.com/vendurehq/vendure/issues/4338)
+* **dashboard** Resolve ESM path aliases relative to source file location (#4323) ([cc520c9](https://github.com/vendurehq/vendure/commit/cc520c9)), closes [#4323](https://github.com/vendurehq/vendure/issues/4323)
+* **dashboard** Validate required args in ConfigurableOperationInput (#4202) ([d1372e5](https://github.com/vendurehq/vendure/commit/d1372e5)), closes [#4202](https://github.com/vendurehq/vendure/issues/4202)
+* **graphiql-plugin** Make embedded mode background transparent (#4205) ([3bb3608](https://github.com/vendurehq/vendure/commit/3bb3608)), closes [#4205](https://github.com/vendurehq/vendure/issues/4205)
+
+#### Features
+
+* **core** Export FSM utility functions from public API ([895644b](https://github.com/vendurehq/vendure/commit/895644b))
+
 ## <small>3.5.3 (2026-01-30)</small>
 
 #### Security
