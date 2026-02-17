@@ -1,0 +1,52 @@
+import { type Page, expect, test } from '@playwright/test';
+
+import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
+
+// Regression: https://github.com/vendurehq/vendure/issues/4155
+// Fix PR: https://github.com/vendurehq/vendure/pull/4339
+//
+// Creating an entity with nullable non-string custom fields (Int, Float, DateTime)
+// fails because getDefaultValueFromField() returns '' instead of null for these types.
+// The form either fails Zod validation or the GraphQL mutation rejects empty strings.
+//
+// PREREQUISITE: This test requires nullable non-string custom fields to be configured
+// in global-setup.ts:
+//
+//   customFields: {
+//       Product: [
+//           { name: 'releaseYear', type: 'int' },
+//           { name: 'weight', type: 'float' },
+//           { name: 'releaseDate', type: 'datetime' },
+//       ],
+//   },
+//
+// Once the fix from PR #4339 is merged AND the custom fields are added to the config,
+// remove the .fixme() markers below.
+
+test.describe('Issue #4155: Nullable non-string custom field defaults', () => {
+    test.describe.configure({ mode: 'serial' });
+
+    const detailPage = (page: Page) =>
+        new BaseDetailPage(page, {
+            newPath: '/products/new',
+            pathPrefix: '/products/',
+            newTitle: 'New product',
+        });
+
+    test.fixme('should create a product without filling nullable non-string custom fields', async ({
+        page,
+    }) => {
+        const dp = detailPage(page);
+        await dp.gotoNew();
+        await dp.expectNewPageLoaded();
+
+        // Only fill required fields — leave nullable custom fields empty
+        await dp.fillInput('Product name', 'Issue 4155 Test Product');
+        await expect(dp.formItem('Slug').getByRole('textbox')).not.toHaveValue('', { timeout: 5_000 });
+
+        // This should succeed: nullable fields should default to null, not ''
+        await dp.clickCreate();
+        await dp.expectSuccessToast(/Successfully created product/);
+        await dp.expectNavigatedToExisting();
+    });
+});
