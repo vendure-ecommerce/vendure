@@ -11,7 +11,7 @@ import {
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
-import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
@@ -106,33 +106,35 @@ export function OrderDetailShared({
     const customFieldConfig = useCustomFieldConfig('Order');
     const refundDialogRef = useRef<RefundOrderDialogRef>(null);
 
-    const refreshOrderAndHistory = useCallback(async () => {
-        if (entity) {
-            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
-            await queryClient.invalidateQueries({ queryKey });
-            void queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
-        }
-    }, [entity, queryClient]);
+    const refreshPage = useCallback(async () => {
+        if (!entity) return;
+        await Promise.all([
+            refreshEntity(),
+            queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) }),
+        ]);
+    }, [refreshEntity, entity, queryClient]);
 
     const stateTransitionActions = useMemo(() => {
         if (!entity) {
             return [];
         }
-        return entity.nextStates.map((state: string) => ({
-            label: t`Transition to ${getTranslatedOrderState(state)}`,
-            type: getTypeForState(state),
-            onClick: async () => {
-                const transitionError = await transitionToState(state);
-                if (transitionError) {
-                    toast(t`Failed to transition order to state`, {
-                        description: transitionError,
-                    });
-                } else {
-                    void refreshOrderAndHistory();
-                }
-            },
-        }));
-    }, [entity, transitionToState, t, refreshOrderAndHistory]);
+        return entity.nextStates
+            .filter((state: string) => state !== 'Modifying')
+            .map((state: string) => ({
+                label: t`Transition to ${getTranslatedOrderState(state)}`,
+                type: getTypeForState(state),
+                onClick: async () => {
+                    const transitionError = await transitionToState(state);
+                    if (transitionError) {
+                        toast(t`Failed to transition order to state`, {
+                            description: transitionError,
+                        });
+                    } else {
+                        void refreshPage();
+                    }
+                },
+            }));
+    }, [entity, transitionToState, t, refreshPage]);
 
     const handleModifyClick = useCallback(async () => {
         if (!entity) return;
@@ -141,15 +143,14 @@ export function OrderDetailShared({
                 id: entity.id,
                 state: 'Modifying',
             });
-            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
-            await queryClient.invalidateQueries({ queryKey });
+            await refreshPage();
             await navigate({ to: `/orders/$id/modify`, params: { id: entity.id } });
         } catch (error) {
             toast(t`Failed to modify order`, {
                 description: error instanceof Error ? error.message : 'Unknown error',
             });
         }
-    }, [entity, transitionOrderToStateMutation, queryClient, navigate, t]);
+    }, [entity, transitionOrderToStateMutation, refreshPage, navigate, t]);
 
     const ModifyMenuItem = useCallback(
         () => (
@@ -206,7 +207,7 @@ export function OrderDetailShared({
                         <FulfillOrderDialog
                             order={entity}
                             onSuccess={() => {
-                                refreshOrderAndHistory();
+                                void refreshPage();
                             }}
                         />
                     </ActionBarItem>
@@ -216,7 +217,7 @@ export function OrderDetailShared({
                         ref={refundDialogRef}
                         order={entity}
                         onSuccess={() => {
-                            void refreshOrderAndHistory();
+                            void refreshPage();
                         }}
                     />
                 )}
@@ -250,7 +251,7 @@ export function OrderDetailShared({
                                 key={payment.id}
                                 payment={payment}
                                 currencyCode={entity.currencyCode}
-                                onSuccess={refreshOrderAndHistory}
+                                onSuccess={refreshPage}
                             />
                         ))}
                     </div>
@@ -312,10 +313,7 @@ export function OrderDetailShared({
                                     order={entity}
                                     fulfillment={fulfillment}
                                     onSuccess={() => {
-                                        refreshEntity();
-                                        void queryClient.refetchQueries({
-                                            queryKey: orderHistoryQueryKey(entity.id),
-                                        });
+                                        void refreshPage();
                                     }}
                                 />
                             ))}

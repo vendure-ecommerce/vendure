@@ -27,6 +27,10 @@ concurrency:
     group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     cancel-in-progress: true
 
+# NOTE: The Elasticsearch and Redis service definitions are duplicated across the e2e-* jobs
+# because GitHub Actions does not support YAML anchors or service definition reuse.
+# When updating these services (version bumps, env changes, health checks), update ALL four copies:
+# e2e-sqljs, e2e-mariadb, e2e-mysql, e2e-postgres.
 jobs:
     codegen:
         uses: ./.github/workflows/codegen.yml
@@ -35,19 +39,9 @@ jobs:
         runs-on: ubuntu-latest
         permissions:
             contents: read
-        strategy:
-            matrix:
-                node: [20.x, 22.x, 24.x]
         steps:
             - uses: actions/checkout@v4
-            - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ matrix.node }}
-            - name: npm install
-              run: |
-                  npm install
-                  npm install --os=linux --cpu=x64 sharp
+            - uses: ./.github/actions/setup
             - name: Build
               run: npm run build
     unit-tests:
@@ -56,52 +50,74 @@ jobs:
         permissions:
             contents: read
         strategy:
+            fail-fast: false
             matrix:
                 node: [20.x, 22.x, 24.x]
         steps:
             - uses: actions/checkout@v4
-            - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@v4
+            - uses: ./.github/actions/setup
               with:
                   node-version: ${{ matrix.node }}
-            - name: npm install
-              run: |
-                  npm install
-                  npm install --os=linux --cpu=x64 sharp
             - name: Build
               run: npx lerna run ci
             - name: Unit tests
               run: npm run test
-    e2e-tests:
-        name: e2e tests
+    dashboard-changes:
+        name: check dashboard changes
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        outputs:
+            changed: ${{ steps.check.outputs.changed }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Check for dashboard changes
+              id: check
+              run: |
+                  base="${{ github.event.pull_request.base.sha }}"
+                  if [ -z "$base" ]; then base="${{ github.event.before }}"; fi
+                  if [ -z "$base" ]; then base="HEAD~1"; fi
+                  if git diff --name-only "$base" HEAD | grep -q '^packages/dashboard/'; then
+                    echo "changed=true" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "changed=false" >> "$GITHUB_OUTPUT"
+                  fi
+    dashboard-e2e:
+        name: dashboard e2e
+        needs: dashboard-changes
+        if: needs.dashboard-changes.outputs.changed == 'true'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+            - name: Build
+              run: npx lerna run ci
+            - name: Cache Playwright browsers
+              id: playwright-cache
+              uses: actions/cache@v4
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+            - name: Install Playwright browsers
+              if: steps.playwright-cache.outputs.cache-hit != 'true'
+              run: npx playwright install chromium
+              working-directory: packages/dashboard
+            - name: Install Playwright system deps
+              run: npx playwright install-deps chromium
+              working-directory: packages/dashboard
+            - name: Dashboard e2e tests
+              run: npm run e2e:pw
+              working-directory: packages/dashboard
+    e2e-sqljs:
+        name: e2e (sqljs)
         runs-on: ubuntu-latest
         permissions:
             contents: read
         services:
-            mariadb:
-                # With v11.6.2+, a default was changed, (https://mariadb.com/kb/en/innodb-system-variables/#innodb_snapshot_isolation)
-                # which causes e2e test failures currently
-                image: mariadb:11.5
-                env:
-                    MARIADB_ROOT_PASSWORD: password
-                ports:
-                    - 3306
-                options: --health-cmd="mariadb-admin ping -h localhost -u vendure -ppassword" --health-interval=10s --health-timeout=5s --health-retries=3
-            mysql:
-                image: vendure/mysql-8-native-auth:latest
-                env:
-                    MYSQL_ROOT_PASSWORD: password
-                ports:
-                    - 3306
-                options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10
-            postgres:
-                image: postgres:16
-                env:
-                    POSTGRES_USER: vendure
-                    POSTGRES_PASSWORD: password
-                ports:
-                    - 5432
-                options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
             elastic:
                 image: docker.elastic.co/elasticsearch/elasticsearch:9.1.0
                 env:
@@ -131,26 +147,161 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                node: [20.x, 22.x, 24.x]
-                db: [sqljs, mariadb, mysql, postgres]
+                node: ${{ github.event_name == 'pull_request' && fromJSON('["22.x"]') || fromJSON('["20.x", "22.x", "24.x"]') }}
         steps:
             - uses: actions/checkout@v4
-            - name: Use Node.js ${{ matrix.node }}
-              uses: actions/setup-node@v4
+            - uses: ./.github/actions/setup
               with:
                   node-version: ${{ matrix.node }}
-            - name: npm install
-              run: |
-                  npm install
-                  npm install --os=linux --cpu=x64 sharp
+            - name: Build
+              run: npx lerna run ci
+            - name: e2e tests
+              env:
+                  E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+                  E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+                  DB: sqljs
+              run: npm run e2e
+    e2e-mariadb:
+        name: e2e (mariadb)
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        services:
+            mariadb:
+                # With v11.6.2+, a default was changed, (https://mariadb.com/kb/en/innodb-system-variables/#innodb_snapshot_isolation)
+                # which causes e2e test failures currently
+                image: mariadb:11.5
+                env:
+                    MARIADB_ROOT_PASSWORD: password
+                ports:
+                    - 3306
+                options: --health-cmd="mariadb-admin ping -h localhost -u vendure -ppassword" --health-interval=10s --health-timeout=5s --health-retries=3
+            elastic:
+                image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+                env:
+                    discovery.type: single-node
+                    bootstrap.memory_lock: true
+                    ES_JAVA_OPTS: -Xms512m -Xmx512m
+                    cluster.routing.allocation.disk.watermark.low: 500mb
+                    cluster.routing.allocation.disk.watermark.high: 200mb
+                    cluster.routing.allocation.disk.watermark.flood_stage: 100mb
+                ports:
+                    - 9200
+                options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+            redis:
+                image: redis:7.4.1
+                ports:
+                    - 6379
+        strategy:
+            fail-fast: false
+            matrix:
+                node: ${{ github.event_name == 'pull_request' && fromJSON('["22.x"]') || fromJSON('["20.x", "22.x", "24.x"]') }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+              with:
+                  node-version: ${{ matrix.node }}
+            - name: Build
+              run: npx lerna run ci
+            - name: e2e tests
+              env:
+                  E2E_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
+                  E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+                  E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+                  DB: mariadb
+              run: npm run e2e
+    e2e-mysql:
+        name: e2e (mysql)
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        services:
+            mysql:
+                image: vendure/mysql-8-native-auth:latest
+                env:
+                    MYSQL_ROOT_PASSWORD: password
+                ports:
+                    - 3306
+                options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10
+            elastic:
+                image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+                env:
+                    discovery.type: single-node
+                    bootstrap.memory_lock: true
+                    ES_JAVA_OPTS: -Xms512m -Xmx512m
+                    cluster.routing.allocation.disk.watermark.low: 500mb
+                    cluster.routing.allocation.disk.watermark.high: 200mb
+                    cluster.routing.allocation.disk.watermark.flood_stage: 100mb
+                ports:
+                    - 9200
+                options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+            redis:
+                image: redis:7.4.1
+                ports:
+                    - 6379
+        strategy:
+            fail-fast: false
+            matrix:
+                node: ${{ github.event_name == 'pull_request' && fromJSON('["22.x"]') || fromJSON('["20.x", "22.x", "24.x"]') }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+              with:
+                  node-version: ${{ matrix.node }}
             - name: Build
               run: npx lerna run ci
             - name: e2e tests
               env:
                   E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-                  E2E_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
+                  E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+                  E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+                  DB: mysql
+              run: npm run e2e
+    e2e-postgres:
+        name: e2e (postgres)
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        services:
+            postgres:
+                image: postgres:16
+                env:
+                    POSTGRES_USER: vendure
+                    POSTGRES_PASSWORD: password
+                ports:
+                    - 5432
+                options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
+            elastic:
+                image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+                env:
+                    discovery.type: single-node
+                    bootstrap.memory_lock: true
+                    ES_JAVA_OPTS: -Xms512m -Xmx512m
+                    cluster.routing.allocation.disk.watermark.low: 500mb
+                    cluster.routing.allocation.disk.watermark.high: 200mb
+                    cluster.routing.allocation.disk.watermark.flood_stage: 100mb
+                ports:
+                    - 9200
+                options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+            redis:
+                image: redis:7.4.1
+                ports:
+                    - 6379
+        strategy:
+            fail-fast: false
+            matrix:
+                node: ${{ github.event_name == 'pull_request' && fromJSON('["22.x"]') || fromJSON('["20.x", "22.x", "24.x"]') }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+              with:
+                  node-version: ${{ matrix.node }}
+            - name: Build
+              run: npx lerna run ci
+            - name: e2e tests
+              env:
                   E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
                   E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
                   E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
-                  DB: ${{ matrix.db }}
+                  DB: postgres
               run: npm run e2e
