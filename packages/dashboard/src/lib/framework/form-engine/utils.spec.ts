@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { FieldInfo, getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 
-import { removeEmptyIdFields, transformRelationFields } from './utils.js';
+import { convertEmptyStringsToNull, removeEmptyIdFields, transformRelationFields } from './utils.js';
 
 const createProductDocument = graphql(`
     mutation CreateProduct($input: CreateProductInput!) {
@@ -160,5 +160,54 @@ describe('transformRelationFields', () => {
         const result = transformRelationFields(fields, entity);
 
         expect(result.customFields).toEqual({ featuredProductsIds: ['1'], notes: 'Some notes' });
+    });
+});
+
+describe('convertEmptyStringsToNull', () => {
+    it('should not throw when called with null values', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'customFields',
+                type: 'CustomFieldsInput',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: false,
+            },
+        ];
+        expect(() => convertEmptyStringsToNull(null as any, fields)).not.toThrow();
+        expect(convertEmptyStringsToNull(null as any, fields)).toBeNull();
+    });
+
+    it('should preserve empty object for nullable non-scalar fields', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'customFields',
+                type: 'CustomFieldsInput',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: false,
+            },
+        ];
+        const values = { customFields: {} };
+        const result = convertEmptyStringsToNull(values, fields);
+        expect(result.customFields).toEqual({});
+    });
+
+    it('should convert empty string to null for nullable DateTime fields', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'releaseDate',
+                type: 'DateTime',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+        ];
+        const values = { releaseDate: '' };
+        const result = convertEmptyStringsToNull(values, fields);
+        expect(result.releaseDate).toBeNull();
     });
 });

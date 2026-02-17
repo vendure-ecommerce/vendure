@@ -1,7 +1,11 @@
 import { FieldInfo } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { describe, expect, it } from 'vitest';
 
-import { createFormSchemaFromFields, getZodTypeFromField } from './form-schema-tools.js';
+import {
+    createFormSchemaFromFields,
+    getDefaultValuesFromFields,
+    getZodTypeFromField,
+} from './form-schema-tools.js';
 
 // Helper to create mock FieldInfo
 const createMockField = (
@@ -569,6 +573,34 @@ describe('form-schema-tools', () => {
 
             const largeData = { customFields: { weight: 999999.99 } };
             expect(() => schema.parse(largeData)).not.toThrow();
+        });
+    });
+
+    describe('createFormSchemaFromFields - schema vs defaults contract', () => {
+        it('default values for nullable customFields inside translations should pass Zod validation', () => {
+            const fields: FieldInfo[] = [
+                createMockField('translations', 'Object', false, true, [
+                    createMockField('id', 'ID'),
+                    createMockField('languageCode', 'String'),
+                    createMockField('name', 'String'),
+                    {
+                        name: 'customFields',
+                        type: 'CustomFieldsInput',
+                        nullable: true,
+                        list: false,
+                        isPaginatedList: false,
+                        isScalar: false,
+                        typeInfo: undefined,
+                    },
+                ]),
+            ];
+
+            const defaults = getDefaultValuesFromFields(fields, 'en');
+            const schema = createFormSchemaFromFields(fields, [], false);
+
+            // defaults.translations[0].customFields should be {} not null
+            expect(defaults.translations[0].customFields).toEqual({});
+            expect(() => schema.parse(defaults)).not.toThrow();
         });
     });
 
