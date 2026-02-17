@@ -602,6 +602,25 @@ describe('form-schema-tools', () => {
             expect(defaults.translations[0].customFields).toEqual({});
             expect(() => schema.parse(defaults)).not.toThrow();
         });
+
+        it('default values for JSON-typed customFields should be {} not null', () => {
+            // When custom field structure is not known from introspection,
+            // the schema treats customFields as JSON scalar type
+            const fields: FieldInfo[] = [
+                {
+                    name: 'customFields',
+                    type: 'JSON',
+                    nullable: true,
+                    list: false,
+                    isPaginatedList: false,
+                    isScalar: true,
+                    typeInfo: undefined,
+                },
+            ];
+
+            const defaults = getDefaultValuesFromFields(fields, 'en');
+            expect(defaults.customFields).toEqual({});
+        });
     });
 
     describe('createFormSchemaFromFields - edge cases', () => {
