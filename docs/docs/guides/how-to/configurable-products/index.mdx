@@ -1,5 +1,7 @@
 ---
 title: "Configurable Products"
+metaTitle: "Configurable Products in Vendure with Custom Fields"
+metaDescription: "Use OrderLine custom fields to support customer-configurable products like engravings or gift messages, with optional dynamic pricing via a custom strategy."
 ---
 
 A "configurable product" is one where aspects can be configured by the customer, and are unrelated to the product's variants. Examples include:
@@ -69,11 +71,9 @@ mutation {
     addItemToOrder(
         productVariantId: "42"
         quantity: 1
-        // highlight-start
-        customFields: {
-            engravingText: "Thanks for all the fish!"
-        }
-        // highlight-end
+        customFields: { # [!code highlight]
+            engravingText: "Thanks for all the fish!" # [!code highlight]
+        } # [!code highlight]
     ) {
         ...on Order {
             id

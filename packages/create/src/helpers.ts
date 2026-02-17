@@ -234,6 +234,7 @@ export function getDependencies(
     const devDependencies = [
         `@vendure/cli${vendurePkgVersion}`,
         'concurrently',
+        'ts-node',
         `typescript@${TYPESCRIPT_VERSION}`,
     ];
     return { dependencies, devDependencies };

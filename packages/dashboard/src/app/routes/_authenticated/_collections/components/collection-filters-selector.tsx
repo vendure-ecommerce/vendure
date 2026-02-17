@@ -5,9 +5,14 @@ import { getCollectionFiltersQueryOptions } from '../collections.graphql.js';
 export interface CollectionFiltersSelectorProps {
     value: ConfigurableOperationInputType[];
     onChange: (filters: ConfigurableOperationInputType[]) => void;
+    onValidityChange?: (isValid: boolean) => void;
 }
 
-export function CollectionFiltersSelector({ value, onChange }: Readonly<CollectionFiltersSelectorProps>) {
+export function CollectionFiltersSelector({
+    value,
+    onChange,
+    onValidityChange,
+}: Readonly<CollectionFiltersSelectorProps>) {
     return (
         <div className="mt-4">
             <ConfigurableOperationMultiSelector
@@ -18,6 +23,7 @@ export function CollectionFiltersSelector({ value, onChange }: Readonly<Collecti
                 dataPath="collectionFilters"
                 buttonText="Add collection filter"
                 showEnhancedDropdown={false}
+                onValidityChange={onValidityChange}
             />
         </div>
     );

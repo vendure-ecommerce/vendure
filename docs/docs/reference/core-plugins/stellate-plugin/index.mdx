@@ -2,7 +2,7 @@
 title: "StellatePlugin"
 generated: true
 ---
-<GenerationInfo sourceFile="packages/stellate-plugin/src/stellate-plugin.ts" sourceLine="246" packageName="@vendure/stellate-plugin" since="2.1.5" />
+<GenerationInfo sourceFile="packages/stellate-plugin/src/stellate-plugin.ts" sourceLine="247" packageName="@vendure/stellate-plugin" since="2.1.5" />
 
 A plugin to integrate the [Stellate](https://stellate.co/) GraphQL caching service with your Vendure server.
 The main purpose of this plugin is to ensure that cached data gets correctly purged in
@@ -131,11 +131,9 @@ import { graphql } from '../generated/gql';
 export const searchProductsDocument = graphql(`
     query SearchProducts($input: SearchInput!) {
         search(input: $input) {
-            // highlight-start
-            cacheIdentifier {
-                collectionSlug
-            }
-            // highlight-end
+            cacheIdentifier { // [!code highlight]
+                collectionSlug // [!code highlight]
+            } // [!code highlight]
             items {
                # ...
             }

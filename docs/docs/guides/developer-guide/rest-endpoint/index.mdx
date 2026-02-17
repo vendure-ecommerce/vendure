@@ -1,6 +1,7 @@
 ---
 title: "Add a REST endpoint"
-showtoc: true
+metaTitle: "Adding REST Endpoints to a Vendure Plugin"
+metaDescription: "Define REST-style HTTP endpoints in Vendure plugins using NestJS controllers, with access to Vendure services and the RequestContext."
 ---
 
 REST-style endpoints can be defined as part of a [plugin](/developer-guide/plugins/).
@@ -65,8 +66,7 @@ export const config: VendureConfig = {
     // ...
     plugins: [
         // ...
-        // highlight-next-line
-        RestPlugin,
+        RestPlugin, // [!code highlight]
     ],
 };
 ```
@@ -83,8 +83,7 @@ import { Allow, Permission, Ctx, ProductService, RequestContext } from '@vendure
 export class ProductsController {
     constructor(private productService: ProductService) {}
 
-    // highlight-next-line
-    @Allow(Permission.ReadProduct)
+    @Allow(Permission.ReadProduct) // [!code highlight]
     @Get()
     findAll(@Ctx() ctx: RequestContext) {
         return this.productService.findAll(ctx);

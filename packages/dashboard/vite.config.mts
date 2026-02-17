@@ -25,7 +25,7 @@ export default ({ mode }: { mode: string }) => {
         test: {
             globals: true,
             environment: 'jsdom',
-            exclude: ['./plugin/**/*', '**/node_modules/**/*'],
+            exclude: ['./e2e/**/*', './plugin/**/*', '**/node_modules/**/*'],
         },
         plugins: [
             vendureDashboardPlugin({

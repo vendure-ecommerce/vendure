@@ -1,5 +1,7 @@
 ---
 title: "GraphQL Code Generation"
+metaTitle: "GraphQL Code Generation for Vendure Plugins"
+metaDescription: "Configure GraphQL Code Generator to produce TypeScript types from your Vendure schema, enabling type-safe resolvers, services, and Admin UI extensions."
 ---
 
 Code generation means the automatic generation of TypeScript types based on your GraphQL schema and your GraphQL operations.
@@ -94,8 +96,7 @@ import { Allow, Ctx, PaginatedList, RequestContext, Transaction } from '@vendure
 import { organizationPermission } from '../constants';
 import { Organization } from '../entities/organization.entity';
 import { OrganizationService } from '../services/organization.service';
-// highlight-next-line
-import { QueryOrganizationArgs, MutationCreateOrganizationArgs } from '../gql/generated';
+import { QueryOrganizationArgs, MutationCreateOrganizationArgs } from '../gql/generated'; // [!code highlight]
 
 @Resolver()
 export class AdminResolver {
@@ -103,18 +104,16 @@ export class AdminResolver {
 
     @Query()
     @Allow(organizationPermission.Read)
-    // highlight-next-line
-    organization(@Ctx() ctx: RequestContext, @Args() args: QueryOrganizationArgs): Promise<Organization> {
+    organization(@Ctx() ctx: RequestContext, @Args() args: QueryOrganizationArgs): Promise<Organization> { // [!code highlight]
         return this.organizationService.findOne(ctx, args.id);
     }
-    
+
     @Transaction()
     @Mutation()
     @Allow(organizationPermission.Create)
     createOrganization(
         @Ctx() ctx: RequestContext,
-        // highlight-next-line
-        @Args() args: MutationCreateOrganizationArgs,
+        @Args() args: MutationCreateOrganizationArgs, // [!code highlight]
     ): Promise<Organization> {
         return this.organizationService.create(ctx, args.input);
     }
@@ -130,20 +129,17 @@ import { Injectable } from '@nestjs/common';
 import { RequestContext, TransactionalConnection } from '@vendure/core';
 
 import { Organization } from '../entities/organization.entity';
-// highlight-next-line
-import { CreateOrganizationInput, UpdateOrganizationInput } from "../gql/generated";
+import { CreateOrganizationInput, UpdateOrganizationInput } from "../gql/generated"; // [!code highlight]
 
 @Injectable()
 export class OrganizationService {
     constructor(private connection: TransactionalConnection) {}
 
-    // highlight-next-line
-    async create(ctx: RequestContext, input: CreateOrganizationInput): Promise<Organization> {
+    async create(ctx: RequestContext, input: CreateOrganizationInput): Promise<Organization> { // [!code highlight]
         return this.connection.getRepository(ctx, Organization).save(new Organization(input));
     }
 
-    // highlight-next-line
-    async update(ctx: RequestContext, input: UpdateOrganizationInput): Promise<Organization> {
+    async update(ctx: RequestContext, input: UpdateOrganizationInput): Promise<Organization> { // [!code highlight]
         const example = await this.connection.getEntityOrThrow(ctx, Organization, input.id);
         const updated = {...example, ...input};
         return this.connection.getRepository(ctx, Organization).save(updated);
@@ -179,18 +175,16 @@ const config: CodegenConfig = {
         namingConvention: { enumValues: 'keep' },
     },
     generates: {
-        // highlight-start
-        'apps/marketplace/src/plugins/marketplace/ui/gql/': {
-            preset: 'client',
-            documents: 'apps/marketplace/src/plugins/marketplace/ui/**/*.ts',
-            // This disables the "fragment masking" feature. Fragment masking
-            // can improve component isolation but introduces some additional
-            // complexity that we will avoid for now.
-            presetConfig: {
-                fragmentMasking: false,
-            },
-        },
-        // highlight-end
+        'apps/marketplace/src/plugins/marketplace/ui/gql/': { // [!code highlight]
+            preset: 'client', // [!code highlight]
+            documents: 'apps/marketplace/src/plugins/marketplace/ui/**/*.ts', // [!code highlight]
+            // This disables the "fragment masking" feature. Fragment masking // [!code highlight]
+            // can improve component isolation but introduces some additional // [!code highlight]
+            // complexity that we will avoid for now. // [!code highlight]
+            presetConfig: { // [!code highlight]
+                fragmentMasking: false, // [!code highlight]
+            }, // [!code highlight]
+        }, // [!code highlight]
         'apps/marketplace/src/plugins/marketplace/gql/generated.ts': {
             plugins: ['typescript'],
         },
@@ -212,22 +206,20 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SharedModule, TypedBaseListComponent } from '@vendure/admin-ui/core';
 import { graphql } from '../../gql';
 
-// highlight-start
-const getOrganizationListDocument = graphql(`
-    query GetOrganizationList($options: OrganizationListOptions) {
-        organizations(options: $options) {
-            items {
-                id
-                createdAt
-                updatedAt
-                name
-                invoiceEmailAddresses
-            }
-            totalItems
-        }
-    }
-`);
-// highlight-end
+const getOrganizationListDocument = graphql(` // [!code highlight]
+    query GetOrganizationList($options: OrganizationListOptions) { // [!code highlight]
+        organizations(options: $options) { // [!code highlight]
+            items { // [!code highlight]
+                id // [!code highlight]
+                createdAt // [!code highlight]
+                updatedAt // [!code highlight]
+                name // [!code highlight]
+                invoiceEmailAddresses // [!code highlight]
+            } // [!code highlight]
+            totalItems // [!code highlight]
+        } // [!code highlight]
+    } // [!code highlight]
+`); // [!code highlight]
 
 @Component({
     selector: 'organization-list',
@@ -238,10 +230,8 @@ const getOrganizationListDocument = graphql(`
     imports: [SharedModule],
 })
 export class OrganizationListComponent extends TypedBaseListComponent<
-    // highlight-start
-    typeof getOrganizationListDocument,
-    'organizations'
-    // highlight-end
+    typeof getOrganizationListDocument, // [!code highlight]
+    'organizations' // [!code highlight]
 > {
     
     // Sort & filter definitions omitted for brevity.
@@ -251,8 +241,7 @@ export class OrganizationListComponent extends TypedBaseListComponent<
     constructor() {
         super();
         super.configure({
-            // highlight-next-line
-            document: getOrganizationListDocument,
+            document: getOrganizationListDocument, // [!code highlight]
             getItems: (data) => data.organizations,
             setVariables: (skip, take) => ({
                 options: {

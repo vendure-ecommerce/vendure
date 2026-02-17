@@ -28,8 +28,7 @@ const loggerCtx = 'AddressBasedTaxZoneStrategy';
  * export const config: VendureConfig = {
  *   // other options...
  *   taxOptions: {
- *     // highlight-next-line
- *     taxZoneStrategy: new AddressBasedTaxZoneStrategy(),
+ *     taxZoneStrategy: new AddressBasedTaxZoneStrategy(), // [!code highlight]
  *   },
  * };
  * ```

@@ -1,6 +1,8 @@
 ---
 title: 'Strategies & Configurable Operations'
-sidebar_position: 4
+metaTitle: "Strategies and Configurable Operations in Vendure"
+metaDescription: "Understand how Vendure uses the strategy pattern and configurable operations to provide extensible, pluggable behavior for orders, taxes, shipping, and more."
+order: 4
 ---
 
 Vendure is built to be highly configurable and extensible. Two methods of providing this extensibility are **strategies** and **configurable operations**.
@@ -64,8 +66,7 @@ import { MyOrderCodeStrategy } from '../config/my-order-code-strategy';
 export const config: VendureConfig = {
     // ...
     orderOptions: {
-        // highlight-next-line
-        orderCodeStrategy: new MyOrderCodeStrategy(),
+        orderCodeStrategy: new MyOrderCodeStrategy(), // [!code highlight]
     },
 }
 ```
@@ -94,8 +95,7 @@ import { MyStockLocationStrategy } from '../config/my-stock-location-strategy';
 export const config: VendureConfig = {
     // ...
     catalogOptions: {
-        // highlight-next-line
-        stockLocationStrategy: new MyStockLocationStrategy({ maxDistance: 100 }),
+        stockLocationStrategy: new MyStockLocationStrategy({ maxDistance: 100 }), // [!code highlight]
     },
 }
 ```

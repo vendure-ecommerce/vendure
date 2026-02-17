@@ -1,6 +1,8 @@
 ---
 title: "Configuration"
-sidebar_position: 3
+metaTitle: "Vendure Server Configuration - VendureConfig Reference"
+metaDescription: "Configure your Vendure server with VendureConfig, including API options, authentication, database connections, plugins, and asset storage settings."
+order: 3
 ---
 
 Every aspect of the Vendure server is configured via a single, central [`VendureConfig`](/reference/typescript-api/configuration/vendure-config/) object. This object is passed into the [`bootstrap`](/reference/typescript-api/common/bootstrap/) and [`bootstrapWorker`](/reference/typescript-api/worker/bootstrap-worker/) functions to start up the Vendure server and worker respectively.
@@ -137,8 +139,7 @@ APP_ENV=dev
 COOKIE_SECRET=toh8soqdlj
 SUPERADMIN_USERNAME=superadmin
 SUPERADMIN_PASSWORD=superadmin
-// highlight-next-line
-MY_API_KEY=12345
+MY_API_KEY=12345 # [!code highlight]
 ```
 
 In order to tell TypeScript about the existence of this new variable, you can add it to the `src/environment.d.ts` file:
@@ -155,8 +156,7 @@ declare global {
             COOKIE_SECRET: string;
             SUPERADMIN_USERNAME: string;
             SUPERADMIN_PASSWORD: string;
-            // highlight-next-line
-            MY_API_KEY: string;
+            MY_API_KEY: string; // [!code highlight]
         }
     }
 }

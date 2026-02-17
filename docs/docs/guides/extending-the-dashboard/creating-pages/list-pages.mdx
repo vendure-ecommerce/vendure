@@ -1,5 +1,7 @@
 ---
 title: 'Creating List Pages'
+metaTitle: "Creating List Pages in the Vendure Dashboard"
+metaDescription: "Build paginated list pages for custom entities using the ListPage component with auto-generated columns, custom cell renderers, and delete mutations."
 ---
 
 ## Setup
@@ -116,13 +118,11 @@ Let's register this route (and we can also remove the test page) in our `index.t
 ```tsx title="src/plugins/cms/dashboard/index.tsx"
 import { defineDashboardExtension } from '@vendure/dashboard';
 
-// highlight-next-line
-import { articleList } from './article-list';
+import { articleList } from './article-list'; // [!code highlight]
 
 defineDashboardExtension({
     routes: [
-        // highlight-next-line
-        articleList,
+        articleList, // [!code highlight]
     ],
 });
 ```

@@ -867,9 +867,9 @@ based on the activeUserId of the current session. As a result, the resolver code
 
 @example
 \`\`\`TypeScript
-\@Query()
-\@Allow(Permission.Owner)
-async activeCustomer(\@Ctx() ctx: RequestContext): Promise<Customer | undefined> {
+\\@Query()
+\\@Allow(Permission.Owner)
+async activeCustomer(\\@Ctx() ctx: RequestContext): Promise<Customer | undefined> {
   const userId = ctx.activeUserId;
   if (userId) {
     return this.customerService.findOneByUserId(ctx, userId);

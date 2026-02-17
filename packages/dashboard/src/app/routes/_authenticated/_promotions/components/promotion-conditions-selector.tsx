@@ -17,9 +17,14 @@ export const promotionConditionsDocument = graphql(
 interface PromotionConditionsSelectorProps {
     value: ConfigurableOperationInputType[];
     onChange: (value: ConfigurableOperationInputType[]) => void;
+    onValidityChange?: (isValid: boolean) => void;
 }
 
-export function PromotionConditionsSelector({ value, onChange }: Readonly<PromotionConditionsSelectorProps>) {
+export function PromotionConditionsSelector({
+    value,
+    onChange,
+    onValidityChange,
+}: Readonly<PromotionConditionsSelectorProps>) {
     return (
         <ConfigurableOperationMultiSelector
             value={value}
@@ -30,6 +35,7 @@ export function PromotionConditionsSelector({ value, onChange }: Readonly<Promot
             buttonText="Add condition"
             dropdownTitle="Available Conditions"
             showEnhancedDropdown={true}
+            onValidityChange={onValidityChange}
         />
     );
 }

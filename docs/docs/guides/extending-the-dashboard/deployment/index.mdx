@@ -1,5 +1,7 @@
 ---
 title: 'Deployment'
+metaTitle: "Deploying the Vendure Dashboard"
+metaDescription: "Deploy the Vendure Dashboard via the DashboardPlugin or as a standalone static site. Covers Vite build configuration, CORS setup, and production best practices."
 ---
 
 The Vendure Dashboard offers flexible deployment options. You can either serve it directly through your Vendure Server using the `DashboardPlugin`, or host it independently as a static site.
@@ -33,9 +35,7 @@ import { pathToFileURL } from 'url';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    // highlight-start
-    base: '/dashboard/',
-    // highlight-end
+    base: '/dashboard/', // [!code highlight]
     plugins: [
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./src/vendure-config.ts'),
@@ -66,10 +66,8 @@ export const config: VendureConfig = {
     plugins: [
         // ... other plugins
         DashboardPlugin.init({
-            // highlight-start
-            // Important: This must match the base path from vite.config.mts (without slashes)
-            route: 'dashboard',
-            // highlight-end
+            // Important: This must match the base path from vite.config.mts (without slashes) // [!code highlight]
+            route: 'dashboard', // [!code highlight]
             // Path to the Vite build output directory
             appDir: path.join(__dirname, './dist'),
         }),
@@ -139,12 +137,10 @@ export default defineConfig({
     plugins: [
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./src/vendure-config.ts'),
-            // highlight-start
-            api: {
-                host: process.env.VENDURE_API_HOST || 'https://api.mystore.com',
-                port: parseInt(process.env.VENDURE_API_PORT || '443'),
-            },
-            // highlight-end
+            api: { // [!code highlight]
+                host: process.env.VENDURE_API_HOST || 'https://api.mystore.com', // [!code highlight]
+                port: parseInt(process.env.VENDURE_API_PORT || '443'), // [!code highlight]
+            }, // [!code highlight]
             gqlOutputPath: path.resolve(__dirname, './src/gql/'),
         }),
     ],

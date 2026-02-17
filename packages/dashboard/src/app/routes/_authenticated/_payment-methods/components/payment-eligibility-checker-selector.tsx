@@ -17,12 +17,14 @@ export const paymentEligibilityCheckersDocument = graphql(
 interface PaymentEligibilityCheckerSelectorProps {
     value: ConfigurableOperationInputType | undefined;
     onChange: (value: ConfigurableOperationInputType | undefined) => void;
+    onValidityChange?: (isValid: boolean) => void;
 }
 
 export function PaymentEligibilityCheckerSelector({
     value,
     onChange,
-}: PaymentEligibilityCheckerSelectorProps) {
+    onValidityChange,
+}: Readonly<PaymentEligibilityCheckerSelectorProps>) {
     return (
         <ConfigurableOperationSelector
             value={value}
@@ -32,6 +34,7 @@ export function PaymentEligibilityCheckerSelector({
             dataPath="paymentMethodEligibilityCheckers"
             buttonText="Select Payment Eligibility Checker"
             emptyText="No checkers found"
+            onValidityChange={onValidityChange}
         />
     );
 }

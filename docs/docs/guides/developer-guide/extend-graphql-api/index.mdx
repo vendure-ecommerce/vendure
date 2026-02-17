@@ -1,6 +1,7 @@
 ---
 title: "Extend the GraphQL API"
-showtoc: true
+metaTitle: "Extending the Vendure GraphQL API with Custom Queries and Mutations"
+metaDescription: "Add custom queries, mutations, and types to the Vendure Shop and Admin GraphQL APIs using schema extensions and resolvers in your plugins."
 ---
 
 Extension to the GraphQL API consists of two parts:
@@ -23,21 +24,19 @@ const schemaExtension = gql`
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    // highlight-start
-    // We pass our schema extension and any related resolvers
-    // to our plugin metadata  
-    shopApiExtensions: {
-        schema: schemaExtension,
-        resolvers: [TopProductsResolver],
-    },
-    // Likewise, if you want to extend the Admin API,
-    // you would use `adminApiExtensions` in exactly the
-    // same way.  
-    // adminApiExtensions: {
-    //     schema: someSchemaExtension
-    //     resolvers: [SomeResolver],
-    // },
-    // highlight-end
+    // We pass our schema extension and any related resolvers // [!code highlight]
+    // to our plugin metadata   // [!code highlight]
+    shopApiExtensions: { // [!code highlight]
+        schema: schemaExtension, // [!code highlight]
+        resolvers: [TopProductsResolver], // [!code highlight]
+    }, // [!code highlight]
+    // Likewise, if you want to extend the Admin API, // [!code highlight]
+    // you would use `adminApiExtensions` in exactly the // [!code highlight]
+    // same way.   // [!code highlight]
+    // adminApiExtensions: { // [!code highlight]
+    //     schema: someSchemaExtension // [!code highlight]
+    //     resolvers: [SomeResolver], // [!code highlight]
+    // }, // [!code highlight]
 })
 export class TopProductsPlugin {
 }
@@ -56,8 +55,7 @@ import gql from 'graphql-tag';
 
 export const shopApiExtensions = gql`
   extend type Query {
-    // highlight-next-line
-    activeBanner(locationId: String!): String
+    activeBanner(locationId: String!): String # [!code highlight]
   }
 `;
 ```
@@ -81,12 +79,10 @@ import { BannerService } from '../services/banner.service.ts';
 class BannerShopResolver {
     constructor(private bannerService: BannerService) {}
 
-    // highlight-start
-    @Query()
-    activeBanner(@Ctx() ctx: RequestContext, @Args() args: { locationId: string; }) {
-        return this.bannerService.getBanner(ctx, args.locationId);
-    }
-    // highlight-end
+    @Query() // [!code highlight]
+    activeBanner(@Ctx() ctx: RequestContext, @Args() args: { locationId: string; }) { // [!code highlight]
+        return this.bannerService.getBanner(ctx, args.locationId); // [!code highlight]
+    } // [!code highlight]
 }
 ```
 
@@ -102,12 +98,10 @@ import { shopApiExtensions } from './api/api-extensions';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    // highlight-start
-    shopApiExtensions: {
-        schema: shopApiExtensions,
-        resolvers: [BannerShopResolver],
-    },
-    // highlight-end
+    shopApiExtensions: { // [!code highlight]
+        schema: shopApiExtensions, // [!code highlight]
+        resolvers: [BannerShopResolver], // [!code highlight]
+    }, // [!code highlight]
     providers: [BannerService],
 })
 export class BannerPlugin {}
@@ -124,8 +118,7 @@ import gql from 'graphql-tag';
 
 export const adminApiExtensions = gql`
   extend type Mutation {
-    // highlight-next-line
-    setBannerText(locationId: String!, text: String!): String!
+    setBannerText(locationId: String!, text: String!): String! # [!code highlight]
   }
 `;
 ```
@@ -143,14 +136,12 @@ import { BannerService } from '../services/banner.service.ts';
 class BannerAdminResolver {
     constructor(private bannerService: BannerService) {}
 
-    // highlight-start
-    @Allow(Permission.UpdateSettings)
-    @Transaction()
-    @Mutation()
-    setBannerText(@Ctx() ctx: RequestContext, @Args() args: { locationId: string; text: string; }) {
-        return this.bannerService.setBannerText(ctx, args.locationId, args.text);
-    }
-    // highlight-end
+    @Allow(Permission.UpdateSettings) // [!code highlight]
+    @Transaction() // [!code highlight]
+    @Mutation() // [!code highlight]
+    setBannerText(@Ctx() ctx: RequestContext, @Args() args: { locationId: string; text: string; }) { // [!code highlight]
+        return this.bannerService.setBannerText(ctx, args.locationId, args.text); // [!code highlight]
+    } // [!code highlight]
 }
 ```
 
@@ -175,12 +166,10 @@ import { shopApiExtensions, adminApiExtensions } from './api/api-extensions';
         schema: shopApiExtensions,
         resolvers: [BannerShopResolver],
     },
-    // highlight-start
-    adminApiExtensions: {
-        schema: adminApiExtensions,
-        resolvers: [BannerAdminResolver],
-    },
-    // highlight-end
+    adminApiExtensions: { // [!code highlight]
+        schema: adminApiExtensions, // [!code highlight]
+        resolvers: [BannerAdminResolver], // [!code highlight]
+    }, // [!code highlight]
     providers: [BannerService],
 })
 export class BannerPlugin {}
@@ -225,17 +214,15 @@ Let's define a new GraphQL type which corresponds to this entity:
 import gql from 'graphql-tag';
 
 export const apiExtensions = gql`
-  // highlight-start
-  type ProductReview implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    product: Product!
-    productId: ID!
-    text: String!
-    rating: Float!
-  }
-  // highlight-end
+  type ProductReview implements Node { # [!code highlight]
+    id: ID! # [!code highlight]
+    createdAt: DateTime! # [!code highlight]
+    updatedAt: DateTime! # [!code highlight]
+    product: Product! # [!code highlight]
+    productId: ID! # [!code highlight]
+    text: String! # [!code highlight]
+    rating: Float! # [!code highlight]
+  } # [!code highlight]
 `;
 ```
 
@@ -257,8 +244,7 @@ import { ProductReview } from './entities/product-review.entity';
 @VendurePlugin({
     imports: [PluginCommonModule],
     shopApiExtensions: {
-        // highlight-next-line
-        schema: apiExtensions,
+        schema: apiExtensions, // [!code highlight]
     },
     entities: [ProductReview],
 })
@@ -280,11 +266,9 @@ export const shopApiExtensions = gql`
     to: Int!
   }
 
-  // highlight-start
-  extend type ProductVariant {
-    delivery: DeliveryEstimate!
-  }
-  // highlight-end
+  extend type ProductVariant { # [!code highlight]
+    delivery: DeliveryEstimate! # [!code highlight]
+  } # [!code highlight]
 }`;
 ```
 
@@ -298,17 +282,14 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Ctx, RequestContext, ProductVariant } from '@vendure/core';
 import { DeliveryEstimateService } from '../services/delivery-estimate.service';
 
-// highlight-next-line
-@Resolver('ProductVariant')
+@Resolver('ProductVariant') // [!code highlight]
 export class ProductVariantEntityResolver {
     constructor(private deliveryEstimateService: DeliveryEstimateService) { }
 
-    // highlight-start
-    @ResolveField()
-    delivery(@Ctx() ctx: RequestContext, @Parent() variant: ProductVariant) {
-        return this.deliveryEstimateService.getEstimate(ctx, variant.id);
-    }
-    // highlight-end
+    @ResolveField() // [!code highlight]
+    delivery(@Ctx() ctx: RequestContext, @Parent() variant: ProductVariant) { // [!code highlight]
+        return this.deliveryEstimateService.getEstimate(ctx, variant.id); // [!code highlight]
+    } // [!code highlight]
 }
 ```
 
@@ -323,10 +304,8 @@ import { shopApiExtensions } from './api/api-extensions';
 @VendurePlugin({
     imports: [PluginCommonModule],
     shopApiExtensions: {
-        // highlight-start
-        schema: shopApiExtensions,
-        resolvers: [ProductVariantEntityResolver]
-        // highlight-end
+        schema: shopApiExtensions, // [!code highlight]
+        resolvers: [ProductVariantEntityResolver] // [!code highlight]
     }
 })
 export class DeliveryTimePlugin {}

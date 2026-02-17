@@ -2,7 +2,7 @@
 title: "SentryPlugin"
 generated: true
 ---
-<GenerationInfo sourceFile="packages/sentry-plugin/src/sentry-plugin.ts" sourceLine="146" packageName="@vendure/sentry-plugin" />
+<GenerationInfo sourceFile="packages/sentry-plugin/src/sentry-plugin.ts" sourceLine="147" packageName="@vendure/sentry-plugin" />
 
 This plugin integrates the [Sentry](https://sentry.io) error tracking & performance monitoring
 service with your Vendure server. In addition to capturing errors, it also provides built-in
@@ -73,12 +73,10 @@ export const config: VendureConfig = {
     // ...
     plugins: [
         // ...
-        // highlight-start
-        SentryPlugin.init({
-            // Optional configuration
-            includeErrorTestMutation: true,
-        }),
-        // highlight-end
+        SentryPlugin.init({ // [!code highlight]
+            // Optional configuration // [!code highlight]
+            includeErrorTestMutation: true, // [!code highlight]
+        }), // [!code highlight]
     ],
 };
 ```

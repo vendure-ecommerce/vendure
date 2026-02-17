@@ -1,5 +1,7 @@
 ---
 title: "Deploying to Render"
+metaTitle: "Deploying Vendure to Render with Postgres and Persistent Disk"
+metaDescription: "Complete walkthrough for deploying Vendure on Render, including Postgres setup, persistent disk for assets, environment groups, and a background worker."
 ---
 
 ![Deploy to Render](./deploy-to-render.webp)
@@ -34,8 +36,7 @@ import { VendureConfig } from '@vendure/core';
 
 export const config: VendureConfig = {
     apiOptions: {
-        // highlight-next-line
-        port: +(process.env.PORT || 3000),
+        port: +(process.env.PORT || 3000), // [!code highlight]
         // ...
     },
     // ...
@@ -83,8 +84,7 @@ export const config: VendureConfig = {
     plugins: [
         AssetServerPlugin.init({
             route: 'assets',
-            // highlight-next-line
-            assetUploadDir: process.env.ASSET_UPLOAD_DIR || path.join(__dirname, '../static/assets'),
+            assetUploadDir: process.env.ASSET_UPLOAD_DIR || path.join(__dirname, '../static/assets'), // [!code highlight]
         }),
     ],
     // ...
@@ -161,11 +161,9 @@ DB_PASSWORD=<database "Password">
 DB_HOST=<database "Hostname">
 DB_PORT=<database "Port">
 ASSET_UPLOAD_DIR=/vendure-assets
-// highlight-next-line
-COOKIE_SECRET=<add some random characters>
+COOKIE_SECRET=<add some random characters> # [!code highlight]
 SUPERADMIN_USERNAME=superadmin
-// highlight-next-line
-SUPERADMIN_PASSWORD=<create some strong password>
+SUPERADMIN_PASSWORD=<create some strong password> # [!code highlight]
 ```
 Once the correct values have been entered, click "Create Environment Group".
 

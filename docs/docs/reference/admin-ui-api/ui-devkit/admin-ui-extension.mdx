@@ -96,8 +96,7 @@ import path from 'path';
 import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
 
 export const uiExtensions: AdminUiExtension = {
-  // highlight-next-line
-  pathAlias: '@common-ui-module',     // this is the important part
+  pathAlias: '@common-ui-module',     // this is the important part // [!code highlight]
   extensionPath: path.join(__dirname, 'ui'),
   ngModules: [
     {
@@ -114,8 +113,7 @@ export const uiExtensions: AdminUiExtension = {
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      // highlight-next-line
-      "@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
+      "@common-ui-module/*": ["packages/common-ui-module/src/ui/*"] // [!code highlight]
     }
   }
 }
@@ -124,11 +122,9 @@ export const uiExtensions: AdminUiExtension = {
 ```ts title="packages/sample-plugin/src/ui/ui-extension.module.ts"
 import { NgModule } from '@angular/core';
 import { SharedModule } from '@vendure/admin-ui/core';
-// highlight-start
-// the import below works both in the context of the custom Admin UI app as well as the main project
-// '@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
-import { CommonSharedUiModule, CommonUiComponent } from '@common-ui-module/ui-shared.module';
-// highlight-end
+// the import below works both in the context of the custom Admin UI app as well as the main project // [!code highlight]
+// '@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath" // [!code highlight]
+import { CommonSharedUiModule, CommonUiComponent } from '@common-ui-module/ui-shared.module'; // [!code highlight]
 
 @NgModule({
   imports: [
@@ -293,7 +289,7 @@ This is useful when the extension is intended to replace the default Admin UI, r
 
 
 </div>
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="278" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="274" packageName="@vendure/ui-devkit" />
 
 A static asset can be provided as a path to the asset, or as an object containing a path and a new
 name, which will cause the compiler to copy and then rename the asset.
@@ -301,7 +297,7 @@ name, which will cause the compiler to copy and then rename the asset.
 ```ts title="Signature"
 type StaticAssetDefinition = string | { path: string; rename: string }
 ```
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="287" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="283" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 
@@ -335,7 +331,7 @@ The name of the extension module class.
 
 
 </div>
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="314" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="310" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 

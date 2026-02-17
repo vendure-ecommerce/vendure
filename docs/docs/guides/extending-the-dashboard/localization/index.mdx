@@ -1,5 +1,7 @@
 ---
 title: 'Localization'
+metaTitle: "Localizing Vendure Dashboard Extensions with Lingui"
+metaDescription: "Add multi-language support to your Vendure Dashboard extensions using Lingui for string extraction, translation catalogs, and ICU MessageFormat."
 ---
 
 :::note
@@ -27,11 +29,9 @@ function MyComponent() {
     return (
         <div>
             <h1>
-                // highlight-next-line
-                <Trans>Welcome to Dashboard</Trans>
+                <Trans>Welcome to Dashboard</Trans> {/* [!code highlight] */}
             </h1>
-            // highlight-next-line
-            <p>{t`Click here to continue`}</p>
+            <p>{t`Click here to continue`}</p> {/* [!code highlight] */}
         </div>
     );
 }
@@ -89,6 +89,5 @@ open up the `de.po` file and add German translations for each of the strings, by
 ```text title="de.po"
 #: test-plugins/reviews/dashboard/review-list.tsx:51
 msgid "Welcome to Dashboard"
-// highlight-next-line
-msgstr "Willkommen zum Dashboard"
+msgstr "Willkommen zum Dashboard" # [!code highlight]
 ```

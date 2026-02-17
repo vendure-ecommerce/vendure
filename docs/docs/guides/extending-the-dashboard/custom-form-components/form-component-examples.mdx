@@ -1,5 +1,7 @@
 ---
 title: 'Form Component Examples'
+metaTitle: "Dashboard Form Component Examples for Vendure"
+metaDescription: "Practical examples of custom Vendure Dashboard form components: email validation input, multi-currency price input, tags input, and auto-generating slug input."
 ---
 
 ## Email Input with Validation
@@ -18,23 +20,19 @@ the validity of the email address, as defined by the custom field "pattern" opti
     import {useFormContext} from 'react-hook-form';
 
     export const EmailInputComponent: DashboardFormComponent = ({name, value, onChange, disabled}) => {
-        // highlight-start
-        const {getFieldState} = useFormContext();
-        const isValid = getFieldState(name).invalid === false;
-        // highlight-end
+        const {getFieldState} = useFormContext(); // [!code highlight]
+        const isValid = getFieldState(name).invalid === false; // [!code highlight]
 
         return (
             <AffixedInput
                 prefix={<Mail className="h-4 w-4 text-muted-foreground" />}
                 suffix={
                     value &&
-                    // highlight-start
-                    (isValid ? (
-                        <Check className="h-4 w-4 text-green-500" />
-                    ) : (
-                        <X className="h-4 w-4 text-red-500" />
-                    ))
-                    // highlight-end
+                    (isValid ? ( // [!code highlight]
+                        <Check className="h-4 w-4 text-green-500" /> // [!code highlight]
+                    ) : ( // [!code highlight]
+                        <X className="h-4 w-4 text-red-500" /> // [!code highlight]
+                    )) // [!code highlight]
                 }
                 value={value || ''}
                 onChange={e => onChange(e.target.value)}
@@ -57,10 +55,8 @@ the validity of the email address, as defined by the custom field "pattern" opti
         customFormComponents: {
             customFields: [
                 {
-                    // highlight-start
-                    id: 'custom-email',
-                    component: EmailInputComponent,
-                    // highlight-end
+                    id: 'custom-email', // [!code highlight]
+                    component: EmailInputComponent, // [!code highlight]
                 },
             ],
         }
@@ -75,10 +71,8 @@ the validity of the email address, as defined by the custom field "pattern" opti
                 name: 'supplierEmail',
                 type: 'string',
                 label: [{ languageCode: LanguageCode.en, value: 'Supplier Email' }],
-                // highlight-start
-                pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
-                ui: { component: 'custom-email' },
-                // highlight-end
+                pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$', // [!code highlight]
+                ui: { component: 'custom-email' }, // [!code highlight]
             });
             return config;
         }
@@ -190,9 +184,7 @@ internal logic.
                 name: 'rrp',
                 type: 'int',
                 label: [{ languageCode: LanguageCode.en, value: 'RRP' }],
-                // highlight-start
-                ui: { component: 'custom-price' },
-                // highlight-end
+                ui: { component: 'custom-price' }, // [!code highlight]
             });
             return config;
         }
@@ -307,9 +299,7 @@ This component brings better UX to a simple comma-separated tags custom field.
                 name: 'tags',
                 type: 'string',
                 label: [{ languageCode: LanguageCode.en, value: 'Tags' }],
-                // highlight-start
-                ui: { component: 'custom-tags' },
-                // highlight-end
+                ui: { component: 'custom-tags' }, // [!code highlight]
             });
             return config;
         }
@@ -415,16 +405,14 @@ react to changes in that field.
     defineDashboardExtension({
         detailForms: [
             {
-                // highlight-start
-                pageId: 'product-detail',
-                inputs: [
-                    {
-                        blockId: 'main-form',
-                        field: 'slug',
-                        component: SlugInputComponent,
-                    },
-                ],
-                // highlight-end
+                pageId: 'product-detail', // [!code highlight]
+                inputs: [ // [!code highlight]
+                    { // [!code highlight]
+                        blockId: 'main-form', // [!code highlight]
+                        field: 'slug', // [!code highlight]
+                        component: SlugInputComponent, // [!code highlight]
+                    }, // [!code highlight]
+                ], // [!code highlight]
             },
         ]
     });
