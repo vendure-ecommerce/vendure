@@ -33,9 +33,7 @@ test.describe('Issue #4155: Nullable non-string custom field defaults', () => {
             newTitle: 'New product',
         });
 
-    test.fixme('should create a product without filling nullable non-string custom fields', async ({
-        page,
-    }) => {
+    test('should create a product without filling nullable non-string custom fields', async ({ page }) => {
         const dp = detailPage(page);
         await dp.gotoNew();
         await dp.expectNewPageLoaded();
