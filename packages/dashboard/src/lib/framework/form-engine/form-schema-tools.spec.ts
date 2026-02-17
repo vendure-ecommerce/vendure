@@ -14,6 +14,7 @@ const createMockField = (
     nullable = false,
     list = false,
     typeInfo?: FieldInfo[],
+    isScalar = !typeInfo,
 ): FieldInfo => ({
     name,
     type,
@@ -21,7 +22,7 @@ const createMockField = (
     list,
     typeInfo,
     isPaginatedList: false,
-    isScalar: false,
+    isScalar,
 });
 
 // Helper to create mock CustomFieldConfig
@@ -620,6 +621,27 @@ describe('form-schema-tools', () => {
 
             const defaults = getDefaultValuesFromFields(fields, 'en');
             expect(defaults.customFields).toEqual({});
+        });
+
+        it.each([
+            ['Int', null],
+            ['Float', null],
+            ['Money', null],
+            ['DateTime', null],
+        ])('nullable %s field should default to null', (type, expected) => {
+            const fields: FieldInfo[] = [createMockField('value', type, true)];
+            const defaults = getDefaultValuesFromFields(fields, 'en');
+            expect(defaults.value).toBe(expected);
+        });
+
+        it.each([
+            ['String', ''],
+            ['Boolean', false],
+            ['ID', ''],
+        ])('nullable %s field should default to %s (not null)', (type, expected) => {
+            const fields: FieldInfo[] = [createMockField('value', type, true)];
+            const defaults = getDefaultValuesFromFields(fields, 'en');
+            expect(defaults.value).toBe(expected);
         });
     });
 

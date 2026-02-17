@@ -14,7 +14,7 @@ import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 //
 //   customFields: {
 //       Product: [
-//           { name: 'releaseYear', type: 'int' },
+//           { name: 'reviewRating', type: 'int' },
 //           { name: 'weight', type: 'float' },
 //           { name: 'releaseDate', type: 'datetime' },
 //       ],
