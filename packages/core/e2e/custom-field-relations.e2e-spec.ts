@@ -710,6 +710,37 @@ describe('Custom field relations', () => {
                 `);
                 assertCustomFieldIds(updateGlobalSettings.customFields, 'T_2', ['T_3', 'T_4']);
             });
+
+            // https://github.com/vendurehq/vendure/issues/4342
+            it('scalar custom fields persist when updating alongside relations', async () => {
+                const { updateGlobalSettings } = await adminClient.query(gql`
+                    mutation {
+                        updateGlobalSettings(
+                            input: {
+                                customFields: { primitive: "updated", singleId: "T_3", multiIds: ["T_1", "T_2"] }
+                            }
+                        ) {
+                            ... on GlobalSettings {
+                                id
+                                ${customFieldsSelection}
+                            }
+                        }
+                    }
+                `);
+                expect(updateGlobalSettings.customFields.primitive).toBe('updated');
+                assertCustomFieldIds(updateGlobalSettings.customFields, 'T_3', ['T_1', 'T_2']);
+
+                // Verify the scalar value actually persisted by re-querying
+                const { globalSettings } = await adminClient.query(gql`
+                    query {
+                        globalSettings {
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(globalSettings.customFields.primitive).toBe('updated');
+                assertCustomFieldIds(globalSettings.customFields, 'T_3', ['T_1', 'T_2']);
+            });
         });
 
         describe('Order entity', () => {
