@@ -215,6 +215,75 @@ describe('convertEmptyStringsToNull', () => {
         const result = convertEmptyStringsToNull(values, fields);
         expect(result.releaseDate).toBeNull();
     });
+
+    it('should NOT convert empty string to null for nullable String fields', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'description',
+                type: 'String',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+        ];
+        const values = { description: '' };
+        const result = convertEmptyStringsToNull(values, fields);
+        expect(result.description).toBe('');
+    });
+
+    it('should convert empty strings to null in nested array objects', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'translations',
+                type: 'TranslationInput',
+                nullable: false,
+                list: true,
+                isPaginatedList: false,
+                isScalar: false,
+                typeInfo: [
+                    {
+                        name: 'releaseDate',
+                        type: 'DateTime',
+                        nullable: true,
+                        list: false,
+                        isPaginatedList: false,
+                        isScalar: true,
+                    },
+                    {
+                        name: 'name',
+                        type: 'String',
+                        nullable: true,
+                        list: false,
+                        isPaginatedList: false,
+                        isScalar: true,
+                    },
+                ],
+            },
+        ];
+        const values = {
+            translations: [{ releaseDate: '', name: '' }],
+        };
+        const result = convertEmptyStringsToNull(values, fields);
+        expect(result.translations[0].releaseDate).toBeNull();
+        expect(result.translations[0].name).toBe('');
+    });
+
+    it('should not mutate the original values', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'releaseDate',
+                type: 'DateTime',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+        ];
+        const values = { releaseDate: '' };
+        convertEmptyStringsToNull(values, fields);
+        expect(values.releaseDate).toBe('');
+    });
 });
 
 describe('stripNullNullableFields', () => {

@@ -156,7 +156,8 @@ export function convertEmptyStringsToNull<T extends Record<string, any>>(values:
  * Strips null-valued nullable fields from the payload so they are omitted
  * rather than sent as explicit nulls. In GraphQL, omitting a field lets the
  * server apply its own default, whereas sending null means "set to NULL".
- * This is only used for create mutations where the user has not touched the field.
+ * This is only used for create mutations, to avoid sending explicit nulls for
+ * fields the user likely did not touch.
  */
 export function stripNullNullableFields<T extends Record<string, any>>(values: T, fields: FieldInfo[]): T {
     if (!values) return values;

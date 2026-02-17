@@ -6,8 +6,8 @@ import { BaseDetailPage } from '../../page-objects/detail-page.base.js';
 // Fix PR: https://github.com/vendurehq/vendure/pull/4339
 //
 // Creating an entity with nullable non-string custom fields (Int, Float, DateTime)
-// fails because getDefaultValueFromField() returns '' instead of null for these types.
-// The form either fails Zod validation or the GraphQL mutation rejects empty strings.
+// failed because getDefaultValueFromField() returned '' instead of null for these types.
+// The form either failed Zod validation or the GraphQL mutation rejected empty strings.
 //
 // PREREQUISITE: This test requires nullable non-string custom fields to be configured
 // in global-setup.ts:
