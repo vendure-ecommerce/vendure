@@ -367,9 +367,11 @@ export function getDefaultValueFromField(field: FieldInfo, defaultLanguageCode?:
             case 'Boolean':
                 return false;
             default:
-                // Non-scalar object-typed fields (e.g. customFields without typeInfo)
-                // should default to {} to match the Zod schema which expects an object
-                if (!field.isScalar) {
+                // Object-typed fields (e.g. customFields without typeInfo) should default
+                // to {} to match the Zod schema which expects an object.
+                // JSON scalar is used for customFields when the field structure isn't
+                // known from introspection — it still represents an object at runtime.
+                if (!field.isScalar || field.type === 'JSON') {
                     return {};
                 }
                 return null;
