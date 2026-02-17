@@ -3,7 +3,12 @@ import { describe, expect, it } from 'vitest';
 
 import { FieldInfo, getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 
-import { convertEmptyStringsToNull, removeEmptyIdFields, transformRelationFields } from './utils.js';
+import {
+    convertEmptyStringsToNull,
+    removeEmptyIdFields,
+    stripNullNullableFields,
+    transformRelationFields,
+} from './utils.js';
 
 const createProductDocument = graphql(`
     mutation CreateProduct($input: CreateProductInput!) {
@@ -209,5 +214,137 @@ describe('convertEmptyStringsToNull', () => {
         const values = { releaseDate: '' };
         const result = convertEmptyStringsToNull(values, fields);
         expect(result.releaseDate).toBeNull();
+    });
+});
+
+describe('stripNullNullableFields', () => {
+    it('should strip null from nullable scalar fields', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'outOfStockThreshold',
+                type: 'Int',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+            {
+                name: 'weight',
+                type: 'Float',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+            {
+                name: 'releaseDate',
+                type: 'DateTime',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+        ];
+        const values = { outOfStockThreshold: null, weight: null, releaseDate: null };
+        const result = stripNullNullableFields(values, fields);
+        expect(result).toEqual({});
+    });
+
+    it('should preserve non-null values for nullable fields', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'outOfStockThreshold',
+                type: 'Int',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+            {
+                name: 'weight',
+                type: 'Float',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+        ];
+        const values = { outOfStockThreshold: 5, weight: null };
+        const result = stripNullNullableFields(values, fields);
+        expect(result).toEqual({ outOfStockThreshold: 5 });
+    });
+
+    it('should preserve null for non-nullable fields', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'code',
+                type: 'String',
+                nullable: false,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+        ];
+        const values = { code: null };
+        const result = stripNullNullableFields(values, fields);
+        expect(result).toEqual({ code: null });
+    });
+
+    it('should handle nested objects with nullable fields', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'translations',
+                type: 'TranslationInput',
+                nullable: false,
+                list: true,
+                isPaginatedList: false,
+                isScalar: false,
+                typeInfo: [
+                    {
+                        name: 'name',
+                        type: 'String',
+                        nullable: false,
+                        list: false,
+                        isPaginatedList: false,
+                        isScalar: true,
+                    },
+                    {
+                        name: 'description',
+                        type: 'String',
+                        nullable: true,
+                        list: false,
+                        isPaginatedList: false,
+                        isScalar: true,
+                    },
+                ],
+            },
+        ];
+        const values = {
+            translations: [{ name: 'Test', description: null }],
+        };
+        const result = stripNullNullableFields(values, fields);
+        expect(result).toEqual({ translations: [{ name: 'Test' }] });
+    });
+
+    it('should handle null input gracefully', () => {
+        const fields: FieldInfo[] = [];
+        expect(stripNullNullableFields(null as any, fields)).toBeNull();
+    });
+
+    it('should not mutate the original values', () => {
+        const fields: FieldInfo[] = [
+            {
+                name: 'threshold',
+                type: 'Int',
+                nullable: true,
+                list: false,
+                isPaginatedList: false,
+                isScalar: true,
+            },
+        ];
+        const values = { threshold: null };
+        const result = stripNullNullableFields(values, fields);
+        expect(values.threshold).toBeNull();
+        expect(result).toEqual({});
     });
 });

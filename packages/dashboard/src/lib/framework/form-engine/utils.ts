@@ -152,6 +152,36 @@ export function convertEmptyStringsToNull<T extends Record<string, any>>(values:
     return result;
 }
 
+/**
+ * Strips null-valued nullable fields from the payload so they are omitted
+ * rather than sent as explicit nulls. In GraphQL, omitting a field lets the
+ * server apply its own default, whereas sending null means "set to NULL".
+ * This is only used for create mutations where the user has not touched the field.
+ */
+export function stripNullNullableFields<T extends Record<string, any>>(values: T, fields: FieldInfo[]): T {
+    if (!values) return values;
+    const result = structuredClone(values);
+
+    function processFields(obj: any, fieldDefs: FieldInfo[]) {
+        for (const field of fieldDefs) {
+            if (field.nullable && obj[field.name] === null) {
+                delete obj[field.name];
+            } else if (field.typeInfo && typeof obj[field.name] === 'object' && obj[field.name] !== null) {
+                if (Array.isArray(obj[field.name])) {
+                    for (const item of obj[field.name]) {
+                        processFields(item, field.typeInfo);
+                    }
+                } else {
+                    processFields(obj[field.name], field.typeInfo);
+                }
+            }
+        }
+    }
+
+    processFields(result, fields);
+    return result;
+}
+
 // =============================================================================
 // TYPE GUARDS FOR CONFIGURABLE FIELD DEFINITIONS
 // =============================================================================
