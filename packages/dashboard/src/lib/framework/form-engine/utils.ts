@@ -126,6 +126,9 @@ export function removeEmptyIdFields<T extends Record<string, any>>(values: T, fi
  * empty strings that are invalid for non-string GraphQL types like DateTime or Enums.
  */
 export function convertEmptyStringsToNull<T extends Record<string, any>>(values: T, fields: FieldInfo[]): T {
+    if (!values) {
+        return values;
+    }
     const result = structuredClone(values);
 
     function processFields(obj: any, fieldDefs: FieldInfo[]) {
