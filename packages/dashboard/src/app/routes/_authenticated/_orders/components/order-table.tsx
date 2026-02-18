@@ -124,6 +124,25 @@ function createCustomizeColumns(currencyCode: string) {
                 <Money currencyCode={currencyCode} value={row.original.discountedLinePriceWithTax} />
             ),
         },
+        discounts: {
+            header: () => <Trans>Discounts</Trans>,
+            cell: ({ row }: { row: any }) => {
+                const discounts = row.original.discounts;
+                if (!discounts?.length) return null;
+                return (
+                    <div className="flex flex-col gap-1">
+                        {discounts.map((d: any, i: number) => (
+                            <div key={i} className="flex flex-col">
+                                <span>{d.description}</span>
+                                <span className="text-xs text-muted-foreground">
+                                    <Money currencyCode={currencyCode} value={d.amountWithTax} />
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                );
+            },
+        },
     };
 }
 
