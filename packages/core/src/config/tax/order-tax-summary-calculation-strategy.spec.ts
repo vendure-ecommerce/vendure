@@ -304,6 +304,46 @@ describe('OrderTaxSummaryCalculationStrategy', () => {
             expect(orderLevelTotals.shippingWithTax).toBe(317 + 67); // 384
         });
 
+        it('merges same tax rate on items and shipping with consistent rounding', () => {
+            const ctx = createRequestContext({ pricesIncludeTax: false });
+            const order = createOrder({
+                ctx,
+                lines: [
+                    { listPrice: 102, taxCategory: taxCategoryStandard, quantity: 1 },
+                    { listPrice: 215, taxCategory: taxCategoryStandard, quantity: 1 },
+                ],
+            });
+            order.lines[0].taxLines = [{ taxRate: 21, description: 'VAT' }];
+            order.lines[1].taxLines = [{ taxRate: 21, description: 'VAT' }];
+            order.shippingLines = [
+                new ShippingLine({
+                    listPrice: 500,
+                    listPriceIncludesTax: false,
+                    adjustments: [],
+                    taxLines: [{ taxRate: 21, description: 'VAT' }],
+                }),
+            ];
+
+            const totals = strategy.calculateOrderTotals(order);
+            const taxSummary = strategy.calculateTaxSummary(order);
+
+            // Items: round(317 * 0.21) = round(66.57) = 67
+            // Shipping: round(500 * 0.21) = round(105) = 105
+            expect(totals.subTotal).toBe(317);
+            expect(totals.subTotalWithTax).toBe(384);
+            expect(totals.shipping).toBe(500);
+            expect(totals.shippingWithTax).toBe(605);
+
+            // Tax summary should merge into one entry with tax = 67 + 105 = 172
+            // (not re-rounded from combined netBase: round(817 * 0.21) = round(171.57) = 172)
+            expect(taxSummary).toEqual([{ description: 'VAT', taxRate: 21, taxBase: 817, taxTotal: 172 }]);
+
+            // Verify taxTotal matches the sum of item tax + shipping tax from totals
+            const totalTaxFromTotals =
+                totals.subTotalWithTax - totals.subTotal + (totals.shippingWithTax - totals.shipping);
+            expect(taxSummary[0].taxTotal).toBe(totalTaxFromTotals);
+        });
+
         it('handles prices-include-tax mode', () => {
             const ctx = createRequestContext({ pricesIncludeTax: true });
             const order = createOrder({
