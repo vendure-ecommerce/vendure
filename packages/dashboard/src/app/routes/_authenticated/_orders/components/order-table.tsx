@@ -125,6 +125,7 @@ function createCustomizeColumns(currencyCode: string) {
             ),
         },
         discounts: {
+            header: () => <Trans>Discounts</Trans>,
             cell: ({ row }: { row: any }) => {
                 const discounts = row.original.discounts;
                 if (!discounts?.length) return null;
