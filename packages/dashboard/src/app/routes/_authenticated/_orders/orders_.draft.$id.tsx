@@ -89,6 +89,9 @@ function DraftOrderPage() {
             toast.success(t`Order custom fields updated`);
             refreshEntity();
         },
+        onError: error => {
+            toast.error(t`Failed to update order custom fields: ${error.message}`);
+        },
     });
 
     const { data: eligibleShippingMethods } = useQuery({
@@ -132,6 +135,9 @@ function DraftOrderPage() {
                     break;
             }
         },
+        onError: error => {
+            toast.error(t`Failed to update order line: ${error.message}`);
+        },
     });
 
     const { mutate: removeDraftOrderLine } = useMutation({
@@ -147,6 +153,9 @@ function DraftOrderPage() {
                     toast.error(order.message);
                     break;
             }
+        },
+        onError: error => {
+            toast.error(t`Failed to remove order line: ${error.message}`);
         },
     });
 
@@ -173,6 +182,9 @@ function DraftOrderPage() {
                     break;
             }
         },
+        onError: error => {
+            toast.error(t`Failed to set customer for order: ${error.message}`);
+        },
     });
 
     const { mutate: setShippingAddressForDraftOrder } = useMutation({
@@ -180,6 +192,9 @@ function DraftOrderPage() {
         onSuccess: (result: ResultOf<typeof setShippingAddressForDraftOrderDocument>) => {
             toast.success(t`Shipping address set for order`);
             refreshEntity();
+        },
+        onError: error => {
+            toast.error(t`Failed to set shipping address for order: ${error.message}`);
         },
     });
 
@@ -189,6 +204,9 @@ function DraftOrderPage() {
             toast.success(t`Billing address set for order`);
             refreshEntity();
         },
+        onError: error => {
+            toast.error(t`Failed to set billing address for order: ${error.message}`);
+        },
     });
 
     const { mutate: unsetShippingAddressForDraftOrder } = useMutation({
@@ -197,6 +215,9 @@ function DraftOrderPage() {
             toast.success(t`Shipping address unset for order`);
             refreshEntity();
         },
+        onError: error => {
+            toast.error(t`Failed to unset shipping address for order: ${error.message}`);
+        },
     });
 
     const { mutate: unsetBillingAddressForDraftOrder } = useMutation({
@@ -204,6 +225,9 @@ function DraftOrderPage() {
         onSuccess: (result: ResultOf<typeof unsetBillingAddressForDraftOrderDocument>) => {
             toast.success(t`Billing address unset for order`);
             refreshEntity();
+        },
+        onError: error => {
+            toast.error(t`Failed to unset billing address for order: ${error.message}`);
         },
     });
 
@@ -221,6 +245,9 @@ function DraftOrderPage() {
                     break;
             }
         },
+        onError: error => {
+            toast.error(t`Failed to set shipping method for order: ${error.message}`);
+        },
     });
 
     const { mutate: setCouponCodeForDraftOrder } = useMutation({
@@ -237,6 +264,9 @@ function DraftOrderPage() {
                     break;
             }
         },
+        onError: error => {
+            toast.error(t`Failed to set coupon code for order: ${error.message}`);
+        },
     });
 
     const { mutate: removeCouponCodeForDraftOrder } = useMutation({
@@ -244,6 +274,9 @@ function DraftOrderPage() {
         onSuccess: (result: ResultOf<typeof removeCouponCodeFromDraftOrderDocument>) => {
             toast.success(t`Coupon code removed from order`);
             refreshEntity();
+        },
+        onError: error => {
+            toast.error(t`Failed to remove coupon code from order: ${error.message}`);
         },
     });
 
@@ -264,6 +297,9 @@ function DraftOrderPage() {
                     break;
             }
         },
+        onError: error => {
+            toast.error(t`Failed to complete draft order: ${error.message}`);
+        },
     });
 
     const { mutate: deleteDraftOrder } = useMutation({
@@ -275,6 +311,9 @@ function DraftOrderPage() {
             } else {
                 toast.error(result.deleteDraftOrder.message);
             }
+        },
+        onError: error => {
+            toast.error(t`Failed to delete draft order: ${error.message}`);
         },
     });
 
