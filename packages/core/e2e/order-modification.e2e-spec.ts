@@ -2601,7 +2601,10 @@ describe('Order modification', () => {
 
             // Verify the payment was added correctly
             expect(addManualPaymentToOrder.payments?.length).toBe(2);
-            expect(addManualPaymentToOrder.payments?.[1]).toEqual({
+            const manualPayment = addManualPaymentToOrder.payments?.find(
+                p => p.transactionId === 'MULTI_MOD_123',
+            );
+            expect(manualPayment).toEqual({
                 id: expect.any(String),
                 transactionId: 'MULTI_MOD_123',
                 state: 'Settled',

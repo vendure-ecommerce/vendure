@@ -637,13 +637,12 @@ export class OrderModifier {
         await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
+        await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
         await this.connection.getRepository(ctx, OrderLine).save(order.lines, { reload: false });
         const orderCustomFields = (input as any).customFields;
         if (orderCustomFields) {
             patchEntity(order, { customFields: orderCustomFields });
         }
-
-        await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
 
         if (dryRun) {
             return { order, modification };
