@@ -98,11 +98,11 @@ export class OrderLevelTaxSummaryCalculationStrategy implements OrderTaxSummaryC
         const subTotalGroups = new Map<string, TaxGroup>();
         const shippingGroups = new Map<string, TaxGroup>();
 
-        for (const line of order.lines) {
+        for (const line of order.lines ?? []) {
             subTotal += line.proratedLinePrice;
             this.accumulateIntoGroups(subTotalGroups, line.taxLines, line.proratedLinePrice);
         }
-        for (const surcharge of order.surcharges) {
+        for (const surcharge of order.surcharges ?? []) {
             subTotal += surcharge.price;
             this.accumulateIntoGroups(subTotalGroups, surcharge.taxLines, surcharge.price);
         }

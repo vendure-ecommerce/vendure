@@ -24,11 +24,11 @@ export class DefaultOrderTaxSummaryCalculationStrategy implements OrderTaxSummar
     calculateOrderTotals(order: Order): OrderTotalsResult {
         let subTotal = 0;
         let subTotalWithTax = 0;
-        for (const line of order.lines) {
+        for (const line of order.lines ?? []) {
             subTotal += line.proratedLinePrice;
             subTotalWithTax += line.proratedLinePriceWithTax;
         }
-        for (const surcharge of order.surcharges) {
+        for (const surcharge of order.surcharges ?? []) {
             subTotal += surcharge.price;
             subTotalWithTax += surcharge.priceWithTax;
         }
