@@ -1031,7 +1031,7 @@ export interface JobQueueOptions {
  * @description
  * Options related to scheduled tasks..
  *
- * @since 3.6.0
+ * @since 3.3.0
  * @docsCategory scheduled-tasks
  */
 export interface SchedulerOptions {
@@ -1335,7 +1335,7 @@ export interface VendureConfig {
      * @description
      * Configures the scheduler mechanism and tasks.
      *
-     * @since 3.6.0
+     * @since 3.3.0
      */
     schedulerOptions?: SchedulerOptions;
     /**
