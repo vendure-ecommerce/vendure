@@ -280,7 +280,7 @@ function getRowActions(
 }
 
 function DefaultDisplayComponent({ value, fieldInfo }: { value: any; fieldInfo: FieldInfo }) {
-    if (fieldInfo.list && Array.isArray(value)) {
+    if (fieldInfo.list && Array.isArray(value) && fieldInfo.isScalar) {
         return value.join(', ');
     }
     if ((fieldInfo.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
