@@ -1686,9 +1686,7 @@ describe('OrderCalculator with OrderLevelTaxSummaryCalculationStrategy', () => {
 
         // taxSummary should be consistent with the totals
         const taxTotal = order.taxSummary.reduce((sum, s) => sum + s.taxTotal, 0);
-        expect(order.subTotalWithTax - order.subTotal).toBe(
-            taxTotal - (order.shippingWithTax - order.shipping),
-        );
+        expect(order.subTotalWithTax - order.subTotal).toBe(taxTotal);
         assertOrderTotalsAddUp(order);
     });
 
