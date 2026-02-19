@@ -67,14 +67,16 @@ export class OrderLevelTaxSummaryCalculationStrategy implements OrderTaxSummaryC
     calculateTaxSummary(order: Order): OrderTaxSummary[] {
         const { subTotalGroups, shippingGroups } = this.groupOrder(order);
 
-        const merged = new Map<string, TaxGroup>();
+        const merged = new Map<string, TaxGroup & { tax: number }>();
         for (const groups of [subTotalGroups, shippingGroups]) {
             for (const [key, group] of groups) {
+                const roundedTax = Math.round(taxPayableOn(group.netBase, group.rate));
                 const existing = merged.get(key);
                 if (existing) {
                     existing.netBase += group.netBase;
+                    existing.tax += roundedTax;
                 } else {
-                    merged.set(key, { ...group });
+                    merged.set(key, { ...group, tax: roundedTax });
                 }
             }
         }
@@ -84,7 +86,7 @@ export class OrderLevelTaxSummaryCalculationStrategy implements OrderTaxSummaryC
                 taxRate: group.rate,
                 description: group.description,
                 taxBase: group.netBase,
-                taxTotal: Math.round(taxPayableOn(group.netBase, group.rate)),
+                taxTotal: group.tax,
             });
         }
         return taxSummary;
