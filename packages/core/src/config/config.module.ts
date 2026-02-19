@@ -86,7 +86,8 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             adminApiKeyStrategy,
             shopApiKeyStrategy,
         } = this.configService.authOptions;
-        const { taxZoneStrategy, taxLineCalculationStrategy } = this.configService.taxOptions;
+        const { taxZoneStrategy, taxLineCalculationStrategy, orderTaxSummaryCalculationStrategy } =
+            this.configService.taxOptions;
         const { jobQueueStrategy, jobBufferStorageStrategy } = this.configService.jobQueueOptions;
         const { schedulerStrategy } = this.configService.schedulerOptions;
         const {
@@ -128,6 +129,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             assetStorageStrategy,
             taxZoneStrategy,
             taxLineCalculationStrategy,
+            orderTaxSummaryCalculationStrategy,
             jobQueueStrategy,
             jobBufferStorageStrategy,
             mergeStrategy,

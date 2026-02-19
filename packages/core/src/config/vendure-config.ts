@@ -64,6 +64,7 @@ import { CacheStrategy } from './system/cache-strategy';
 import { ErrorHandlerStrategy } from './system/error-handler-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
 import { InstrumentationStrategy } from './system/instrumentation-strategy';
+import { OrderTaxSummaryCalculationStrategy } from './tax/order-tax-summary-calculation-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 
@@ -949,6 +950,19 @@ export interface TaxOptions {
      * @default DefaultTaxLineCalculationStrategy
      */
     taxLineCalculationStrategy?: TaxLineCalculationStrategy;
+    /**
+     * @description
+     * Defines how order-level tax totals and the tax summary are calculated.
+     *
+     * The default strategy rounds tax at the individual line level and then sums
+     * (per-line rounding). The {@link OrderLevelTaxSummaryCalculationStrategy} alternative
+     * groups net subtotals by tax rate and rounds once per group (per-total rounding),
+     * which is required by certain jurisdictions and ERP systems.
+     *
+     * @default DefaultOrderTaxSummaryCalculationStrategy
+     * @since 3.6.0
+     */
+    orderTaxSummaryCalculationStrategy?: OrderTaxSummaryCalculationStrategy;
 }
 
 /**
@@ -1017,7 +1031,7 @@ export interface JobQueueOptions {
  * @description
  * Options related to scheduled tasks..
  *
- * @since 3.3.0
+ * @since 3.6.0
  * @docsCategory scheduled-tasks
  */
 export interface SchedulerOptions {
@@ -1321,7 +1335,7 @@ export interface VendureConfig {
      * @description
      * Configures the scheduler mechanism and tasks.
      *
-     * @since 3.3.0
+     * @since 3.6.0
      */
     schedulerOptions?: SchedulerOptions;
     /**

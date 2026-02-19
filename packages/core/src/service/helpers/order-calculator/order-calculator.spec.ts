@@ -10,8 +10,10 @@ import { ensureConfigLoaded } from '../../../config/config-helpers';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
+import { DefaultOrderTaxSummaryCalculationStrategy } from '../../../config/tax/default-order-tax-summary-calculation-strategy';
 import { DefaultTaxLineCalculationStrategy } from '../../../config/tax/default-tax-line-calculation-strategy';
 import { DefaultTaxZoneStrategy } from '../../../config/tax/default-tax-zone-strategy';
+import { OrderLevelTaxSummaryCalculationStrategy } from '../../../config/tax/order-level-tax-summary-calculation-strategy';
 import {
     CalculateTaxLinesArgs,
     TaxLineCalculationStrategy,
@@ -50,6 +52,7 @@ describe('OrderCalculator', () => {
         mockConfigService.taxOptions = {
             taxZoneStrategy: new DefaultTaxZoneStrategy(),
             taxLineCalculationStrategy: new DefaultTaxLineCalculationStrategy(),
+            orderTaxSummaryCalculationStrategy: new DefaultOrderTaxSummaryCalculationStrategy(),
         };
     });
 
@@ -1537,6 +1540,7 @@ describe('OrderCalculator with custom TaxLineCalculationStrategy', () => {
         mockConfigService.taxOptions = {
             taxZoneStrategy: new DefaultTaxZoneStrategy(),
             taxLineCalculationStrategy: new CustomTaxLineCalculationStrategy(),
+            orderTaxSummaryCalculationStrategy: new DefaultOrderTaxSummaryCalculationStrategy(),
         };
     });
 
@@ -1646,6 +1650,116 @@ describe('OrderCalculator with custom TaxLineCalculationStrategy', () => {
         ]);
         expect(order.lines[0].taxLines).toEqual([newYorkStateTaxLine, nycCityTaxLine]);
         expect(order.lines[1].taxLines).toEqual([newYorkStateTaxLine, nycCityTaxLine]);
+        assertOrderTotalsAddUp(order);
+    });
+});
+
+describe('OrderCalculator with OrderLevelTaxSummaryCalculationStrategy', () => {
+    let orderCalculator: OrderCalculator;
+
+    beforeAll(async () => {
+        const module = await createTestModule();
+        orderCalculator = module.get(OrderCalculator);
+        const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);
+        mockConfigService.taxOptions = {
+            taxZoneStrategy: new DefaultTaxZoneStrategy(),
+            taxLineCalculationStrategy: new DefaultTaxLineCalculationStrategy(),
+            orderTaxSummaryCalculationStrategy: new OrderLevelTaxSummaryCalculationStrategy(),
+        };
+    });
+
+    it('calculates order-level totals using grouped rounding', async () => {
+        const ctx = createRequestContext({ pricesIncludeTax: false });
+        const order = createOrder({
+            ctx,
+            lines: [
+                { listPrice: 102, taxCategory: taxCategoryStandard, quantity: 1 },
+                { listPrice: 215, taxCategory: taxCategoryStandard, quantity: 1 },
+            ],
+        });
+        await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+        // Both lines have 20% standard tax rate.
+        // Order-level: round((102+215)*0.20) = round(63.4) = 63
+        expect(order.subTotal).toBe(317);
+        expect(order.subTotalWithTax).toBe(317 + Math.round(317 * 0.2));
+
+        // taxSummary should be consistent with the totals
+        const taxTotal = order.taxSummary.reduce((sum, s) => sum + s.taxTotal, 0);
+        expect(order.subTotalWithTax - order.subTotal).toBe(
+            taxTotal - (order.shippingWithTax - order.shipping),
+        );
+        assertOrderTotalsAddUp(order);
+    });
+
+    it('handles order with shipping', async () => {
+        const ctx = createRequestContext({ pricesIncludeTax: false });
+        const order = createOrder({
+            ctx,
+            lines: [{ listPrice: 100, taxCategory: taxCategoryStandard, quantity: 1 }],
+        });
+        order.shippingLines = [
+            new ShippingLine({
+                shippingMethodId: mockShippingMethodId,
+            }),
+        ];
+        await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+        expect(order.subTotal).toBe(100);
+        expect(order.shipping).toBe(500);
+        expect(order.shippingWithTax).toBe(600);
+        expect(order.total).toBe(order.subTotal + 500);
+        expect(order.totalWithTax).toBe(order.subTotalWithTax + 600);
+        assertOrderTotalsAddUp(order);
+    });
+
+    it('applies percentage order promotion correctly with order-level rounding', async () => {
+        const percentageOrderAction = new PromotionOrderAction({
+            code: 'percentage_order_action',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
+            args: { discount: { type: 'int' } },
+            execute(_ctx, _order, args) {
+                const orderTotal = _ctx.channel.pricesIncludeTax ? _order.subTotalWithTax : _order.subTotal;
+                return -orderTotal * (args.discount / 100);
+            },
+        });
+        const alwaysTrueCondition = new PromotionCondition({
+            args: {},
+            code: 'always_true_condition',
+            description: [{ languageCode: LanguageCode.en, value: '' }],
+            check() {
+                return true;
+            },
+        });
+        const promotion = new Promotion({
+            id: 1,
+            name: '50% off order',
+            conditions: [{ code: alwaysTrueCondition.code, args: [] }],
+            promotionConditions: [alwaysTrueCondition],
+            actions: [
+                {
+                    code: percentageOrderAction.code,
+                    args: [{ name: 'discount', value: '50' }],
+                },
+            ],
+            promotionActions: [percentageOrderAction],
+        });
+        const ctx = createRequestContext({ pricesIncludeTax: false });
+        const order = createOrder({
+            ctx,
+            lines: [
+                { listPrice: 102, taxCategory: taxCategoryStandard, quantity: 1 },
+                { listPrice: 215, taxCategory: taxCategoryStandard, quantity: 1 },
+            ],
+        });
+        await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+        // subTotal before promo = 317, 50% off = -158, so subTotal = 159
+        expect(order.subTotal).toBe(159);
+        expect(order.discounts.length).toBe(1);
+        expect(order.discounts[0].description).toBe('50% off order');
+        // Order-level rounding: tax = round(159 * 0.20) = round(31.8) = 32
+        expect(order.subTotalWithTax).toBe(159 + Math.round(159 * 0.2));
         assertOrderTotalsAddUp(order);
     });
 });
