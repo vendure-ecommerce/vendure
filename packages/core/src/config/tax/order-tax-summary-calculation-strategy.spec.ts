@@ -59,6 +59,7 @@ describe('OrderTaxSummaryCalculationStrategy', () => {
             const taxSummary = strategy.calculateTaxSummary(order);
 
             expect(totals.subTotal).toBe(600 + 400);
+            expect(totals.subTotalWithTax).toBe(1310);
             expect(taxSummary).toEqual([
                 { description: 'tax a', taxRate: 5, taxBase: 600, taxTotal: 30 },
                 { description: 'tax 50', taxRate: 50, taxBase: 400, taxTotal: 200 },
@@ -88,6 +89,7 @@ describe('OrderTaxSummaryCalculationStrategy', () => {
             expect(totals.subTotal).toBe(600);
             expect(totals.shipping).toBe(500);
             expect(totals.shippingWithTax).toBe(600);
+            expect(taxSummary).toHaveLength(2);
             expect(taxSummary).toEqual(
                 expect.arrayContaining([
                     { description: 'tax a', taxRate: 5, taxBase: 600, taxTotal: 30 },
@@ -226,6 +228,7 @@ describe('OrderTaxSummaryCalculationStrategy', () => {
             const taxSummary = strategy.calculateTaxSummary(order);
 
             expect(totals.subTotal).toBe(1000);
+            expect(taxSummary).toHaveLength(3);
             expect(taxSummary).toEqual(
                 expect.arrayContaining([
                     { description: 'tax a', taxRate: 5, taxBase: 600, taxTotal: 30 },
@@ -259,6 +262,7 @@ describe('OrderTaxSummaryCalculationStrategy', () => {
             expect(totals.subTotal).toBe(600);
             expect(totals.shipping).toBe(500);
             expect(totals.shippingWithTax).toBe(600);
+            expect(taxSummary).toHaveLength(2);
             expect(taxSummary).toEqual(
                 expect.arrayContaining([
                     { description: 'tax a', taxRate: 5, taxBase: 600, taxTotal: 30 },

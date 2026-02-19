@@ -1668,6 +1668,11 @@ describe('OrderCalculator with OrderLevelTaxSummaryCalculationStrategy', () => {
         };
     });
 
+    // Note: taxCategoryStandard uses a 20% rate, which means these inputs (102, 215)
+    // produce the same result for both OrderLevelTaxSummaryCalculationStrategy and
+    // DefaultOrderTaxSummaryCalculationStrategy. This test serves as a regression/integration
+    // smoke-check. See order-tax-summary-calculation-strategy.spec.ts for tests with a 21%
+    // rate that demonstrate the actual rounding difference between strategies.
     it('calculates order-level totals using grouped rounding', async () => {
         const ctx = createRequestContext({ pricesIncludeTax: false });
         const order = createOrder({
