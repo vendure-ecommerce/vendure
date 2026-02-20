@@ -190,6 +190,7 @@ export async function bootstrap(
     earlyMiddlewares.forEach(mid => {
         app.use(mid.route, mid.handler);
     });
+    await config.apiOptions.onBeforeAppListen?.(app);
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();
     logWelcomeMessage(config);
