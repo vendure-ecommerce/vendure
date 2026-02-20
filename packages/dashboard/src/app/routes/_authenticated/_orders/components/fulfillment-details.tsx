@@ -1,12 +1,16 @@
 import { LabeledData } from '@/vdb/components/labeled-data.js';
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/components/ui/collapsible.js';
+import { Form } from '@/vdb/components/ui/form.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { useDynamicTranslations } from '@/vdb/hooks/use-dynamic-translations.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { ChevronDown } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import {
     fulfillmentFragment,
@@ -27,6 +31,12 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
     const { formatDate } = useLocalFormat();
     const { t } = useLingui();
     const { getTranslatedFulfillmentState } = useDynamicTranslations();
+    const customFieldConfig = useCustomFieldConfig('Fulfillment');
+    const customFieldsForm = useForm({
+        defaultValues: {
+            customFields: (fulfillment as any).customFields ?? {},
+        },
+    });
 
     // Create a map of order lines by ID for quick lookup
     const orderLinesMap = new Map(order.lines.map(line => [line.id, line]));
@@ -144,6 +154,16 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
                             })}
                         </CollapsibleContent>
                     </Collapsible>
+                </div>
+            )}
+
+            {customFieldConfig.length > 0 && (
+                <div className="mt-3 pt-3 border-t">
+                    <Form {...customFieldsForm}>
+                        <fieldset disabled>
+                            <CustomFieldsForm entityType="Fulfillment" control={customFieldsForm.control} />
+                        </fieldset>
+                    </Form>
                 </div>
             )}
 
