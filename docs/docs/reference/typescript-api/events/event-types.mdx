@@ -151,6 +151,33 @@ class AttemptedLoginEvent extends VendureEvent {
 
 
 </div>
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/bootstrapped-event.ts" sourceLine="15" packageName="@vendure/core" since="3.5.4" />
+
+This event is fired when vendure finished bootstrapping.
+For the server and worker process, this happens after the welcome message is logged.
+
+Use this event to preload data into the cache or perform other startup logic that would otherwise
+block the bootstrapping process and slow down server start time.
+
+```ts title="Signature"
+class BootstrappedEvent extends VendureEvent {
+    constructor()
+}
+```
+* Extends: [`VendureEvent`](/reference/typescript-api/events/vendure-event#vendureevent)
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`() => BootstrappedEvent`}   />
+
+
+
+
+</div>
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/change-channel-event.ts" sourceLine="17" packageName="@vendure/core" since="1.4" />
 
 This event is fired whenever an [ChannelAware](/reference/typescript-api/entities/interfaces#channelaware) entity is assigned or removed
@@ -974,7 +1001,7 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductOptionGroup, type: 'created' | 'updated' | 'deleted', input?: ProductOptionGroupInputTypes)
 }
 ```
-* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<     `[`ProductOptionGroup`](/reference/typescript-api/entities/product-option-group#productoptiongroup)`,     ProductOptionGroupInputTypes >`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<     `[`ProductOptionGroup`](/reference/typescript-api/entities/product-option-group#productoptiongroup)`,     ProductOptionGroupInputTypes >`
 
 
 
@@ -1053,7 +1080,7 @@ class ProductVariantPriceEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductVariantPrice[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes)
 }
 ```
-* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<     `[`ProductVariantPrice`](/reference/typescript-api/entities/product-variant-price#productvariantprice)`[],     ProductVariantInputTypes >`
+* Extends: [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event#vendureentityevent)`<     `[`ProductVariantPrice`](/reference/typescript-api/entities/product-variant-price#productvariantprice)`[],     ProductVariantInputTypes >`
 
 
 

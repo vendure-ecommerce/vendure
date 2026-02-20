@@ -109,7 +109,7 @@ A more complete example can be found in the discussion thread
 [How to make elastic plugin to search by substring with stemming](https://github.com/vendurehq/vendure/discussions/1066).
 ### indexMappingProperties
 
-<MemberInfo kind="property" type={`{         [indexName: string]: object;     }`} default={`{}`}  since="1.2.0"  />
+<MemberInfo kind="property" type={`{         [indexName: string]: object;     }`} default={`{}`}  since="1.2.0"  />
 
 This option allow to redefine or define new properties in mapping. More about elastic
 [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
@@ -170,7 +170,7 @@ bulk operation is executed.
 Configuration of the internal Elasticsearch query.
 ### customProductMappings
 
-<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping<             [<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>]         >;     }`}   />
+<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping<             [<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>]         >;     }`}   />
 
 Custom mappings may be defined which will add the defined data to the
 Elasticsearch index and expose that data via the SearchResult GraphQL type,
@@ -233,7 +233,7 @@ query SearchProducts($input: SearchInput!) {
 ```
 ### customProductVariantMappings
 
-<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping<[<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>]>;     }`}   />
+<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping<[<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>, <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>]>;     }`}   />
 
 This config option defines custom mappings which are accessible when the "groupByProduct" and "groupBySKU"
 input options are both set to `false`. In addition, custom product mappings can be accessed by using
@@ -303,7 +303,7 @@ Additional variant relations that will be fetched from DB while reindexing. See
 `hydrateProductRelations` for more explanation and a usage example.
 ### extendSearchInputType
 
-<MemberInfo kind="property" type={`{         [name: string]: PrimitiveTypeVariations<GraphQlPrimitive>;     }`} default={`{}`}  since="1.3.0"  />
+<MemberInfo kind="property" type={`{         [name: string]: PrimitiveTypeVariations<GraphQlPrimitive>;     }`} default={`{}`}  since="1.3.0"  />
 
 Allows the `SearchInput` type to be extended with new input fields. This allows arbitrary
 data to be passed in, which can then be used e.g. in the `mapQuery()` function or
@@ -459,7 +459,7 @@ The interval used to group search results into buckets according to price range.
 ```
 ### mapQuery
 
-<MemberInfo kind="property" type={`(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired<<a href='/reference/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>>,         channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,     ) => any`}   />
+<MemberInfo kind="property" type={`(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired<<a href='/reference/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>>,         channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,     ) => any`}   />
 
 This config option allows the the modification of the whole (already built) search query. This allows
 for e.g. wildcard / fuzzy searches on the index.
