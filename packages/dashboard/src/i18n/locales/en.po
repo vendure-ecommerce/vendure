@@ -228,6 +228,10 @@ msgstr "Type and press Enter or comma to add..."
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
+#: src/lib/components/data-table/data-table-filter-badge.tsx:111
+msgid "end"
+msgstr "end"
+
 msgid "fulfillmentState.Created"
 msgstr "Created"
 
@@ -780,6 +784,10 @@ msgstr "(max: {0})"
 #: src/lib/components/data-input/product-multi-selector-input.tsx:278
 #: src/lib/components/data-input/relation-selector.tsx:403
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:425
+#: src/lib/components/data-table/data-table-filter-badge.tsx:109
+msgid "start"
+msgstr "start"
+
 msgid "{0}"
 msgstr "{0}"
 

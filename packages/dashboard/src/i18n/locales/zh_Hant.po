@@ -228,6 +228,10 @@ msgstr "輸入後按 Enter 或逗號新增..."
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts:7
+#: src/lib/components/data-table/data-table-filter-badge.tsx:111
+msgid "end"
+msgstr "結束"
+
 msgid "fulfillmentState.Created"
 msgstr "已建立"
 
@@ -780,6 +784,10 @@ msgstr "(最大: {0})"
 #: src/lib/components/data-input/product-multi-selector-input.tsx:278
 #: src/lib/components/data-input/relation-selector.tsx:403
 #: src/lib/components/shared/rich-text-editor/responsive-toolbar.tsx:425
+#: src/lib/components/data-table/data-table-filter-badge.tsx:109
+msgid "start"
+msgstr "開始"
+
 msgid "{0}"
 msgstr "{0}"
 
