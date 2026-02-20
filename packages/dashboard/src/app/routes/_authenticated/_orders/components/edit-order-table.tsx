@@ -68,6 +68,7 @@ export function EditOrderTable({
     displayTotals = true,
 }: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
     const { t } = useLingui();
     const currencyCode = order.currencyCode;
     const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = useMemo(
@@ -115,19 +116,22 @@ export function EditOrderTable({
                         <div className="flex gap-2">
                             <Input
                                 type="number"
-                                value={row.original.quantity}
                                 min={0}
-                                onChange={e => {
-                                    const value = Number.isNaN(e.target.valueAsNumber)
-                                        ? 0
-                                        : e.target.valueAsNumber;
+                                defaultValue={row.original.quantity}
+                                placeholder="1"
+                                onKeyDown={e => {
+                                    if (e.key !== 'Enter') return;
+                                    const input = e.currentTarget.value.trim();
+                                    const quantity = Number(input);
+
                                     onAdjustLine({
                                         lineId: row.original.id,
-                                        quantity: value,
+                                        quantity,
                                         customFields: row.original.customFields,
                                     });
                                 }}
                             />
+
                             <Button
                                 variant="outline"
                                 type="button"
@@ -143,7 +147,7 @@ export function EditOrderTable({
                                         onAdjustLine({
                                             lineId: row.original.id,
                                             quantity: row.original.quantity,
-                                            customFields: customFields,
+                                            customFields,
                                         });
                                     }}
                                     value={row.original.customFields}
