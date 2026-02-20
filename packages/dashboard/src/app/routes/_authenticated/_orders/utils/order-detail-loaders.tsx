@@ -12,7 +12,10 @@ async function ensureOrderWithIdExists(context: any, params: { id: string }): Pr
     }
 
     const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
-        getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.id }),
+        getDetailQueryOptions(
+            addCustomFields(orderDetailDocument, { includeNestedFragments: ['Fulfillment'] }),
+            { id: params.id },
+        ),
     );
 
     if (!result.order) {
@@ -86,7 +89,10 @@ export async function loadSellerOrder(
     }
 
     const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
-        getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.sellerOrderId }),
+        getDetailQueryOptions(
+            addCustomFields(orderDetailDocument, { includeNestedFragments: ['Fulfillment'] }),
+            { id: params.sellerOrderId },
+        ),
     );
 
     if (!result.order) {
