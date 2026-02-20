@@ -1,11 +1,15 @@
+import { fail } from 'assert';
+import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
 
-import { Channel } from '../../../entity/channel/channel.entity';
-import { Customer } from '../../../entity/customer/customer.entity';
-import { Product } from '../../../entity/product/product.entity';
+import { VendureEntity } from '../../../entity/base/base.entity';
 
 import { parseChannelParam } from './parse-channel-param';
 import { MockConnection } from './parse-sort-params.spec';
+
+class Channel extends VendureEntity {}
+class Customer extends VendureEntity {}
+class Product extends VendureEntity {}
 
 describe('parseChannelParam()', () => {
     it('works with a channel-aware entity', () => {

@@ -1,5 +1,6 @@
 import { Type } from '@vendure/common/lib/shared-types';
 import { fail } from 'assert';
+import 'reflect-metadata';
 import { DefaultNamingStrategy } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
@@ -7,11 +8,23 @@ import { describe, expect, it } from 'vitest';
 
 import { SortParameter } from '../../../common/types/common-types';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
-import { ProductTranslation } from '../../../entity/product/product-translation.entity';
-import { Product } from '../../../entity/product/product.entity';
+import { VendureEntity } from '../../../entity/base/base.entity';
 import { I18nError } from '../../../i18n/i18n-error';
 
 import { parseSortParams } from './parse-sort-params';
+
+class Product extends VendureEntity {
+    name: string;
+    infoUrl: string;
+    createdAt: Date;
+    shortName: string;
+}
+
+class ProductTranslation extends VendureEntity {
+    name: string;
+    base: Product;
+    shortName: string;
+}
 
 describe('parseSortParams()', () => {
     it('works with no params', () => {

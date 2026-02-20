@@ -397,8 +397,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 } else {
                     qb.orWhere(existsClause.clause, existsClause.parameters);
                 }
-                return;
+            } else {
+                Logger.warn(
+                    `Could not build EXISTS subquery for custom property "${condition.isExistsCondition.customPropertyKey}". Skipping filter condition.`,
+                );
             }
+            return;
         }
 
         // Standard WHERE clause handling
@@ -546,6 +550,29 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             existsQuery = `EXISTS (
                 SELECT 1 FROM ${escapeId(inverseTableName)} ${escapeId(relatedAlias)}
                 WHERE ${escapeId(relatedAlias)}.${escapeId(foreignKeyColumn)} = ${escapeId(mainQb.alias)}.${escapeId('id')} AND ${whereCondition}
+            )`;
+        } else if (relation.isManyToOne) {
+            // ManyToOne: The foreign key is on the main entity table
+            const relatedAlias = aliasBase;
+            const joinColumns = relation.joinColumns;
+            if (!joinColumns || joinColumns.length === 0) {
+                return null;
+            }
+            const foreignKeyColumn = joinColumns[0].databaseName;
+
+            const whereCondition = this.buildWhereConditionClause(
+                relatedAlias,
+                columnName,
+                comparisonOperator,
+                newParamKey,
+                escapeId,
+            );
+
+            // EXISTS (SELECT 1 FROM related_table rt
+            //         WHERE rt.id = main_entity.foreignKey AND rt.columnName = :paramValue)
+            existsQuery = `EXISTS (
+                SELECT 1 FROM ${escapeId(inverseTableName)} ${escapeId(relatedAlias)}
+                WHERE ${escapeId(relatedAlias)}.${escapeId('id')} = ${escapeId(mainQb.alias)}.${escapeId(foreignKeyColumn)} AND ${whereCondition}
             )`;
         } else {
             // Not a *-to-Many relation, shouldn't happen but fall back gracefully
@@ -714,6 +741,19 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 continue;
             }
             let parts = customPropertyMap[property].split('.');
+
+            // Optimization: If the custom property is a ManyToOne relation and is NOT being used for sorting,
+            // we can skip the JOIN and let the filter be handled by an EXISTS subquery.
+            // This avoids performance issues when many custom fields are present.
+            if (parts.length === 2) {
+                const relationMetadata = qb.expressionMap.mainAlias?.metadata.findRelationWithPropertyPath(
+                    parts[0],
+                );
+                if (relationMetadata?.isManyToOne && !options.sort?.[property]) {
+                    continue;
+                }
+            }
+
             const normalizedRelationPath: string[] = [];
             let entityMetadata = qb.expressionMap.mainAlias?.metadata;
             let entityAlias = qb.alias;

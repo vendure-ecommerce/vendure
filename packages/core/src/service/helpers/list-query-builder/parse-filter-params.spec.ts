@@ -1,12 +1,26 @@
 import { LogicalOperator } from '@vendure/common/lib/generated-types';
+import 'reflect-metadata';
 import { describe, expect, it } from 'vitest';
 
 import { FilterParameter } from '../../../common/types/common-types';
-import { ProductTranslation } from '../../../entity/product/product-translation.entity';
-import { Product } from '../../../entity/product/product.entity';
+import { VendureEntity } from '../../../entity/base/base.entity';
 
 import { parseFilterParams, WhereCondition, WhereGroup } from './parse-filter-params';
 import { MockConnection } from './parse-sort-params.spec';
+
+class Product extends VendureEntity {
+    name: string;
+    slug: string;
+    price: number;
+    createdAt: Date;
+    available: boolean;
+    image: string;
+}
+
+class ProductTranslation extends VendureEntity {
+    name: string;
+    base: Product;
+}
 
 // Helper function to check if a result is a WhereCondition (not a WhereGroup)
 function isWhereCondition(item: WhereCondition | WhereGroup): item is WhereCondition {
