@@ -78,7 +78,8 @@ export class GlobalSettingsService {
         const settings = await this.getSettings(ctx);
         await this.eventBus.publish(new GlobalSettingsEvent(ctx, settings, input));
         patchEntity(settings, input);
-        await this.customFieldRelationService.updateRelations(ctx, GlobalSettings, input, settings);
-        return this.connection.getRepository(ctx, GlobalSettings).save(settings);
+        const savedSettings = await this.connection.getRepository(ctx, GlobalSettings).save(settings);
+        await this.customFieldRelationService.updateRelations(ctx, GlobalSettings, input, savedSettings);
+        return savedSettings;
     }
 }
