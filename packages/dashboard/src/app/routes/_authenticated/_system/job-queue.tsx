@@ -25,8 +25,38 @@ import {
     RotateCcw,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { CancelJobsBulkAction } from './components/cancel-jobs-bulk-action.js';
 import { PayloadDialog } from './components/payload-dialog.js';
 import { cancelJobDocument, jobListDocument, jobQueueListDocument } from './job-queue.graphql.js';
+
+
+function formatDuration(ms: number): string {
+    if (ms < 1000) {
+        return `${ms}ms`;
+    }
+
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    const parts: string[] = [];
+
+    if (days > 0) {
+        parts.push(`${days}d`);
+    }
+    if (hours % 24 > 0) {
+        parts.push(`${hours % 24}h`);
+    }
+    if (minutes % 60 > 0) {
+        parts.push(`${minutes % 60}m`);
+    }
+    if (seconds % 60 > 0) {
+        parts.push(`${seconds % 60}s`);
+    }
+
+    return parts.join(' ');
+}
 
 export const Route = createFileRoute('/_authenticated/_system/job-queue')({
     component: JobQueuePage,
@@ -202,7 +232,7 @@ function JobQueuePage() {
                 },
                 duration: {
                     cell: ({ row }) => {
-                        return row.original.duration ? `${row.original.duration}ms` : null;
+                        return row.original.duration ? formatDuration(row.original.duration) : null;
                     },
                 },
             }}
@@ -232,6 +262,12 @@ function JobQueuePage() {
                     options: STATES,
                 },
             }}
+            bulkActions={[
+                {
+                    component: CancelJobsBulkAction,
+                    order: 100,
+                },
+            ]}
             registerRefresher={refresher => {
                 refreshRef.current = refresher;
             }}
