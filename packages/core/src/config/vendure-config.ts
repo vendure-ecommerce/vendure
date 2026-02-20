@@ -1,6 +1,6 @@
 import { ApolloServerPlugin } from '@apollo/server';
 import { RenderPageOptions } from '@apollographql/graphql-playground-html';
-import { DynamicModule, Type } from '@nestjs/common';
+import { DynamicModule, INestApplication, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ValidationContext } from 'graphql';
@@ -192,6 +192,15 @@ export interface ApiOptions {
      * @default []
      */
     middleware?: Middleware[];
+
+    /**
+     * @description
+     * A function which is called before the app starts listening. This can be used to perform any final configuration of the Nest application.
+     * E.g., to set global filters, interceptors or pipes.
+     *
+     * @since 3.5.0
+     */
+    onBeforeAppListen?: (app: INestApplication) => void | Promise<void>;
     /**
      * @description
      * Set the trust proxy configuration for the server. See the [express proxy docs](https://expressjs.com/en/guide/behind-proxies.html).
