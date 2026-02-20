@@ -75,10 +75,12 @@ type Variant = NonNullable<ResultOf<typeof productDetailWithVariantsDocument>['p
 function AddOptionValueDialog({
     groupId,
     groupName,
+    existingValues,
     onSuccess,
 }: Readonly<{
     groupId: string;
     groupName: string;
+    existingValues: string[];
     onSuccess?: () => void;
 }>) {
     const [open, setOpen] = useState(false);
@@ -107,6 +109,14 @@ function AddOptionValueDialog({
     });
 
     const onSubmit = (values: AddOptionValueFormValues) => {
+        const trimmedValue = values.name.trim();
+
+        // Prevent duplicates
+        if (existingValues.includes(trimmedValue)) {
+            toast.error(t`Option value already exists`);
+            return;
+        }
+
         createOptionMutation.mutate({
             input: {
                 productOptionGroupId: groupId,
@@ -283,15 +293,40 @@ function ManageProductVariants() {
                                             <AddOptionValueDialog
                                                 groupId={group.id}
                                                 groupName={group.name}
+                                                existingValues={group.options.map(o => o.name)}
                                                 onSuccess={() => refetch()}
                                             />
                                         </div>
+                                    </div>
+                                    <div className="col-span-1 flex justify-end">
+                                        <Button
+                                            size="icon"
+                                            variant="ghost"
+                                            onClick={() => {
+                                                if (confirm(t`Are you sure you want to remove this option group? This will affect all variants using this option.`)) {
+                                                    removeOptionGroupMutation.mutate(
+                                                        { productId: id, optionGroupId: group.id },
+                                                        {
+                                                            onError: (error) => {
+                                                                toast.error(t`Failed to remove option group`, {
+                                                                    description: error instanceof Error ? error.message : t`Unknown error`,
+                                                                });
+                                                            }
+                                                        }
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                        </Button>
                                     </div>
                                 </div>
                             ))
                         )}
                     </div>
-                    <AddOptionGroupDialog productId={id} onSuccess={() => refetch()} />
+                    <AddOptionGroupDialog productId={id}
+                        existingGroupNames={productData.product.optionGroups.map(g => g.name)}
+                        onSuccess={() => refetch()} />
                 </PageBlock>
 
                 <PageBlock column="main" blockId="product-variants" title={<Trans>Variants</Trans>}>
@@ -329,7 +364,7 @@ function ManageProductVariants() {
                                                             <Select
                                                                 value={
                                                                     optionsToAddToVariant[variant.id]?.[
-                                                                        group.id
+                                                                    group.id
                                                                     ] || ''
                                                                 }
                                                                 onValueChange={value =>
@@ -365,7 +400,7 @@ function ManageProductVariants() {
                                                                 }
                                                                 disabled={
                                                                     !optionsToAddToVariant[variant.id]?.[
-                                                                        group.id
+                                                                    group.id
                                                                     ]
                                                                 }
                                                                 onClick={() => addOptionToVariant(variant)}

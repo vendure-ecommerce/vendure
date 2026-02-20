@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useMutation } from '@tanstack/react-query';
 import { Plus, Save } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { addOptionGroupToProductDocument, createProductOptionGroupDocument } from '../products.graphql.js';
@@ -21,9 +21,11 @@ import { OptionGroup, optionGroupSchema, SingleOptionGroupEditor } from './optio
 
 export function AddOptionGroupDialog({
     productId,
+    existingGroupNames,
     onSuccess,
 }: Readonly<{
     productId: string;
+    existingGroupNames: string[];
     onSuccess?: () => void;
 }>) {
     const [open, setOpen] = useState(false);
@@ -38,6 +40,16 @@ export function AddOptionGroupDialog({
         mode: 'onChange',
     });
 
+    // Reset form when dialog opens
+    useEffect(() => {
+        if (open) {
+            form.reset({
+                name: '',
+                values: [],
+            });
+        }
+    }, [open, form]);
+
     const createOptionGroupMutation = useMutation({
         mutationFn: api.mutate(createProductOptionGroupDocument),
     });
@@ -48,7 +60,17 @@ export function AddOptionGroupDialog({
 
     const handleSave = async () => {
         const formValue = form.getValues();
-        if (!formValue.name || formValue.values.length === 0) return;
+        const trimmedName = formValue.name.trim();
+
+        if (!trimmedName || formValue.values.length === 0) {
+            toast.error(t`Please fill in all required fields`);
+            return;
+        }
+        const existingNames = existingGroupNames ?? [];
+        if (existingNames.some(name => name.toLowerCase() === trimmedName.toLowerCase())) {
+            toast.error(t`An option group with this name already exists`);
+            return;
+        }
 
         try {
             const createResult = await createOptionGroupMutation.mutateAsync({
@@ -57,7 +79,7 @@ export function AddOptionGroupDialog({
                     translations: [
                         {
                             languageCode: 'en',
-                            name: formValue.name,
+                            name: trimmedName,
                         },
                     ],
                     options: formValue.values.map(value => ({
@@ -81,6 +103,7 @@ export function AddOptionGroupDialog({
 
             toast.success(t`Successfully created option group`);
             setOpen(false);
+            form.reset();
             onSuccess?.();
         } catch (error) {
             toast.error(t`Failed to create option group`, {
