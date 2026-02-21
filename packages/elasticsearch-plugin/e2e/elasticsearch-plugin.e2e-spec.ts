@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
-import { CurrencyCode, SortOrder } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, GlobalFlag, SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
@@ -1558,6 +1558,141 @@ describe('Elasticsearch plugin', () => {
                     priority: 2,
                 },
             });
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/3972
+    describe('multi-channel productInStock cache', () => {
+        const STOCK_CHANNEL_TOKEN = 'stock-test-channel-token';
+        let stockTestChannelId: string;
+        let testProductId: string;
+
+        beforeAll(async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            await adminClient.asSuperAdmin();
+
+            // Create a second channel for testing stock isolation
+            const { createChannel } = await adminClient.query<
+                Codegen.CreateChannelMutation,
+                Codegen.CreateChannelMutationVariables
+            >(CREATE_CHANNEL, {
+                input: {
+                    code: 'stock-test-channel',
+                    token: STOCK_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultTaxZoneId: 'T_2',
+                    defaultShippingZoneId: 'T_1',
+                },
+            });
+            stockTestChannelId = (createChannel as Codegen.ChannelFragment).id;
+
+            // Create a product with a variant that has stock in the default channel
+            const { createProduct } = await adminClient.query<
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
+            >(CREATE_PRODUCT, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Stock Test Product',
+                            slug: 'stock-test-product',
+                            description: 'A product for testing multi-channel stock',
+                        },
+                    ],
+                },
+            });
+            testProductId = createProduct.id;
+
+            await adminClient.query<
+                Codegen.CreateProductVariantsMutation,
+                Codegen.CreateProductVariantsMutationVariables
+            >(CREATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        productId: testProductId,
+                        sku: 'STOCK-TEST-1',
+                        price: 1000,
+                        stockOnHand: 100,
+                        trackInventory: GlobalFlag.TRUE,
+                        translations: [{ languageCode: LanguageCode.en, name: 'Stock Test Variant' }],
+                    },
+                ],
+            });
+            await awaitRunningJobs(adminClient);
+
+            // Assign the product to the second channel (no stock location there)
+            await adminClient.query<
+                Codegen.AssignProductsToChannelMutation,
+                Codegen.AssignProductsToChannelMutationVariables
+            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                input: { channelId: stockTestChannelId, productIds: [testProductId] },
+            });
+            await awaitRunningJobs(adminClient);
+
+            // Reindex default channel first
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            await adminClient.query<Codegen.ReindexMutation>(REINDEX);
+            await awaitRunningJobs(adminClient);
+
+            // Reindex the second channel
+            adminClient.setChannelToken(STOCK_CHANNEL_TOKEN);
+            await adminClient.query<Codegen.ReindexMutation>(REINDEX);
+            await awaitRunningJobs(adminClient);
+
+            // Reset admin token after reindexing second channel
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        });
+
+        it('product is inStock in default channel', async () => {
+            shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        term: 'Stock Test Product',
+                        groupByProduct: true,
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.items.map(i => i.productName)).toContain('Stock Test Product');
+        });
+
+        it('product is NOT inStock in second channel (no stock location)', async () => {
+            shopClient.setChannelToken(STOCK_CHANNEL_TOKEN);
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        term: 'Stock Test Product',
+                        groupByProduct: true,
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.items.map(i => i.productName)).not.toContain('Stock Test Product');
+        });
+
+        it('product appears when filtering inStock: false in second channel', async () => {
+            shopClient.setChannelToken(STOCK_CHANNEL_TOKEN);
+            const result = await shopClient.query<SearchProductsShopQuery, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        term: 'Stock Test Product',
+                        groupByProduct: true,
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.items.map(i => i.productName)).toContain('Stock Test Product');
+        });
+
+        afterAll(() => {
+            shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         });
     });
 });
