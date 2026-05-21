@@ -49,6 +49,7 @@ import {
     createCustomerDocument,
     customerDetailDocument,
     removeCustomerFromGroupDocument,
+    resetCustomerPasswordAsAdminDocument,
     updateCustomerDocument,
     verifyCustomerAccountDocument,
 } from './customers.graphql.js';
@@ -178,6 +179,16 @@ function CustomerDetailPage() {
                 {entity?.user && !entity.user.verified && (
                     <ActionBarItem itemId="verify-button" requiresPermission={['UpdateCustomer']}>
                         <VerifyAccountDialog customerId={entity.id} onVerified={refreshEntity} />
+                    </ActionBarItem>
+                )}
+                {entity?.user?.verified && (
+                    <ActionBarItem itemId="reset-password-button" requiresPermission={['UpdateCustomer']}>
+                        <ResetPasswordDialog
+                            customerId={entity.id}
+                            onSent={() =>
+                                queryClient.invalidateQueries({ queryKey: customerHistoryQueryKey(entity.id) })
+                            }
+                        />
                     </ActionBarItem>
                 )}
                 <ActionBarItem itemId="save-button" requiresPermission={['UpdateCustomer']}>
@@ -429,6 +440,68 @@ function VerifyAccountDialog({ customerId, onVerified }: { customerId: string; o
                         onClick={() => verifyCustomer({ id: customerId, password: password || undefined })}
                     >
                         <Trans>Verify</Trans>
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+/**
+ * Sends a verified Customer a password reset email. The Customer sets the new password themselves
+ * through the reset link.
+ */
+function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSent: () => void }) {
+    const { t } = useLingui();
+    const [open, setOpen] = useState(false);
+
+    const { mutate: resetPassword, isPending } = useMutation({
+        mutationFn: api.mutate(resetCustomerPasswordAsAdminDocument),
+        onSuccess: ({
+            resetCustomerPasswordAsAdmin: result,
+        }: ResultOf<typeof resetCustomerPasswordAsAdminDocument>) => {
+            if (result.__typename !== 'Success') {
+                toast.error(t`Failed to send password reset email`, { description: result.message });
+                return;
+            }
+            toast.success(t`Password reset email sent`);
+            setOpen(false);
+            onSent();
+        },
+        onError: err => {
+            toast.error(t`Failed to send password reset email`, {
+                description: err instanceof Error ? err.message : undefined,
+            });
+        },
+    });
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger render={<Button type="button" variant="secondary" />}>
+                <Trans>Reset password</Trans>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        <Trans>Reset password</Trans>
+                    </DialogTitle>
+                    <DialogDescription>
+                        <Trans>
+                            Sends the customer an email with a link to set a new password. Their current
+                            password keeps working until they do.
+                        </Trans>
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose render={<Button type="button" variant="secondary" />}>
+                        <Trans>Cancel</Trans>
+                    </DialogClose>
+                    <Button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => resetPassword({ customerId })}
+                    >
+                        <Trans>Send email</Trans>
                     </Button>
                 </DialogFooter>
             </DialogContent>

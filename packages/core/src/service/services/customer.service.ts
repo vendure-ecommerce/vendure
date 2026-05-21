@@ -29,7 +29,10 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
-import { EmailAddressConflictError as EmailAddressConflictAdminError } from '../../common/error/generated-graphql-admin-errors';
+import {
+    CustomerAccountStateError,
+    EmailAddressConflictError as EmailAddressConflictAdminError,
+} from '../../common/error/generated-graphql-admin-errors';
 import {
     EmailAddressConflictError,
     IdentifierChangeTokenExpiredError,
@@ -653,6 +656,30 @@ export class CustomerService {
         });
         await this.eventBus.publish(new PasswordResetVerifiedEvent(ctx, result));
         return result;
+    }
+
+    /**
+     * @description
+     * Sends a verified Customer a password reset email on behalf of an administrator. The same as the
+     * Customer calling `requestPasswordReset` from the Shop API: a reset token is issued and a
+     * {@link PasswordResetEvent} is published.
+     */
+    async resetCustomerPasswordAsAdmin(
+        ctx: RequestContext,
+        customerId: ID,
+    ): Promise<{ success: boolean } | CustomerAccountStateError> {
+        const customer = await this.findOne(ctx, customerId, ['user']);
+        if (!customer) {
+            throw new EntityNotFoundError('Customer', customerId);
+        }
+        if (!customer.user) {
+            return new CustomerAccountStateError({ accountState: 'guest' });
+        }
+        if (!customer.user.verified) {
+            return new CustomerAccountStateError({ accountState: 'registered' });
+        }
+        await this.requestPasswordReset(ctx, customer.emailAddress);
+        return { success: true };
     }
 
     /**

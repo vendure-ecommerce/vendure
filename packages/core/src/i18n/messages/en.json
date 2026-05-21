@@ -77,6 +77,7 @@
     "COUPON_CODE_INVALID_ERROR": "Coupon code \"{ couponCode }\" is not valid",
     "COUPON_CODE_LIMIT_ERROR": "Coupon code cannot be used more than {limit, plural, one {once} other {# times}} per customer",
     "CREATE_FULFILLMENT_ERROR": "An error occurred when attempting to create the Fulfillment",
+    "CUSTOMER_ACCOUNT_STATE_ERROR": "This action is not available for a customer whose account is in the \"{ accountState }\" state",
     "DUPLICATE_ENTITY_ERROR": "The entity could not be duplicated",
     "EMAIL_ADDRESS_CONFLICT_ERROR": "The email address is not available.",
     "EMPTY_ORDER_LINE_SELECTION_ERROR": "At least one OrderLine must be specified",
