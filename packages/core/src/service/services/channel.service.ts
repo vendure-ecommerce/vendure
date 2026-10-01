@@ -71,8 +71,9 @@ export class ChannelService {
     /**
      * Channels are looked up on every request, so lookups by token, the default Channel and the
      * Channel count are cached per process. Promises are cached so that concurrent misses share
-     * one query. Unknown tokens are kept in a smaller cache of their own, so that a flood of them
-     * cannot evict the count, the default Channel or known tokens.
+     * one query. Once resolved, unknown tokens move to a smaller cache of their own, so that a
+     * flood of them cannot evict the count or the default Channel, and can only evict known tokens
+     * while their query is in flight.
      */
     private channelCache = new Map<string, CacheEntry<unknown>>();
     private tokenCache = new Map<string, CacheEntry<Channel | undefined>>();
@@ -292,9 +293,7 @@ export class ChannelService {
      * Returns the default Channel.
      */
     async getDefaultChannel(ctx?: RequestContext): Promise<Channel> {
-        // The default Channel is created at bootstrap and its code never changes, so it is always
-        // read from the cache, even inside a transaction
-        const defaultChannel = await this.cached(undefined, this.channelCache, 'default', c =>
+        const defaultChannel = await this.cached(ctx, this.channelCache, 'default', c =>
             this.findChannel(c, { code: DEFAULT_CHANNEL_CODE }),
         );
 
@@ -554,8 +553,12 @@ export class ChannelService {
 
     /**
      * Cached entries are shared by every request in the process, so they are loaded outside of
-     * any transaction. A caller inside a transaction bypasses the cache, so it sees its own
-     * uncommitted writes and never shares them with other requests.
+     * any transaction. A caller inside a transaction still uses a cached Channel, but on a miss it
+     * loads through its own transaction and does not store the result. That way it does not need a
+     * second pool connection while holding one, it sees its own uncommitted writes after `create`,
+     * `update` or `delete` clear the cache, and it never shares those writes with other requests.
+     * Cached misses are ignored inside a transaction, so a Channel created earlier in the same
+     * transaction always resolves.
      */
     private cached<T>(
         ctx: RequestContext | undefined,
@@ -565,10 +568,11 @@ export class ChannelService {
         maxSize = Infinity,
         missCache?: Map<string, CacheEntry<unknown>>,
     ): Promise<T> {
-        if (ctx && (ctx as any)[TRANSACTION_MANAGER_KEY]) {
-            return load(ctx);
-        }
         const now = Date.now();
+        if (ctx && (ctx as any)[TRANSACTION_MANAGER_KEY]) {
+            const cachedHit = cache.get(key);
+            return cachedHit && now < cachedHit.expires ? (cachedHit.value as Promise<T>) : load(ctx);
+        }
         const hit = cache.get(key) ?? missCache?.get(key);
         if (hit && now < hit.expires) {
             return hit.value as Promise<T>;
