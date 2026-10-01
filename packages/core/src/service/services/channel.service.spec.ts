@@ -9,52 +9,68 @@ import { ChannelService } from './channel.service';
 
 /**
  * Unit tests for the per-process Channel cache (#988). Each test counts the queries which reach
- * the repository, and which RequestContext they ran through.
+ * the repository, and records whether they ran on the pool or through a transaction.
  */
 
-const channels = [
-    new Channel({ id: 1, code: DEFAULT_CHANNEL_CODE, token: 'default-token' }),
-    new Channel({ id: 2, code: 'second', token: 'second-token' }),
-];
-
-const queries: Array<{ ctx: RequestContext | undefined; where?: any }> = [];
-
-function getRepository(ctx: RequestContext | undefined) {
-    return {
-        count: () => {
-            queries.push({ ctx });
-            return Promise.resolve(channels.length);
-        },
-        findOne: ({ where }: any) => {
-            queries.push({ ctx, where });
-            return Promise.resolve(
-                channels.find(c => (where.token ? c.token === where.token : c.code === where.code)) ?? null,
-            );
-        },
-    };
-}
-
-function tokenQueries(token: string) {
-    return queries.filter(q => q.where?.token === token);
-}
-
-function transactionalContext() {
-    const ctx = RequestContext.empty();
-    (ctx as any)[TRANSACTION_MANAGER_KEY] = {};
-    return ctx;
-}
+type Source = 'pool' | 'transaction';
 
 describe('ChannelService cache', () => {
     let service: ChannelService;
     let onChannelEvent: () => void;
+    let queries: Array<{ source: Source; where?: any }>;
+    /** The rows visible on the pool, i.e. committed data. */
+    let committed: Channel[];
+    /** The rows visible inside the transaction of `transactionalContext()`. */
+    let inTransaction: Channel[];
+
+    function repository(source: Source) {
+        const rows = () => (source === 'pool' ? committed : inTransaction);
+        return {
+            count: () => {
+                queries.push({ source });
+                return Promise.resolve(rows().length);
+            },
+            findOne: ({ where }: any) => {
+                queries.push({ source, where });
+                return Promise.resolve(
+                    rows().find(c => (where.token ? c.token === where.token : c.code === where.code)) ?? null,
+                );
+            },
+        };
+    }
+
+    const transactionManager = { getRepository: () => repository('transaction') };
+
+    function transactionalContext() {
+        const ctx = RequestContext.empty();
+        (ctx as any)[TRANSACTION_MANAGER_KEY] = transactionManager;
+        return ctx;
+    }
+
+    function tokenQueries(token: string) {
+        return queries.filter(q => q.where?.token === token);
+    }
 
     beforeEach(() => {
-        queries.length = 0;
+        queries = [];
+        committed = [
+            new Channel({ id: 1, code: DEFAULT_CHANNEL_CODE, token: 'default-token' }),
+            new Channel({ id: 2, code: 'second', token: 'second-token' }),
+            new Channel({ id: 3, code: 'third', token: 'third-token' }),
+        ];
+        inTransaction = [...committed];
+        const connection = {
+            rawConnection: { getRepository: () => repository('pool') },
+            getEntityOrThrow: (_ctx: any, _entity: any, id: number) =>
+                Promise.resolve(committed.find(c => c.id === id)),
+            getRepository: () => ({ delete: () => Promise.resolve() }),
+        };
         const eventBus = {
             ofType: () => ({ subscribe: (fn: () => void) => (onChannelEvent = fn) }),
+            publish: () => Promise.resolve(),
         };
         service = new ChannelService(
-            { getRepository } as any,
+            connection as any,
             { entityOptions: { channelCacheTtl: 30_000 } } as any,
             {} as any,
             {} as any,
@@ -87,14 +103,10 @@ describe('ChannelService cache', () => {
     });
 
     it('loads a miss inside a transaction through that transaction without storing it', async () => {
-        const ctx = transactionalContext();
-
-        await service.getChannelFromToken(ctx, 'second-token');
-        expect(tokenQueries('second-token')).toEqual([{ ctx, where: { token: 'second-token' } }]);
-
+        await service.getChannelFromToken(transactionalContext(), 'second-token');
         await service.getChannelFromToken('second-token');
-        expect(tokenQueries('second-token')).toHaveLength(2);
-        expect(tokenQueries('second-token')[1].ctx).toBeUndefined();
+
+        expect(tokenQueries('second-token').map(q => q.source)).toEqual(['transaction', 'pool']);
     });
 
     it('uses a cached Channel inside a transaction', async () => {
@@ -105,14 +117,24 @@ describe('ChannelService cache', () => {
     });
 
     it('ignores a cached miss inside a transaction', async () => {
-        await expect(service.getChannelFromToken('second-token-later')).rejects.toThrow();
-        channels.push(new Channel({ id: 3, code: 'later', token: 'second-token-later' }));
-        try {
-            const channel = await service.getChannelFromToken(transactionalContext(), 'second-token-later');
-            expect(channel.id).toBe(3);
-        } finally {
-            channels.pop();
-        }
+        await expect(service.getChannelFromToken('later-token')).rejects.toThrow('error.channel-not-found');
+        inTransaction.push(new Channel({ id: 4, code: 'later', token: 'later-token' }));
+
+        const channel = await service.getChannelFromToken(transactionalContext(), 'later-token');
+        expect(channel.id).toBe(4);
+    });
+
+    it('skips the cache in a transaction which has written a Channel', async () => {
+        const ctx = transactionalContext();
+        await service.delete(ctx, 2);
+        inTransaction = inTransaction.filter(c => c.id !== 2);
+
+        // Another request refills the cache from the committed data before the transaction ends
+        await service.getChannelFromToken('second-token');
+
+        await expect(service.getChannelFromToken(ctx, 'second-token')).rejects.toThrow(
+            'error.channel-not-found',
+        );
     });
 
     it('clears the cache when a ChannelEvent is published', async () => {
