@@ -221,15 +221,17 @@ describe('Channels', () => {
         await channelService.delete(ctx, channel.id);
     });
 
-    // Unknown tokens are cached as misses, so creating a Channel must clear them
-    it('getChannelFromToken resolves a token that was unknown before the Channel was created', async () => {
+    // #988 — Channels are cached per token, so create, update and delete must clear the cache
+    it('getChannelFromToken reflects created, updated and deleted Channels', async () => {
         const channelService = server.app.get(ChannelService);
         const requestContextService = server.app.get(RequestContextService);
         const ctx = await requestContextService.create({ apiType: 'admin' });
 
-        await expect(channelService.getChannelFromToken('late-channel-token')).rejects.toThrow();
+        await expect(channelService.getChannelFromToken('late-channel-token')).rejects.toThrow(
+            'error.channel-not-found',
+        );
 
-        const created = await channelService.create(ctx, {
+        await channelService.create(ctx, {
             code: 'late-channel',
             token: 'late-channel-token',
             defaultLanguageCode: LanguageCode.en,
@@ -239,9 +241,17 @@ describe('Channels', () => {
         const channel = await channelService.getChannelFromToken('late-channel-token');
         expect(channel.code).toBe('late-channel');
 
-        if ('id' in created) {
-            await channelService.delete(ctx, created.id);
-        }
+        await channelService.update(ctx, { id: channel.id, token: 'renamed-channel-token' });
+        await expect(channelService.getChannelFromToken('late-channel-token')).rejects.toThrow(
+            'error.channel-not-found',
+        );
+        const renamed = await channelService.getChannelFromToken('renamed-channel-token');
+        expect(renamed.id).toBe(channel.id);
+
+        await channelService.delete(ctx, channel.id);
+        await expect(channelService.getChannelFromToken('renamed-channel-token')).rejects.toThrow(
+            'error.channel-not-found',
+        );
     });
 
     it('createRole on second Channel', async () => {

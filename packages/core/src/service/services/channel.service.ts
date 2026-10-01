@@ -20,6 +20,7 @@ import { FindOptionsWhere } from 'typeorm';
 
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
+import { TRANSACTION_MANAGER_KEY } from '../../common/constants';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import {
     ChannelNotFoundError,
@@ -53,7 +54,10 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { GlobalSettingsService } from './global-settings.service';
 
-const CHANNEL_CACHE_SIZE = 10_000;
+const TOKEN_CACHE_SIZE = 10_000;
+const MISS_CACHE_SIZE = 1_000;
+
+type CacheEntry<T> = { value: Promise<T>; expires: number };
 
 /**
  * @description
@@ -67,9 +71,12 @@ export class ChannelService {
     /**
      * Channels are looked up on every request, so lookups by token, the default Channel and the
      * Channel count are cached per process. Promises are cached so that concurrent misses share
-     * one query.
+     * one query. Unknown tokens are kept in a smaller cache of their own, so that a flood of them
+     * cannot evict the count, the default Channel or known tokens.
      */
-    private channelCache = new Map<string, { value: Promise<unknown>; expires: number }>();
+    private channelCache = new Map<string, CacheEntry<unknown>>();
+    private tokenCache = new Map<string, CacheEntry<Channel | undefined>>();
+    private missCache = new Map<string, CacheEntry<Channel | undefined>>();
 
     constructor(
         private connection: TransactionalConnection,
@@ -78,7 +85,12 @@ export class ChannelService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
-    ) {}
+    ) {
+        // The caches are also cleared synchronously in create, update and delete, but that happens
+        // before the transaction commits. Events are published after the commit, so clearing again
+        // here drops anything another request cached from the old data in the meantime.
+        this.eventBus.ofType(ChannelEvent).subscribe(() => this.clearCache());
+    }
 
     /**
      * When the app is bootstrapped, ensure a default Channel exists.
@@ -253,16 +265,21 @@ export class ChannelService {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             ctxOrToken instanceof RequestContext ? [ctxOrToken, token!] : [undefined, ctxOrToken];
 
-        const channelCount = await this.cached('count', () =>
-            this.connection.getRepository(ctx, Channel).count(),
+        const channelCount = await this.cached(ctx, this.channelCache, 'count', c =>
+            this.connection.getRepository(c, Channel).count(),
         );
         if (channelCount === 1 || channelToken === '') {
             // there is only the default channel, so return it
             return this.getDefaultChannel(ctx);
         }
         // Misses are cached too, so unknown tokens do not query the database on every request
-        const channel = await this.cached(`token:${channelToken}`, () =>
-            this.findChannel(ctx, { token: channelToken }),
+        const channel = await this.cached(
+            ctx,
+            this.tokenCache,
+            channelToken,
+            c => this.findChannel(c, { token: channelToken }),
+            TOKEN_CACHE_SIZE,
+            this.missCache,
         );
         if (!channel) {
             throw new ChannelNotFoundError(channelToken);
@@ -275,8 +292,10 @@ export class ChannelService {
      * Returns the default Channel.
      */
     async getDefaultChannel(ctx?: RequestContext): Promise<Channel> {
-        const defaultChannel = await this.cached('default', () =>
-            this.findChannel(ctx, { code: DEFAULT_CHANNEL_CODE }),
+        // The default Channel is created at bootstrap and its code never changes, so it is always
+        // read from the cache, even inside a transaction
+        const defaultChannel = await this.cached(undefined, this.channelCache, 'default', c =>
+            this.findChannel(c, { code: DEFAULT_CHANNEL_CODE }),
         );
 
         if (!defaultChannel) {
@@ -349,7 +368,7 @@ export class ChannelService {
             await this.connection.getRepository(ctx, Channel).save(newChannel);
         }
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
-        this.channelCache.clear();
+        this.clearCache();
         await this.assignDefaultRolesToChannel(ctx, newChannel.id);
         await this.eventBus.publish(new ChannelEvent(ctx, newChannel, 'created', input));
         return newChannel;
@@ -453,7 +472,7 @@ export class ChannelService {
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
-        this.channelCache.clear();
+        this.clearCache();
         await this.eventBus.publish(new ChannelEvent(ctx, channel, 'updated', input));
         return assertFound(this.findOne(ctx, channel.id));
     }
@@ -479,7 +498,7 @@ export class ChannelService {
         await this.connection.getRepository(ctx, ProductVariantPrice).delete({
             channelId: id,
         });
-        this.channelCache.clear();
+        this.clearCache();
         await this.eventBus.publish(new ChannelEvent(ctx, deletedChannel, 'deleted', id));
 
         return {
@@ -533,28 +552,59 @@ export class ChannelService {
             .then(result => result ?? undefined);
     }
 
-    private cached<T>(key: string, load: () => Promise<T>): Promise<T> {
+    /**
+     * Cached entries are shared by every request in the process, so they are loaded outside of
+     * any transaction. A caller inside a transaction bypasses the cache, so it sees its own
+     * uncommitted writes and never shares them with other requests.
+     */
+    private cached<T>(
+        ctx: RequestContext | undefined,
+        cache: Map<string, CacheEntry<unknown>>,
+        key: string,
+        load: (ctx?: RequestContext) => Promise<T>,
+        maxSize = Infinity,
+        missCache?: Map<string, CacheEntry<unknown>>,
+    ): Promise<T> {
+        if (ctx && (ctx as any)[TRANSACTION_MANAGER_KEY]) {
+            return load(ctx);
+        }
         const now = Date.now();
-        const hit = this.channelCache.get(key);
+        const hit = cache.get(key) ?? missCache?.get(key);
         if (hit && now < hit.expires) {
             return hit.value as Promise<T>;
         }
-        this.channelCache.delete(key);
-        if (this.channelCache.size >= CHANNEL_CACHE_SIZE) {
+        cache.delete(key);
+        missCache?.delete(key);
+        const entry = { value: load(), expires: now + this.configService.entityOptions.channelCacheTtl };
+        this.setBounded(cache, key, entry, maxSize);
+        entry.value.then(
+            result => {
+                if (missCache && result == null && cache.get(key) === entry) {
+                    cache.delete(key);
+                    this.setBounded(missCache, key, entry, MISS_CACHE_SIZE);
+                }
+            },
+            () => {
+                if (cache.get(key) === entry) {
+                    cache.delete(key);
+                }
+            },
+        );
+        return entry.value;
+    }
+
+    private setBounded<V>(cache: Map<string, V>, key: string, value: V, maxSize: number) {
+        if (cache.size >= maxSize) {
             // Evicts the oldest insertion rather than the least recently used entry
-            this.channelCache.delete(this.channelCache.keys().next().value as string);
+            cache.delete(cache.keys().next().value as string);
         }
-        const value = load();
-        this.channelCache.set(key, {
-            value,
-            expires: now + this.configService.entityOptions.channelCacheTtl,
-        });
-        value.catch(() => {
-            if (this.channelCache.get(key)?.value === value) {
-                this.channelCache.delete(key);
-            }
-        });
-        return value;
+        cache.set(key, value);
+    }
+
+    private clearCache() {
+        this.channelCache.clear();
+        this.tokenCache.clear();
+        this.missCache.clear();
     }
 
     /**
