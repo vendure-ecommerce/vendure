@@ -1,5 +1,4 @@
-import { Injectable, OnApplicationShutdown } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { Injectable } from '@nestjs/common';
 import {
     CreateChannelInput,
     CreateChannelResult,
@@ -17,7 +16,7 @@ import {
 } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { FindOptionsWhere, In } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
 
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
@@ -30,11 +29,9 @@ import {
     UserInputError,
 } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
-import { Injector } from '../../common/injector';
 import { Instrument } from '../../common/instrument-decorator';
 import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { ChannelCacheStrategy } from '../../config/channel-cache/channel-cache-strategy';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { VendureEntity } from '../../entity/base/base.entity';
@@ -55,6 +52,9 @@ import { isChannelAwareMetadata } from '../helpers/utils/is-channel-aware-metada
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { GlobalSettingsService } from './global-settings.service';
+
+const CHANNEL_CACHE_SIZE = 10_000;
+
 /**
  * @description
  * Contains methods relating to {@link Channel} entities.
@@ -63,10 +63,13 @@ import { GlobalSettingsService } from './global-settings.service';
  */
 @Injectable()
 @Instrument()
-export class ChannelService implements OnApplicationShutdown {
-    private readonly channelCacheStrategy: ChannelCacheStrategy;
-    private channelCacheStrategyInitialized = false;
-    private readonly pendingChannelLookups = new Map<string, Promise<Channel>>();
+export class ChannelService {
+    /**
+     * Channels are looked up on every request, so lookups by token, the default Channel and the
+     * Channel count are cached per process. Promises are cached so that concurrent misses share
+     * one query.
+     */
+    private channelCache = new Map<string, { value: Promise<unknown>; expires: number }>();
 
     constructor(
         private connection: TransactionalConnection,
@@ -75,30 +78,15 @@ export class ChannelService implements OnApplicationShutdown {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
-        private moduleRef: ModuleRef,
-    ) {
-        this.channelCacheStrategy = this.configService.entityOptions.channelCacheStrategy;
-    }
+    ) {}
 
     /**
-     * Ensures that a default Channel exists and primes its configured cache strategy
-     * during application initialization.
+     * When the app is bootstrapped, ensure a default Channel exists.
      *
      * @internal
      */
     async initChannels() {
         await this.ensureDefaultChannelExists();
-        await this.initChannelCacheStrategy();
-        await this.getDefaultChannel();
-    }
-
-    /**
-     * @internal
-     */
-    async onApplicationShutdown() {
-        if (this.channelCacheStrategyInitialized && typeof this.channelCacheStrategy.destroy === 'function') {
-            await this.channelCacheStrategy.destroy();
-        }
     }
 
     /**
@@ -265,32 +253,21 @@ export class ChannelService implements OnApplicationShutdown {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             ctxOrToken instanceof RequestContext ? [ctxOrToken, token!] : [undefined, ctxOrToken];
 
-        if (channelToken === '') {
+        const channelCount = await this.cached('count', () =>
+            this.connection.getRepository(ctx, Channel).count(),
+        );
+        if (channelCount === 1 || channelToken === '') {
+            // there is only the default channel, so return it
             return this.getDefaultChannel(ctx);
         }
-
-        return this.singleFlight(`token:${channelToken}`, async () => {
-            const cached = await this.channelCacheStrategy.getByToken(channelToken);
-            if (cached) {
-                return cached;
-            }
-
-            const channel = await this.findChannel(ctx, { token: channelToken });
-            if (channel) {
-                await this.channelCacheStrategy.set(channel);
-                return channel;
-            }
-
-            // In a single-Channel installation, any token resolves to the default Channel.
-            // This fallback is part of Channel token resolution semantics.
-            const channelCount = await this.connection
-                .getRepository(ctx ?? RequestContext.empty(), Channel)
-                .count();
-            if (channelCount === 1) {
-                return this.getDefaultChannel(ctx);
-            }
+        // Misses are cached too, so unknown tokens do not query the database on every request
+        const channel = await this.cached(`token:${channelToken}`, () =>
+            this.findChannel(ctx, { token: channelToken }),
+        );
+        if (!channel) {
             throw new ChannelNotFoundError(channelToken);
-        });
+        }
+        return channel;
     }
 
     /**
@@ -298,20 +275,14 @@ export class ChannelService implements OnApplicationShutdown {
      * Returns the default Channel.
      */
     async getDefaultChannel(ctx?: RequestContext): Promise<Channel> {
-        return this.singleFlight('default', async () => {
-            const cached = await this.channelCacheStrategy.getDefault();
-            if (cached) {
-                return cached;
-            }
+        const defaultChannel = await this.cached('default', () =>
+            this.findChannel(ctx, { code: DEFAULT_CHANNEL_CODE }),
+        );
 
-            const defaultChannel = await this.findChannel(ctx, { code: DEFAULT_CHANNEL_CODE });
-
-            if (!defaultChannel) {
-                throw new InternalServerError('error.default-channel-not-found');
-            }
-            await this.channelCacheStrategy.set(defaultChannel);
-            return defaultChannel;
-        });
+        if (!defaultChannel) {
+            throw new InternalServerError('error.default-channel-not-found');
+        }
+        return defaultChannel;
     }
 
     findAll(
@@ -334,20 +305,10 @@ export class ChannelService implements OnApplicationShutdown {
     findOne(ctx: RequestContext, id: ID): Promise<Channel | undefined> {
         return this.connection
             .getRepository(ctx, Channel)
-            .findOne({ where: { id }, relations: { defaultShippingZone: true, defaultTaxZone: true } })
+            .findOne({ where: { id }, relations: ['defaultShippingZone', 'defaultTaxZone'] })
             .then(result => result ?? undefined);
     }
 
-    /**
-     * @description
-     * Creates a new Channel from the given input, validating the default language code and
-     * resolving the default tax and shipping Zones and the Seller if provided.
-     *
-     * Since v3.8.0, the new Channel is automatically assigned to the SuperAdmin and Customer
-     * roles. Without these assignments a Channel is not administrable (it does not appear in the
-     * Dashboard) and cannot support customer accounts, so callers no longer need to assign these
-     * roles themselves.
-     */
     async create(
         ctx: RequestContext,
         input: CreateChannelInput,
@@ -388,28 +349,8 @@ export class ChannelService implements OnApplicationShutdown {
             await this.connection.getRepository(ctx, Channel).save(newChannel);
         }
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
-        // RoleService depends on ChannelService, so it cannot be injected here without creating a
-        // circular dependency; the default roles are therefore looked up directly.
-        const defaultRoleCodes = [SUPER_ADMIN_ROLE_CODE, CUSTOMER_ROLE_CODE];
-        const defaultRoles = await this.connection.getRepository(ctx, Role).find({
-            where: { code: In(defaultRoleCodes) },
-        });
-        for (const code of defaultRoleCodes) {
-            const role = defaultRoles.find(r => r.code === code);
-            if (!role) {
-                throw new InternalServerError(
-                    code === SUPER_ADMIN_ROLE_CODE
-                        ? 'error.super-admin-role-not-found'
-                        : 'error.customer-role-not-found',
-                );
-            }
-            await this.assignToChannels(ctx, Role, role.id, [newChannel.id]);
-        }
+        this.channelCache.clear();
         await this.assignDefaultRolesToChannel(ctx, newChannel.id);
-        const cachedChannel = await this.findOne(ctx, newChannel.id);
-        if (cachedChannel) {
-            await this.channelCacheStrategy.set(cachedChannel);
-        }
         await this.eventBus.publish(new ChannelEvent(ctx, newChannel, 'created', input));
         return newChannel;
     }
@@ -429,7 +370,6 @@ export class ChannelService implements OnApplicationShutdown {
         if (!channel) {
             throw new EntityNotFoundError('Channel', input.id);
         }
-        const previousChannel = new Channel(channel);
         const originalDefaultCurrencyCode = channel.defaultCurrencyCode;
         const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);
         if (isGraphQlErrorResult(defaultLanguageValidationResult)) {
@@ -513,11 +453,9 @@ export class ChannelService implements OnApplicationShutdown {
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
-        await this.channelCacheStrategy.delete(previousChannel);
-        const result = await assertFound(this.findOne(ctx, channel.id));
-        await this.channelCacheStrategy.set(result);
+        this.channelCache.clear();
         await this.eventBus.publish(new ChannelEvent(ctx, channel, 'updated', input));
-        return result;
+        return assertFound(this.findOne(ctx, channel.id));
     }
 
     /**
@@ -541,7 +479,7 @@ export class ChannelService implements OnApplicationShutdown {
         await this.connection.getRepository(ctx, ProductVariantPrice).delete({
             channelId: id,
         });
-        await this.channelCacheStrategy.delete(deletedChannel);
+        this.channelCache.clear();
         await this.eventBus.publish(new ChannelEvent(ctx, deletedChannel, 'deleted', id));
 
         return {
@@ -585,41 +523,38 @@ export class ChannelService implements OnApplicationShutdown {
         return isChannelAwareMetadata(this.connection.rawConnection.getMetadata(entityType));
     }
 
-    private async initChannelCacheStrategy() {
-        if (this.channelCacheStrategyInitialized) {
-            return;
-        }
-        if (typeof this.channelCacheStrategy.init === 'function') {
-            await this.channelCacheStrategy.init(new Injector(this.moduleRef));
-        }
-        this.channelCacheStrategyInitialized = true;
-    }
-
     private findChannel(
         ctx: RequestContext | undefined,
         where: FindOptionsWhere<Channel>,
     ): Promise<Channel | undefined> {
         return this.connection
-            .getRepository(ctx ?? RequestContext.empty(), Channel)
-            .findOne({
-                where,
-                relations: { defaultShippingZone: true, defaultTaxZone: true },
-            })
+            .getRepository(ctx, Channel)
+            .findOne({ where, relations: { defaultShippingZone: true, defaultTaxZone: true } })
             .then(result => result ?? undefined);
     }
 
-    private singleFlight(key: string, lookup: () => Promise<Channel>): Promise<Channel> {
-        const pending = this.pendingChannelLookups.get(key);
-        if (pending) {
-            return pending;
+    private cached<T>(key: string, load: () => Promise<T>): Promise<T> {
+        const now = Date.now();
+        const hit = this.channelCache.get(key);
+        if (hit && now < hit.expires) {
+            return hit.value as Promise<T>;
         }
-        const result = lookup().finally(() => {
-            if (this.pendingChannelLookups.get(key) === result) {
-                this.pendingChannelLookups.delete(key);
+        this.channelCache.delete(key);
+        if (this.channelCache.size >= CHANNEL_CACHE_SIZE) {
+            // Evicts the oldest insertion rather than the least recently used entry
+            this.channelCache.delete(this.channelCache.keys().next().value as string);
+        }
+        const value = load();
+        this.channelCache.set(key, {
+            value,
+            expires: now + this.configService.entityOptions.channelCacheTtl,
+        });
+        value.catch(() => {
+            if (this.channelCache.get(key)?.value === value) {
+                this.channelCache.delete(key);
             }
         });
-        this.pendingChannelLookups.set(key, result);
-        return result;
+        return value;
     }
 
     /**
@@ -632,7 +567,7 @@ export class ChannelService implements OnApplicationShutdown {
             where: {
                 code: DEFAULT_CHANNEL_CODE,
             },
-            relations: { seller: true },
+            relations: ['seller'],
         });
 
         if (!defaultChannel) {

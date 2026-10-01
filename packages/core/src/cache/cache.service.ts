@@ -1,9 +1,7 @@
-import { Injectable, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { Injectable } from '@nestjs/common';
 import { JsonCompatible } from '@vendure/common/lib/shared-types';
 
 import { Instrument } from '../common';
-import { Injector } from '../common/injector';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../config/index';
 import { CacheStrategy, SetCacheKeyOptions } from '../config/system/cache-strategy';
@@ -22,30 +20,11 @@ import { Cache, CacheConfig } from './cache';
  */
 @Injectable()
 @Instrument()
-export class CacheService implements OnModuleInit, OnApplicationShutdown {
+export class CacheService {
     protected cacheStrategy: CacheStrategy;
-    private cacheStrategyInitialized = false;
-    private cacheStrategyInitialization?: Promise<void>;
 
-    constructor(
-        private configService: ConfigService,
-        private moduleRef: ModuleRef,
-    ) {
+    constructor(private configService: ConfigService) {
         this.cacheStrategy = this.configService.systemOptions.cacheStrategy;
-    }
-
-    /** @internal */
-    async onModuleInit() {
-        await this.initializeCacheStrategy();
-    }
-
-    /** @internal */
-    async onApplicationShutdown() {
-        if (this.cacheStrategyInitialized && typeof this.cacheStrategy.destroy === 'function') {
-            await this.cacheStrategy.destroy();
-        }
-        this.cacheStrategyInitialized = false;
-        this.cacheStrategyInitialization = undefined;
     }
 
     /**
@@ -66,9 +45,6 @@ export class CacheService implements OnModuleInit, OnApplicationShutdown {
      */
     async get<T extends JsonCompatible<T>>(key: string): Promise<T | undefined> {
         try {
-            if (!this.cacheStrategyInitialized) {
-                await this.initializeCacheStrategy();
-            }
             const result = await this.cacheStrategy.get(key);
             if (result) {
                 Logger.debug(`CacheService hit for key [${key}]`);
@@ -93,9 +69,6 @@ export class CacheService implements OnModuleInit, OnApplicationShutdown {
         options?: SetCacheKeyOptions,
     ): Promise<void> {
         try {
-            if (!this.cacheStrategyInitialized) {
-                await this.initializeCacheStrategy();
-            }
             await this.cacheStrategy.set(key, value, options);
             Logger.debug(`Set key [${key}] in CacheService`);
         } catch (e: any) {
@@ -109,9 +82,6 @@ export class CacheService implements OnModuleInit, OnApplicationShutdown {
      */
     async delete(key: string): Promise<void> {
         try {
-            if (!this.cacheStrategyInitialized) {
-                await this.initializeCacheStrategy();
-            }
             await this.cacheStrategy.delete(key);
             Logger.debug(`Deleted key [${key}] from CacheService`);
         } catch (e: any) {
@@ -125,9 +95,6 @@ export class CacheService implements OnModuleInit, OnApplicationShutdown {
      */
     async invalidateTags(tags: string[]): Promise<void> {
         try {
-            if (!this.cacheStrategyInitialized) {
-                await this.initializeCacheStrategy();
-            }
             await this.cacheStrategy.invalidateTags(tags);
             Logger.debug(`Invalidated tags [${tags.join(', ')}] from CacheService`);
         } catch (e: any) {
@@ -137,23 +104,5 @@ export class CacheService implements OnModuleInit, OnApplicationShutdown {
                 e.stack,
             );
         }
-    }
-
-    private initializeCacheStrategy(): Promise<void> {
-        if (this.cacheStrategyInitialized) {
-            return Promise.resolve();
-        }
-        if (!this.cacheStrategyInitialization) {
-            this.cacheStrategyInitialization = Promise.resolve()
-                .then(() => this.cacheStrategy.init?.(new Injector(this.moduleRef)))
-                .then(() => {
-                    this.cacheStrategyInitialized = true;
-                })
-                .catch(error => {
-                    this.cacheStrategyInitialization = undefined;
-                    throw error;
-                });
-        }
-        return this.cacheStrategyInitialization;
     }
 }

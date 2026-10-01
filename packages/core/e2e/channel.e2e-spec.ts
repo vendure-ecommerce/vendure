@@ -7,8 +7,7 @@ import {
     Permission,
 } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { JsonCompatible } from '@vendure/common/lib/shared-types';
-import { ChannelService, mergeConfig, RequestContextService, SetCacheKeyOptions } from '@vendure/core';
+import { ChannelService, RequestContextService } from '@vendure/core';
 import {
     createErrorResultGuard,
     createTestEnvironment,
@@ -21,7 +20,6 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import { InMemoryCacheStrategy } from '../src/config/system/in-memory-cache-strategy';
 
 import { channelFragment } from './graphql/fragments-admin';
 import { FragmentOf, graphql } from './graphql/graphql-admin';
@@ -41,42 +39,8 @@ import {
 import { getActiveOrderDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-class LifecycleTrackingCacheStrategy extends InMemoryCacheStrategy {
-    initialized = false;
-    accessedBeforeInitialization = false;
-
-    init() {
-        this.initialized = true;
-    }
-
-    override async get<T extends JsonCompatible<T>>(key: string): Promise<T | undefined> {
-        this.trackAccess();
-        return super.get<T>(key);
-    }
-
-    override async set<T extends JsonCompatible<T>>(
-        key: string,
-        value: T,
-        options?: SetCacheKeyOptions,
-    ): Promise<void> {
-        this.trackAccess();
-        await super.set(key, value, options);
-    }
-
-    private trackAccess() {
-        if (!this.initialized) {
-            this.accessedBeforeInitialization = true;
-        }
-    }
-}
-
 describe('Channels', () => {
-    const cacheStrategy = new LifecycleTrackingCacheStrategy();
-    const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig(), {
-            systemOptions: { cacheStrategy },
-        }),
-    );
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
 
     let secondChannelAdminRole: ResultOf<typeof createRoleDocument>['createRole'];
@@ -104,11 +68,6 @@ describe('Channels', () => {
 
     afterAll(async () => {
         await server.destroy();
-    });
-
-    it('initializes the shared cache before the Channel cache accesses it', () => {
-        expect(cacheStrategy.initialized).toBe(true);
-        expect(cacheStrategy.accessedBeforeInitialization).toBe(false);
     });
 
     it('createChannel returns error result defaultLanguageCode not available', async () => {
@@ -260,6 +219,29 @@ describe('Channels', () => {
         const ctx = await requestContextService.create({ apiType: 'admin' });
         const channel = await channelService.getChannelFromToken('programmatic-channel-token');
         await channelService.delete(ctx, channel.id);
+    });
+
+    // Unknown tokens are cached as misses, so creating a Channel must clear them
+    it('getChannelFromToken resolves a token that was unknown before the Channel was created', async () => {
+        const channelService = server.app.get(ChannelService);
+        const requestContextService = server.app.get(RequestContextService);
+        const ctx = await requestContextService.create({ apiType: 'admin' });
+
+        await expect(channelService.getChannelFromToken('late-channel-token')).rejects.toThrow();
+
+        const created = await channelService.create(ctx, {
+            code: 'late-channel',
+            token: 'late-channel-token',
+            defaultLanguageCode: LanguageCode.en,
+            defaultCurrencyCode: CurrencyCode.USD,
+            pricesIncludeTax: false,
+        });
+        const channel = await channelService.getChannelFromToken('late-channel-token');
+        expect(channel.code).toBe('late-channel');
+
+        if ('id' in created) {
+            await channelService.delete(ctx, created.id);
+        }
     });
 
     it('createRole on second Channel', async () => {
