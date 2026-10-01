@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { RequestContext } from '../../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
+import { ChannelEvent } from '../../event-bus/events/channel-event';
 
 import { ChannelService } from './channel.service';
 
@@ -16,7 +17,9 @@ type Source = 'pool' | 'transaction';
 
 describe('ChannelService cache', () => {
     let service: ChannelService;
+    let subscribedEvent: unknown;
     let onChannelEvent: () => void;
+    let queryRunnerModes: string[];
     let queries: Array<{ source: Source; where?: any }>;
     /** The rows visible on the pool, i.e. committed data. */
     let committed: Channel[];
@@ -53,6 +56,7 @@ describe('ChannelService cache', () => {
 
     beforeEach(() => {
         queries = [];
+        queryRunnerModes = [];
         committed = [
             new Channel({ id: 1, code: DEFAULT_CHANNEL_CODE, token: 'default-token' }),
             new Channel({ id: 2, code: 'second', token: 'second-token' }),
@@ -60,13 +64,24 @@ describe('ChannelService cache', () => {
         ];
         inTransaction = [...committed];
         const connection = {
-            rawConnection: { getRepository: () => repository('pool') },
+            rawConnection: {
+                createQueryRunner: (mode: string) => {
+                    queryRunnerModes.push(mode);
+                    return {
+                        manager: { getRepository: () => repository('pool') },
+                        release: () => Promise.resolve(),
+                    };
+                },
+            },
             getEntityOrThrow: (_ctx: any, _entity: any, id: number) =>
                 Promise.resolve(committed.find(c => c.id === id)),
             getRepository: () => ({ delete: () => Promise.resolve() }),
         };
         const eventBus = {
-            ofType: () => ({ subscribe: (fn: () => void) => (onChannelEvent = fn) }),
+            ofType: (type: unknown) => {
+                subscribedEvent = type;
+                return { subscribe: (fn: () => void) => (onChannelEvent = fn) };
+            },
             publish: () => Promise.resolve(),
         };
         service = new ChannelService(
@@ -84,6 +99,8 @@ describe('ChannelService cache', () => {
         await service.getChannelFromToken('second-token');
 
         expect(tokenQueries('second-token')).toHaveLength(1);
+        // Cache loads read from the master, so replica lag is not cached for the whole TTL
+        expect(new Set(queryRunnerModes)).toEqual(new Set(['master']));
     });
 
     it('queries an unknown token once', async () => {
@@ -139,6 +156,7 @@ describe('ChannelService cache', () => {
 
     it('clears the cache when a ChannelEvent is published', async () => {
         await service.getChannelFromToken('second-token');
+        expect(subscribedEvent).toBe(ChannelEvent);
         onChannelEvent();
         await service.getChannelFromToken('second-token');
 

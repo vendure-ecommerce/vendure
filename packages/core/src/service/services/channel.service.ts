@@ -559,13 +559,14 @@ export class ChannelService {
      * Cached entries are shared by every request in the process, so they are loaded outside of
      * any transaction. A caller inside a transaction still uses a cached Channel, but on a miss it
      * loads through its own transaction and does not store the result, so it does not need a second
-     * pool connection while holding one. Cached misses are ignored inside a transaction. A
+     * pool connection while holding one. Resolved misses are ignored inside a transaction. A
      * transaction which has written a Channel skips the cache entirely, so it always sees its own
      * writes and never shares them with other requests.
      *
      * Loads go to the repository directly rather than through `TransactionalConnection.getRepository(ctx)`,
      * because resolving a Channel is not subject to the {@link EntityAccessControlStrategy}, and
-     * the result must not depend on whether the cache was warm.
+     * the result must not depend on whether the cache was warm. They also read from the master,
+     * so that replica lag right after a write is not cached for the whole TTL.
      */
     private cached<T>(
         ctx: RequestContext | undefined,
@@ -590,7 +591,7 @@ export class ChannelService {
         cache.delete(key);
         missCache?.delete(key);
         const entry = {
-            value: load(this.connection.rawConnection.getRepository(Channel)),
+            value: this.loadFromMaster(load),
             expires: now + this.configService.entityOptions.channelCacheTtl,
         };
         this.setBounded(cache, key, entry, maxSize);
@@ -608,6 +609,15 @@ export class ChannelService {
             },
         );
         return entry.value;
+    }
+
+    private async loadFromMaster<T>(load: (repository: Repository<Channel>) => Promise<T>): Promise<T> {
+        const queryRunner = this.connection.rawConnection.createQueryRunner('master');
+        try {
+            return await load(queryRunner.manager.getRepository(Channel));
+        } finally {
+            await queryRunner.release();
+        }
     }
 
     private setBounded<V>(cache: Map<string, V>, key: string, value: V, maxSize: number) {
