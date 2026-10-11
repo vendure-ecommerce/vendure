@@ -98,6 +98,7 @@ import { QueryRunner } from 'typeorm';
  * `columns` must hold the physical column names as they are when the migration runs.
  *
  * @docsCategory migration
+ * @since 3.8.0
  */
 export async function deduplicateTranslations(
     queryRunner: QueryRunner,
