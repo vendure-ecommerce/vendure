@@ -147,11 +147,11 @@ plugin. Pin them to the versions the plugin is built against, otherwise npm reso
 line and you end up with two copies of the SDK in your tree:
 
 ```bash
-npm install @opentelemetry/exporter-logs-otlp-proto@0.222.0 \
-            @opentelemetry/exporter-trace-otlp-http@0.222.0 \
-            @opentelemetry/sdk-logs@0.222.0 \
-            @opentelemetry/sdk-node@0.222.0 \
-            @opentelemetry/sdk-trace-base@2.11.0
+npm install @opentelemetry/exporter-logs-otlp-proto@0.223.0 \
+            @opentelemetry/exporter-trace-otlp-http@0.223.0 \
+            @opentelemetry/sdk-logs@0.223.0 \
+            @opentelemetry/sdk-node@0.223.0 \
+            @opentelemetry/sdk-trace-base@2.12.0
 ```
 
 Create a file called `preload.ts` in the src dir of your project with the following contents:
@@ -240,14 +240,14 @@ const config = getSdkConfiguration({
 Install just the ones you want and pass them alongside the Vendure-default set:
 
 ```bash
-npm install @opentelemetry/instrumentation-http@0.222.0 \
-            @opentelemetry/instrumentation-express@0.70.0 \
-            @opentelemetry/instrumentation-nestjs-core@0.68.0 \
-            @opentelemetry/instrumentation-graphql@0.70.0 \
-            @opentelemetry/instrumentation-pg@0.74.0 \
-            @opentelemetry/instrumentation-mysql2@0.68.0 \
-            @opentelemetry/instrumentation-ioredis@0.70.0 \
-            @opentelemetry/instrumentation-kafkajs@0.31.0
+npm install @opentelemetry/instrumentation-http@0.223.0 \
+            @opentelemetry/instrumentation-express@0.71.0 \
+            @opentelemetry/instrumentation-nestjs-core@0.69.0 \
+            @opentelemetry/instrumentation-graphql@0.71.0 \
+            @opentelemetry/instrumentation-pg@0.75.0 \
+            @opentelemetry/instrumentation-mysql2@0.69.0 \
+            @opentelemetry/instrumentation-ioredis@0.71.0 \
+            @opentelemetry/instrumentation-kafkajs@0.32.0
 ```
 
 ```ts title="src/preload.ts"
@@ -288,7 +288,7 @@ your own array as shown above.
 
 ## Upgrading from earlier versions
 
-The plugin now uses the OpenTelemetry 0.222 instrumentations, which emit only the stable semantic
+The plugin now uses the OpenTelemetry 0.223 instrumentations, which emit only the stable semantic
 conventions. Two things change in the telemetry your server produces. Both apply whether or not
 you customise `instrumentations`.
 
