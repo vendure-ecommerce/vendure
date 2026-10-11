@@ -1,6 +1,6 @@
 ## Unreleased
 
-#### Features
+#### Behaviour changes
 
 * **core** Reject blank strings for required fields on top-level mutation inputs (#5080). Adds `InputValidationInterceptor` with a curated registry of ~45 input types. A storefront that sends `name: ""` or `sku: "   "` now gets a `UserInputError` instead of persisting an empty string. Opt out with `apiOptions.inputValidation.requiredFieldValidation: false`. Relates to [#5080](https://github.com/vendurehq/vendure/issues/5080).
 
