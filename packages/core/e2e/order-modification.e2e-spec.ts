@@ -1370,7 +1370,9 @@ describe('Order modification', () => {
             orderWithModificationsGuard.assertSuccess(addManualPaymentToOrder);
 
             expect(addManualPaymentToOrder.payments?.length).toBe(2);
-            expect(omit(addManualPaymentToOrder.payments![1], ['id'])).toEqual({
+            // Payments are not returned in a guaranteed order, so identify the new one by transactionId
+            const manualPayment = addManualPaymentToOrder.payments!.find(p => p.transactionId === 'ABC123')!;
+            expect(omit(manualPayment, ['id'])).toEqual({
                 transactionId: 'ABC123',
                 state: 'Settled',
                 amount: 300,
@@ -1382,9 +1384,7 @@ describe('Order modification', () => {
                 refunds: [],
             });
             expect(addManualPaymentToOrder.modifications[0].isSettled).toBe(true);
-            expect(addManualPaymentToOrder.modifications[0].payment?.id).toBe(
-                addManualPaymentToOrder.payments![1].id,
-            );
+            expect(addManualPaymentToOrder.modifications[0].payment?.id).toBe(manualPayment.id);
         });
 
         it('transition back to original state', async () => {
