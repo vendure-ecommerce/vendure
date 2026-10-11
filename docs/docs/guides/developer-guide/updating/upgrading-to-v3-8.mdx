@@ -11,7 +11,7 @@ This guide covers what you need to do when upgrading an existing Vendure project
 Every project:
 
 - [ ] **Back up your database**, then generate and run a [database migration](#database-migration).
-- [ ] Decide whether you need the [order line promotion data migration](#order-line-promotion-data-migration) (you do if any order has a partially cancelled line).
+- [ ] **Before upgrading**, check whether you need the [order line promotion data migration](#order-line-promotion-data-migration). If you do, it must run in the same deployment as the upgrade. It cannot be added later.
 - [ ] Update any of your own dependencies on `@nestjs/*` or `@apollo/server` to [NestJS 12 and Apollo Server 5](#nestjs-12-and-apollo-server-5).
 - [ ] Tell your administrators they will need to [log in again once](#admin-api-sessions-are-bound-to-the-admin-api) after the upgrade.
 
@@ -28,10 +28,10 @@ Check these if they apply to you:
 
 **Who is affected:** every project.
 
-v3.8 contains schema changes. They are all non-destructive, but you must generate and run a migration before starting the server against an existing database.
+v3.8 contains schema changes. You must generate and run a migration before starting the server against an existing database.
 
 :::warning
-Make a backup of your database before running the migration. The new unique constraints on translation tables (see below) remove duplicate rows as part of the migration.
+Make a backup of your database before running the migration. Most of the changes only add tables, columns and indexes. The exception is the new unique constraint on translation tables (see below): if a table contains duplicate translations, the migration **deletes** all but the most recently updated row for each language before adding the constraint.
 :::
 
 The changes are:
@@ -88,7 +88,40 @@ v3.8 fixes how promotion discounts on an `OrderLine` are prorated when its quant
 
 The [`rescaleOrderLinePromotionAdjustments`](/reference/typescript-api/migration/rescale-order-line-promotion-adjustments/) helper rewrites the affected rows. Unlike `deduplicateTranslations`, it is **not** added to generated migrations automatically.
 
-**What to do:** add it to the `up()` method of your v3.8 migration (or a migration of its own). It needs no schema change, so it can run at any point in the migration:
+### Check whether you need it
+
+Run this query against your database **before upgrading**. It lists the order lines the helper would consider: partially cancelled lines that store a `PROMOTION` adjustment.
+
+```sql title="PostgreSQL and SQLite"
+SELECT ol.id, ol."orderId", ol.quantity, ol."orderPlacedQuantity"
+FROM order_line ol
+WHERE ol.quantity > 0
+  AND ol.quantity < ol."orderPlacedQuantity"
+  AND ol.adjustments LIKE '%"type":"PROMOTION"%';
+```
+
+```sql title="MySQL and MariaDB"
+SELECT ol.id, ol.orderId, ol.quantity, ol.orderPlacedQuantity
+FROM order_line ol
+WHERE ol.quantity > 0
+  AND ol.quantity < ol.orderPlacedQuantity
+  AND ol.adjustments LIKE '%"type":"PROMOTION"%';
+```
+
+- **No rows:** you don't need the helper.
+- **One or more rows:** add the helper. It works out per line whether the stored amounts are stale, so it may change fewer rows than the query returns.
+
+If you use a custom TypeORM naming strategy, adjust the table and column names to match.
+
+### Run it in the upgrade deployment
+
+:::warning
+The helper must run in the **same deployment as the upgrade to v3.8**, before the server handles any order cancellation. Never add it in a later migration.
+
+From v3.8, a partial cancellation rescales the line's `PROMOTION` adjustments itself. The helper cannot tell those lines apart from lines cancelled before v3.8, so it would scale them a second time and **shrink their discount**.
+:::
+
+**What to do:** add it to the `up()` method of your v3.8 migration, or to a separate migration that runs in the same deployment. It needs no schema change, so it can run at any point in the migration:
 
 ```ts title="src/migrations/1234567890-rescale-order-line-promotions.ts"
 import { MigrationInterface, QueryRunner } from 'typeorm';
@@ -105,7 +138,7 @@ export class RescaleOrderLinePromotionAdjustments1234567890 implements Migration
 }
 ```
 
-It only touches lines whose quantity was reduced by a cancellation after their adjustments were last calculated, and it logs how many rows it rescaled. If you have no partially cancelled lines, it is a no-op, so it's safe to include when in doubt.
+It only touches lines whose quantity was reduced by a cancellation after their adjustments were last calculated, and it logs how many rows it rescaled. If you have no partially cancelled lines, it changes nothing, so including it in the upgrade migration is safe when in doubt.
 
 :::note
 If an order modification and a cancellation on the same order were stored with the same timestamp, the helper cannot tell which came first. It throws before writing anything and lists the affected OrderLine IDs. Inspect them and pass the correct basis for each via the `ambiguousOrderLineQuantityBases` option. See the [reference docs](/reference/typescript-api/migration/rescale-order-line-promotion-adjustments/) for details.
@@ -150,7 +183,7 @@ Since v3.8, every session records the API it was created for (the new `apiType` 
 
 - **Expect administrators to be logged out once.** Sessions created before the upgrade have no `apiType` and are refused on the Admin API, so administrators need to log in again. API keys created before the upgrade keep working.
 - Keep authentication strategies that can resolve administrators on `authOptions.adminAuthenticationStrategy` only.
-- If you create sessions yourself, for example in a REST controller that completes an SSO callback, pass `'admin'` as the `apiType` argument of `AuthService.authenticate()` or `SessionService.createNewAuthenticatedSession()`. A REST route's context has an `apiType` of `custom`, and sessions created from contexts with no request (scripts, job queue workers) record the Shop API.
+- If you create sessions yourself, for example in a REST controller that completes an SSO callback, pass `'admin'` as the `apiType` argument of `AuthService.authenticate()`, `AuthService.createAuthenticatedSessionForUser()` or `SessionService.createNewAuthenticatedSession()`. A REST route's context has an `apiType` of `custom`, and sessions created from contexts with no request (scripts, job queue workers) record the Shop API.
 - REST routes added by plugins are not checked. If you have one gated by an admin permission, check `ctx.session?.apiType === 'admin'` in the handler.
 
 See the [Auth guide](/core-concepts/auth/#configuring-multiple-authentication-strategies) for the full rules.
@@ -162,7 +195,7 @@ See the [Auth guide](/core-concepts/auth/#configuring-multiple-authentication-st
 The default order process now recalculates the order when it transitions to `ArrangingPayment`:
 
 1. Prices, promotions, taxes and shipping promotions are recalculated, **without** changing the selected shipping method.
-2. If the order has a shipping method that is no longer eligible (for example, a `ShippingEligibilityChecker` with a minimum order value that the recalculated total no longer meets), the transition is refused with the message `cannot-transition-to-payment-with-ineligible-shipping-method`.
+2. If the order has a shipping method that is no longer eligible (for example, a `ShippingEligibilityChecker` with a minimum order value that the recalculated total no longer meets), the transition is refused. The client receives an `OrderStateTransitionError` whose `transitionError` is the translated message for the `cannot-transition-to-payment-with-ineligible-shipping-method` key. In English it reads: `Cannot transition Order to the "ArrangingPayment" state because the selected ShippingMethod is no longer eligible`.
 3. If all checks pass, a full recalculation runs, including the shipping rate.
 
 So the totals at checkout may differ from what the customer last saw if prices or promotions changed in the meantime.
@@ -172,7 +205,7 @@ So the totals at checkout may differ from what the customer last saw if prices o
 - In your storefront, handle an `OrderStateTransitionError` from `transitionOrderToState(state: "ArrangingPayment")` whose `transitionError` says the shipping method is no longer eligible. Re-query `eligibleShippingMethods`, let the customer pick again, then retry.
 - Re-read the order totals after the transition rather than relying on values cached from the cart page.
 
-The recalculation itself cannot be turned off. The ineligible-shipping check is controlled by the `arrangingPaymentRequiresShipping` option of [`configureDefaultOrderProcess`](/reference/typescript-api/orders/order-process/#configuredefaultorderprocess), but setting it to `false` also removes the check that an order has a shipping method at all:
+The recalculation itself cannot be turned off. The ineligible-shipping check is controlled by the `arrangingPaymentRequiresShipping` option of [`configureDefaultOrderProcess`](/reference/typescript-api/orders/order-process/#configuredefaultorderprocess), but setting it to `false` also removes the check that an order has a shipping method at all, and skips the final recalculation in step 3, so the shipping rate is not refreshed:
 
 ```ts title="src/vendure-config.ts"
 import { configureDefaultOrderProcess, VendureConfig } from '@vendure/core';
@@ -181,8 +214,8 @@ export const config: VendureConfig = {
     orderOptions: {
         process: [
             configureDefaultOrderProcess({
-                // Disables both the "has a shipping method" and the
-                // "shipping method is still eligible" checks.
+                // Disables the "has a shipping method" and the "shipping method
+                // is still eligible" checks, and the shipping rate refresh.
                 arrangingPaymentRequiresShipping: false,
             }),
         ],
