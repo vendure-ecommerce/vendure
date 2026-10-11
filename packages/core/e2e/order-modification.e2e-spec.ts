@@ -1413,7 +1413,9 @@ describe('Order modification', () => {
             orderWithModificationsGuard.assertSuccess(addManualPaymentToOrder);
 
             expect(addManualPaymentToOrder.payments?.length).toBe(2);
-            expect(omit(addManualPaymentToOrder.payments![1], ['id'])).toEqual({
+            // Payments are not returned in a guaranteed order, so identify the new one by transactionId
+            const manualPayment = addManualPaymentToOrder.payments!.find(p => p.transactionId === 'ABC123')!;
+            expect(omit(manualPayment, ['id'])).toEqual({
                 transactionId: 'ABC123',
                 state: 'Settled',
                 amount: 300,
@@ -1425,9 +1427,7 @@ describe('Order modification', () => {
                 refunds: [],
             });
             expect(addManualPaymentToOrder.modifications[0].isSettled).toBe(true);
-            expect(addManualPaymentToOrder.modifications[0].payment?.id).toBe(
-                addManualPaymentToOrder.payments![1].id,
-            );
+            expect(addManualPaymentToOrder.modifications[0].payment?.id).toBe(manualPayment.id);
         });
 
         it('transition back to original state', async () => {
@@ -1512,6 +1512,7 @@ describe('Order modification', () => {
     describe('refunds for multiple payments', () => {
         let orderId2: string;
         let orderLineId: string;
+        let originalPaymentId: string;
         let additionalPaymentId: string;
 
         beforeAll(async () => {
@@ -1564,7 +1565,10 @@ describe('Order modification', () => {
                 },
             });
             orderWithModificationsGuard.assertSuccess(addManualPaymentToOrder);
-            additionalPaymentId = addManualPaymentToOrder.payments![1].id!;
+            // Payments are not returned in a guaranteed order, so identify them by transactionId
+            const payments = addManualPaymentToOrder.payments!;
+            additionalPaymentId = payments.find(p => p.transactionId === 'ABC123')!.id;
+            originalPaymentId = payments.find(p => p.id !== additionalPaymentId)!.id;
 
             const transitionOrderToState2 = await adminTransitionOrderToState(orderId2, 'PaymentSettled');
             orderGuard.assertSuccess(transitionOrderToState2);
@@ -1639,10 +1643,10 @@ describe('Order modification', () => {
             // the refund being calculated, so the individual OrderItem had only 1/2 the full order discount
             // applied to it (300). Now, the pro-ration is applied to the single remaining item and therefore the
             // entire discount of 600 gets moved over to the remaining item.
-            expect(modifyOrder?.payments?.find(p => p.id !== additionalPaymentId)?.refunds).toEqual([
+            expect(modifyOrder?.payments?.find(p => p.id === originalPaymentId)?.refunds).toEqual([
                 {
                     id: 'T_6',
-                    paymentId: 'T_15',
+                    paymentId: originalPaymentId,
                     state: 'Pending',
                     total: 600,
                     reason: 'test 2',
