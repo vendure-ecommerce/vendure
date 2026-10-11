@@ -272,7 +272,7 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
  * underlying migration mechanism.
  *
  * If the schema changes include adding the `(languageCode, baseId)` unique constraint to one or more
- * translation tables (introduced in v3.7 to prevent duplicate translations, see
+ * translation tables (introduced in v3.8 to prevent duplicate translations, see
  * [#4884](https://github.com/vendurehq/vendure/issues/4884)), the generated migration will begin
  * with a call to {@link deduplicateTranslations} for exactly those tables, so that any duplicate rows
  * already present in the database are removed before the constraint is created.
