@@ -2470,13 +2470,13 @@
                   "title": "DeduplicateTranslations",
                   "slug": "deduplicate-translations",
                   "file": "docs/reference/typescript-api/migration/deduplicate-translations.mdx",
-                  "lastModified": "2026-10-09T13:26:48+02:00"
+                  "lastModified": "2026-10-11T09:39:19+02:00"
                 },
                 {
                   "title": "GenerateMigration",
                   "slug": "generate-migration",
                   "file": "docs/reference/typescript-api/migration/generate-migration.mdx",
-                  "lastModified": "2026-10-09T13:26:48+02:00"
+                  "lastModified": "2026-10-11T09:39:19+02:00"
                 },
                 {
                   "title": "MigrateAssetTranslationData",
@@ -2530,13 +2530,13 @@
                   "title": "TranslationTableColumnNames",
                   "slug": "translation-table-column-names",
                   "file": "docs/reference/typescript-api/migration/translation-table-column-names.mdx",
-                  "lastModified": "2026-10-09T13:26:48+02:00"
+                  "lastModified": "2026-10-11T09:39:19+02:00"
                 },
                 {
                   "title": "TranslationTableToDeduplicate",
                   "slug": "translation-table-to-deduplicate",
                   "file": "docs/reference/typescript-api/migration/translation-table-to-deduplicate.mdx",
-                  "lastModified": "2026-10-09T13:26:48+02:00"
+                  "lastModified": "2026-10-11T09:39:19+02:00"
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"
