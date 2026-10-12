@@ -4725,7 +4725,7 @@
                   "title": "UseDisplayLocale",
                   "slug": "use-display-locale",
                   "file": "docs/reference/dashboard/hooks/use-display-locale.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-12T12:31:30Z"
                 },
                 {
                   "title": "UseDragAndDrop",
@@ -4773,7 +4773,7 @@
                   "title": "UseUiLanguageLoader",
                   "slug": "use-ui-language-loader",
                   "file": "docs/reference/dashboard/hooks/use-ui-language-loader.mdx",
-                  "lastModified": "2026-06-24T09:45:17Z"
+                  "lastModified": "2026-10-12T12:31:30Z"
                 },
                 {
                   "title": "UseWidgetConfig",
