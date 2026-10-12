@@ -10,7 +10,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { Injector } from '../common';
+import { idsAreEqual, Injector } from '../common';
 import { InspectableJobQueueStrategy } from '../config/job-queue/inspectable-job-queue-strategy';
 import { Logger } from '../config/logger/vendure-logger';
 import { ProcessContext } from '../process-context/process-context';
@@ -66,7 +66,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
         }
         (job as any).retries = this.setRetries(job.queueName, job);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.jobs.set(job.id!, job);
+        this.jobs.set(this.toKey(job.id!), job);
         if (!this.unsettledJobs[job.queueName]) {
             this.unsettledJobs[job.queueName] = [];
         }
@@ -75,7 +75,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
     }
 
     async findOne(id: ID): Promise<Job | undefined> {
-        const job = this.jobs.get(id);
+        const job = this.jobs.get(this.toKey(id));
         return job && this.snapshot(job);
     }
 
@@ -103,7 +103,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
 
     async findManyById(ids: ID[]): Promise<Job[]> {
         return ids
-            .map(id => this.jobs.get(id))
+            .map(id => this.jobs.get(this.toKey(id)))
             .filter(notNullOrUndefined)
             .map(job => this.snapshot(job));
     }
@@ -144,7 +144,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
             this.unsettledJobs[job.queueName].unshift({ job, updatedAt: new Date() });
         }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.jobs.set(job.id!, job);
+        this.jobs.set(this.toKey(job.id!), job);
     }
 
     /**
@@ -157,7 +157,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
      * live job immediately, so no later progress update can revert it.
      */
     async cancelJob(jobId: ID): Promise<Job | undefined> {
-        const job = this.jobs.get(jobId);
+        const job = this.jobs.get(this.toKey(jobId));
         if (!job) {
             return;
         }
@@ -176,12 +176,12 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
                 if (olderThan) {
                     if (job.settledAt && job.settledAt < olderThan) {
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        this.jobs.delete(job.id!);
+                        this.jobs.delete(this.toKey(job.id!));
                         removed++;
                     }
                 } else {
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    this.jobs.delete(job.id!);
+                    this.jobs.delete(this.toKey(job.id!));
                     removed++;
                 }
             }
@@ -218,6 +218,15 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
         });
     }
 
+    /**
+     * Job ids are generated here as strings, but the Admin API resolvers pass ids through
+     * `decodeId()`, which returns a number for numeric ids. Keying the store by the string form
+     * lets both find the same job.
+     */
+    private toKey(id: ID): string {
+        return String(id);
+    }
+
     private removeFromUnsettled(job: Job): void {
         const queued = this.unsettledJobs[job.queueName];
         if (!queued) {
@@ -245,7 +254,11 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
                 continue;
             }
             if (operator?.eq !== undefined) {
-                items = items.filter(i => i[key] === operator.eq);
+                const eq = operator.eq;
+                items =
+                    key === 'id'
+                        ? items.filter(i => idsAreEqual(i.id, eq as ID))
+                        : items.filter(i => i[key] === eq);
             }
 
             const contains = (operator as StringOperators)?.contains;

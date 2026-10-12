@@ -2456,6 +2456,21 @@ msgstr "Descriere"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Preț linie cu reducere"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Preț linie cu reducere și taxă"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Reduceri"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Durată"
 
@@ -2496,6 +2511,11 @@ msgstr "Cod procesator livrare"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Linii onorare"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2521,6 +2541,21 @@ msgstr "Nume"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Preț linie"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Preț linie cu taxă"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Taxă linie"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Nume"
 
@@ -2528,6 +2563,11 @@ msgstr "Nume"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Comandă plasată la"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Cantitate la plasarea comenzii"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2566,6 +2606,11 @@ msgstr "Preț cu taxă"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Variantă produs"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Variante produs"
 
@@ -2573,6 +2618,21 @@ msgstr "Variante produs"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Progres"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Preț unitar proporțional"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Preț unitar proporțional cu taxă"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Cantitate"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2653,6 +2713,16 @@ msgstr "Total cu taxă"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Tip"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Preț unitar"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Preț unitar cu taxă"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts

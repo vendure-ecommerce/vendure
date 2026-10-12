@@ -2523,6 +2523,21 @@ msgstr "תיאור"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "מחיר שורה לאחר הנחה"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "מחיר שורה לאחר הנחה כולל מע\"מ"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "הנחות"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "משך זמן"
 
@@ -2563,6 +2578,11 @@ msgstr "קוד מטפל במשלוח"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "פריטי משלוח"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "מזהה"
 
@@ -2588,6 +2608,21 @@ msgstr "שם משפחה"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "מחיר שורה"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "מחיר שורה כולל מע\"מ"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "מע\"מ שורה"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "שם"
 
@@ -2595,6 +2630,11 @@ msgstr "שם"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "ההזמנה בוצעה ב"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "כמות בעת ביצוע ההזמנה"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2633,6 +2673,11 @@ msgstr "מחיר כולל מע\"מ"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "גרסת מוצר"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "גרסאות מוצר"
 
@@ -2640,6 +2685,21 @@ msgstr "גרסאות מוצר"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "התקדמות"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "מחיר יחסי ליחידה"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "מחיר יחסי ליחידה כולל מע\"מ"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "כמות"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2720,6 +2780,16 @@ msgstr "סה\"כ כולל מע\"מ"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "סוג"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "מחיר ליחידה"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "מחיר ליחידה כולל מע\"מ"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts

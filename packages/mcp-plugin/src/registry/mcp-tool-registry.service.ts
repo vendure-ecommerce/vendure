@@ -3,20 +3,17 @@ import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { DiscoveryService } from '@nestjs/core';
 import {
     ConfigService,
-    EntityNotFoundError,
-    ForbiddenError,
     GraphQLErrorResult,
     I18nError,
-    IllegalOperationError,
     Instrument,
     isGraphQlErrorResult,
     Logger,
+    LogLevel,
+    Order,
     Permission,
     RequestContext,
     SettingsStoreService,
     TransactionalConnection,
-    UnauthorizedError,
-    UserInputError,
 } from '@vendure/core';
 import {
     McpCallerInfo,
@@ -47,16 +44,6 @@ const ALL_TOOLSETS: readonly McpToolset[] = ['shop', 'admin'];
 // Also stated in the no-results hint and the meta-tool's schema description; keep all three in sync.
 const SEARCH_DEFAULT_LIMIT = 10;
 const SEARCH_MAX_LIMIT = 50;
-// Error types a tool throws on purpose, with a message meant to be read by the caller. Anything
-// else is treated as an internal failure: logged server-side, and the caller gets a generic
-// message instead.
-const CALLER_SAFE_ERROR_TYPES = [
-    UserInputError,
-    IllegalOperationError,
-    EntityNotFoundError,
-    ForbiddenError,
-    UnauthorizedError,
-] as const;
 const GENERIC_TOOL_ERROR_MESSAGE =
     'The tool failed unexpectedly. This is a server-side fault, not a problem with your ' +
     'arguments. Do not retry with different arguments; tell the user the operation could not ' +
@@ -112,6 +99,8 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
     private discoveryMetaTools: McpExposedTool[] = [];
     private bm25 = new Map<McpToolset, Bm25Index>();
     private toggleCache = new WeakMap<RequestContext, Record<string, boolean>>();
+    // Every request lists all tools, so canAccess runs once per distinct permission list, not once per tool.
+    private readonly canAccessCache = new WeakMap<RequestContext, Map<string, Promise<boolean>>>();
 
     constructor(
         private readonly discoveryService: DiscoveryService,
@@ -392,7 +381,8 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
 
         const startedAt = Date.now();
         try {
-            const output = await this.runToolHandler(tool, callContext, toolInput);
+            const handlerContext = await this.inCartCurrency(tool, callContext);
+            const output = await this.runToolHandler(tool, handlerContext, toolInput);
             return await this.buildToolCallResult({
                 callContext,
                 tool,
@@ -442,19 +432,60 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
         };
     }
 
+    // Core reprices a cart into the request's currency on every change. A storefront sends the cart's
+    // currency with each request, but an MCP call has none, so the tool gets a copy of the context in
+    // the cart's currency.
+    private async inCartCurrency(
+        tool: McpRegisteredTool,
+        callContext: McpExecutionContext,
+    ): Promise<McpExecutionContext> {
+        const { ctx } = callContext;
+        // Without a session there is no cart, and core's lookup throws instead of returning none.
+        if (!tool.usesActiveOrder || !ctx.session) {
+            return callContext;
+        }
+        const cart = await this.findCart(ctx);
+        if (!cart || cart.currencyCode === ctx.currencyCode) {
+            return callContext;
+        }
+        // Set the same private field core sets when it changes a cart's currency. findOrCreateActiveOrder
+        // in @vendure/mcp-sdk does the same; keep the two in step.
+        const cartCtx = ctx.copy();
+        (cartCtx as any)._currencyCode = cart.currencyCode;
+        return { ...callContext, ctx: cartCtx };
+    }
+
+    // Only the lookup step of ActiveOrderService.getActiveOrder. getActiveOrder can also reprice a
+    // stale cart, and would do so in the request's currency, converting the cart before it is read.
+    private async findCart(ctx: RequestContext): Promise<Order | undefined> {
+        const { activeOrderStrategy } = this.configService.orderOptions;
+        const strategies = Array.isArray(activeOrderStrategy) ? activeOrderStrategy : [activeOrderStrategy];
+        for (const strategy of strategies) {
+            const order = await strategy.determineActiveOrder(ctx, {});
+            if (order) {
+                return order;
+            }
+        }
+        return undefined;
+    }
+
     // A writing tool runs in one transaction, so a throw rolls back all its writes.
     private async runToolHandler(
         tool: McpRegisteredTool,
         callContext: McpExecutionContext,
         toolInput: Record<string, unknown>,
     ): Promise<unknown> {
+        // Prepared on the context the handler receives: a strategy may store its data per context
+        // object, and the transaction runs on a copy.
+        const { entityAccessControlStrategy } = this.configService.authOptions;
         if (tool.resolvedBehavior === 'readonly') {
+            await entityAccessControlStrategy.prepareAccessControl?.(callContext.ctx);
             return tool.handler.execute(callContext.ctx, toolInput, this.toCallerInfo(callContext));
         }
-        // withTransaction needs a promise; some handlers return a plain value.
-        return this.connection.withTransaction(callContext.ctx, txCtx =>
-            Promise.resolve(tool.handler.execute(txCtx, toolInput, this.toCallerInfo(callContext))),
-        );
+        return this.connection.withTransaction(callContext.ctx, async txCtx => {
+            await entityAccessControlStrategy.prepareAccessControl?.(txCtx);
+            return tool.handler.execute(txCtx, toolInput, this.toCallerInfo(callContext));
+        });
     }
 
     private async handleToolCallError(call: {
@@ -467,12 +498,12 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
     }): Promise<CallToolResult> {
         const { error, callContext, tool, input, startedAt, sessionToken } = call;
         const message = error instanceof Error ? error.message : 'MCP tool failed';
-        const callerSafe = CALLER_SAFE_ERROR_TYPES.some(ErrorType => error instanceof ErrorType);
-        const callerMessage =
-            callerSafe && error instanceof I18nError
-                ? callContext.ctx.translate(error.message, error.variables)
-                : message;
-        if (!callerSafe) {
+        // An I18nError carries a message meant for the caller. One with LogLevel.Error, such as
+        // InternalServerError, reports a server fault, so it gets the generic message like any other error.
+        const callerSafe = error instanceof I18nError && error.logLevel !== LogLevel.Error;
+        if (callerSafe) {
+            this.logCallerSafeError(tool.name, error);
+        } else {
             Logger.error(
                 `MCP tool "${tool.name}" failed: ${message}`,
                 loggerCtx,
@@ -487,7 +518,34 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
             durationMs: Date.now() - startedAt,
             status: 'error',
         });
-        return this.errorResult(callerSafe ? callerMessage : GENERIC_TOOL_ERROR_MESSAGE, sessionToken);
+        return this.errorResult(
+            callerSafe
+                ? callContext.ctx.translate(error.message, error.variables)
+                : GENERIC_TOOL_ERROR_MESSAGE,
+            sessionToken,
+        );
+    }
+
+    // Logs at the level the error declares, as the GraphQL API's exception logger does.
+    private logCallerSafeError(toolName: string, error: I18nError): void {
+        const text = `MCP tool "${toolName}" refused the call: ${error.message}`;
+        switch (error.logLevel) {
+            case LogLevel.Warn:
+                Logger.warn(text, loggerCtx);
+                break;
+            case LogLevel.Info:
+                Logger.info(text, loggerCtx);
+                break;
+            case LogLevel.Verbose:
+                Logger.verbose(text, loggerCtx);
+                break;
+            case LogLevel.Debug:
+                Logger.debug(text, loggerCtx);
+                break;
+        }
+        if (error.stack) {
+            Logger.debug(error.stack, loggerCtx);
+        }
     }
 
     private async admitToolCall(
@@ -514,7 +572,7 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
         if (!this.isToolEnabled(tool, toggles)) {
             return { kind: 'refused', result: this.errorResult(`MCP tool is disabled: ${name}`) };
         }
-        if (!this.hasPermissions(ctx, tool)) {
+        if (!(await this.canCallTool(ctx, tool))) {
             return {
                 kind: 'refused',
                 result: this.errorResult(`You do not have permission to call MCP tool: ${name}`),
@@ -728,10 +786,12 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
 
     private async visibleTools(ctx: RequestContext, toolset: McpToolset): Promise<McpRegisteredTool[]> {
         const toggles = await this.getToolToggles(ctx);
-        return [...this.tools.values()]
+        const enabledTools = [...this.tools.values()]
             .filter(tool => tool.toolset === toolset)
-            .filter(tool => this.isToolEnabled(tool, toggles))
-            .filter(tool => this.hasPermissions(ctx, tool))
+            .filter(tool => this.isToolEnabled(tool, toggles));
+        const callable = await Promise.all(enabledTools.map(tool => this.canCallTool(ctx, tool)));
+        return enabledTools
+            .filter((_tool, index) => callable[index])
             .sort((a, b) => a.name.localeCompare(b.name));
     }
 
@@ -742,6 +802,49 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
             destructiveHint: behavior === 'destructive',
             idempotentHint: behavior === 'readonly',
         };
+    }
+
+    // The strategy can refuse a tool but not grant one. The anonymous Shop context is
+    // `authorizedAsOwnerOnly`, which the default strategy accepts for any permission.
+    private async canCallTool(
+        ctx: RequestContext,
+        tool: Pick<McpRegisteredTool, 'permissions'>,
+    ): Promise<boolean> {
+        if (!this.hasPermissions(ctx, tool)) {
+            return false;
+        }
+        // An omitted list means Public on a Shop tool, so the strategy is told Public.
+        const permissions = tool.permissions?.length ? tool.permissions : [Permission.Public];
+        let decisions = this.canAccessCache.get(ctx);
+        if (!decisions) {
+            decisions = new Map();
+            this.canAccessCache.set(ctx, decisions);
+        }
+        const key = [...permissions].sort((a, b) => a.localeCompare(b)).join(',');
+        let decision = decisions.get(key);
+        if (!decision) {
+            decision = this.askStrategyCanAccess(ctx, permissions);
+            decisions.set(key, decision);
+        }
+        return decision;
+    }
+
+    private async askStrategyCanAccess(ctx: RequestContext, permissions: Permission[]): Promise<boolean> {
+        try {
+            return await this.configService.authOptions.entityAccessControlStrategy.canAccess(
+                ctx,
+                permissions,
+            );
+        } catch (e) {
+            // Every request lists the tools, so a throw that escaped here would fail every request.
+            Logger.error(
+                `EntityAccessControlStrategy.canAccess failed for MCP tool permissions ` +
+                    `[${permissions.join(', ')}]: ${e instanceof Error ? e.message : String(e)}`,
+                loggerCtx,
+                e instanceof Error ? e.stack : undefined,
+            );
+            return false;
+        }
     }
 
     private hasPermissions(ctx: RequestContext, tool: Pick<McpRegisteredTool, 'permissions'>): boolean {

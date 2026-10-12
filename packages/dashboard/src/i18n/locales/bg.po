@@ -2541,6 +2541,21 @@ msgstr "Описание"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Цена на реда с отстъпка"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Цена на реда с отстъпка и данък"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Отстъпки"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Продължителност"
 
@@ -2581,6 +2596,11 @@ msgstr "Код на обработчика на изпълнение"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Редове за изпълнение"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2606,6 +2626,21 @@ msgstr "Фамилия"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Цена на реда"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Цена на реда с данък"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Данък на реда"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Име"
 
@@ -2613,6 +2648,11 @@ msgstr "Име"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Поръчката е направена на"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Количество при поръчка"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2651,6 +2691,11 @@ msgstr "Цена с данък"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Вариант на продукт"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Варианти"
 
@@ -2658,6 +2703,21 @@ msgstr "Варианти"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Напредък"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Пропорционална единична цена"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Пропорционална единична цена с данък"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Количество"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2738,6 +2798,16 @@ msgstr "Общо с данък"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Тип"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Единична цена"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Единична цена с данък"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts

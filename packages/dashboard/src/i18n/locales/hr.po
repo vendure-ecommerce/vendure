@@ -2523,6 +2523,21 @@ msgstr "Opis"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Snižena cijena retka"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Snižena cijena retka s porezom"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Popusti"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Trajanje"
 
@@ -2563,6 +2578,11 @@ msgstr "Kod rukovatelja izvršenja"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Redci izvršenja"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2588,6 +2608,21 @@ msgstr "Prezime"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Cijena retka"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Cijena retka s porezom"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Porez retka"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Ime"
 
@@ -2595,6 +2630,11 @@ msgstr "Ime"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Narudžba postavljena"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Količina pri narudžbi"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2633,6 +2673,11 @@ msgstr "Cijena s porezom"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Varijanta proizvoda"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Varijante proizvoda"
 
@@ -2640,6 +2685,21 @@ msgstr "Varijante proizvoda"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Napredak"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Proporcionalna jedinična cijena"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Proporcionalna jedinična cijena s porezom"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Količina"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2720,6 +2780,16 @@ msgstr "Ukupno s porezom"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Tip"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Jedinična cijena"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Jedinična cijena s porezom"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts

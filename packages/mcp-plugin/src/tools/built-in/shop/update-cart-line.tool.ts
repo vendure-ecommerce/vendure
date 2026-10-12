@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { OrderService, Permission, RequestContext } from '@vendure/core';
-import { McpTool, McpToolHandler } from '@vendure/mcp-sdk';
+import { idSchema, int32Schema, McpTool, McpToolHandler } from '@vendure/mcp-sdk';
 import { z } from 'zod';
 
 import { McpActiveOrderService } from '../active-order.service';
-import { idSchema } from '../id-schema';
-import { int32Schema } from '../int32-schema';
 import { McpToolSerializerService } from '../serializer.service';
 
 const updateCartLineInput = z.strictObject({
@@ -43,7 +41,7 @@ export class UpdateCartLineTool implements McpToolHandler<UpdateCartLineInput> {
     async execute(ctx: RequestContext, input: UpdateCartLineInput) {
         const order = await this.activeOrder.findOrThrow(ctx);
         return this.serializer.orderOrError(
-            await this.orderService.adjustOrderLine(order.ctx, order.id, input.orderLineId, input.quantity),
+            await this.orderService.adjustOrderLine(ctx, order.id, input.orderLineId, input.quantity),
         );
     }
 }

@@ -1,9 +1,6 @@
-import type { GlobalSettingsService } from '../../service/index';
-import { GlobalFlag } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import ms from 'ms';
 import { filter } from 'rxjs/operators';
-import { LockNotSupportedOnGivenDriverError } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Cache, CacheService, RequestContextCacheService } from '../../cache/index';
@@ -41,20 +38,14 @@ export class MultiChannelStockLocationStrategy extends BaseStockLocationStrategy
     /** @internal */
     protected eventBus: EventBus;
     /** @internal */
-    protected globalSettingsService: GlobalSettingsService;
-    /** @internal */
     protected requestContextCache: RequestContextCacheService;
 
     /** @internal */
     async init(injector: Injector) {
-        super.init(injector);
+        await super.init(injector);
         this.eventBus = injector.get(EventBus);
         this.cacheService = injector.get(CacheService);
         this.requestContextCache = injector.get(RequestContextCacheService);
-        // Dynamically import the GlobalSettingsService to avoid circular dependency
-        const GlobalSettingsService = (await import('../../service/services/global-settings.service.js'))
-            .GlobalSettingsService;
-        this.globalSettingsService = injector.get(GlobalSettingsService);
         this.channelIdCache = this.cacheService.createCache({
             options: {
                 ttl: ms('7 days'),
@@ -114,7 +105,6 @@ export class MultiChannelStockLocationStrategy extends BaseStockLocationStrategy
         orderLine: OrderLine,
         quantity: number,
     ): Promise<LocationWithQuantity[]> {
-        const stockLevels = await this.getLockedStockLevelsForVariant(ctx, orderLine.productVariantId);
         const variant = await this.connection.getEntityOrThrow(
             ctx,
             ProductVariant,
@@ -127,6 +117,20 @@ export class MultiChannelStockLocationStrategy extends BaseStockLocationStrategy
             ctx,
             variant,
         );
+        // Only a tracked variant's figures decide how much is allocated, so only those need the lock.
+        let stockLevels: StockLevel[];
+        if (inventoryNotTracked) {
+            stockLevels = await this.connection.getRepository(ctx, StockLevel).find({
+                where: { productVariantId: orderLine.productVariantId },
+                loadEagerRelations: false,
+            });
+        } else {
+            const stockLevelService = await this.getStockLevelService();
+            stockLevels = await stockLevelService.getLockedStockLevelsForVariant(
+                ctx,
+                orderLine.productVariantId,
+            );
+        }
         for (const stockLocation of stockLocations) {
             const stockLevel = stockLevels.find(sl => sl.stockLocationId === stockLocation.id);
             if (stockLevel && (await this.stockLevelAppliesToActiveChannel(ctx, stockLevel))) {
@@ -201,57 +205,5 @@ export class MultiChannelStockLocationStrategy extends BaseStockLocationStrategy
                     loggerCtx,
                 ),
             );
-    }
-
-    /**
-     * @description
-     * Reads the variant's StockLevel rows with a pessimistic write lock. This both serializes
-     * concurrent allocations for the same variant and — crucially on MySQL/MariaDB, whose default
-     * REPEATABLE READ isolation would otherwise serve a plain read from the transaction snapshot
-     * taken before the lock — returns the latest committed values. The lock is held until the
-     * surrounding allocation transaction commits (see `StockMovementService.createAllocationsForOrderLines`,
-     * which runs this in a transaction). The request-context cache is deliberately bypassed so that
-     * a second order line for the same variant re-reads the post-allocation values rather than a
-     * stale cached snapshot.
-     */
-    private async getLockedStockLevelsForVariant(
-        ctx: RequestContext,
-        productVariantId: ID,
-    ): Promise<StockLevel[]> {
-        try {
-            return await this.connection
-                .getRepository(ctx, StockLevel)
-                .createQueryBuilder('stockLevel')
-                .setLock('pessimistic_write')
-                .where('stockLevel.productVariantId = :productVariantId', { productVariantId })
-                .getMany();
-        } catch (e) {
-            if (!(e instanceof LockNotSupportedOnGivenDriverError)) {
-                throw e;
-            }
-            // SQLite does not support pessimistic locking. It is single-writer in practice, so a
-            // concurrent write surfaces as SQLITE_BUSY rather than a silent lost update; SQLite is
-            // not recommended for concurrent production use.
-            return this.connection.getRepository(ctx, StockLevel).find({
-                where: { productVariantId },
-                loadEagerRelations: false,
-            });
-        }
-    }
-
-    private async getVariantStockSettings(ctx: RequestContext, variant: ProductVariant) {
-        const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
-
-        const inventoryNotTracked =
-            variant.trackInventory === GlobalFlag.FALSE ||
-            (variant.trackInventory === GlobalFlag.INHERIT && trackInventory === false);
-        const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
-            ? outOfStockThreshold
-            : variant.outOfStockThreshold;
-
-        return {
-            inventoryNotTracked,
-            effectiveOutOfStockThreshold,
-        };
     }
 }

@@ -2517,6 +2517,21 @@ msgstr "Leírás"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Kedvezményes tételár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Kedvezményes tételár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Kedvezmények"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Időtartam"
 
@@ -2557,6 +2572,11 @@ msgstr "Teljesítési kezelőkód"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Teljesítési sorok"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2582,6 +2602,21 @@ msgstr "Vezetéknév"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Tételár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Tételár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Tétel adója"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Név"
 
@@ -2589,6 +2624,11 @@ msgstr "Név"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Megrendelés dátuma"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Megrendeléskori mennyiség"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2627,6 +2667,11 @@ msgstr "Ár adóval"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Termékváltozat"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Termékváltozatok"
 
@@ -2634,6 +2679,21 @@ msgstr "Termékváltozatok"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Folyamat"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Arányosított egységár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Arányosított egységár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Mennyiség"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2714,6 +2774,16 @@ msgstr "Összesen adóval"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Típus"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Egységár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Egységár adóval"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts

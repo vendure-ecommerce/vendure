@@ -7,12 +7,10 @@ import {
     RequestContext,
     UserInputError,
 } from '@vendure/core';
-import { McpTool, McpToolHandler } from '@vendure/mcp-sdk';
+import { idSchema, int32Schema, McpTool, McpToolHandler } from '@vendure/mcp-sdk';
 import { z } from 'zod';
 
 import { McpActiveOrderService } from '../active-order.service';
-import { idSchema } from '../id-schema';
-import { int32Schema } from '../int32-schema';
 import { McpToolSerializerService } from '../serializer.service';
 
 const addToCartInput = z.strictObject({
@@ -63,9 +61,9 @@ export class AddToCartTool implements McpToolHandler<AddToCartInput> {
 
     async execute(ctx: RequestContext, input: AddToCartInput) {
         const variantId = await this.resolveVariantId(ctx, input);
-        const order = await this.activeOrder.findOrCreate(ctx);
+        const cart = await this.activeOrder.findOrCreate(ctx);
         return this.serializer.orderOrError(
-            await this.orderService.addItemToOrder(order.ctx, order.id, variantId, input.quantity),
+            await this.orderService.addItemToOrder(cart.ctx, cart.order.id, variantId, input.quantity),
         );
     }
 

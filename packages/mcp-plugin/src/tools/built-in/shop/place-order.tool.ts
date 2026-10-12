@@ -17,13 +17,12 @@ import {
     UnauthorizedError,
     UserInputError,
 } from '@vendure/core';
-import { McpTool, McpToolHandler } from '@vendure/mcp-sdk';
+import { McpTool, McpToolHandler, shortText } from '@vendure/mcp-sdk';
 import { z } from 'zod';
 
 import { loggerCtx } from '../../../constants';
 import { McpActiveOrderService } from '../active-order.service';
 import { McpToolSerializerService } from '../serializer.service';
-import { shortText } from '../string-schemas';
 
 const placeOrderInput = z.strictObject({
     paymentMethodCode: shortText.describe('Payment method code.'),
@@ -72,7 +71,7 @@ export class PlaceOrderTool implements McpToolHandler<PlaceOrderInput> {
         const order = await this.activeOrder.findOrThrow(ctx);
         // Taking a payment has to run inside a database transaction: `addPaymentToOrder` refuses to
         // run without one.
-        return this.connection.withTransaction(order.ctx, async txCtx => {
+        return this.connection.withTransaction(ctx, async txCtx => {
             const current = await this.orderService.findOne(txCtx, order.id);
             if (!current) {
                 // The cart was there a moment ago, so only a concurrent deletion gets here.

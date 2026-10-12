@@ -19,6 +19,8 @@ import {
     PaymentMethodHandler,
     type RequestContext,
     RequestContextService,
+    StockLevel,
+    StockLevelService,
     StockMovementService,
     StockShortfallEvent,
     TransactionalConnection,
@@ -1324,12 +1326,16 @@ describe('Stock control', () => {
         });
     });
 
-    // OSS-94: stockAllocated and stockOnHand must never go negative
-    describe('stock values never go negative (clamped writes)', () => {
-        // Use product T_2 (Curvy Monitor) variant[2] (32 inch, id T_7).
-        // The allocation describe above uses variants[0] and variants[1]; variants[2]
-        // is untracked (inherited global=false) and otherwise untouched — safe to reset.
+    // GHSA-8ghm-q833-cmgp: a release larger than the allocation clamps stockAllocated at 0, while
+    // stockOnHand is not clamped, because a negative stockOnHand is a valid backorder.
+    describe('stockAllocated is clamped at 0, stockOnHand is not', () => {
+        // Use product T_2 (Curvy Monitor) variant[2] (32 inch, id T_7). The edge-case tests above
+        // leave it in an arbitrary state, so it is reset here, and the shortfall attribution test
+        // below sets its own figures from whatever this leaves.
         let trackedVariantId: string;
+        let ctx: RequestContext;
+        let stockLocationId: string | number;
+        const rawId = (id: string) => id.replace(/^T_/, '');
 
         beforeAll(async () => {
             const { product } = await adminClient.query(getStockMovementDocument, {
@@ -1345,10 +1351,14 @@ describe('Stock control', () => {
                     },
                 ],
             });
+            ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
+            const [stockLevel] = await server.app
+                .get(StockLevelService)
+                .getStockLevelsForVariant(ctx, rawId(trackedVariantId));
+            stockLocationId = stockLevel.stockLocationId;
         });
 
-        it('stockAllocated stays >= 0 after allocate → release cycle', async () => {
-            // Allocate 3 by completing an order
+        it('allocates 3 by completing an order', async () => {
             await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
             await shopClient.query(addItemToOrderDocument, {
                 productVariantId: trackedVariantId,
@@ -1358,73 +1368,28 @@ describe('Stock control', () => {
             const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
             orderGuard.assertSuccess(order);
 
-            // After allocation, stockAllocated should be 3
-            const productAfterAlloc = await getProductWithStockMovement('T_2');
-            const variantAfterAlloc = productAfterAlloc!.variants[2];
-            expect(variantAfterAlloc.stockAllocated).toBe(3);
-
-            // Cancel all lines — triggers Release, decrementing stockAllocated by 3
-            await adminClient.query(cancelOrderDocument, {
-                input: {
-                    orderId: order.id,
-                    lines: order.lines.map(l => ({
-                        orderLineId: l.id,
-                        quantity: l.quantity,
-                    })),
-                    reason: 'Test',
-                },
-            });
-
-            const productAfterCancel = await getProductWithStockMovement('T_2');
-            const variantAfterCancel = productAfterCancel!.variants[2];
-            // stockAllocated must be exactly 0: started at 3, one Release of 3 → 0
-            expect(variantAfterCancel.stockAllocated).toBe(0);
+            const product = await getProductWithStockMovement('T_2');
+            expect(product!.variants[2].stockAllocated).toBe(3);
         });
 
-        it('stockOnHand stays >= 0 after fulfill → cancel cycle', async () => {
-            // Reset stock
-            await adminClient.query(updateStockOnHandDocument, {
-                input: [
-                    {
-                        id: trackedVariantId,
-                        stockOnHand: 2,
-                        trackInventory: GlobalFlag.TRUE,
-                    },
-                ],
-            });
+        it('clamps stockAllocated at 0 when more is released than was allocated', async () => {
+            await server.app
+                .get(StockLevelService)
+                .updateStockAllocatedForLocation(ctx, rawId(trackedVariantId), stockLocationId, -5);
 
-            // Complete an order (alloc=2)
-            await shopClient.asUserWithCredentials('marques.sawayn@hotmail.com', 'test');
-            await shopClient.query(addItemToOrderDocument, {
-                productVariantId: trackedVariantId,
-                quantity: 2,
-            });
-            await proceedToArrangingPayment(shopClient);
-            const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
-            orderGuard.assertSuccess(order);
+            const product = await getProductWithStockMovement('T_2');
+            // 3 - 5 would be -2
+            expect(product!.variants[2].stockAllocated).toBe(0);
+        });
 
-            // Fulfill (sale: stockAllocated -= 2, stockOnHand -= 2)
-            await adminClient.query(createFulfillmentDocument, {
-                input: {
-                    lines: order.lines.map(l => ({
-                        orderLineId: l.id,
-                        quantity: l.quantity,
-                    })),
-                    handler: {
-                        code: manualFulfillmentHandler.code,
-                        arguments: [
-                            { name: 'method', value: 'test' },
-                            { name: 'trackingCode', value: '' },
-                        ],
-                    },
-                },
-            });
+        it('lets stockOnHand go negative', async () => {
+            await server.app
+                .get(StockLevelService)
+                .updateStockOnHandForLocation(ctx, rawId(trackedVariantId), stockLocationId, -5);
 
-            const productAfterFulfill = await getProductWithStockMovement('T_2');
-            const variantAfterFulfill = productAfterFulfill!.variants[2];
-            // Sale deducts: stockAllocated 2→0, stockOnHand 2→0; clamp must not go negative
-            expect(variantAfterFulfill.stockAllocated).toBe(0);
-            expect(variantAfterFulfill.stockOnHand).toBe(0);
+            const product = await getProductWithStockMovement('T_2');
+            // 3 - 5
+            expect(product!.variants[2].stockOnHand).toBe(-2);
         });
     });
 
@@ -1501,7 +1466,27 @@ describe('Stock control', () => {
         });
     });
 
-    // OSS-94: lock re-check + shortfall detection at allocation
+    // StockLevels are loaded through a DataLoader whose lifetime is one RequestContext and
+    // which batches without memoizing, so a stock read is never served from a value loaded
+    // before the write it follows. Mutation fields execute serially and each is completed
+    // before the next begins, so `before` resolves its stockOnHand, then `after` writes a new
+    // value and reads it back, both within one request. Widening the loader beyond a single
+    // RequestContext, or memoizing across one, makes this report 11 twice and oversell stock.
+    describe('reading stock back after writing it in the same request', () => {
+        const variantId = 'T_4';
+
+        it('reports the stockOnHand written earlier in the same request', async () => {
+            const { before, after } = await adminClient.query(adjustStockTwiceDocument, {
+                first: [{ id: variantId, stockOnHand: 11, trackInventory: GlobalFlag.TRUE }],
+                second: [{ id: variantId, stockOnHand: 13 }],
+            });
+
+            expect(before[0]!.stockOnHand).toBe(11);
+            expect(after[0]!.stockOnHand).toBe(13);
+        });
+    });
+
+    // GHSA-8ghm-q833-cmgp: lock re-check + shortfall detection at allocation
     describe('stock shortfall detection when stock depleted between checkout and settlement', () => {
         // T_3 = "Laptop 13 inch 16GB". Reset to 20 on hand, tracked, threshold=0.
         const variantId = 'T_3';
@@ -1520,7 +1505,7 @@ describe('Stock control', () => {
             });
         });
 
-        // #OSS-94 — concurrent settlement must not oversell; StockShortfallEvent must be published
+        // GHSA-8ghm-q833-cmgp: concurrent settlement must not oversell; StockShortfallEvent must be published
         it('emits StockShortfallEvent and does not oversell when stock is depleted before settlement', async () => {
             const eventBus = server.app.get(EventBus);
 
@@ -1582,7 +1567,7 @@ describe('Stock control', () => {
         });
     });
 
-    // OSS-94: the allocation re-check must hold when settlements genuinely overlap,
+    // GHSA-8ghm-q833-cmgp: the allocation re-check must hold when settlements genuinely overlap,
     // not only when one settlement completes before the next begins.
     describe('truly concurrent settlement', () => {
         // sql.js executes all queries on a single connection, so transactions cannot
@@ -1668,7 +1653,7 @@ describe('Stock control', () => {
         );
     });
 
-    // OSS-94: a StockShortfallEvent must reference the Order which the shortfalling
+    // GHSA-8ghm-q833-cmgp: a StockShortfallEvent must reference the Order which the shortfalling
     // line belongs to. Fulfillments can span multiple Orders (Fulfillment.orders is
     // many-to-many), and default-fulfillment-process re-allocates a cancelled
     // fulfillment's lines in a single createAllocationsForOrderLines() call, so the
@@ -1763,7 +1748,7 @@ describe('Stock control', () => {
         });
     });
 
-    // OSS-94: service methods must remain callable with a RequestContext that is not
+    // GHSA-8ghm-q833-cmgp: service methods must remain callable with a RequestContext that is not
     // bound to a transaction (job-queue processors and scripts do this). A pessimistic
     // lock outside a transaction makes TypeORM throw PessimisticLockTransactionRequiredError.
     describe('allocation outside a transaction', () => {
@@ -1800,23 +1785,50 @@ describe('Stock control', () => {
         });
     });
 
-    // StockLevels are loaded through a DataLoader whose lifetime is one RequestContext and
-    // which batches without memoizing, so a stock read is never served from a value loaded
-    // before the write it follows. Mutation fields execute serially and each is completed
-    // before the next begins, so `before` resolves its stockOnHand, then `after` writes a new
-    // value and reads it back, both within one request. Widening the loader beyond a single
-    // RequestContext, or memoizing across one, makes this report 11 twice and oversell stock.
-    describe('reading stock back after writing it in the same request', () => {
-        const variantId = 'T_4';
+    // GHSA-8ghm-q833-cmgp: a variant which does not track inventory has nothing to fall short of.
+    // Without a StockLevel in the Channel's locations it gets no Allocation, which must not be
+    // reported as a shortfall.
+    describe('untracked variant without a StockLevel', () => {
+        const variantId = 'T_6';
 
-        it('reports the stockOnHand written earlier in the same request', async () => {
-            const { before, after } = await adminClient.query(adjustStockTwiceDocument, {
-                first: [{ id: variantId, stockOnHand: 11, trackInventory: GlobalFlag.TRUE }],
-                second: [{ id: variantId, stockOnHand: 13 }],
+        it('does not publish a StockShortfallEvent', async () => {
+            await adminClient.query(updateProductVariantsDocument, {
+                input: [{ id: variantId, trackInventory: GlobalFlag.FALSE }],
             });
+            await shopClient.asUserWithCredentials('marques.sawayn@hotmail.com', 'test');
+            const { addItemToOrder: order } = await shopClient.query(addItemToOrderDocument, {
+                productVariantId: variantId,
+                quantity: 1,
+            });
+            orderGuard.assertSuccess(order);
+            const line = order.lines.find(l => l.productVariant.id === variantId)!;
+            // Deleted after the item is added, because the saleable stock check creates a
+            // missing StockLevel.
+            await server.app
+                .get(TransactionalConnection)
+                .rawConnection.getRepository(StockLevel)
+                .delete({ productVariantId: variantId.replace(/^T_/, '') });
 
-            expect(before[0]!.stockOnHand).toBe(11);
-            expect(after[0]!.stockOnHand).toBe(13);
+            const shortfallEvents: StockShortfallEvent[] = [];
+            const subscription = server.app
+                .get(EventBus)
+                .ofType(StockShortfallEvent)
+                .subscribe(event => shortfallEvents.push(event));
+            try {
+                const ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
+                const allocations = await server.app
+                    .get(StockMovementService)
+                    .createAllocationsForOrderLines(ctx, [
+                        { orderLineId: line.id.replace(/^T_/, ''), quantity: 1 },
+                    ]);
+                // Let the event bus deliver anything published after the commit.
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                expect(allocations.length).toBe(0);
+                expect(shortfallEvents.length).toBe(0);
+            } finally {
+                subscription.unsubscribe();
+            }
         });
     });
 });

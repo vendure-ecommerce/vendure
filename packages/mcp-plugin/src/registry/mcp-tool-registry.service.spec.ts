@@ -1,6 +1,17 @@
 import { StandardSchemaWithJSON } from '@modelcontextprotocol/server';
 import { Permission } from '@vendure/common/lib/generated-types';
-import { Logger, OrderStateTransitionError, PermissionDefinition, UserInputError } from '@vendure/core';
+import {
+    DefaultEntityAccessControlStrategy,
+    ForbiddenError,
+    I18nError,
+    InternalServerError,
+    Logger,
+    LogLevel,
+    OrderStateTransitionError,
+    PermissionDefinition,
+    UnauthorizedError,
+    UserInputError,
+} from '@vendure/core';
 import { McpStandardSchema, McpToolMetadata, McpToolset } from '@vendure/mcp-sdk';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -89,7 +100,17 @@ function build(
             Promise.resolve({ id: 'anon-id', token: 'anon-token', expires: new Date(Date.now() + 60_000) }),
         ),
     };
-    const configService = { authOptions: { customPermissions } };
+    const activeOrderStrategy = {
+        name: 'test',
+        determineActiveOrder: vi.fn((): Promise<unknown> => Promise.resolve(undefined)),
+    };
+    const configService = {
+        authOptions: {
+            customPermissions,
+            entityAccessControlStrategy: new DefaultEntityAccessControlStrategy(),
+        },
+        orderOptions: { activeOrderStrategy },
+    };
     // Stands in for TransactionalConnection: mutating tools are handed a transactional context,
     // which here is just the context they were called with.
     const connection = {
@@ -106,7 +127,17 @@ function build(
         connection as any,
         resolveMcpPluginOptions(options),
     );
-    return { service, rateLimiter, toolCallLog, settingsStoreService, sessionService, store, connection };
+    return {
+        service,
+        activeOrderStrategy,
+        rateLimiter,
+        toolCallLog,
+        settingsStoreService,
+        sessionService,
+        store,
+        connection,
+        configService,
+    };
 }
 
 const shopTool = (over: Partial<McpToolMetadata> = {}): McpToolMetadata => ({
@@ -548,6 +579,130 @@ describe('McpToolRegistryService', () => {
         });
     });
 
+    describe('cart currency', () => {
+        const cartTool = (over: Partial<McpToolMetadata> = {}) =>
+            shopTool({
+                name: 'touch_cart',
+                behavior: 'mutating',
+                usesActiveOrder: true,
+                permissions: [Permission.Authenticated],
+                ...over,
+            });
+
+        // Core's RequestContext reads its currency from a private field, and copy() keeps the getter.
+        const currencyGetter = {
+            get currencyCode() {
+                return (this as any)._currencyCode;
+            },
+        };
+        function signedInCtx(currencyCode: string) {
+            return Object.assign(
+                Object.create(currencyGetter),
+                makeCtx({ granted: [Permission.Authenticated] }),
+                {
+                    session: { id: 's1', token: 't1' },
+                    _currencyCode: currencyCode,
+                    copy() {
+                        return Object.assign(Object.create(currencyGetter), this);
+                    },
+                },
+            );
+        }
+
+        it("gives a tool that uses the active order a context in the cart's currency", async () => {
+            const execute = vi.fn(() => ({ ok: true }));
+            const { service, activeOrderStrategy } = build([wrapper(cartTool(), execute)]);
+            activeOrderStrategy.determineActiveOrder.mockResolvedValue({ id: '1', currencyCode: 'EUR' });
+            service.onApplicationBootstrap();
+            const ctx = signedInCtx('USD');
+
+            await service.callTool({ ctx }, 'shop', 'touch_cart', {});
+
+            const handlerCtx = (execute.mock.calls[0] as unknown[])[0] as typeof ctx;
+            expect(handlerCtx.currencyCode).toBe('EUR');
+            expect(handlerCtx.session).toBe(ctx.session);
+            expect(ctx.currencyCode).toBe('USD');
+        });
+
+        it('passes the context through unchanged when the cart is already in its currency', async () => {
+            const execute = vi.fn(() => ({ ok: true }));
+            const { service, activeOrderStrategy } = build([wrapper(cartTool(), execute)]);
+            activeOrderStrategy.determineActiveOrder.mockResolvedValue({ id: '1', currencyCode: 'USD' });
+            service.onApplicationBootstrap();
+            const ctx = signedInCtx('USD');
+
+            await service.callTool({ ctx }, 'shop', 'touch_cart', {});
+
+            expect((execute.mock.calls[0] as unknown[])[0]).toBe(ctx);
+        });
+
+        it('does not look up a cart for a tool that does not use the active order', async () => {
+            const { service, activeOrderStrategy } = build([
+                wrapper(cartTool({ usesActiveOrder: undefined })),
+            ]);
+            service.onApplicationBootstrap();
+
+            await service.callTool({ ctx: signedInCtx('USD') }, 'shop', 'touch_cart', {});
+
+            expect(activeOrderStrategy.determineActiveOrder).not.toHaveBeenCalled();
+        });
+
+        it('passes the context through unchanged when the shopper has no cart', async () => {
+            const execute = vi.fn(() => ({ ok: true }));
+            const { service, activeOrderStrategy } = build([wrapper(cartTool(), execute)]);
+            service.onApplicationBootstrap();
+            const ctx = signedInCtx('USD');
+
+            await service.callTool({ ctx }, 'shop', 'touch_cart', {});
+
+            expect(activeOrderStrategy.determineActiveOrder).toHaveBeenCalledOnce();
+            expect((execute.mock.calls[0] as unknown[])[0]).toBe(ctx);
+        });
+
+        it('asks the next active-order strategy when the first finds no cart', async () => {
+            const execute = vi.fn(() => ({ ok: true }));
+            const { service, activeOrderStrategy, configService } = build([wrapper(cartTool(), execute)]);
+            const secondStrategy = {
+                name: 'second',
+                determineActiveOrder: vi.fn(() => Promise.resolve({ id: '1', currencyCode: 'EUR' })),
+            };
+            (configService.orderOptions as any).activeOrderStrategy = [activeOrderStrategy, secondStrategy];
+            service.onApplicationBootstrap();
+
+            await service.callTool({ ctx: signedInCtx('USD') }, 'shop', 'touch_cart', {});
+
+            expect(activeOrderStrategy.determineActiveOrder).toHaveBeenCalledOnce();
+            expect(secondStrategy.determineActiveOrder).toHaveBeenCalledOnce();
+            expect(((execute.mock.calls[0] as unknown[])[0] as { currencyCode: string }).currencyCode).toBe(
+                'EUR',
+            );
+        });
+
+        it('does not look up a cart when the call has no session', async () => {
+            const execute = vi.fn(() => ({ ok: true }));
+            const { service, activeOrderStrategy } = build([wrapper(cartTool(), execute)]);
+            service.onApplicationBootstrap();
+            const ctx = makeCtx({ granted: [Permission.Authenticated] });
+
+            await service.callTool({ ctx }, 'shop', 'touch_cart', {});
+
+            expect(activeOrderStrategy.determineActiveOrder).not.toHaveBeenCalled();
+            expect((execute.mock.calls[0] as unknown[])[0]).toBe(ctx);
+        });
+
+        it('returns an error result without running the tool when the cart lookup throws', async () => {
+            const execute = vi.fn(() => ({ ok: true }));
+            const { service, activeOrderStrategy } = build([wrapper(cartTool(), execute)]);
+            activeOrderStrategy.determineActiveOrder.mockRejectedValue(new Error('lookup failed'));
+            service.onApplicationBootstrap();
+
+            const result = await service.callTool({ ctx: signedInCtx('USD') }, 'shop', 'touch_cart', {});
+
+            expect(result.isError).toBe(true);
+            expect(execute).not.toHaveBeenCalled();
+        });
+    });
+
     describe('toggles', () => {
         it('is enabled by default and hidden/blocked once disabled', async () => {
             const { service } = build([wrapper(shopTool())]);
@@ -641,6 +796,68 @@ describe('McpToolRegistryService', () => {
             const result = await service.callTool({ ctx: makeCtx() }, 'shop', 'get_thing', {});
             expect(result.isError).toBe(true);
             expect((result.content as any)[0].text).toMatch(/permission/);
+        });
+
+        it('denies a call the entity access control strategy refuses, without running the handler', async () => {
+            const execute = vi.fn(() => ({ ok: true }));
+            const { service, configService } = build([wrapper(shopTool(), execute)]);
+            vi.spyOn(configService.authOptions.entityAccessControlStrategy, 'canAccess').mockResolvedValue(
+                false,
+            );
+            service.onApplicationBootstrap();
+            const result = await service.callToolDirect({ ctx: makeCtx() }, 'shop', 'get_thing', {});
+            expect(result.isError).toBe(true);
+            expect((result.content as any)[0].text).toMatch(/permission/);
+            expect(execute).not.toHaveBeenCalled();
+        });
+
+        it('treats a throw from the entity access control strategy as a refusal and logs it', async () => {
+            const error = vi.spyOn(Logger, 'error').mockImplementation(() => undefined);
+            const execute = vi.fn(() => ({ ok: true }));
+            const { service, configService } = build([wrapper(shopTool(), execute)]);
+            vi.spyOn(configService.authOptions.entityAccessControlStrategy, 'canAccess').mockRejectedValue(
+                new Error('policy lookup failed'),
+            );
+            service.onApplicationBootstrap();
+
+            expect(await service.getCallableTools(makeCtx(), 'shop')).toEqual([]);
+            const result = await service.callToolDirect({ ctx: makeCtx() }, 'shop', 'get_thing', {});
+            expect(result.isError).toBe(true);
+            expect((result.content as any)[0].text).toMatch(/permission/);
+            expect((result.content as any)[0].text).not.toMatch(/policy lookup failed/);
+            expect(execute).not.toHaveBeenCalled();
+            expect(error).toHaveBeenCalledWith(
+                expect.stringContaining('policy lookup failed'),
+                expect.anything(),
+                expect.anything(),
+            );
+            error.mockRestore();
+        });
+
+        it('asks the strategy once per distinct permission list for a context', async () => {
+            const { service, configService } = build([
+                wrapper(shopTool({ name: 'get_one' })),
+                wrapper(shopTool({ name: 'get_two' })),
+                wrapper(shopTool({ name: 'get_three', permissions: [Permission.ReadCatalog] })),
+            ]);
+            const canAccess = vi.spyOn(configService.authOptions.entityAccessControlStrategy, 'canAccess');
+            service.onApplicationBootstrap();
+            const ctx = makeCtx({ granted: [Permission.ReadCatalog] });
+
+            await service.getCallableTools(ctx, 'shop');
+            await service.callToolDirect({ ctx }, 'shop', 'get_one', {});
+            expect(canAccess).toHaveBeenCalledTimes(2);
+
+            await service.getCallableTools(makeCtx({ granted: [Permission.ReadCatalog] }), 'shop');
+            expect(canAccess).toHaveBeenCalledTimes(4);
+        });
+
+        it('tells the strategy Public for a shop tool that declares no permissions', async () => {
+            const { service, configService } = build([wrapper(shopTool({ permissions: undefined }))]);
+            const canAccess = vi.spyOn(configService.authOptions.entityAccessControlStrategy, 'canAccess');
+            service.onApplicationBootstrap();
+            await service.callToolDirect({ ctx: makeCtx() }, 'shop', 'get_thing', {});
+            expect(canAccess).toHaveBeenCalledWith(expect.anything(), [Permission.Public]);
         });
 
         it('runs a permitted tool end-to-end and returns structuredContent', async () => {
@@ -1421,6 +1638,104 @@ describe('McpToolRegistryService', () => {
             error.mockRestore();
         });
 
+        it('passes through caller-safe errors logged below Warn, such as UnauthorizedError and a Verbose ForbiddenError', async () => {
+            for (const thrown of [new UnauthorizedError(), new ForbiddenError(LogLevel.Verbose)]) {
+                const execute = () => {
+                    throw thrown;
+                };
+                const { service } = build([wrapper(shopTool(), execute)]);
+                service.onApplicationBootstrap();
+                const result = await service.callTool({ ctx: makeCtx() }, 'shop', 'get_thing', {});
+                expect(result.isError).toBe(true);
+                expect((result.content as any)[0].text).toBe(thrown.message);
+            }
+        });
+
+        it('logs a caller-safe error at the level it declares, never as an error', async () => {
+            const spies = {
+                error: vi.spyOn(Logger, 'error').mockImplementation(() => undefined),
+                warn: vi.spyOn(Logger, 'warn').mockImplementation(() => undefined),
+                verbose: vi.spyOn(Logger, 'verbose').mockImplementation(() => undefined),
+            };
+            for (const thrown of [
+                new UserInputError('bad input from caller'),
+                new ForbiddenError(LogLevel.Verbose),
+            ]) {
+                const execute = () => {
+                    throw thrown;
+                };
+                const { service } = build([wrapper(shopTool(), execute)]);
+                service.onApplicationBootstrap();
+                await service.callTool({ ctx: makeCtx() }, 'shop', 'get_thing', {});
+            }
+            expect(spies.warn).toHaveBeenCalledWith(
+                expect.stringContaining('bad input from caller'),
+                expect.anything(),
+            );
+            expect(spies.verbose).toHaveBeenCalledWith(
+                expect.stringContaining('error.forbidden'),
+                expect.anything(),
+            );
+            expect(spies.error).not.toHaveBeenCalled();
+            Object.values(spies).forEach(spy => spy.mockRestore());
+        });
+
+        it('logs the stack of a caller-safe error at debug level', async () => {
+            const debug = vi.spyOn(Logger, 'debug').mockImplementation(() => undefined);
+            const warn = vi.spyOn(Logger, 'warn').mockImplementation(() => undefined);
+            const thrown = new UserInputError('bad input from caller');
+            const execute = () => {
+                throw thrown;
+            };
+            const { service } = build([wrapper(shopTool(), execute)]);
+            service.onApplicationBootstrap();
+            await service.callTool({ ctx: makeCtx() }, 'shop', 'get_thing', {});
+            expect(debug).toHaveBeenCalledWith(thrown.stack, expect.anything());
+            debug.mockRestore();
+            warn.mockRestore();
+        });
+
+        it('genericizes an InternalServerError for the caller and logs it server-side', async () => {
+            const error = vi.spyOn(Logger, 'error').mockImplementation(() => undefined);
+            const execute = () => {
+                throw new InternalServerError('error.cannot-locate-customer-for-user');
+            };
+            const { service } = build([wrapper(shopTool(), execute)]);
+            service.onApplicationBootstrap();
+            const result = await service.callTool({ ctx: makeCtx() }, 'shop', 'get_thing', {});
+            expect(result.isError).toBe(true);
+            expect((result.content as any)[0].text).toMatch(/^The tool failed unexpectedly\./);
+            expect(error).toHaveBeenCalledWith(
+                expect.stringContaining('error.cannot-locate-customer-for-user'),
+                expect.anything(),
+                expect.anything(),
+            );
+            error.mockRestore();
+        });
+
+        it('genericizes a plugin I18nError subclass that reports a server fault with LogLevel.Error', async () => {
+            class GatewayError extends I18nError {
+                constructor() {
+                    super('gateway timed out', {}, 'GATEWAY_ERROR', LogLevel.Error);
+                }
+            }
+            const error = vi.spyOn(Logger, 'error').mockImplementation(() => undefined);
+            const execute = () => {
+                throw new GatewayError();
+            };
+            const { service } = build([wrapper(shopTool(), execute)]);
+            service.onApplicationBootstrap();
+            const result = await service.callTool({ ctx: makeCtx() }, 'shop', 'get_thing', {});
+            expect(result.isError).toBe(true);
+            expect((result.content as any)[0].text).toMatch(/^The tool failed unexpectedly\./);
+            expect(error).toHaveBeenCalledWith(
+                expect.stringContaining('gateway timed out'),
+                expect.anything(),
+                expect.anything(),
+            );
+            error.mockRestore();
+        });
+
         it('treats a thrown non-Error value as internal, using the fallback message', async () => {
             const thrown: unknown = 'oops';
             const execute = () => {
@@ -1441,12 +1756,20 @@ describe('McpToolRegistryService', () => {
     });
 
     describe('caller-facing error text', () => {
+        // Stands in for an error class defined by a plugin rather than by core.
+        class RecordLockedError extends I18nError {
+            constructor(id: number) {
+                super('error.record-is-locked', { id }, 'RECORD_LOCKED');
+            }
+        }
+
         // Stands in for the request's translate function. i18next runs its ICU formatter on every
         // string it returns, including one it has no entry for, so the fake throws on a brace the
         // way the real formatter would.
         const dictionary: Record<string, (vars: any) => string> = {
             'error.order-does-not-contain-line-with-id': vars =>
                 `This order does not contain an OrderLine with the id ${String(vars.id)}`,
+            'error.record-is-locked': vars => `Record ${String(vars.id)} is locked`,
             'errorResult.ORDER_STATE_TRANSITION_ERROR': vars =>
                 `Cannot transition Order from "${String(vars.fromState)}" to "${String(vars.toState)}"`,
         };
@@ -1480,6 +1803,36 @@ describe('McpToolRegistryService', () => {
                     output: { message: 'error.order-does-not-contain-line-with-id' },
                 }),
             );
+        });
+
+        it("translates a plugin's own I18nError subclass and does not log it as a server error", async () => {
+            const error = vi.spyOn(Logger, 'error').mockImplementation(() => undefined);
+            const { result, toolCallLog } = await callWith(() => {
+                throw new RecordLockedError(7);
+            }, makeCtx({ translate }));
+
+            expect(result.isError).toBe(true);
+            expect((result.content as any)[0].text).toBe('Record 7 is locked');
+            expect(error).not.toHaveBeenCalled();
+            expect(toolCallLog.logToolCall).toHaveBeenCalledWith(
+                expect.objectContaining({ status: 'error', output: { message: 'error.record-is-locked' } }),
+            );
+            error.mockRestore();
+        });
+
+        it("translates a plugin's own I18nError subclass thrown through execute_tool in discovery mode", async () => {
+            const execute = () => {
+                throw new RecordLockedError(7);
+            };
+            const { service } = build([wrapper(shopTool(), execute)], { toolExposure: 'discovery' });
+            service.onApplicationBootstrap();
+            const result = await service.callTool({ ctx: makeCtx({ translate }) }, 'shop', 'execute_tool', {
+                name: 'get_thing',
+                arguments: {},
+            });
+
+            expect(result.isError).toBe(true);
+            expect((result.content as any)[0].text).toBe('Record 7 is locked');
         });
 
         it('leaves the key alone when the context carries no translate function', async () => {
