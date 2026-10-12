@@ -16,7 +16,7 @@ This plugin demonstrates many capabilities of the Vendure plugin system:
 
 ## Usage
 
-The plugin is disabled by default. Enable `ReviewsPlugin` in `packages/dev-server/dev-config.ts` (see the comment there), then start the Vendure server and in the Shop API (http://localhost:3000/shop-api) try the following mutation:
+Start the Vendure server and then in the Shop API (http://localhost:3000/shop-api) try the following mutation:
 
 ```SDL
 mutation {

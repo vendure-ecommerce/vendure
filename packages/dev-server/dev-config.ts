@@ -117,9 +117,6 @@ export const devConfig: VendureConfig = {
         //     platformFeeSKU: 'FEE',
         // }),
         ReadonlySettingsTestPlugin,
-        // Off by default: the dashboard dev build uses sample-vendure-config.ts, which has no
-        // `reviews` custom field, so saving a product would fail. To test this plugin, uncomment
-        // it and its import, and run the dashboard with VENDURE_CONFIG_PATH=../dev-server/dev-config.ts.
         // ReviewsPlugin,
         InsightsTestPlugin,
         // FieldTestPlugin,
