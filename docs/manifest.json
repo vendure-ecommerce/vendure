@@ -1,7 +1,7 @@
 {
   "id": "core",
   "name": "Vendure Core Documentation",
-  "version": "3.7.3",
+  "version": "3.7.4",
   "vendureVersion": "v3",
   "navigation": [
     {
@@ -1740,7 +1740,7 @@
                   "title": "OrderLine",
                   "slug": "order-line",
                   "file": "docs/reference/typescript-api/entities/order-line.mdx",
-                  "lastModified": "2026-09-03T12:03:40Z"
+                  "lastModified": "2026-10-05T09:55:36Z"
                 },
                 {
                   "title": "OrderLineReference",
@@ -1972,7 +1972,7 @@
                   "title": "Event Types",
                   "slug": "event-types",
                   "file": "docs/reference/typescript-api/events/event-types.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 },
                 {
                   "title": "EventBus",
@@ -2323,12 +2323,6 @@
                   "lastModified": "2026-09-10T12:56:42+02:00"
                 },
                 {
-                  "title": "RescaleOrderLinePromotionAdjustments",
-                  "slug": "rescale-order-line-promotion-adjustments",
-                  "file": "docs/reference/typescript-api/migration/rescale-order-line-promotion-adjustments.mdx",
-                  "lastModified": "2026-09-03T12:03:40Z"
-                },
-                {
                   "title": "RevertLastMigration",
                   "slug": "revert-last-migration",
                   "file": "docs/reference/typescript-api/migration/revert-last-migration.mdx",
@@ -2510,7 +2504,7 @@
                   "title": "OrderProcess",
                   "slug": "order-process",
                   "file": "docs/reference/typescript-api/orders/order-process.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 },
                 {
                   "title": "OrderSellerStrategy",
@@ -2522,7 +2516,7 @@
                   "title": "StockAllocationStrategy",
                   "slug": "stock-allocation-strategy",
                   "file": "docs/reference/typescript-api/orders/stock-allocation-strategy.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"
@@ -2690,13 +2684,13 @@
                   "title": "DefaultStockLocationStrategy",
                   "slug": "default-stock-location-strategy",
                   "file": "docs/reference/typescript-api/products-stock/default-stock-location-strategy.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 },
                 {
                   "title": "MultiChannelStockLocationStrategy",
                   "slug": "multi-channel-stock-location-strategy",
                   "file": "docs/reference/typescript-api/products-stock/multi-channel-stock-location-strategy.mdx",
-                  "lastModified": "2026-08-17T12:00:11+02:00"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 },
                 {
                   "title": "ProductVariantPriceCalculationStrategy",
@@ -2878,7 +2872,7 @@
                   "title": "OrderModifier",
                   "slug": "order-modifier",
                   "file": "docs/reference/typescript-api/service-helpers/order-modifier.mdx",
-                  "lastModified": "2026-06-30T07:18:09+02:00"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 },
                 {
                   "title": "ProductPriceApplicator",
@@ -3054,7 +3048,7 @@
                   "title": "ProductVariantService",
                   "slug": "product-variant-service",
                   "file": "docs/reference/typescript-api/services/product-variant-service.mdx",
-                  "lastModified": "2026-08-25T13:57:08Z"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 },
                 {
                   "title": "PromotionService",
@@ -3111,10 +3105,22 @@
                   "lastModified": "2026-04-20T16:08:16+02:00"
                 },
                 {
+                  "title": "StockLevelLockOptions",
+                  "slug": "stock-level-lock-options",
+                  "file": "docs/reference/typescript-api/services/stock-level-lock-options.mdx",
+                  "lastModified": "2026-10-05T09:30:37+02:00"
+                },
+                {
+                  "title": "StockLevelReadOptions",
+                  "slug": "stock-level-read-options",
+                  "file": "docs/reference/typescript-api/services/stock-level-read-options.mdx",
+                  "lastModified": "2026-10-05T09:30:37+02:00"
+                },
+                {
                   "title": "StockLevelService",
                   "slug": "stock-level-service",
                   "file": "docs/reference/typescript-api/services/stock-level-service.mdx",
-                  "lastModified": "2026-09-01T14:02:55Z"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 },
                 {
                   "title": "StockLocationService",
@@ -3126,7 +3132,7 @@
                   "title": "StockMovementService",
                   "slug": "stock-movement-service",
                   "file": "docs/reference/typescript-api/services/stock-movement-service.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-05T09:30:37+02:00"
                 },
                 {
                   "title": "TagService",
@@ -4095,7 +4101,7 @@
                   "title": "SlugInput",
                   "slug": "slug-input",
                   "file": "docs/reference/dashboard/form-components/slug-input.mdx",
-                  "lastModified": "2026-03-24T17:34:23+01:00"
+                  "lastModified": "2026-10-12T08:46:35Z"
                 },
                 {
                   "title": "TextareaInput",

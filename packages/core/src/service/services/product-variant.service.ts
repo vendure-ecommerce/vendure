@@ -59,7 +59,7 @@ import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 import { GlobalSettingsService } from './global-settings.service';
 import { RoleService } from './role.service';
-import { StockLevelService } from './stock-level.service';
+import { StockLevelReadOptions, StockLevelService } from './stock-level.service';
 import { StockMovementService } from './stock-movement.service';
 import { TaxCategoryService } from './tax-category.service';
 
@@ -319,8 +319,19 @@ export class ProductVariantService {
      * Returns the number of saleable units of the ProductVariant, i.e. how many are available
      * for purchase by Customers. This is determined by the ProductVariant's `stockOnHand` value,
      * as well as the local and global `outOfStockThreshold` settings.
+     *
+     * Pass `{ lockStockLevels: true }` when the result is used to decide whether stock may be
+     * allocated. This holds a write lock on the StockLevel rows until the surrounding
+     * transaction commits, so that two concurrent checkouts cannot both pass the check and
+     * then both allocate the same units. See {@link StockLevelService.getAvailableStock}.
+     *
+     * @since 3.7.4 - Added the `options` parameter
      */
-    async getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
+    async getSaleableStockLevel(
+        ctx: RequestContext,
+        variant: ProductVariant,
+        options?: StockLevelReadOptions,
+    ): Promise<number> {
         const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
 
         const inventoryNotTracked =
@@ -332,6 +343,7 @@ export class ProductVariantService {
         const { stockOnHand, stockAllocated } = await this.stockLevelService.getAvailableStock(
             ctx,
             variant.id,
+            options,
         );
         const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
             ? outOfStockThreshold
@@ -386,6 +398,9 @@ export class ProductVariantService {
         input: CreateProductVariantInput[],
     ): Promise<Array<Translated<ProductVariant>>> {
         const ids: ID[] = [];
+        // No up-front stock lock here, unlike `update()`: each variant is created in this loop, so
+        // its StockLevel rows do not exist until `createSingle` inserts them and no other
+        // transaction can be holding them. The ids are not even known before the loop runs.
         for (const productInput of input) {
             const id = await this.createSingle(ctx, productInput);
             ids.push(id);
@@ -399,6 +414,16 @@ export class ProductVariantService {
         ctx: RequestContext,
         input: UpdateProductVariantInput[],
     ): Promise<Array<Translated<ProductVariant>>> {
+        // Lock every variant whose stock this call adjusts before the loop below touches any of it.
+        // The loop visits the variants in input order, and a bulk update can share variants with a
+        // concurrent settlement or order modification; taking the locks up front in the shared
+        // order is what stops the two from deadlocking. Untracked variants are included because the
+        // adjustment derives its delta from the current `stockOnHand` either way.
+        await this.stockLevelService.lockStockLevelsForVariants(
+            ctx,
+            input.filter(i => i.stockOnHand != null || i.stockLevels).map(i => i.id),
+            { includeUntrackedVariants: true },
+        );
         for (const productInput of input) {
             await this.updateSingle(ctx, productInput);
         }

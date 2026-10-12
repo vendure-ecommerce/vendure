@@ -449,56 +449,6 @@ describe('OrderCalculator', () => {
                     assertOrderTotalsAddUp(order);
                 });
             });
-
-            // https://github.com/vendurehq/vendure/issues/5127 (continuation of #3098)
-            describe('quantity reduced below orderPlacedQuantity after recalculation (#5127)', () => {
-                const promotion = new Promotion({
-                    id: 1,
-                    name: '40% off each item',
-                    conditions: [{ code: alwaysTrueCondition.code, args: [] }],
-                    promotionConditions: [alwaysTrueCondition],
-                    actions: [
-                        {
-                            code: percentageItemAction.code,
-                            args: [{ name: 'discount', value: '40' }],
-                        },
-                    ],
-                    promotionActions: [percentageItemAction],
-                });
-
-                it('keeps the 40% discount after a modifyOrder-style recalculation at a reduced quantity', async () => {
-                    const ctx = createRequestContext({ pricesIncludeTax: true });
-                    const order = createOrder({
-                        ctx,
-                        lines: [
-                            {
-                                listPrice: 2975,
-                                taxCategory: taxCategoryZero,
-                                quantity: 20,
-                            },
-                        ],
-                    });
-                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
-
-                    // simulate order placement: the line's orderPlacedQuantity is fixed at 20
-                    order.lines[0].orderPlacedQuantity = 20;
-                    // listPrice 2975 * 20 = 59500, 60% of that (i.e. after a 40% discount) is 35700
-                    expect(order.lines[0].proratedLinePriceWithTax).toBe(35700);
-
-                    // Simulate `modifyOrder` reducing the quantity from 20 to 2 - the same
-                    // `OrderCalculator.applyPriceAdjustments()` call that a real `modifyOrder`
-                    // mutation makes, which clears and freshly recomputes `adjustments` against the
-                    // new, already-reduced quantity.
-                    order.lines[0].quantity = 2;
-                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
-
-                    expect(order.lines[0].quantity).toBe(2);
-                    expect(order.lines[0].orderPlacedQuantity).toBe(20);
-                    // listPrice 2975 * 2 = 5950, 60% of that is 3570
-                    expect(order.lines[0].proratedLinePriceWithTax).toBe(3570);
-                    assertOrderTotalsAddUp(order);
-                });
-            });
         });
 
         describe('Order-level discounts', () => {

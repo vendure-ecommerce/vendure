@@ -328,11 +328,32 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                     return 'message.cannot-transition-to-payment-without-shipping-method';
                 }
                 if (options.arrangingPaymentRequiresStock !== false) {
+                    // A write lock on the StockLevel rows only closes the gap between this check
+                    // and the allocation if the allocation happens in this same transition, and
+                    // therefore in this same transaction. The default StockAllocationStrategy
+                    // allocates later, on the transition to PaymentAuthorized or PaymentSettled,
+                    // which is a separate request and a separate transaction, so a lock taken here
+                    // would be released long before it could serialize anything. Ask the configured
+                    // strategy and only lock when it is going to allocate now.
+                    const { stockAllocationStrategy } = configService.orderOptions;
+                    const lockStockLevels = await stockAllocationStrategy.shouldAllocateStock(
+                        ctx,
+                        fromState,
+                        toState,
+                        order,
+                    );
+                    if (lockStockLevels) {
+                        await stockLevelService.lockStockLevelsForVariants(
+                            ctx,
+                            order.lines.map(line => line.productVariantId),
+                        );
+                    }
                     const variantsWithInsufficientSaleableStock: ProductVariant[] = [];
                     for (const line of order.lines) {
                         const availableStock = await productVariantService.getSaleableStockLevel(
                             ctx,
                             line.productVariant,
+                            { lockStockLevels },
                         );
                         if (line.quantity > availableStock) {
                             variantsWithInsufficientSaleableStock.push(line.productVariant);
