@@ -9,13 +9,14 @@ import { FacetValueService } from './facet-value.service';
 
 /**
  * Rows of the Product to FacetValue join table. Product 3 has no FacetValues. FacetValue 12 is
- * shared by products 1 and 2.
+ * shared by products 1 and 2. The rows are not in facetValueId order on purpose, so a test
+ * asserting that order is asserting that the query asked for it.
  */
 const links = [
-    { productId: 1, facetValueId: 11 },
     { productId: 1, facetValueId: 12 },
-    { productId: 2, facetValueId: 12 },
     { productId: 2, facetValueId: 13 },
+    { productId: 1, facetValueId: 11 },
+    { productId: 2, facetValueId: 12 },
     { productId: 4, facetValueId: 14 },
 ];
 
@@ -28,6 +29,7 @@ let facetValueReads: Array<Array<string | number>>;
 
 function createQueryBuilder() {
     let productIds: Array<string | number> = [];
+    let orderBy: string | undefined;
     const queryBuilder: any = {
         innerJoin: () => queryBuilder,
         select: () => queryBuilder,
@@ -36,11 +38,17 @@ function createQueryBuilder() {
             productIds = params.productIds;
             return queryBuilder;
         },
+        orderBy: (field: string) => {
+            orderBy = field;
+            return queryBuilder;
+        },
         getRawMany: () => {
             linkReads.push(productIds);
-            return Promise.resolve(
-                links.filter(link => productIds.map(String).includes(String(link.productId))),
-            );
+            const rows = links.filter(link => productIds.map(String).includes(String(link.productId)));
+            if (orderBy === 'facetValue.id') {
+                rows.sort((a, b) => a.facetValueId - b.facetValueId);
+            }
+            return Promise.resolve(rows);
         },
     };
     return queryBuilder;
@@ -55,8 +63,7 @@ const mockConnection = {
         channelId: number,
     ) => {
         facetValueReads.push(ids);
-        // Returned in descending id order, so a test asserting this order is asserting that
-        // the result order of this read is kept.
+        // Returned in descending id order, as an IN (...) read may return them in any order.
         const values = [...new Set(ids.map(Number))]
             .filter(id => facetValueChannels[id].includes(channelId))
             .sort((a, b) => b - a)
@@ -105,7 +112,25 @@ describe('FacetValueService', () => {
 
             expect(linkReads).toEqual([[1, 2, 3]]);
             expect(facetValueReads.length).toBe(1);
-            expect(results.map(values => values.map(fv => fv.id))).toEqual([[12, 11], [13, 12], []]);
+            expect(results.map(values => values.map(fv => fv.id))).toEqual([[11, 12], [12, 13], []]);
+        });
+
+        it("orders each product's FacetValues by id, whatever order the reads return", async () => {
+            const [product1] = await Promise.all([1, 2].map(id => service.findByProductId(ctx, id)));
+
+            expect(product1.map(fv => fv.id)).toEqual([11, 12]);
+        });
+
+        it('reads each product and FacetValue id once per batch', async () => {
+            const results = await Promise.all([1, 2, 1].map(id => service.findByProductId(ctx, id)));
+
+            expect(linkReads).toEqual([[1, 2]]);
+            expect(facetValueReads).toEqual([[11, 12, 13]]);
+            expect(results.map(values => values.map(fv => fv.id))).toEqual([
+                [11, 12],
+                [12, 13],
+                [11, 12],
+            ]);
         });
 
         it('returns only the FacetValues in the Channel of the RequestContext', async () => {

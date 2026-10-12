@@ -179,36 +179,33 @@ export class FacetValueService {
             .innerJoin('product.facetValues', 'facetValue')
             .select('product.id', 'productId')
             .addSelect('facetValue.id', 'facetValueId')
-            .where('product.id IN (:...productIds)', { productIds })
+            .where('product.id IN (:...productIds)', { productIds: this.uniqueIds(productIds) })
+            // An IN (...) query gives no row order guarantee, so sort to keep the order of
+            // `Product.facetValues` stable for API clients.
+            .orderBy('facetValue.id', 'ASC')
             .getRawMany();
-        const productIdsByFacetValueId = new Map<string, string[]>();
-        for (const { productId, facetValueId } of links) {
-            const key = String(facetValueId);
-            const existing = productIdsByFacetValueId.get(key);
-            if (existing) {
-                existing.push(String(productId));
-            } else {
-                productIdsByFacetValueId.set(key, [String(productId)]);
-            }
-        }
-        // One channel-filtered read for the whole batch. Each product's values keep the
-        // relative order of this result, as they did when read one product at a time.
-        const facetValues = await this.findByIds(
-            ctx,
-            links.map(link => link.facetValueId),
-        );
+        // One channel-filtered read for the whole batch.
+        const facetValues = await this.findByIds(ctx, this.uniqueIds(links.map(link => link.facetValueId)));
+        const facetValuesById = new Map(facetValues.map(facetValue => [String(facetValue.id), facetValue]));
         const byProductId = new Map<string, Array<Translated<FacetValue>>>();
-        for (const facetValue of facetValues) {
-            for (const productId of productIdsByFacetValueId.get(String(facetValue.id)) ?? []) {
-                const existing = byProductId.get(productId);
-                if (existing) {
-                    existing.push(facetValue);
-                } else {
-                    byProductId.set(productId, [facetValue]);
-                }
+        for (const { productId, facetValueId } of links) {
+            const facetValue = facetValuesById.get(String(facetValueId));
+            if (!facetValue) {
+                // Not in the Channel of the RequestContext
+                continue;
+            }
+            const existing = byProductId.get(String(productId));
+            if (existing) {
+                existing.push(facetValue);
+            } else {
+                byProductId.set(String(productId), [facetValue]);
             }
         }
         return productIds.map(id => byProductId.get(String(id)) ?? []);
+    }
+
+    private uniqueIds(ids: ID[]): ID[] {
+        return [...new Map(ids.map(id => [String(id), id])).values()];
     }
 
     /**
