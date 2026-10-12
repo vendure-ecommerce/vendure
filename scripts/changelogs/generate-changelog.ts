@@ -61,7 +61,12 @@ function generateChangelogForPackage() {
     conventionalChangelogCore(
         {
             transform: (commit: any, context: any) => {
-                restoreDoubleRevert(commit);
+                restoreReappliedCommit(commit);
+                if (commit.revert) {
+                    // Kept so that the writer's `ignoreReverted` can drop the commit it reverts when
+                    // both are in the release. Reverts themselves are removed in `finalizeContext`.
+                    return context(null, commit);
+                }
                 const includeCommit = VALID_TYPES.includes(commit.type) && scopeIsValid(commit.scope);
                 if (includeCommit) {
                     return context(null, commit);
@@ -81,6 +86,9 @@ function generateChangelogForPackage() {
             mainTemplate,
             commitPartial: commitTemplate,
             finalizeContext(context: any, options: any, commits: any) {
+                context.commitGroups = context.commitGroups
+                    .map((group: any) => ({ ...group, commits: group.commits.filter((c: any) => !c.revert) }))
+                    .filter((group: any) => group.commits.length);
                 context.commitGroups.forEach(addHeaderToCommitGroup);
                 return context;
             },
@@ -98,11 +106,21 @@ function generateChangelogForPackage() {
 }
 
 /**
- * A `Revert "Revert "<header>""` commit re-applies the original change, but its own header matches
- * no conventional-commit type, so it would be dropped. Treat it as the original commit instead.
+ * A commit that reverts a revert re-applies the original change, but its own header matches no
+ * conventional-commit type, so it would be dropped. Treat it as the original commit instead.
+ * It takes one of three forms:
+ * - `Revert "Revert "<header>""`, from `git revert` on older git. The parser also records
+ *   which revert it undoes, in `commit.revert`.
+ * - `Reapply "<header>"`, from `git revert` on newer git.
+ * - `Revert "Revert "<header>"" (#123)`, from GitHub's Revert button.
  */
-function restoreDoubleRevert(commit: any) {
-    const originalHeader = commit.revert?.header?.match(/^Revert "(.*)"$/)?.[1];
+function restoreReappliedCommit(commit: any) {
+    const originalHeader =
+        commit.revert?.header?.match(/^Revert "(.*)"$/)?.[1] ??
+        commit.header
+            ?.match(/^(?:Reapply "(.*)"|Revert "Revert "(.*)""(?: \(#\d+\))?)$/)
+            ?.slice(1)
+            .find(Boolean);
     const parsed = originalHeader?.match(HEADER_PATTERN);
     if (!parsed) {
         return;
