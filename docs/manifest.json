@@ -169,7 +169,7 @@
           "title": "Auth",
           "slug": "auth",
           "file": "docs/guides/core-concepts/auth/index.mdx",
-          "lastModified": "2026-08-31T14:33:32+02:00"
+          "lastModified": "2026-10-12T11:08:48+02:00"
         },
         {
           "title": "Channels",
@@ -488,7 +488,7 @@
           "title": "Telemetry",
           "slug": "telemetry",
           "file": "docs/guides/how-to/telemetry/index.mdx",
-          "lastModified": "2026-09-11T14:17:58+02:00"
+          "lastModified": "2026-10-12T11:08:48+02:00"
         }
       ]
     },
@@ -2506,7 +2506,7 @@
                   "title": "RescaleOrderLinePromotionAdjustments",
                   "slug": "rescale-order-line-promotion-adjustments",
                   "file": "docs/reference/typescript-api/migration/rescale-order-line-promotion-adjustments.mdx",
-                  "lastModified": "2026-10-05T12:08:27+02:00"
+                  "lastModified": "2026-10-12T11:08:48+02:00"
                 },
                 {
                   "title": "RevertLastMigration",
