@@ -270,13 +270,6 @@ const manifestInput: DocsPackageManifestInput = {
                     title: 'Updating',
                     slug: 'updating',
                     file: file('docs/guides/developer-guide/updating/index.mdx'),
-                    children: [
-                        {
-                            title: 'Upgrading to v3.8',
-                            slug: 'upgrading-to-v3-8',
-                            file: file('docs/guides/developer-guide/updating/upgrading-to-v3-8.mdx'),
-                        },
-                    ],
                 },
                 {
                     title: 'Worker & Job Queue',
