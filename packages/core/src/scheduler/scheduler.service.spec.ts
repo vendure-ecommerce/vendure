@@ -32,10 +32,6 @@ describe('SchedulerService', () => {
         } as unknown as ScheduledTask;
     }
 
-    function runningTasks() {
-        return (service as any).runningTasks as number;
-    }
-
     beforeEach(() => {
         vi.useFakeTimers();
         vi.spyOn(Logger, 'info').mockImplementation(() => undefined);
@@ -69,28 +65,49 @@ describe('SchedulerService', () => {
 
         expect(started).toBe(1);
         expect(maxInFlight).toBe(1);
-        expect(runningTasks()).toBe(1);
         expect(warnSpy).toHaveBeenCalledWith(
             expect.stringContaining('was blocked because an existing task is still running'),
         );
 
         finishRun();
-        await vi.advanceTimersByTimeAsync(0);
-
-        expect(runningTasks()).toBe(0);
-
         await vi.advanceTimersByTimeAsync(1_000);
 
         expect(started).toBe(2);
+        finishRun();
     });
 
-    it('logs a rejected task execution and releases the running count', async () => {
+    it('waits for a running task to finish before shutting down', async () => {
+        let finishRun: () => void = () => undefined;
+        service = createService(
+            everySecondTask(true),
+            () => () => new Promise<void>(resolve => (finishRun = resolve)),
+        );
+        service.onApplicationBootstrap();
+        await vi.advanceTimersByTimeAsync(1_000);
+
+        let shutDown = false;
+        const shutdown = service.onApplicationShutdown().then(() => (shutDown = true));
+        await vi.advanceTimersByTimeAsync(500);
+
+        expect(shutDown).toBe(false);
+        expect(warnSpy).toHaveBeenCalledTimes(1);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Waiting for 1 running tasks'));
+
+        finishRun();
+        await vi.advanceTimersByTimeAsync(100);
+        await shutdown;
+
+        expect(shutDown).toBe(true);
+    });
+
+    it('logs a rejected task execution and does not wait for it on shutdown', async () => {
         service = createService(everySecondTask(false), () => () => Promise.reject(new Error('boom')));
         service.onApplicationBootstrap();
 
         await vi.advanceTimersByTimeAsync(1_000);
+        await service.onApplicationShutdown();
 
         expect(errorSpy).toHaveBeenCalledWith('Error executing scheduled task slow-task: boom');
-        expect(runningTasks()).toBe(0);
+        expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('Waiting for'));
     });
 });
