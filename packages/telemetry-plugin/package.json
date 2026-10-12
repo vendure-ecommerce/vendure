@@ -4,7 +4,8 @@
     "description": "Telemetry for Vendure",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vendurehq/vendure/"
+        "url": "git+https://github.com/vendurehq/vendure.git",
+        "directory": "packages/telemetry-plugin"
     },
     "homepage": "https://www.vendure.io",
     "funding": "https://github.com/sponsors/michaelbromley",
