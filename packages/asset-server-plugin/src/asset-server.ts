@@ -255,7 +255,10 @@ export class AssetServer {
         const decodedReqPath = this.sanitizeFilePath(filePath);
         if (imageParamsString !== '') {
             const imageParamHash = this.md5(imageParamsString);
-            return path.join(this.cacheDir, this.addSuffix(decodedReqPath, imageParamHash, imageFormat));
+            return path.posix.join(
+                this.cacheDir,
+                this.addSuffix(decodedReqPath, imageParamHash, imageFormat),
+            );
         } else {
             return decodedReqPath;
         }
@@ -286,7 +289,11 @@ export class AssetServer {
                 previousPath = sanitizedPath;
                 sanitizedPath = previousPath.replace(/(\.\.[\\/])+/g, '');
             } while (sanitizedPath !== previousPath);
-            return sanitizedPath;
+            // `path.normalize` rewrites separators to the platform form, so on Windows the
+            // result would otherwise carry backslashes into the asset identifier and into the
+            // cache key that `addSuffix` composes with `path.posix.join`. Normalizing here,
+            // after the traversal strip, keeps that guard unchanged.
+            return sanitizedPath.split(path.sep).join('/');
         }
     }
 
@@ -299,7 +306,7 @@ export class AssetServer {
         const effectiveExt = ext ? `.${ext}` : originalExt;
         const baseName = path.basename(fileName, originalExt);
         const dirName = path.dirname(fileName);
-        return path.join(dirName, `${baseName}${suffix}${effectiveExt}`);
+        return path.posix.join(dirName, `${baseName}${suffix}${effectiveExt}`);
     }
 
     /**

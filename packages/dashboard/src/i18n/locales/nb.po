@@ -2477,6 +2477,11 @@ msgstr "Kunde"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "Kundens e-post"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Kundegruppe"
 
@@ -2522,6 +2527,21 @@ msgstr "Beskrivelse"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Rabattert linjepris"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Rabattert linjepris inkl. mva"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Rabatter"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Varighet"
 
@@ -2562,6 +2582,11 @@ msgstr "Oppfyllelsesbehandlerkode"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Oppfyllelseslinjer"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2587,6 +2612,21 @@ msgstr "Etternavn"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Linjepris"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Linjepris inkl. mva"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Linje-mva"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Navn"
 
@@ -2594,6 +2634,11 @@ msgstr "Navn"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Bestilling lagt inn"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Antall ved bestilling"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2632,6 +2677,11 @@ msgstr "Pris inkl. mva"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Produktvariant"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Produktvarianter"
 
@@ -2639,6 +2689,21 @@ msgstr "Produktvarianter"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Fremgang"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Forholdsmessig enhetspris"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Forholdsmessig enhetspris inkl. mva"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Antall"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2719,6 +2784,16 @@ msgstr "Total inkl. mva"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Type"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Enhetspris"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Enhetspris inkl. mva"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -4155,6 +4230,10 @@ msgstr "Passordene stemmer ikke overens"
 msgid "Pick a date and time"
 msgstr "Velg dato og klokkeslett"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4892,6 +4971,10 @@ msgstr "Betaling gjennomført"
 #: src/i18n/common-strings.ts
 msgid "orderState.Shipped"
 msgstr "Sendt"
+
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"

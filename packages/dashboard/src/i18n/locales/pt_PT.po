@@ -2477,6 +2477,11 @@ msgstr "Cliente"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "E-mail do cliente"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Grupo de clientes"
 
@@ -2522,6 +2527,21 @@ msgstr "Descrição"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Preço da linha com desconto"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Preço da linha com desconto e IVA"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Descontos"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Duração"
 
@@ -2562,6 +2582,11 @@ msgstr "Código do manipulador de atendimento"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Linhas de atendimento"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2587,6 +2612,21 @@ msgstr "Apelido"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Preço da linha"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Preço da linha com IVA"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "IVA da linha"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Nome"
 
@@ -2594,6 +2634,11 @@ msgstr "Nome"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Encomenda efetuada em"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Quantidade na encomenda"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2632,6 +2677,11 @@ msgstr "Preço com IVA"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Variante de produto"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Variantes de produtos"
 
@@ -2639,6 +2689,21 @@ msgstr "Variantes de produtos"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Progresso"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Preço unitário rateado"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Preço unitário rateado com IVA"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Quantidade"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2719,6 +2784,16 @@ msgstr "Total com IVA"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Tipo"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Preço unitário"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Preço unitário com IVA"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -4155,6 +4230,10 @@ msgstr "As palavras-passe não coincidem"
 msgid "Pick a date and time"
 msgstr "Escolha uma data e hora"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4892,6 +4971,10 @@ msgstr "Pagamento liquidado"
 #: src/i18n/common-strings.ts
 msgid "orderState.Shipped"
 msgstr "Enviado"
+
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"

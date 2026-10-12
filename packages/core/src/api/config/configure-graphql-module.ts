@@ -23,7 +23,7 @@ export interface GraphQLApiOptions {
     typePaths: string[];
     apiPath: string;
     playground: boolean | Record<string, any>;
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     resolverModule: Function;
     validationRules: Array<(context: ValidationContext) => any>;
 }

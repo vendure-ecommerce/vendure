@@ -2410,6 +2410,11 @@ msgstr "Client"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "Emailul clientului"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Grup client"
 
@@ -2455,6 +2460,21 @@ msgstr "Descriere"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Preț linie cu reducere"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Preț linie cu reducere și taxă"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Reduceri"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Durată"
 
@@ -2495,6 +2515,11 @@ msgstr "Cod procesator livrare"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Linii onorare"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2520,6 +2545,21 @@ msgstr "Nume"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Preț linie"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Preț linie cu taxă"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Taxă linie"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Nume"
 
@@ -2527,6 +2567,11 @@ msgstr "Nume"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Comandă plasată la"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Cantitate la plasarea comenzii"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2565,6 +2610,11 @@ msgstr "Preț cu taxă"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Variantă produs"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Variante produs"
 
@@ -2572,6 +2622,21 @@ msgstr "Variante produs"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Progres"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Preț unitar proporțional"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Preț unitar proporțional cu taxă"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Cantitate"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2652,6 +2717,16 @@ msgstr "Total cu taxă"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Tip"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Preț unitar"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Preț unitar cu taxă"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -4055,6 +4130,10 @@ msgstr "Parolele nu se potrivesc"
 msgid "Pick a date and time"
 msgstr "Alege data și ora"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4768,6 +4847,10 @@ msgstr "Plată soluționată"
 #: src/i18n/common-strings.ts
 msgid "orderState.Shipped"
 msgstr "Expediată"
+
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
 
 #: src/lib/framework/layout-engine/page-layout.tsx
 msgid "Entity Information"

@@ -2471,6 +2471,11 @@ msgstr "Vásárló"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "Vásárló e-mail címe"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Vásárlói csoport"
 
@@ -2516,6 +2521,21 @@ msgstr "Leírás"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Kedvezményes tételár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Kedvezményes tételár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Kedvezmények"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Időtartam"
 
@@ -2556,6 +2576,11 @@ msgstr "Teljesítési kezelőkód"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Teljesítési sorok"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2581,6 +2606,21 @@ msgstr "Vezetéknév"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Tételár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Tételár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Tétel adója"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Név"
 
@@ -2588,6 +2628,11 @@ msgstr "Név"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Megrendelés dátuma"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Megrendeléskori mennyiség"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2626,6 +2671,11 @@ msgstr "Ár adóval"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Termékváltozat"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Termékváltozatok"
 
@@ -2633,6 +2683,21 @@ msgstr "Termékváltozatok"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Folyamat"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Arányosított egységár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Arányosított egységár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Mennyiség"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2713,6 +2778,16 @@ msgstr "Összesen adóval"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Típus"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Egységár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Egységár adóval"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -4145,6 +4220,10 @@ msgstr "A jelszavak nem egyeznek"
 msgid "Pick a date and time"
 msgstr "Válasszon dátumot és időpontot"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4879,6 +4958,10 @@ msgstr "Fizetés teljesítve"
 #: src/i18n/common-strings.ts
 msgid "orderState.Shipped"
 msgstr "Kiszállítva"
+
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"

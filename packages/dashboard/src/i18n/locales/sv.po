@@ -2477,6 +2477,11 @@ msgstr "Kund"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "Kundens e-post"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Kundgrupp"
 
@@ -2522,6 +2527,21 @@ msgstr "Beskrivning"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Rabatterat radpris"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Rabatterat radpris med skatt"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Rabatter"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Varaktighet"
 
@@ -2562,6 +2582,11 @@ msgstr "Leveranshanterarkod"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Leveransrader"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2587,6 +2612,21 @@ msgstr "Efternamn"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Radpris"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Radpris med skatt"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Radskatt"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Namn"
 
@@ -2594,6 +2634,11 @@ msgstr "Namn"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Beställning lagd"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Antal vid beställning"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2632,6 +2677,11 @@ msgstr "Pris med skatt"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Produktvariant"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Produktvarianter"
 
@@ -2639,6 +2689,21 @@ msgstr "Produktvarianter"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Framsteg"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Fördelat enhetspris"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Fördelat enhetspris med skatt"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Antal"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2719,6 +2784,16 @@ msgstr "Totalt med skatt"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Typ"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Enhetspris"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Enhetspris med skatt"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -4155,6 +4230,10 @@ msgstr "Lösenorden matchar inte"
 msgid "Pick a date and time"
 msgstr "Välj datum och tid"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4892,6 +4971,10 @@ msgstr "Betalning genomförd"
 #: src/i18n/common-strings.ts
 msgid "orderState.Shipped"
 msgstr "Skickad"
+
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"

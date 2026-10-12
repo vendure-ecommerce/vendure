@@ -2477,6 +2477,11 @@ msgstr "顧客"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "顧客のメールアドレス"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "顧客グループ"
 
@@ -2522,6 +2527,21 @@ msgstr "説明"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "割引後ライン価格"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "税込割引後ライン価格"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "割引"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "期間"
 
@@ -2562,6 +2582,11 @@ msgstr "フルフィルメントハンドラーコード"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "フルフィルメントライン"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2587,6 +2612,21 @@ msgstr "姓"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "ライン価格"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "税込ライン価格"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "ライン税額"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "名前"
 
@@ -2594,6 +2634,11 @@ msgstr "名前"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "注文日時"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "注文時の数量"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2632,6 +2677,11 @@ msgstr "税込価格"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "商品バリエーション"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "商品バリエーション"
 
@@ -2639,6 +2689,21 @@ msgstr "商品バリエーション"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "進捗"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "按分単価"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "税込按分単価"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "数量"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2719,6 +2784,16 @@ msgstr "税込合計"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "種類"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "単価"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "税込単価"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -4155,6 +4230,10 @@ msgstr "パスワードが一致しません"
 msgid "Pick a date and time"
 msgstr "日時を選択"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4892,6 +4971,10 @@ msgstr "支払い完了"
 #: src/i18n/common-strings.ts
 msgid "orderState.Shipped"
 msgstr "発送済み"
+
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"

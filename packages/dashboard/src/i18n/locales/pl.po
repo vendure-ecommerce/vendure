@@ -2477,6 +2477,11 @@ msgstr "Klient"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "E-mail klienta"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Grupa klientów"
 
@@ -2522,6 +2527,21 @@ msgstr "Opis"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Cena wiersza po rabacie"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Cena wiersza po rabacie z podatkiem"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Rabaty"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Czas trwania"
 
@@ -2562,6 +2582,11 @@ msgstr "Kod obsługi realizacji"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Wiersze realizacji"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2587,6 +2612,21 @@ msgstr "Nazwisko"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Cena wiersza"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Cena wiersza z podatkiem"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Podatek wiersza"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Nazwa"
 
@@ -2594,6 +2634,11 @@ msgstr "Nazwa"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Data złożenia zamówienia"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Ilość przy złożeniu zamówienia"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2632,6 +2677,11 @@ msgstr "Cena z podatkiem"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Wariant produktu"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Warianty produktów"
 
@@ -2639,6 +2689,21 @@ msgstr "Warianty produktów"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Postęp"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Proporcjonalna cena jednostkowa"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Proporcjonalna cena jednostkowa z podatkiem"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Ilość"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2719,6 +2784,16 @@ msgstr "Suma z podatkiem"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Typ"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Cena jednostkowa"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Cena jednostkowa z podatkiem"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -4155,6 +4230,10 @@ msgstr "Hasła nie są zgodne"
 msgid "Pick a date and time"
 msgstr "Wybierz datę i godzinę"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4892,6 +4971,10 @@ msgstr "Płatność rozliczona"
 #: src/i18n/common-strings.ts
 msgid "orderState.Shipped"
 msgstr "Wysłane"
+
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"

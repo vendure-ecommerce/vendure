@@ -40,6 +40,15 @@ export const e2eCustomFields: CustomFields = {
             type: 'int',
             label: [{ languageCode: LanguageCode.en, value: 'Review Rating' }],
         },
+        // A `nullable: false` custom field must declare a `defaultValue`, which becomes the
+        // column's SQL DEFAULT — the value a create form relies on when it is left empty (#5241).
+        {
+            name: 'warrantyMonths',
+            type: 'int',
+            nullable: false,
+            defaultValue: 12,
+            label: [{ languageCode: LanguageCode.en, value: 'Warranty Months' }],
+        },
         {
             name: 'isDownloadable',
             type: 'boolean',
@@ -67,6 +76,15 @@ export const e2eCustomFields: CustomFields = {
             nullable: true,
             label: [{ languageCode: LanguageCode.en, value: 'Feature Type' }],
             options: [{ value: 'standard' }, { value: 'premium' }],
+        },
+        {
+            // Used by the #4741 tests in catalog/custom-fields.spec.ts. Nullable, and the
+            // pattern accepts the empty default, so other product tests are unaffected.
+            name: 'numericCode',
+            type: 'string',
+            nullable: true,
+            pattern: '^[0-9]*$',
+            label: [{ languageCode: LanguageCode.en, value: 'Numeric Code' }],
         },
         // ── SEO tab ──
         {

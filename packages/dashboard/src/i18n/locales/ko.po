@@ -2463,6 +2463,11 @@ msgstr "고객"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "고객 이메일"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "고객 그룹"
 
@@ -2508,6 +2513,21 @@ msgstr "설명"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "할인된 항목 가격"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "세금 포함 할인된 항목 가격"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "할인"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "기간"
 
@@ -2548,6 +2568,11 @@ msgstr "배송 처리 코드"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "이행 항목"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2573,6 +2598,21 @@ msgstr "성"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "항목 가격"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "세금 포함 항목 가격"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "항목 세금"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "이름"
 
@@ -2580,6 +2620,11 @@ msgstr "이름"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "주문 일시"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "주문 시 수량"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2618,6 +2663,11 @@ msgstr "세금 포함 가격"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "상품 변형"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "상품 변형"
 
@@ -2625,6 +2675,21 @@ msgstr "상품 변형"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "진행률"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "안분 단가"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "세금 포함 안분 단가"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "수량"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2705,6 +2770,16 @@ msgstr "세금 포함 합계"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "유형"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "단가"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "세금 포함 단가"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -4133,6 +4208,10 @@ msgstr ""
 msgid "Pick a date and time"
 msgstr ""
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4855,6 +4934,10 @@ msgstr "결제 완료"
 #: src/i18n/common-strings.ts
 msgid "orderState.Shipped"
 msgstr "배송됨"
+
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"

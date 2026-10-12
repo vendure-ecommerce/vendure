@@ -15,8 +15,8 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { Allocation } from '../../entity/stock-movement/allocation.entity';
@@ -86,52 +86,92 @@ export class StockMovementService {
      * @description
      * Adjusts the stock level of the ProductVariant, creating a new {@link StockAdjustment} entity
      * in the process.
+     *
+     * The `stockOnHand` of the input is absolute, but the write which applies it is a relative
+     * `stockOnHand + delta`, so the current value is read under a write lock held until the
+     * surrounding transaction commits. Two concurrent adjustments of the same ProductVariant
+     * therefore serialize, and the stored value is the one the later of the two asked for.
+     *
+     * When adjusting more than one ProductVariant in a transaction, call
+     * {@link StockLevelService.lockStockLevelsForVariants} for the whole set first, with
+     * `{ includeUntrackedVariants: true }`, so the locks are taken in the shared order.
      */
     async adjustProductVariantStock(
         ctx: RequestContext,
         productVariantId: ID,
         stockOnHandNumberOrInput: number | StockLevelInput[],
     ): Promise<StockAdjustment[]> {
-        let stockOnHandInputs: StockLevelInput[];
-        if (typeof stockOnHandNumberOrInput === 'number') {
-            const defaultStockLocation = await this.stockLocationService.defaultStockLocation(ctx);
-            stockOnHandInputs = [
-                { stockLocationId: defaultStockLocation.id, stockOnHand: stockOnHandNumberOrInput },
-            ];
-        } else {
-            stockOnHandInputs = stockOnHandNumberOrInput;
-        }
-        const adjustments: StockAdjustment[] = [];
-        for (const input of stockOnHandInputs) {
-            const stockLevel = await this.stockLevelService.getStockLevel(
-                ctx,
-                productVariantId,
-                input.stockLocationId,
-            );
-            const oldStockLevel = stockLevel.stockOnHand;
-            const newStockLevel = input.stockOnHand;
-            if (oldStockLevel === newStockLevel) {
-                continue;
+        // Run inside a transaction for the same reason as `createAllocationsForOrderLines`: the
+        // locked read below needs one, and a caller from a non-transactional context (the
+        // FastImporterService, a job-queue processor, a stand-alone script) would otherwise fall
+        // back to an unlocked read. It also makes the StockAdjustment ledger row and the StockLevel
+        // write atomic. Nested transactions join the existing one, so the `@Transaction()`-wrapped
+        // API paths are unaffected.
+        return this.connection.withTransaction(ctx, async txCtx => {
+            let stockOnHandInputs: StockLevelInput[];
+            if (typeof stockOnHandNumberOrInput === 'number') {
+                const defaultStockLocation = await this.stockLocationService.defaultStockLocation(txCtx);
+                stockOnHandInputs = [
+                    { stockLocationId: defaultStockLocation.id, stockOnHand: stockOnHandNumberOrInput },
+                ];
+            } else {
+                stockOnHandInputs = stockOnHandNumberOrInput;
             }
-            const delta = newStockLevel - oldStockLevel;
-            const adjustment = await this.connection.getRepository(ctx, StockAdjustment).save(
-                new StockAdjustment({
-                    quantity: delta,
-                    stockLocation: { id: input.stockLocationId },
-                    productVariant: { id: productVariantId },
-                }),
-            );
-            await this.stockLevelService.updateStockOnHandForLocation(
-                ctx,
+            // One locked read for every location of this variant, before the first delta is
+            // computed. It must be the locking read rather than a plain one: on MySQL and MariaDB a
+            // plain SELECT under REPEATABLE READ returns the transaction's opening snapshot, which
+            // for a transaction that waited on the lock is the value from before the other
+            // adjustment committed.
+            const lockedStockLevels = await this.stockLevelService.getLockedStockLevelsForVariant(
+                txCtx,
                 productVariantId,
-                input.stockLocationId,
-                delta,
             );
-            await this.eventBus.publish(new StockMovementEvent(ctx, [adjustment]));
-            adjustments.push(adjustment);
-        }
+            // Keyed by stock location, so that two inputs for the same location in one call each
+            // apply their delta to the value the previous one produced, rather than both to the
+            // value read above.
+            const stockOnHandByLocation = new Map<string, number>(
+                lockedStockLevels.map(level => [String(level.stockLocationId), level.stockOnHand]),
+            );
+            const adjustments: StockAdjustment[] = [];
+            for (const input of stockOnHandInputs) {
+                const locationKey = String(input.stockLocationId);
+                if (!stockOnHandByLocation.has(locationKey)) {
+                    // No row for this location yet, so there is nothing to lock and nothing stale.
+                    // `getStockLevel` creates it with a `stockOnHand` of 0.
+                    const created = await this.stockLevelService.getStockLevel(
+                        txCtx,
+                        productVariantId,
+                        input.stockLocationId,
+                    );
+                    stockOnHandByLocation.set(locationKey, created.stockOnHand);
+                }
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const oldStockLevel = stockOnHandByLocation.get(locationKey)!;
+                const newStockLevel = input.stockOnHand;
+                if (oldStockLevel === newStockLevel) {
+                    continue;
+                }
+                const delta = newStockLevel - oldStockLevel;
+                stockOnHandByLocation.set(locationKey, newStockLevel);
+                const adjustment = await this.connection.getRepository(txCtx, StockAdjustment).save(
+                    new StockAdjustment({
+                        quantity: delta,
+                        stockLocation: { id: input.stockLocationId },
+                        productVariant: { id: productVariantId },
+                    }),
+                );
+                await this.stockLevelService.updateStockOnHandForLocation(
+                    txCtx,
+                    productVariantId,
+                    input.stockLocationId,
+                    delta,
+                );
+                await this.eventBus.publish(new StockMovementEvent(txCtx, [adjustment]));
+                adjustments.push(adjustment);
+            }
 
-        return adjustments;
+            return adjustments;
+        });
     }
 
     /**
@@ -171,13 +211,8 @@ export class StockMovementService {
             // fulfillment's lines in one call. Shortfalls are therefore grouped by the Order the
             // shortfalling line belongs to, so each StockShortfallEvent references the right Order.
             const shortfallsByOrder = new Map<ID, { order: Order; shortfalls: StockShortfall[] }>();
-            const globalTrackInventory = (await this.globalSettingsService.getSettings(txCtx))
-                .trackInventory;
+            const globalTrackInventory = (await this.globalSettingsService.getSettings(txCtx)).trackInventory;
 
-            // Load the order lines up front and process them in a deterministic order (by
-            // productVariantId), so concurrent allocation batches acquire the per-variant stock
-            // locks in the same global order and cannot deadlock when two Orders reference the same
-            // variants in a different sequence.
             const orderLinesToAllocate = await Promise.all(
                 lines.map(async ({ orderLineId, quantity }) => ({
                     orderLine: await this.connection.getEntityOrThrow(txCtx, OrderLine, orderLineId, {
@@ -186,10 +221,9 @@ export class StockMovementService {
                     quantity,
                 })),
             );
-            orderLinesToAllocate.sort((a, b) =>
-                `${a.orderLine.productVariantId}`.localeCompare(`${b.orderLine.productVariantId}`, undefined, {
-                    numeric: true,
-                }),
+            await this.stockLevelService.lockStockLevelsForVariants(
+                txCtx,
+                orderLinesToAllocate.map(({ orderLine }) => orderLine.productVariantId),
             );
 
             for (const { orderLine, quantity } of orderLinesToAllocate) {
@@ -204,8 +238,11 @@ export class StockMovementService {
                     orderLine,
                     quantity,
                 );
+                const trackInventory = this.trackInventoryForVariant(productVariant, globalTrackInventory);
                 const allocatedForLine = allocationLocations.reduce((sum, l) => sum + l.quantity, 0);
-                if (allocatedForLine < quantity) {
+                // A variant which does not track inventory has no stock to fall short of, even
+                // when it has no StockLevel in the Channel's locations and so gets no allocation.
+                if (trackInventory && allocatedForLine < quantity) {
                     const shortfall: StockShortfall = {
                         productVariantId: orderLine.productVariantId,
                         orderLineId: orderLine.id,
@@ -231,7 +268,7 @@ export class StockMovementService {
                     });
                     allocations.push(allocation);
 
-                    if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
+                    if (trackInventory) {
                         await this.stockLevelService.updateStockAllocatedForLocation(
                             txCtx,
                             orderLine.productVariantId,
@@ -276,6 +313,10 @@ export class StockMovementService {
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
             .find({ where: { id: In(lines.map(line => line.orderLineId)) } });
+        await this.stockLevelService.lockStockLevelsForVariants(
+            ctx,
+            orderLines.map(line => line.productVariantId),
+        );
         for (const lineRow of lines) {
             const orderLine = orderLines.find(line => idsAreEqual(line.id, lineRow.orderLineId));
             if (!orderLine) {
@@ -341,6 +382,11 @@ export class StockMovementService {
             relations: { productVariant: true },
         });
 
+        await this.stockLevelService.lockStockLevelsForVariants(
+            ctx,
+            orderLines.map(line => line.productVariantId),
+        );
+
         const cancellations: Cancellation[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         for (const orderLine of orderLines) {
@@ -391,6 +437,10 @@ export class StockMovementService {
             where: { id: In(lineInputs.map(l => l.orderLineId)) },
             relations: { productVariant: true },
         });
+        await this.stockLevelService.lockStockLevelsForVariants(
+            ctx,
+            orderLines.map(line => line.productVariantId),
+        );
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         const variantsMap = new Map<ID, ProductVariant>();
         for (const orderLine of orderLines) {

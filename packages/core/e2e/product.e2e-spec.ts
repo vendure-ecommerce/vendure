@@ -4,6 +4,7 @@ import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
+import { Logger as TypeOrmLogger } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type {
     productVariantFragment,
@@ -15,6 +16,7 @@ import type { ResultOf, VariablesOf } from './graphql/graphql-admin';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
+import { graphql } from './graphql/graphql-admin';
 import {
     addOptionGroupToProductDocument,
     createProductDocument,
@@ -41,8 +43,26 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Product resolver', () => {
+    /** The number of SQL queries run since it was last reset to 0. */
+    let sqlQueryCount = 0;
+    const countingLogger: TypeOrmLogger = {
+        logQuery: () => {
+            sqlQueryCount++;
+        },
+        logQueryError: () => undefined,
+        logQuerySlow: () => undefined,
+        logSchemaBuild: () => undefined,
+        logMigration: () => undefined,
+        log: () => undefined,
+    };
+    const config = testConfig();
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig(),
+        ...config,
+        dbConnectionOptions: {
+            ...config.dbConnectionOptions,
+            logging: ['query'],
+            logger: countingLogger,
+        },
     });
 
     const removeOptionGuard: ErrorResultGuard<ResultOf<typeof productWithOptionsFragment>> =
@@ -226,6 +246,36 @@ describe('Product resolver', () => {
                 'Tripod',
                 'USB Cable',
             ]);
+        });
+
+        // #5537 — Product.facetValues ran several SQL queries per product on a product list
+        it('resolves facetValues with a number of queries independent of the page size', async () => {
+            const countQueries = async (take: number) => {
+                // The first request warms up caches which are not part of the field resolver
+                await adminClient.query(getProductListFacetValuesDocument, { options: { take } });
+                sqlQueryCount = 0;
+                await adminClient.query(getProductListFacetValuesDocument, { options: { take } });
+                return sqlQueryCount;
+            };
+
+            expect(await countQueries(20)).toBe(await countQueries(2));
+        });
+
+        // #5537
+        it('resolves the same facetValues on the list as on a single product, ordered by id', async () => {
+            const { products } = await adminClient.query(getProductListFacetValuesDocument, {
+                options: { take: 20 },
+            });
+            const productsWithFacetValues = products.items.filter(p => p.facetValues.length > 0);
+            // The fixture shares FacetValues between products, which a single batch must give to each
+            expect(productsWithFacetValues.length).toBeGreaterThan(1);
+
+            for (const item of products.items) {
+                const { product } = await adminClient.query(getProductFacetValuesDocument, { id: item.id });
+                const ids = item.facetValues.map(fv => fv.id);
+                expect(ids).toEqual(product?.facetValues.map(fv => fv.id));
+                expect(ids).toEqual([...ids].sort((a, b) => Number(a.slice(2)) - Number(b.slice(2))));
+            }
         });
     });
 
@@ -2173,3 +2223,27 @@ describe('Product resolver', () => {
         return createProductOptionGroup;
     }
 });
+
+const getProductListFacetValuesDocument = graphql(`
+    query GetProductListFacetValues($options: ProductListOptions) {
+        products(options: $options) {
+            items {
+                id
+                facetValues {
+                    id
+                }
+            }
+        }
+    }
+`);
+
+const getProductFacetValuesDocument = graphql(`
+    query GetProductFacetValues($id: ID!) {
+        product(id: $id) {
+            id
+            facetValues {
+                id
+            }
+        }
+    }
+`);
