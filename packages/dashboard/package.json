@@ -38,10 +38,10 @@
     },
     "module": "./src/lib/index.ts",
     "main": "./src/lib/index.ts",
-    "types": "./src/lib/index.d.ts",
+    "types": "./src/lib/index.ts",
     "exports": {
         ".": {
-            "types": "./src/lib/index.d.ts",
+            "types": "./src/lib/index.ts",
             "import": "./src/lib/index.ts",
             "require": "./src/lib/index.ts"
         },
