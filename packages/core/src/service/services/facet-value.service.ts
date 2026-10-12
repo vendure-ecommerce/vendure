@@ -8,6 +8,7 @@ import {
     UpdateFacetValueInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import DataLoader from 'dataloader';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -179,13 +180,13 @@ export class FacetValueService {
             .innerJoin('product.facetValues', 'facetValue')
             .select('product.id', 'productId')
             .addSelect('facetValue.id', 'facetValueId')
-            .where('product.id IN (:...productIds)', { productIds: this.uniqueIds(productIds) })
+            .where('product.id IN (:...productIds)', { productIds: unique(productIds) })
             // An IN (...) query gives no row order guarantee, so sort to keep the order of
             // `Product.facetValues` stable for API clients.
             .orderBy('facetValue.id', 'ASC')
             .getRawMany();
         // One channel-filtered read for the whole batch.
-        const facetValues = await this.findByIds(ctx, this.uniqueIds(links.map(link => link.facetValueId)));
+        const facetValues = await this.findByIds(ctx, unique(links.map(link => link.facetValueId)));
         const facetValuesById = new Map(facetValues.map(facetValue => [String(facetValue.id), facetValue]));
         const byProductId = new Map<string, Array<Translated<FacetValue>>>();
         for (const { productId, facetValueId } of links) {
@@ -202,10 +203,6 @@ export class FacetValueService {
             }
         }
         return productIds.map(id => byProductId.get(String(id)) ?? []);
-    }
-
-    private uniqueIds(ids: ID[]): ID[] {
-        return [...new Map(ids.map(id => [String(id), id])).values()];
     }
 
     /**
