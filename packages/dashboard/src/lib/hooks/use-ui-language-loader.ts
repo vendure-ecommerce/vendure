@@ -18,14 +18,17 @@ export function useUiLanguageLoader() {
 
     const loadAndActivateLocale = useCallback(
         async (locale: string) => {
-            if (currentlyLoading === locale || i18n.locale === locale) {
+            // Catalogs are named after the LanguageCode (e.g. `zh_Hans`), but Lingui passes
+            // the active locale to `Intl.PluralRules`, which only accepts BCP 47 tags (`zh-Hans`).
+            const bcp47Locale = locale.replace(/_/g, '-');
+            if (currentlyLoading === locale || i18n.locale === bcp47Locale) {
                 return;
             }
             currentlyLoading = locale;
             try {
                 const messages = await loadI18nMessages(locale);
-                i18n.load(locale, messages);
-                i18n.activate(locale);
+                i18n.load(bcp47Locale, messages);
+                i18n.activate(bcp47Locale);
             } finally {
                 currentlyLoading = null;
             }
