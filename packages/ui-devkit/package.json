@@ -23,7 +23,8 @@
     "types": "client/index.d.ts",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vendurehq/vendure"
+        "url": "git+https://github.com/vendurehq/vendure.git",
+        "directory": "packages/ui-devkit"
     },
     "scripts": {
         "build:client": "rimraf ./client && rollup -c rollup.config.mjs --configProduction",
