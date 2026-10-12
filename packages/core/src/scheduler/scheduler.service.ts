@@ -78,10 +78,12 @@ export class SchedulerService implements OnApplicationBootstrap, OnApplicationSh
         const startTime = Date.now();
         // If any tasks are still running, wait a short time for them to finish
         const maxWaitTime = 10_000;
-        while (this.runningTasks > 0 && Date.now() - startTime < maxWaitTime) {
+        if (this.runningTasks > 0) {
             Logger.warn(
                 `Waiting for ${this.runningTasks} running tasks to finish before shutting down (signal: ${signal ?? 'unknown'})`,
             );
+        }
+        while (this.runningTasks > 0 && Date.now() - startTime < maxWaitTime) {
             await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
@@ -171,14 +173,15 @@ export class SchedulerService implements OnApplicationBootstrap, OnApplicationSh
                 name: task.id,
                 protect: task.options.preventOverlap ? protectCallback : undefined,
             },
-            () => {
+            async () => {
                 if (this.shouldRunTasks) {
                     // Only execute the cron task on the worker process
                     // so that any expensive logic does not affect
                     // the responsiveness of server processes
                     this.runningTasks++;
                     try {
-                        schedulerStrategy.executeTask(task)(job);
+                        // Awaiting keeps croner's `protect` blocking for the full run
+                        await schedulerStrategy.executeTask(task)(job);
                     } catch (e: any) {
                         const message = e instanceof Error ? e.message : String(e);
                         Logger.error(`Error executing scheduled task ${task.id}: ${message}`);
