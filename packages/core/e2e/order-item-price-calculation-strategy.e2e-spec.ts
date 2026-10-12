@@ -1,4 +1,4 @@
-import { DefaultSearchPlugin, mergeConfig } from '@vendure/core';
+import { mergeConfig } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -26,7 +26,6 @@ describe('custom OrderItemPriceCalculationStrategy', () => {
             orderOptions: {
                 orderItemPriceCalculationStrategy: new TestOrderItemPriceCalculationStrategy(),
             },
-            plugins: [DefaultSearchPlugin],
         }),
     );
 
@@ -42,8 +41,7 @@ describe('custom OrderItemPriceCalculationStrategy', () => {
             customerCount: 3,
         });
         await adminClient.asSuperAdmin();
-        // Read the variant price from the catalog rather than the search index, since
-        // the index may not yet be fully populated when this setup runs.
+        // Don't read prices via the `search` query here: the index may still be filling.
         const { product } = await adminClient.query(getProductWithVariantsDocument, { id: 'T_1' });
         const variant = product?.variants[0];
         if (!variant) {
