@@ -259,6 +259,21 @@ test.describe('Detail page starting values (setValuesForCreate)', () => {
         await expect(textbox(page, 'Info URL')).toHaveValue(`https://example.com/${preset}`);
     });
 
+    test('is not dirty after a create that stays on the page', async ({ page }) => {
+        // Unique per attempt, so a CI retry does not reuse the slug from the first run.
+        await page.goto(`/starting-values-test/stay-${Date.now()}/new`);
+        const create = page.getByRole('button', { name: 'Create', exact: true });
+        const createResponse = page.waitForResponse(res =>
+            (res.request().postData() ?? '').includes('mutation StartingValuesTestCreateProduct('),
+        );
+        await create.click();
+        await createResponse;
+
+        await expect(create).toBeDisabled();
+        await page.getByRole('link', { name: 'Leave page' }).click();
+        await expect(page).toHaveURL(/\/form-inputs-test$/);
+    });
+
     test('enables the button on a DetailPage create page filled by starting values', async ({ page }) => {
         await page.goto('/starting-values-detail-page-test/first/new');
         await expect(textbox(page, 'name')).toHaveValue('Prefilled first');

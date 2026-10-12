@@ -58,7 +58,7 @@ export function StartingValuesTestPage({ route }: { route: AnyRoute }) {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === 'new';
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         pageId: 'starting-values-test',
         entityName: 'Product',
         queryDocument: productDocument,
@@ -92,7 +92,13 @@ export function StartingValuesTestPage({ route }: { route: AnyRoute }) {
             },
         }),
         onSuccess: async data => {
-            if (creatingNewEntity) {
+            if (!creatingNewEntity) {
+                return;
+            }
+            // A "stay" preset keeps the create page open after saving, like a page that returns to its parent.
+            if (params.preset.startsWith('stay')) {
+                resetForm();
+            } else {
                 await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },

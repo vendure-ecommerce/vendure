@@ -249,19 +249,12 @@ export function useGeneratedForm<
             : processedDefaultValues;
         return applyNullableSelectCustomFieldDefaults(raw, customFieldConfig);
     }, [processedEntity, processedDefaultValues, updateFields, customFieldConfig]);
-    const startingFormValues = useMemo(
-        () => (startingValues ? mergeStartingValues(values, startingValues) : undefined),
-        [values, startingValues],
-    );
 
     const form = useForm({
         resolver: zodResolver(schema),
         mode: 'onChange',
         defaultValues: processedDefaultValues,
-        values: startingFormValues ?? values,
-        // Keep the defaults as the baseline, so the starting values count as unsaved changes and the
-        // page's submit button is enabled.
-        resetOptions: { keepDefaultValues: !!startingFormValues },
+        values,
     });
     // Read `dirtyFields` here, during render, so react-hook-form's lazily-tracked `formState`
     // Proxy actually populates it. If it were only read inside the submit handler it could come
@@ -282,6 +275,16 @@ export function useGeneratedForm<
             void form.trigger();
         }
     }, [valuesKey]);
+
+    // Put the starting values on top of the defaults. The defaults stay the baseline, so the starting
+    // values count as unsaved changes. Keep this below `useForm`: it must run after react-hook-form
+    // resets the form to `values`, which also happens whenever `values` changes.
+    const startingValuesKey = JSON.stringify(startingValues);
+    useEffect(() => {
+        if (startingValues) {
+            form.reset(mergeStartingValues(values, startingValues), { keepDefaultValues: true });
+        }
+    }, [valuesKey, startingValuesKey]);
 
     let submitHandler = (event: FormEvent): any => {
         event.preventDefault();
