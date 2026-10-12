@@ -9,7 +9,8 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/vendurehq/vendure"
+        "url": "git+https://github.com/vendurehq/vendure.git",
+        "directory": "packages/harden-plugin"
     },
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
