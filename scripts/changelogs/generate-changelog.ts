@@ -40,6 +40,12 @@ const VALID_SCOPES: string[] = [
     'telemetry-plugin',
 ];
 
+/**
+ * The default conventional-commits header pattern, plus `,` in the scope so that commits such as
+ * `feat(core,dashboard): ...` are parsed instead of silently dropped.
+ */
+const HEADER_PATTERN = /^(\w*)(?:\(([\w$.\-*/, ]*)\))?: (.*)$/;
+
 const mainTemplate = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');
 const commitTemplate = fs.readFileSync(path.join(__dirname, 'commit.hbs'), 'utf-8');
 
@@ -55,6 +61,7 @@ function generateChangelogForPackage() {
     conventionalChangelogCore(
         {
             transform: (commit: any, context: any) => {
+                restoreDoubleRevert(commit);
                 const includeCommit = VALID_TYPES.includes(commit.type) && scopeIsValid(commit.scope);
                 if (includeCommit) {
                     return context(null, commit);
@@ -69,7 +76,7 @@ function generateChangelogForPackage() {
             version: require('../../lerna.json').version,
         },
         null,
-        null,
+        { headerPattern: HEADER_PATTERN },
         {
             mainTemplate,
             commitPartial: commitTemplate,
@@ -88,6 +95,21 @@ function generateChangelogForPackage() {
                     fs.unlinkSync(tempFile);
                 });
         });
+}
+
+/**
+ * A `Revert "Revert "<header>""` commit re-applies the original change, but its own header matches
+ * no conventional-commit type, so it would be dropped. Treat it as the original commit instead.
+ */
+function restoreDoubleRevert(commit: any) {
+    const originalHeader = commit.revert?.header?.match(/^Revert "(.*)"$/)?.[1];
+    const parsed = originalHeader?.match(HEADER_PATTERN);
+    if (!parsed) {
+        return;
+    }
+    [, commit.type, commit.scope, commit.subject] = parsed;
+    commit.header = originalHeader;
+    commit.revert = null;
 }
 
 function scopeIsValid(scope?: string): boolean {
