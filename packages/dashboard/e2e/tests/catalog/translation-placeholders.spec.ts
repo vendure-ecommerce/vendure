@@ -338,6 +338,54 @@ test.describe('Translation fallback placeholders', () => {
         });
     });
 
+    // A create page with `setValuesForCreate`, reached from an edit page while the page stays mounted,
+    // must compare the form against the create defaults, not the edited product. Otherwise the
+    // product's `de` row makes the empty `de` row count as changed, and the create fails with
+    // "The "name" field cannot be blank".
+    test('a create page with starting values opened from an edit page creates the product', async ({
+        page,
+    }) => {
+        const client = new VendureAdminClient(page);
+        await client.login();
+        const suffix = Date.now();
+        const { createProduct } = await client.gql(
+            `mutation ($input: CreateProductInput!) { createProduct(input: $input) { id } }`,
+            {
+                input: {
+                    translations: [
+                        {
+                            languageCode: 'en',
+                            name: `Edit to new ${suffix}`,
+                            slug: `edit-to-new-${suffix}`,
+                            description: '',
+                        },
+                        {
+                            languageCode: 'de',
+                            name: `Edit to new DE ${suffix}`,
+                            slug: `edit-to-new-de-${suffix}`,
+                            description: '',
+                        },
+                    ],
+                },
+            },
+        );
+
+        await page.goto(`/starting-values-test/first/${String(createProduct.id)}`);
+        await expect(page.getByRole('button', { name: 'Update', exact: true })).toBeVisible({
+            timeout: 10_000,
+        });
+        await page.getByRole('link', { name: 'Open create page with preset "other"' }).click();
+        await expect(page).toHaveURL(/\/starting-values-test\/other\/new$/);
+        await page.getByRole('button', { name: 'Create', exact: true }).click();
+        await expect(page).toHaveURL(/\/starting-values-test\/other\/(?!new$)[^/]+$/);
+
+        // Clean up both products so the suite stays re-runnable.
+        const createdId = new URL(page.url()).pathname.split('/').pop();
+        for (const id of [createProduct.id, createdId]) {
+            await client.gql(`mutation ($id: ID!) { deleteProduct(id: $id) { result } }`, { id });
+        }
+    });
+
     // #5476 — a language added to an existing entity must get a generated slug, not an empty one
     test('generates the slug of a new language on an existing collection', async ({ page }) => {
         const stamp = Date.now();
