@@ -69,7 +69,6 @@ describe('useUiLanguageLoader', () => {
 
         expect(loadI18nMessages).toHaveBeenCalledWith(languageCode);
         expect(i18n.locale).toBe(bcp47);
-        expect(() => i18n._(pluralMessageId, { count: 2 })).not.toThrow();
         expect(i18n._(pluralMessageId, { count: 2 })).toBe('2 items');
     });
 

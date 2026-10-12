@@ -1,4 +1,5 @@
 import { loadI18nMessages } from '@/vdb/lib/load-i18n-messages.js';
+import { toBcp47Tag } from '@/vdb/lib/utils.js';
 import { useLingui } from '@lingui/react/macro';
 import { useCallback } from 'react';
 
@@ -20,7 +21,7 @@ export function useUiLanguageLoader() {
         async (locale: string) => {
             // Catalogs are named after the LanguageCode (e.g. `zh_Hans`), but Lingui passes
             // the active locale to `Intl.PluralRules`, which only accepts BCP 47 tags (`zh-Hans`).
-            const bcp47Locale = locale.replace(/_/g, '-');
+            const bcp47Locale = toBcp47Tag(locale);
             if (currentlyLoading === locale || i18n.locale === bcp47Locale) {
                 return;
             }
