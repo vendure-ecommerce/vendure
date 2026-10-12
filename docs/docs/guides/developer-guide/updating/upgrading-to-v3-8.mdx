@@ -18,7 +18,6 @@ Every project:
 Check these if they apply to you:
 
 - [ ] Storefronts: handle the new [checkout refusal for ineligible shipping methods](#checkout-recalculates-prices-and-re-checks-shipping-eligibility).
-- [ ] API clients that send empty strings for required fields: see [blank-string rejection](#blank-strings-are-rejected-for-required-fields).
 - [ ] Plugins that read `ctx.session.token` in job queue workers: see [session token on workers](#requestcontextsessiontoken-is-optional).
 - [ ] Custom resolvers or event handlers for Product, ProductVariant or Collection updates: see [partial updates from the Dashboard](#the-dashboard-sends-only-changed-fields-for-some-updates).
 - [ ] Custom authentication strategies and SSO flows: see [session API binding](#admin-api-sessions-are-bound-to-the-admin-api).
@@ -224,26 +223,6 @@ export const config: VendureConfig = {
 ```
 
 See [Configuring the default order process](/core-concepts/orders/#configuring-the-default-order-process).
-
-## Blank strings are rejected for required fields
-
-**Who is affected:** API clients and integrations that send `""` or whitespace-only strings for required fields in mutations.
-
-A new input validation step rejects empty or whitespace-only strings for business-required fields on top-level mutation inputs, such as a product name, a facet code or a channel token. These requests now fail with a `UserInputError` (`field-cannot-be-blank`) instead of saving a blank value. Description fields and fields that Vendure fills in itself are not checked.
-
-**What to do:** fix the clients so they send real values. If you can't update them in time, turn the check off:
-
-```ts title="src/vendure-config.ts"
-export const config: VendureConfig = {
-    apiOptions: {
-        inputValidation: {
-            requiredFieldValidation: false,
-        },
-    },
-};
-```
-
-See [`ApiOptions`](/reference/typescript-api/configuration/api-options/).
 
 ## `RequestContext.session.token` is optional
 
