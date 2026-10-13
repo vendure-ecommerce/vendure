@@ -102,7 +102,7 @@ Nothing has been taken out of Core to make room for a paid plan. A licence alrea
 
 # What's in this repo
 
-This is the Vendure source monorepo: the `@vendure/core` framework, the React and TanStack admin dashboard, the CLI, the official plugins, and an e2e testing harness. To build with Vendure, run `npx @vendure/create` (see [Getting started](#getting-started)) rather than cloning; clone this repo only to contribute to Vendure itself.
+This is the Vendure source monorepo: the `@vendure/core` framework, the React and TanStack admin dashboard, the CLI, the official plugins, and an e2e testing harness. To build with Vendure, run `npx @vendure/create` (see [Getting started](#installation)) rather than cloning; clone this repo only to contribute to Vendure itself.
 
 # Contribution
 
