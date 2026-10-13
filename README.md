@@ -65,7 +65,7 @@ Vendure runs anywhere Node.js runs, including Docker, Kubernetes, a single VM or
 
 Plugins let you extend or replace any of the features below.
 
-| | |
+| Feature | What it covers |
 |---|---|
 | **[Catalog](https://docs.vendure.io/guides/core-concepts/products/)** | Products, variants, facets, collections and [custom fields](https://docs.vendure.io/guides/developer-guide/custom-fields/) on any entity |
 | **[Orders](https://docs.vendure.io/guides/core-concepts/orders/)** | Carts, draft orders, modifications, fulfillment and returns |
