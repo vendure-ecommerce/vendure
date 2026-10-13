@@ -239,6 +239,12 @@
           "lastModified": "2026-08-25T13:46:09-04:00"
         },
         {
+          "title": "Secret Fields",
+          "slug": "secret-fields",
+          "file": "docs/guides/developer-guide/secret-fields/index.mdx",
+          "lastModified": "2026-07-31T11:54:35+02:00"
+        },
+        {
           "title": "Error Handling",
           "slug": "error-handling",
           "file": "docs/guides/developer-guide/error-handling/index.mdx",
