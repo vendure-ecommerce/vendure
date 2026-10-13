@@ -264,6 +264,7 @@ export async function assertRoleAssignmentDataMigrated(queryRunner: QueryRunner)
 }
 
 interface TableNames {
+    user: string;
     role: string;
     channel: string;
     roleAssignment: string;
@@ -280,6 +281,7 @@ interface TableNames {
 function getTableNames(queryRunner: QueryRunner): TableNames {
     const prefix = queryRunner.connection.options.entityPrefix ?? '';
     return {
+        user: `${prefix}user`,
         role: `${prefix}role`,
         channel: `${prefix}channel`,
         roleAssignment: `${prefix}role_assignment`,
@@ -386,25 +388,22 @@ function getPendingGrantQueries(
     };
 }
 
-const MAX_REPORTED_MISMATCHES = 20;
+const MAX_REPORTED_USERS = 20;
+const MAX_FETCHED_MISMATCHES = 500;
 
 /**
  * Checks that `role_assignment` holds exactly the grants the legacy tables describe under
  * the v4 rules: every legacy triple except the Customer role's, and one default-channel
- * row per SuperAdmin holder. Throws, listing the offending triples, on any missing or
- * extra row. An extra row is most likely a grant which was revoked in the legacy tables
- * after an earlier pass of a staged rollout copied it.
+ * row per SuperAdmin holder. Throws on any missing or extra row, naming the affected
+ * users, roles and channels. An extra row is most likely a grant which was revoked in the
+ * legacy tables after an earlier pass of a staged rollout copied it.
  */
 async function verifyRoleAssignmentData(queryRunner: QueryRunner, sources: SourceTables): Promise<void> {
     const esc = (name: string) => queryRunner.connection.driver.escape(name);
     const t = getTableNames(queryRunner);
     const pending = getPendingGrantQueries(queryRunner, sources);
-    const missing: Triple[] = [
-        ...(await queryRunner.query(`${pending.legacyGrants} LIMIT ${MAX_REPORTED_MISMATCHES}`)),
-        ...(await queryRunner.query(`${pending.superAdminGrants} LIMIT ${MAX_REPORTED_MISMATCHES}`)),
-    ];
-    const extra: Triple[] = await queryRunner.query(
-        `SELECT ra.${esc('userId')}, ra.${esc('roleId')}, ra.${esc('channelId')}
+    const missingQuery = `${pending.legacyGrants} UNION ALL ${pending.superAdminGrants}`;
+    const extraQuery = `SELECT ra.${esc('userId')} AS ${esc('userId')}, ra.${esc('roleId')} AS ${esc('roleId')}, ra.${esc('channelId')} AS ${esc('channelId')}
          FROM ${esc(t.roleAssignment)} ra
          LEFT JOIN ${esc(t.role)} r ON r.${esc('id')} = ra.${esc('roleId')}
          WHERE NOT (
@@ -425,28 +424,103 @@ async function verifyRoleAssignmentData(queryRunner: QueryRunner, sources: Sourc
                      WHERE ur.${esc('userId')} = ra.${esc('userId')}
                      AND ur.${esc('roleId')} = ra.${esc('roleId')}
                  ))
-         )
-         LIMIT ${MAX_REPORTED_MISMATCHES}`,
-    );
-    if (missing.length === 0 && extra.length === 0) {
+         )`;
+    const missing = await describeGrants(queryRunner, missingQuery);
+    const extra = await describeGrants(queryRunner, extraQuery);
+    if (missing.total === 0 && extra.total === 0) {
         return;
     }
-    const format = (triples: Triple[]) =>
-        triples.map(row => `  user ${row.userId}, role ${row.roleId}, channel ${row.channelId}`).join('\n');
-    throw new Error(
-        `Role assignment verification failed: ${t.roleAssignment} does not match the legacy ` +
-            `${sources.userRoles} and ${sources.roleChannels} tables. The legacy tables have not been ` +
-            'modified. Showing up to ' +
-            `${MAX_REPORTED_MISMATCHES} rows per kind.` +
-            (missing.length ? `\nGranted by the legacy tables but missing:\n${format(missing)}` : '') +
-            (extra.length ? `\nPresent but not granted by the legacy tables:\n${format(extra)}` : ''),
-    );
+    const lines = [
+        'Role assignment verification failed: the copied role assignments do not match the ' +
+            'pre-v4 grants. The legacy tables have not been changed, so the migration can be run ' +
+            'again once the cause is fixed.',
+    ];
+    if (missing.total) {
+        lines.push(
+            '',
+            `Would lose access (granted before v4, missing after the copy): ${missing.total} grant(s)`,
+            ...formatGrantsByUser(missing.grants),
+        );
+    }
+    if (extra.total) {
+        lines.push(
+            '',
+            `Would gain access (present after the copy, not granted before v4): ${extra.total} grant(s)`,
+            ...formatGrantsByUser(extra.grants),
+            '',
+            'A grant present but not granted before v4 is usually one which was revoked after an ' +
+                'earlier pass of a staged rollout copied it. Remove it from the role_assignment ' +
+                'table and run the migration again.',
+        );
+    }
+    throw new Error(lines.join('\n'));
 }
 
-interface Triple {
+interface DescribedGrant {
     userId: string | number;
+    userIdentifier: string | null;
     roleId: string | number;
+    roleCode: string | null;
     channelId: string | number;
+    channelCode: string | null;
+}
+
+/**
+ * Counts the grants a query yields and fetches up to MAX_FETCHED_MISMATCHES of them with
+ * the user identifier, role code and channel code they refer to.
+ */
+async function describeGrants(
+    queryRunner: QueryRunner,
+    grantsQuery: string,
+): Promise<{ total: number; grants: DescribedGrant[] }> {
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const t = getTableNames(queryRunner);
+    const countRows: Array<{ count: string | number }> = await queryRunner.query(
+        `SELECT COUNT(*) AS ${esc('count')} FROM (${grantsQuery}) g`,
+    );
+    const total = Number(countRows[0].count);
+    if (total === 0) {
+        return { total, grants: [] };
+    }
+    const grants: DescribedGrant[] = await queryRunner.query(
+        `SELECT g.${esc('userId')} AS ${esc('userId')}, u.${esc('identifier')} AS ${esc('userIdentifier')},
+                g.${esc('roleId')} AS ${esc('roleId')}, r.${esc('code')} AS ${esc('roleCode')},
+                g.${esc('channelId')} AS ${esc('channelId')}, c.${esc('code')} AS ${esc('channelCode')}
+         FROM (${grantsQuery}) g
+         LEFT JOIN ${esc(t.user)} u ON u.${esc('id')} = g.${esc('userId')}
+         LEFT JOIN ${esc(t.role)} r ON r.${esc('id')} = g.${esc('roleId')}
+         LEFT JOIN ${esc(t.channel)} c ON c.${esc('id')} = g.${esc('channelId')}
+         ORDER BY g.${esc('userId')}, g.${esc('roleId')}, g.${esc('channelId')}
+         LIMIT ${MAX_FETCHED_MISMATCHES}`,
+    );
+    return { total, grants };
+}
+
+/**
+ * One line per user: `  alice: order-manager on eu-store, store-03; sales on store-05`.
+ */
+function formatGrantsByUser(grants: DescribedGrant[]): string[] {
+    const byUser = new Map<string, Map<string, string[]>>();
+    for (const grant of grants) {
+        const user = grant.userIdentifier ?? `user ${grant.userId}`;
+        const role = grant.roleCode ?? `role ${grant.roleId}`;
+        const roles = byUser.get(user) ?? new Map<string, string[]>();
+        roles.set(role, [...(roles.get(role) ?? []), grant.channelCode ?? `channel ${grant.channelId}`]);
+        byUser.set(user, roles);
+    }
+    const lines = [...byUser.entries()]
+        .slice(0, MAX_REPORTED_USERS)
+        .map(
+            ([user, roles]) =>
+                `  ${user}: ` +
+                [...roles.entries()]
+                    .map(([role, channels]) => `${role} on ${channels.join(', ')}`)
+                    .join('; '),
+        );
+    if (byUser.size > MAX_REPORTED_USERS) {
+        lines.push(`  ... and more users, not shown`);
+    }
+    return lines;
 }
 
 /**

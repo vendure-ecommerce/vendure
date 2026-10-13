@@ -33,6 +33,9 @@ describe('migrateRoleAssignmentData()', () => {
             `CREATE TABLE "channel" ("id" integer PRIMARY KEY AUTOINCREMENT, "code" varchar NOT NULL)`,
         );
         await queryRunner.query(
+            `CREATE TABLE "user" ("id" integer PRIMARY KEY AUTOINCREMENT, "identifier" varchar NOT NULL)`,
+        );
+        await queryRunner.query(
             `CREATE TABLE "administrator" ("id" integer PRIMARY KEY AUTOINCREMENT,
              "deletedAt" datetime, "userId" integer)`,
         );
@@ -77,6 +80,10 @@ describe('migrateRoleAssignmentData()', () => {
         await queryRunner.query(
             `INSERT INTO "role_channels_channel" ("roleId", "channelId") VALUES
              (1, 1), (1, 2), (2, 1), (2, 2), (3, 2)`,
+        );
+        await queryRunner.query(
+            `INSERT INTO "user" ("id", "identifier") VALUES
+             (1, 'superadmin'), (2, 'sales-admin'), (3, 'customer-a'), (4, 'customer-b')`,
         );
         // user 1: superadmin, user 2: sales admin, user 3: customer,
         // user 4: customer who also holds the sales role (but is not an administrator)
@@ -181,7 +188,7 @@ describe('migrateRoleAssignmentData()', () => {
         );
 
         await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            /Present but not granted by the legacy tables:\n {2}user 2, role 3, channel 1/,
+            /Would gain access \(present after the copy, not granted before v4\): 1 grant\(s\)\n {2}sales-admin: sales on __default_channel__/,
         );
         // Nothing destructive runs before a successful verification
         const customerRoles = await queryRunner.query(
@@ -200,7 +207,7 @@ describe('migrateRoleAssignmentData()', () => {
         );
 
         await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            /Present but not granted by the legacy tables:\n {2}user 1, role 1, channel 2/,
+            /Would gain access .*: 1 grant\(s\)\n {2}superadmin: __super_admin_role__ on second/,
         );
     });
 
@@ -212,8 +219,23 @@ describe('migrateRoleAssignmentData()', () => {
         );
 
         await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            /Present but not granted by the legacy tables:\n {2}user 3, role 2, channel 1/,
+            /Would gain access .*: 1 grant\(s\)\n {2}customer-a: __customer_role__ on __default_channel__/,
         );
+    });
+
+    it('fails verification when grants go missing in the copy, naming the user', async () => {
+        await createSchema();
+        await seedData();
+        // a faulty copy: inserts for the sales admin are silently dropped
+        await queryRunner.query(
+            `CREATE TRIGGER "drop_sales_admin" BEFORE INSERT ON "role_assignment"
+             WHEN NEW."userId" = 2 BEGIN SELECT RAISE(IGNORE); END`,
+        );
+
+        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
+            /Would lose access \(granted before v4, missing after the copy\): 1 grant\(s\)\n {2}sales-admin: sales on second/,
+        );
+        expect(await queryRunner.hasTable('user_roles_role')).toBe(true);
     });
 
     it('generates uuid primary keys when the id column has no database-side default', async () => {
