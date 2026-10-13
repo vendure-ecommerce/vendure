@@ -5,7 +5,7 @@ import React from 'react';
  * The GraphQL schema cannot tell us this: `String!` permits '', and translation and update inputs
  * are nullable throughout.
  */
-const NON_BLANK_FIELD_NAMES = ['name', 'code', 'sku'];
+const NON_BLANK_FIELD_NAMES = new Set(['name', 'code', 'sku']);
 
 /**
  * Injects `id` and `aria-invalid` props onto the rendered element via cloneElement.
@@ -25,9 +25,7 @@ export function applyControlProps(
     if (!React.isValidElement(element)) return element;
     const elementProps = element.props as Record<string, unknown>;
     const nonBlank =
-        fieldName !== undefined &&
-        NON_BLANK_FIELD_NAMES.includes(fieldName) &&
-        elementProps.required !== false;
+        fieldName !== undefined && NON_BLANK_FIELD_NAMES.has(fieldName) && elementProps.required !== false;
     return React.cloneElement(
         element as React.ReactElement<Record<string, unknown>>,
         nonBlank ? { required: true, pattern: '.*\\S.*', ...props } : props,
