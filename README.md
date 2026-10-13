@@ -69,7 +69,7 @@ Vendure runs anywhere Node.js runs: Docker, Kubernetes, a single VM or any cloud
 
 ### Vendure Cloud
 
-[Vendure Cloud](https://vendure.io/cloud) is the managed runtime: git-push deploys, a preview environment for every pull request, and a managed database, queues, search, backups and scaling. It runs the same application you can self-host, so moving is a runtime change rather than a rebuild. Cloud is included in every paid plan at no extra cost, and is in design-partner preview ahead of general availability in Q1 2027.
+[Vendure Cloud](https://vendure.io/cloud) is the managed runtime: git-push deploys, a preview environment for every pull request, and a managed database, queues, search, backups and scaling. It runs the same application you can self-host, so you can move to Cloud without rebuilding it. Cloud is included in every paid plan at no extra cost, and is in design-partner preview ahead of general availability in Q1 2027.
 
 <br />
 
@@ -94,11 +94,7 @@ Core ships the commerce primitives. The plugin model is how you make them yours.
 
 # Beyond the open-source core
 
-Four paid plans sit on top of this repository: **Starter, Growth, Scale** and **Enterprise**. They add the commercial B2B layer: company accounts, quotes, contract pricing, organisation hierarchies, approvals, single sign-on and audit trails, along with direct support from the team that builds Vendure and a commercial licence. Vendure Cloud is included in every paid plan at no extra cost. See [plans and pricing](https://vendure.io/pricing).
-
-# Open source, and staying that way
-
-Nothing has been taken out of Core to make room for a paid plan. A licence already granted cannot be withdrawn, so every version of Core we have released stays free to use, fork and self-host. We make no money from Core: everything we sell sits on top of it, which is exactly why we can afford to leave it alone.
+Four paid plans are built on top of this repository: **Starter, Growth, Scale** and **Enterprise**. They add commercial B2B features such as company accounts, quotes, contract pricing, organisation hierarchies, approvals, single sign-on and audit trails, along with direct support from the team that builds Vendure and a commercial licence. Vendure Cloud is included in every paid plan at no extra cost. See [plans and pricing](https://vendure.io/pricing).
 
 # What's in this repo
 
