@@ -15,11 +15,31 @@ import { QueryRunner } from 'typeorm';
 export interface RoleAssignmentMigrationPreview {
     /**
      * @description
-     * Per Channel, how many Customers lose or gain the Customer role's permissions. Pre-v4,
-     * every holder of the Customer role held its permissions on every Channel the role was
-     * assigned to, regardless of membership. In v4, Customers hold `Authenticated` on their
-     * member Channels only. Counts are of Customer-role grants: a User may still hold the
-     * same permissions through another Role.
+     * Users holding at least one Role other than the Customer role (Administrators and API
+     * keys). Their permissions do not change: every grant is copied, which
+     * {@link migrateRoleAssignmentData} verifies before it changes anything.
+     */
+    administrators: {
+        userCount: number;
+        superAdminCount: number;
+        /**
+         * @description
+         * The number of `role_assignment` rows the migration will write.
+         */
+        assignmentCount: number;
+    };
+    /**
+     * @description
+     * The number of distinct Customers who lose access to at least one Channel.
+     */
+    customersLosingAccess: number;
+    /**
+     * @description
+     * Per Channel, how many Customers lose or gain access. Pre-v4, every holder of the
+     * Customer role held its permissions on every Channel the role was assigned to,
+     * regardless of membership. In v4, Customers hold `Authenticated` on their member
+     * Channels only. A User who keeps access to the Channel through another Role, or as a
+     * SuperAdmin, is not counted.
      */
     customerChannelChanges: Array<{
         channelId: string;
@@ -84,12 +104,18 @@ export async function previewRoleAssignmentMigration(
     const table = (name: string) => esc(`${prefix}${name}`);
     const customerRoleId = `(SELECT ${esc('id')} FROM ${table('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}')`;
 
-    const channelRows: Array<{ id: string | number; code: string }> = await queryRunner.query(
-        `SELECT ${esc('id')}, ${esc('code')} FROM ${table('channel')}`,
-    );
-    const losingRows: ChannelCountRow[] = await queryRunner.query(
-        `SELECT rc.${esc('channelId')} AS ${esc('channelId')}, COUNT(*) AS ${esc('count')}
-         FROM ${table('user_roles_role')} ur
+    // The User keeps access to the Channel through a Role other than the Customer role
+    const keepsAccessThroughOtherRole = (userId: string, channelId: string) =>
+        `EXISTS (
+             SELECT 1 FROM ${table('user_roles_role')} ur2
+             INNER JOIN ${table('role')} r2 ON r2.${esc('id')} = ur2.${esc('roleId')}
+             LEFT JOIN ${table('role_channels_channel')} rc2
+                 ON rc2.${esc('roleId')} = ur2.${esc('roleId')} AND rc2.${esc('channelId')} = ${channelId}
+             WHERE ur2.${esc('userId')} = ${userId}
+             AND r2.${esc('code')} <> '${CUSTOMER_ROLE_CODE}'
+             AND (r2.${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}' OR rc2.${esc('roleId')} IS NOT NULL)
+         )`;
+    const losingFrom = `FROM ${table('user_roles_role')} ur
          INNER JOIN ${table('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
          WHERE ur.${esc('roleId')} = ${customerRoleId}
          AND NOT EXISTS (
@@ -99,7 +125,18 @@ export async function previewRoleAssignmentMigration(
              AND cu.${esc('deletedAt')} IS NULL
              AND ccc.${esc('channelId')} = rc.${esc('channelId')}
          )
+         AND NOT ${keepsAccessThroughOtherRole(`ur.${esc('userId')}`, `rc.${esc('channelId')}`)}`;
+
+    const channelRows: Array<{ id: string | number; code: string }> = await queryRunner.query(
+        `SELECT ${esc('id')}, ${esc('code')} FROM ${table('channel')}`,
+    );
+    const losingRows: ChannelCountRow[] = await queryRunner.query(
+        `SELECT rc.${esc('channelId')} AS ${esc('channelId')}, COUNT(*) AS ${esc('count')}
+         ${losingFrom}
          GROUP BY rc.${esc('channelId')}`,
+    );
+    const customersLosingRows: CountRow[] = await queryRunner.query(
+        `SELECT COUNT(DISTINCT ur.${esc('userId')}) AS ${esc('count')} ${losingFrom}`,
     );
     const gainingRows: ChannelCountRow[] = await queryRunner.query(
         `SELECT ccc.${esc('channelId')} AS ${esc('channelId')}, COUNT(*) AS ${esc('count')}
@@ -114,7 +151,29 @@ export async function previewRoleAssignmentMigration(
              AND ur.${esc('roleId')} = ${customerRoleId}
              AND rc.${esc('channelId')} = ccc.${esc('channelId')}
          )
+         AND NOT ${keepsAccessThroughOtherRole(`cu.${esc('userId')}`, `ccc.${esc('channelId')}`)}
          GROUP BY ccc.${esc('channelId')}`,
+    );
+    const adminUserRows: CountRow[] = await queryRunner.query(
+        `SELECT COUNT(DISTINCT ur.${esc('userId')}) AS ${esc('count')}
+         FROM ${table('user_roles_role')} ur
+         INNER JOIN ${table('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
+         WHERE r.${esc('code')} <> '${CUSTOMER_ROLE_CODE}'`,
+    );
+    const superAdminRows: CountRow[] = await queryRunner.query(
+        `SELECT COUNT(DISTINCT ur.${esc('userId')}) AS ${esc('count')}
+         FROM ${table('user_roles_role')} ur
+         INNER JOIN ${table('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
+         WHERE r.${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}'`,
+    );
+    // The rows migrateRoleAssignmentData() writes: every triple except the Customer role's,
+    // plus one default-channel row per SuperAdmin
+    const grantRows: CountRow[] = await queryRunner.query(
+        `SELECT COUNT(*) AS ${esc('count')}
+         FROM ${table('user_roles_role')} ur
+         INNER JOIN ${table('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
+         INNER JOIN ${table('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
+         WHERE r.${esc('code')} NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')`,
     );
     const customerRoleRows: Array<{ permissions: string | null }> = await queryRunner.query(
         `SELECT ${esc('permissions')} FROM ${table('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
@@ -148,7 +207,14 @@ export async function previewRoleAssignmentMigration(
     // Role.permissions is a simple-array column: comma-joined permission names
     const customerRolePermissions = customerRoleRows[0]?.permissions?.split(',') ?? [];
 
+    const superAdminCount = Number(superAdminRows[0].count);
     return {
+        administrators: {
+            userCount: Number(adminUserRows[0].count),
+            superAdminCount,
+            assignmentCount: Number(grantRows[0].count) + superAdminCount,
+        },
+        customersLosingAccess: Number(customersLosingRows[0].count),
         customerChannelChanges,
         customerRoleDroppedPermissions: customerRolePermissions.filter(
             permission => permission !== 'Authenticated',
@@ -170,49 +236,52 @@ export async function previewRoleAssignmentMigration(
  * @docsPage previewRoleAssignmentMigration
  */
 export function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigrationPreview): string {
-    const lines: string[] = [
-        'Role assignment migration preview',
-        '=================================',
-        'Nothing has been changed. This shows how permissions will change when',
-        'migrateRoleAssignmentData() runs.',
-    ];
     const channelChanges = [...preview.customerChannelChanges].sort((a, b) =>
         compareIds(a.channelId, b.channelId),
     );
     const totalLosing = channelChanges.reduce((sum, change) => sum + change.customersLosingAccess, 0);
     const totalGaining = channelChanges.reduce((sum, change) => sum + change.customersGainingAccess, 0);
+    const lines: string[] = [
+        'Role assignment migration preview',
+        '=================================',
+        'Read-only: nothing has been changed. This shows what migrateRoleAssignmentData() will do.',
+    ];
 
     lines.push(
         '',
-        'Summary',
+        sectionHeader('Administrators and API keys', 'no change'),
         ...formatKeyValues([
-            ['Channels with customer access changes', formatCount(channelChanges.length)],
-            ['Customer channel accesses removed', formatCount(totalLosing)],
-            ['Customer channel accesses added', formatCount(totalGaining)],
-            ['Customer role permissions dropped', formatCount(preview.customerRoleDroppedPermissions.length)],
-            ['Roles assigned to no channel', formatCount(preview.rolesWithoutChannels.length)],
+            ['Users with admin roles', formatCount(preview.administrators.userCount)],
+            ['of which SuperAdmins', formatCount(preview.administrators.superAdminCount)],
+            ['Role assignments to be written', formatCount(preview.administrators.assignmentCount)],
         ]),
+        '',
+        '   Every administrator and API key keeps exactly the permissions they have today, on',
+        '   the same channels. The migration checks this before it changes anything, and stops',
+        '   if a single grant does not match.',
     );
-    if (
-        channelChanges.length === 0 &&
-        preview.customerRoleDroppedPermissions.length === 0 &&
-        preview.rolesWithoutChannels.length === 0
-    ) {
-        lines.push('', 'No behavior changes: every User keeps their current permissions.');
-        return lines.join('\n');
-    }
 
-    let section = 0;
-    if (channelChanges.length) {
+    lines.push('', sectionHeader('Shop customers', 'expected'));
+    if (channelChanges.length === 0) {
+        lines.push('   No change: every customer is a member of exactly the channels they can use today.');
+    } else {
         lines.push(
+            ...formatKeyValues([
+                ['Customers affected', formatCount(preview.customersLosingAccess)],
+                ['Channel accesses removed', formatCount(totalLosing)],
+                ['Channel accesses added', formatCount(totalGaining)],
+            ]),
             '',
-            `${++section}. Customer access per channel`,
-            '   Before v4, every customer could act on every channel the Customer role was assigned',
-            '   to, whether or not they were a member. From v4, a customer can act only on the',
-            '   channels they are a member of.',
+            '   This is a fix, not a loss. Before v4, the Customer role let every customer use',
+            '   every channel it was assigned to, including channels they never signed up to.',
+            '   From v4, a customer can use only the channels they are a member of. Their',
+            '   accounts, orders and memberships are untouched.',
+            '',
+            '   Customers who also hold an admin role on a channel keep their access there and',
+            '   are not counted.',
             '',
             ...formatTable(
-                ['Channel', 'Lose access', 'Gain access'],
+                ['Channel', 'Customers losing access', 'Customers gaining access'],
                 [
                     ...channelChanges.map(change => [
                         change.channelCode,
@@ -223,31 +292,32 @@ export function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigr
                 ],
             ),
             '',
-            '   Lose access: customers the Customer role covered on this channel who are not members',
-            '   of it (soft-deleted customers count as non-members).',
-            '   Gain access: members of a channel the Customer role did not cover.',
-            '   A user who is also an administrator may keep access through an admin role.',
-            '',
-            '   Before migrating, check that customer channel memberships are correct. A large',
-            '   "Lose access" count on a channel your customers use means memberships are missing.',
+            '   Losing access: the customer is not a member of the channel (a soft-deleted',
+            '   customer counts as not a member). Gaining access: the customer is a member of a',
+            '   channel the Customer role did not cover, usually one created programmatically.',
+            '   Check: if a channel your customers really use shows a high count, its customer',
+            '   memberships are incomplete. Add the missing memberships before migrating.',
         );
     }
+
     if (preview.customerRoleDroppedPermissions.length) {
         lines.push(
             '',
-            `${++section}. Customer role permissions that will be dropped`,
+            sectionHeader('Customer role permissions', 'action needed'),
             '   v4 has no Customer role. Customers hold only Authenticated on their member',
-            '   channels, so these extra permissions are lost on every channel:',
+            '   channels, so these permissions, added to the Customer role by hand, are lost:',
             ...preview.customerRoleDroppedPermissions.map(permission => `   - ${permission}`),
+            '   If customers need them, grant them another way before migrating.',
         );
     }
+
     if (preview.rolesWithoutChannels.length) {
         const roles = [...preview.rolesWithoutChannels].sort((a, b) => a.roleCode.localeCompare(b.roleCode));
         lines.push(
             '',
-            `${++section}. Roles assigned to no channel`,
-            '   These roles granted nothing before v4, so their holders lose nothing. Their',
-            '   holdings are not migrated; assign the roles per channel if they are still needed.',
+            sectionHeader('Roles assigned to no channel', 'info'),
+            '   These roles granted nothing before v4, so nobody loses access. They stay as roles',
+            '   but have no assignments; assign them per channel if they are still needed.',
             '',
             ...formatTable(
                 ['Role', 'Id', 'Holders'],
@@ -256,6 +326,12 @@ export function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigr
         );
     }
     return lines.join('\n');
+}
+
+const REPORT_WIDTH = 88;
+
+function sectionHeader(title: string, tag: string): string {
+    return title + `[${tag}]`.padStart(REPORT_WIDTH - title.length);
 }
 
 /**
@@ -291,6 +367,10 @@ function compareIds(a: string, b: string): number {
     const aNumber = Number(a);
     const bNumber = Number(b);
     return Number.isNaN(aNumber) || Number.isNaN(bNumber) ? a.localeCompare(b) : aNumber - bNumber;
+}
+
+interface CountRow {
+    count: string | number;
 }
 
 interface ChannelCountRow {

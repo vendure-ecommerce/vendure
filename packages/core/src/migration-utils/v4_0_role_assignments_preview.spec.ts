@@ -75,12 +75,14 @@ describe('previewRoleAssignmentMigration()', () => {
         const preview = await previewRoleAssignmentMigration(queryRunner);
 
         expect(preview).toEqual({
+            administrators: { userCount: 2, superAdminCount: 1, assignmentCount: 2 },
+            customersLosingAccess: 0,
             customerChannelChanges: [],
             customerRoleDroppedPermissions: [],
             rolesWithoutChannels: [],
         });
         expect(formatRoleAssignmentMigrationPreview(preview)).toContain(
-            'No behavior changes: every User keeps their current permissions.',
+            '   No change: every customer is a member of exactly the channels they can use today.',
         );
     });
 
@@ -117,18 +119,37 @@ describe('previewRoleAssignmentMigration()', () => {
                 customersGainingAccess: 1,
             },
         ]);
+        expect(preview.customersLosingAccess).toBe(3);
         const report = formatRoleAssignmentMigrationPreview(preview);
         expect(report).toContain(
             [
-                '   Channel               Lose access   Gain access',
-                '   -------------------   -----------   -----------',
-                '   __default_channel__             1             0',
-                '   second                          3             0',
-                '   programmatic                    0             1',
-                '   Total                           4             1',
+                '   Channel               Customers losing access   Customers gaining access',
+                '   -------------------   -----------------------   ------------------------',
+                '   __default_channel__                         1                          0',
+                '   second                                      3                          0',
+                '   programmatic                                0                          1',
+                '   Total                                       4                          1',
             ].join('\n'),
         );
-        expect(report).toContain('   Customer channel accesses removed       4');
+        expect(report).toContain('   Customers affected         3');
+    });
+
+    it('does not count a customer who keeps access through an admin role', async () => {
+        // user 3: customer, member of channel 1 only, also holds sales on channel 2
+        // user 4: customer, member of channel 1 only, also a SuperAdmin
+        await queryRunner.query(
+            `INSERT INTO "user_roles_role" ("userId", "roleId") VALUES (3, 2), (3, 3), (4, 2), (4, 1)`,
+        );
+        await queryRunner.query(`INSERT INTO "customer" ("id", "userId") VALUES (1, 3), (2, 4)`);
+        await queryRunner.query(
+            `INSERT INTO "customer_channels_channel" ("customerId", "channelId") VALUES (1, 1), (2, 1)`,
+        );
+
+        const preview = await previewRoleAssignmentMigration(queryRunner);
+
+        expect(preview.customerChannelChanges).toEqual([]);
+        expect(preview.customersLosingAccess).toBe(0);
+        expect(preview.administrators).toEqual({ userCount: 2, superAdminCount: 1, assignmentCount: 2 });
     });
 
     it('reports Customer role permissions beyond Authenticated', async () => {
