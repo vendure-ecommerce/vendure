@@ -5,6 +5,7 @@ import { TransactionalConnection } from '../connection/transactional-connection'
 import { Administrator } from '../entity/administrator/administrator.entity';
 import { EventBus } from '../event-bus';
 import { InitializerEvent } from '../event-bus/events/initializer-event';
+import { assertRoleAssignmentDataMigrated } from '../migration-utils/v4_0_role_assignments';
 
 import { AdministratorService } from './services/administrator.service';
 import { ChannelService } from './services/channel.service';
@@ -41,6 +42,7 @@ export class InitializerService {
 
     async onModuleInit() {
         await this.awaitDbSchemaGeneration();
+        await this.assertRoleAssignmentDataMigrated();
         // IMPORTANT - why manually invoke these init methods rather than just relying on
         // Nest's "onModuleInit" lifecycle hook within each individual service class?
         // The reason is that the order of invocation matters. By explicitly invoking the
@@ -57,6 +59,20 @@ export class InitializerService {
         await this.taxRateService.initTaxRates();
         await this.stockLocationService.initStockLocations();
         await this.eventBus.publish(new InitializerEvent());
+    }
+
+    /**
+     * Refuses to start on a database whose pre-v4 role grants have not been migrated: the
+     * role_assignment table would be empty and every Administrator except the configured
+     * superadmin would be locked out.
+     */
+    private async assertRoleAssignmentDataMigrated() {
+        const queryRunner = this.connection.rawConnection.createQueryRunner();
+        try {
+            await assertRoleAssignmentDataMigrated(queryRunner);
+        } finally {
+            await queryRunner.release();
+        }
     }
 
     /**
