@@ -4,7 +4,7 @@ generated: true
 ---
 ## previewRoleAssignmentMigration
 
-<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments_preview.ts" sourceLine="69" packageName="@vendure/core" since="4.0.0" />
+<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments_preview.ts" sourceLine="89" packageName="@vendure/core" since="4.0.0" />
 
 Reports, without writing anything, how the v4 role-assignment migration will change
 effective permissions for the Users of this database. Run it after upgrading the Vendure
@@ -41,6 +41,16 @@ database, as reported by [previewRoleAssignmentMigration](/reference/typescript-
 
 ```ts title="Signature"
 interface RoleAssignmentMigrationPreview {
+    administrators: {
+        userCount: number;
+        superAdminCount: number;
+        /**
+         * @description
+         * The number of `role_assignment` rows the migration will write.
+         */
+        assignmentCount: number;
+    };
+    customersLosingAccess: number;
     customerChannelChanges: Array<{
         channelId: string;
         channelCode: string;
@@ -54,15 +64,27 @@ interface RoleAssignmentMigrationPreview {
 
 <div className="members-wrapper">
 
+### administrators
+
+<MemberInfo kind="property" type={`{         userCount: number;         superAdminCount: number;         /**          * @description          * The number of \`role_assignment\` rows the migration will write.          */         assignmentCount: number;     }`}   />
+
+Users holding at least one Role other than the Customer role (Administrators and API
+keys). Their permissions do not change: every grant is copied, which
+[migrateRoleAssignmentData](/reference/typescript-api/migration/migrate-role-assignment-data#migrateroleassignmentdata) verifies before it changes anything.
+### customersLosingAccess
+
+<MemberInfo kind="property" type={`number`}   />
+
+The number of distinct Customers who lose access to at least one Channel.
 ### customerChannelChanges
 
 <MemberInfo kind="property" type={`Array<{         channelId: string;         channelCode: string;         customersLosingAccess: number;         customersGainingAccess: number;     }>`}   />
 
-Per Channel, how many Customers lose or gain the Customer role's permissions. Pre-v4,
-every holder of the Customer role held its permissions on every Channel the role was
-assigned to, regardless of membership. In v4, Customers hold `Authenticated` on their
-member Channels only. Counts are of Customer-role grants: a User may still hold the
-same permissions through another Role.
+Per Channel, how many Customers lose or gain access. Pre-v4, every holder of the
+Customer role held its permissions on every Channel the role was assigned to,
+regardless of membership. In v4, Customers hold `Authenticated` on their member
+Channels only. A User who keeps access to the Channel through another Role, or as a
+SuperAdmin, is not counted.
 ### customerRoleDroppedPermissions
 
 <MemberInfo kind="property" type={`string[]`}   />
@@ -81,7 +103,7 @@ holdings disappear.
 </div>
 ## formatRoleAssignmentMigrationPreview
 
-<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments_preview.ts" sourceLine="172" packageName="@vendure/core" since="4.0.0" />
+<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments_preview.ts" sourceLine="238" packageName="@vendure/core" since="4.0.0" />
 
 Renders a [RoleAssignmentMigrationPreview](/reference/typescript-api/migration/preview-role-assignment-migration#roleassignmentmigrationpreview) as a human-readable report.
 
