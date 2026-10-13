@@ -170,35 +170,127 @@ export async function previewRoleAssignmentMigration(
  * @docsPage previewRoleAssignmentMigration
  */
 export function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigrationPreview): string {
-    const lines: string[] = [];
-    if (preview.customerChannelChanges.length) {
+    const lines: string[] = [
+        'Role assignment migration preview',
+        '=================================',
+        'Nothing has been changed. This shows how permissions will change when',
+        'migrateRoleAssignmentData() runs.',
+    ];
+    const channelChanges = [...preview.customerChannelChanges].sort((a, b) =>
+        compareIds(a.channelId, b.channelId),
+    );
+    const totalLosing = channelChanges.reduce((sum, change) => sum + change.customersLosingAccess, 0);
+    const totalGaining = channelChanges.reduce((sum, change) => sum + change.customersGainingAccess, 0);
+
+    lines.push(
+        '',
+        'Summary',
+        ...formatKeyValues([
+            ['Channels with customer access changes', formatCount(channelChanges.length)],
+            ['Customer channel accesses removed', formatCount(totalLosing)],
+            ['Customer channel accesses added', formatCount(totalGaining)],
+            ['Customer role permissions dropped', formatCount(preview.customerRoleDroppedPermissions.length)],
+            ['Roles assigned to no channel', formatCount(preview.rolesWithoutChannels.length)],
+        ]),
+    );
+    if (
+        channelChanges.length === 0 &&
+        preview.customerRoleDroppedPermissions.length === 0 &&
+        preview.rolesWithoutChannels.length === 0
+    ) {
+        lines.push('', 'No behavior changes: every User keeps their current permissions.');
+        return lines.join('\n');
+    }
+
+    let section = 0;
+    if (channelChanges.length) {
         lines.push(
-            'Customer access changes (Customers now hold permissions on their member Channels only; ' +
-                'verify that Customer channel memberships are accurate before migrating):',
-            ...preview.customerChannelChanges.map(
-                change =>
-                    `  - Channel "${change.channelCode}": ${change.customersLosingAccess} lose access, ` +
-                    `${change.customersGainingAccess} gain access`,
+            '',
+            `${++section}. Customer access per channel`,
+            '   Before v4, every customer could act on every channel the Customer role was assigned',
+            '   to, whether or not they were a member. From v4, a customer can act only on the',
+            '   channels they are a member of.',
+            '',
+            ...formatTable(
+                ['Channel', 'Lose access', 'Gain access'],
+                [
+                    ...channelChanges.map(change => [
+                        change.channelCode,
+                        formatCount(change.customersLosingAccess),
+                        formatCount(change.customersGainingAccess),
+                    ]),
+                    ['Total', formatCount(totalLosing), formatCount(totalGaining)],
+                ],
             ),
+            '',
+            '   Lose access: customers the Customer role covered on this channel who are not members',
+            '   of it (soft-deleted customers count as non-members).',
+            '   Gain access: members of a channel the Customer role did not cover.',
+            '   A user who is also an administrator may keep access through an admin role.',
+            '',
+            '   Before migrating, check that customer channel memberships are correct. A large',
+            '   "Lose access" count on a channel your customers use means memberships are missing.',
         );
     }
     if (preview.customerRoleDroppedPermissions.length) {
         lines.push(
-            'The Customer role carries permissions beyond Authenticated, which Customers lose ' +
-                `on every Channel: ${preview.customerRoleDroppedPermissions.join(', ')}`,
+            '',
+            `${++section}. Customer role permissions that will be dropped`,
+            '   v4 has no Customer role. Customers hold only Authenticated on their member',
+            '   channels, so these extra permissions are lost on every channel:',
+            ...preview.customerRoleDroppedPermissions.map(permission => `   - ${permission}`),
         );
     }
     if (preview.rolesWithoutChannels.length) {
+        const roles = [...preview.rolesWithoutChannels].sort((a, b) => a.roleCode.localeCompare(b.roleCode));
         lines.push(
-            'Roles assigned to no Channel (they grant nothing, and their holdings are not migrated):',
-            ...preview.rolesWithoutChannels.map(
-                role => `  - "${role.roleCode}" (id ${role.roleId}): ${role.holderCount} holder(s)`,
+            '',
+            `${++section}. Roles assigned to no channel`,
+            '   These roles granted nothing before v4, so their holders lose nothing. Their',
+            '   holdings are not migrated; assign the roles per channel if they are still needed.',
+            '',
+            ...formatTable(
+                ['Role', 'Id', 'Holders'],
+                roles.map(role => [role.roleCode, role.roleId, formatCount(role.holderCount)]),
             ),
         );
     }
-    return lines.length
-        ? lines.join('\n')
-        : 'No behavior changes: every User keeps their current permissions.';
+    return lines.join('\n');
+}
+
+/**
+ * Renders label / value pairs indented by three spaces, values right-aligned in one column.
+ */
+function formatKeyValues(pairs: Array<[string, string]>): string[] {
+    const labelWidth = Math.max(...pairs.map(([label]) => label.length));
+    const valueWidth = Math.max(...pairs.map(([, value]) => value.length));
+    return pairs.map(([label, value]) => `   ${label.padEnd(labelWidth)}   ${value.padStart(valueWidth)}`);
+}
+
+/**
+ * Renders rows as a plain-text table, indented by three spaces. The first column is
+ * left-aligned, the others right-aligned.
+ */
+function formatTable(headers: string[], rows: string[][]): string[] {
+    const widths = headers.map((header, i) => Math.max(header.length, ...rows.map(row => row[i].length)));
+    const formatRow = (row: string[]) =>
+        '   ' +
+        row.map((cell, i) => (i === 0 ? cell.padEnd(widths[i]) : cell.padStart(widths[i]))).join('   ');
+    return [
+        formatRow(headers),
+        '   ' + widths.map(width => '-'.repeat(width)).join('   '),
+        ...rows.map(formatRow),
+    ];
+}
+
+function formatCount(count: number): string {
+    return count.toLocaleString('en-US');
+}
+
+function compareIds(a: string, b: string): number {
+    const aNumber = Number(a);
+    const bNumber = Number(b);
+    return Number.isNaN(aNumber) || Number.isNaN(bNumber) ? a.localeCompare(b) : aNumber - bNumber;
 }
 
 interface ChannelCountRow {

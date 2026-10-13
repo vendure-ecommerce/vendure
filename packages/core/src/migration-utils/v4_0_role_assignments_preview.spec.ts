@@ -79,7 +79,7 @@ describe('previewRoleAssignmentMigration()', () => {
             customerRoleDroppedPermissions: [],
             rolesWithoutChannels: [],
         });
-        expect(formatRoleAssignmentMigrationPreview(preview)).toBe(
+        expect(formatRoleAssignmentMigrationPreview(preview)).toContain(
             'No behavior changes: every User keeps their current permissions.',
         );
     });
@@ -117,6 +117,18 @@ describe('previewRoleAssignmentMigration()', () => {
                 customersGainingAccess: 1,
             },
         ]);
+        const report = formatRoleAssignmentMigrationPreview(preview);
+        expect(report).toContain(
+            [
+                '   Channel               Lose access   Gain access',
+                '   -------------------   -----------   -----------',
+                '   __default_channel__             1             0',
+                '   second                          3             0',
+                '   programmatic                    0             1',
+                '   Total                           4             1',
+            ].join('\n'),
+        );
+        expect(report).toContain('   Customer channel accesses removed       4');
     });
 
     it('reports Customer role permissions beyond Authenticated', async () => {
