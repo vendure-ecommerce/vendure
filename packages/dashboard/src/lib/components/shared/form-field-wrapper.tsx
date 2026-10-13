@@ -95,10 +95,14 @@ export function FormFieldWrapper<
                             {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
                             <OverriddenFormComponent field={renderArgs.field} fieldName={name}>
                                 {renderFormControl
-                                    ? applyControlProps(render(renderArgs), {
-                                          id: fieldId,
-                                          'aria-invalid': fieldState.invalid || undefined,
-                                      })
+                                    ? applyControlProps(
+                                          render(renderArgs),
+                                          {
+                                              id: fieldId,
+                                              'aria-invalid': fieldState.invalid || undefined,
+                                          },
+                                          name,
+                                      )
                                     : render(renderArgs)}
                             </OverriddenFormComponent>
                             {description && <FieldDescription>{description}</FieldDescription>}

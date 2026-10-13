@@ -190,7 +190,7 @@ export const TranslatableFormFieldWrapper = <
                             {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
                             <OverriddenFormComponent field={renderArgs.field} fieldName={name as string}>
                                 {renderFormControl
-                                    ? applyControlProps(render(renderArgs), controlProps)
+                                    ? applyControlProps(render(renderArgs), controlProps, String(name))
                                     : render(renderArgs)}
                             </OverriddenFormComponent>
                             {description && <FieldDescription>{description}</FieldDescription>}

@@ -112,7 +112,7 @@ export function AddSurchargeForm({ onAddSurcharge, taxDescriptions }: Readonly<A
                         control={surchargeForm.control}
                         name="sku"
                         label={<Trans>SKU</Trans>}
-                        render={({ field }) => <Input {...field} />}
+                        render={({ field }) => <Input {...field} required={false} />}
                     />
                     <FormFieldWrapper
                         control={surchargeForm.control}
