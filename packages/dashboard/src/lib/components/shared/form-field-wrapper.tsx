@@ -1,5 +1,6 @@
 import React from 'react';
-import { Controller, ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
+import { Controller, ControllerProps, FieldPath, FieldValues, useFormContext } from 'react-hook-form';
+import { isNonBlankField } from '@/vdb/framework/form-engine/non-blank-fields.js';
 import { OverriddenFormComponent } from '@/vdb/framework/form-engine/overridden-form-component.js';
 import { LocationWrapper } from '@/vdb/framework/layout-engine/location-wrapper.js';
 import { Field, FieldDescription, FieldError, FieldLabel } from '../ui/field.js';
@@ -82,6 +83,8 @@ export function FormFieldWrapper<
     ...controllerProps
 }: FormFieldWrapperProps<TFieldValues, TName>) {
     const { name, render, ...rest } = controllerProps;
+    const formContext = useFormContext();
+    const nonBlank = isNonBlankField(rest.control ?? formContext?.control, name);
     return (
         <LocationWrapper identifier={name}>
             <Controller
@@ -101,7 +104,7 @@ export function FormFieldWrapper<
                                               id: fieldId,
                                               'aria-invalid': fieldState.invalid || undefined,
                                           },
-                                          name,
+                                          nonBlank,
                                       )
                                     : render(renderArgs)}
                             </OverriddenFormComponent>
