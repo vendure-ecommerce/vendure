@@ -227,6 +227,11 @@ const manifestInput: DocsPackageManifestInput = {
                     file: file('docs/guides/developer-guide/custom-fields/index.mdx'),
                 },
                 {
+                    title: 'Secret Fields',
+                    slug: 'secret-fields',
+                    file: file('docs/guides/developer-guide/secret-fields/index.mdx'),
+                },
+                {
                     title: 'Error Handling',
                     slug: 'error-handling',
                     file: file('docs/guides/developer-guide/error-handling/index.mdx'),
