@@ -1,10 +1,6 @@
 <p align="center">
   <a href="https://vendure.io">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://assets.vendure.io/brand/logo-light.svg" />
-      <source media="(prefers-color-scheme: light)" srcset="https://assets.vendure.io/brand/logo-dark.svg" />
-      <img src="https://assets.vendure.io/brand/logo-vendure-blue.svg" width="200" alt="Vendure logo" />
-    </picture>
+    <img alt="Vendure logo" height="60" width="auto" src="https://assets.vendure.io/brand/logo-icon-vendure-blue.svg">
   </a>
 </p>
 
