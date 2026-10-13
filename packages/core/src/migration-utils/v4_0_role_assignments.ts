@@ -51,6 +51,12 @@ import { QueryRunner } from 'typeorm';
  * dropped. If it runs out of order, the queries reference a table which does not exist
  * and the migration fails.
  *
+ * After copying, the helper verifies that `role_assignment` holds exactly the grants the
+ * legacy tables describe under these rules, and throws if any row is missing or extra. The
+ * check runs before the Customer role is deleted, so a failed migration leaves the legacy
+ * data intact. To review the intended behavior changes for your data before migrating,
+ * see {@link previewRoleAssignmentMigration}.
+ *
  * The helper is idempotent: rows which already exist are left as-is, so it is safe to
  * re-run, e.g. after a partial failure on MySQL (where DDL is non-transactional) or as
  * the delta pass of a staged rollout in which the bulk of the data was copied while the
@@ -114,37 +120,19 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
     // 1. Write out the cross product of user_roles_role and role_channels_channel for all
     // Roles except the Customer role, whose permissions are derived from channel membership,
     // and the SuperAdmin role, which step 2 writes as a single default-channel row.
-    await queryRunner.query(
-        `INSERT INTO ${esc('role_assignment')} (${idInsert.columns}${esc('userId')}, ${esc('roleId')}, ${esc('channelId')})
-         SELECT ${idInsert.select}ur.${esc('userId')}, ur.${esc('roleId')}, rc.${esc('channelId')}
-         FROM ${esc('user_roles_role')} ur
-         INNER JOIN ${esc('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
-         INNER JOIN ${esc('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
-         WHERE r.${esc('code')} NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')
-         AND NOT EXISTS (
-             SELECT 1 FROM ${esc('role_assignment')} ra
-             WHERE ra.${esc('userId')} = ur.${esc('userId')}
-             AND ra.${esc('roleId')} = ur.${esc('roleId')}
-             AND ra.${esc('channelId')} = rc.${esc('channelId')}
-         )`,
-    );
-
     // 2. Write one row on the default Channel per SuperAdmin role holder. The row stands for
     // every Channel: SuperAdmin access is derived from it at check time.
-    await queryRunner.query(
-        `INSERT INTO ${esc('role_assignment')} (${idInsert.columns}${esc('userId')}, ${esc('roleId')}, ${esc('channelId')})
-         SELECT ${idInsert.select}ur.${esc('userId')}, ur.${esc('roleId')}, c.${esc('id')}
-         FROM ${esc('user_roles_role')} ur
-         INNER JOIN ${esc('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
-         INNER JOIN ${esc('channel')} c ON c.${esc('code')} = '${DEFAULT_CHANNEL_CODE}'
-         WHERE r.${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}'
-         AND NOT EXISTS (
-             SELECT 1 FROM ${esc('role_assignment')} ra
-             WHERE ra.${esc('userId')} = ur.${esc('userId')}
-             AND ra.${esc('roleId')} = ur.${esc('roleId')}
-             AND ra.${esc('channelId')} = c.${esc('id')}
-         )`,
-    );
+    const pending = getPendingGrantQueries(queryRunner, idInsert.select);
+    for (const pendingGrants of [pending.legacyGrants, pending.superAdminGrants]) {
+        await queryRunner.query(
+            `INSERT INTO ${esc('role_assignment')} (${idInsert.columns}${esc('userId')}, ${esc('roleId')}, ${esc('channelId')})
+             ${pendingGrants}`,
+        );
+    }
+
+    // Verify the copy before anything else is touched: the legacy tables are still intact at
+    // this point, so a mismatch aborts the migration with the source data preserved.
+    await verifyRoleAssignmentData(queryRunner);
 
     // 3. Create the RoleEditor role if it does not yet exist, so that a migrated instance
     // presents the same system roles as a fresh one before RoleService.initRoles() runs.
@@ -212,6 +200,102 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
     const insertedCount = (await countRows()) - countBefore;
     console.log(`Successfully migrated ${insertedCount} role assignments to the role_assignment table.`);
     return insertedCount;
+}
+
+/**
+ * The SELECTs yielding the `(userId, roleId, channelId)` triples which the legacy tables
+ * grant but `role_assignment` does not yet contain. The migration inserts their results;
+ * {@link verifyRoleAssignmentData} requires them to be empty afterwards. `idSelect` prefixes
+ * the selected columns with a generated id where the INSERT must supply one.
+ */
+function getPendingGrantQueries(
+    queryRunner: QueryRunner,
+    idSelect = '',
+): { legacyGrants: string; superAdminGrants: string } {
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const notYetAssigned = (userId: string, roleId: string, channelId: string) =>
+        `NOT EXISTS (
+             SELECT 1 FROM ${esc('role_assignment')} ra
+             WHERE ra.${esc('userId')} = ${userId}
+             AND ra.${esc('roleId')} = ${roleId}
+             AND ra.${esc('channelId')} = ${channelId}
+         )`;
+    return {
+        legacyGrants: `SELECT ${idSelect}ur.${esc('userId')} AS ${esc('userId')}, ur.${esc('roleId')} AS ${esc('roleId')}, rc.${esc('channelId')} AS ${esc('channelId')}
+             FROM ${esc('user_roles_role')} ur
+             INNER JOIN ${esc('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
+             INNER JOIN ${esc('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
+             WHERE r.${esc('code')} NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')
+             AND ${notYetAssigned(`ur.${esc('userId')}`, `ur.${esc('roleId')}`, `rc.${esc('channelId')}`)}`,
+        superAdminGrants: `SELECT ${idSelect}ur.${esc('userId')} AS ${esc('userId')}, ur.${esc('roleId')} AS ${esc('roleId')}, c.${esc('id')} AS ${esc('channelId')}
+             FROM ${esc('user_roles_role')} ur
+             INNER JOIN ${esc('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
+             INNER JOIN ${esc('channel')} c ON c.${esc('code')} = '${DEFAULT_CHANNEL_CODE}'
+             WHERE r.${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}'
+             AND ${notYetAssigned(`ur.${esc('userId')}`, `ur.${esc('roleId')}`, `c.${esc('id')}`)}`,
+    };
+}
+
+const MAX_REPORTED_MISMATCHES = 20;
+
+/**
+ * Checks that `role_assignment` holds exactly the grants the legacy tables describe under
+ * the v4 rules: every legacy triple except the Customer role's, and one default-channel
+ * row per SuperAdmin holder. Throws, listing the offending triples, on any missing or
+ * extra row. An extra row is most likely a grant which was revoked in the legacy tables
+ * after an earlier pass of a staged rollout copied it.
+ */
+async function verifyRoleAssignmentData(queryRunner: QueryRunner): Promise<void> {
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const pending = getPendingGrantQueries(queryRunner);
+    const missing: Triple[] = [
+        ...(await queryRunner.query(`${pending.legacyGrants} LIMIT ${MAX_REPORTED_MISMATCHES}`)),
+        ...(await queryRunner.query(`${pending.superAdminGrants} LIMIT ${MAX_REPORTED_MISMATCHES}`)),
+    ];
+    const extra: Triple[] = await queryRunner.query(
+        `SELECT ra.${esc('userId')}, ra.${esc('roleId')}, ra.${esc('channelId')}
+         FROM ${esc('role_assignment')} ra
+         LEFT JOIN ${esc('role')} r ON r.${esc('id')} = ra.${esc('roleId')}
+         WHERE NOT (
+             (COALESCE(r.${esc('code')}, '') NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')
+                 AND EXISTS (
+                     SELECT 1 FROM ${esc('user_roles_role')} ur
+                     INNER JOIN ${esc('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
+                     WHERE ur.${esc('userId')} = ra.${esc('userId')}
+                     AND ur.${esc('roleId')} = ra.${esc('roleId')}
+                     AND rc.${esc('channelId')} = ra.${esc('channelId')}
+                 ))
+             OR (COALESCE(r.${esc('code')}, '') = '${SUPER_ADMIN_ROLE_CODE}'
+                 AND ra.${esc('channelId')} IN (
+                     SELECT c.${esc('id')} FROM ${esc('channel')} c WHERE c.${esc('code')} = '${DEFAULT_CHANNEL_CODE}'
+                 )
+                 AND EXISTS (
+                     SELECT 1 FROM ${esc('user_roles_role')} ur
+                     WHERE ur.${esc('userId')} = ra.${esc('userId')}
+                     AND ur.${esc('roleId')} = ra.${esc('roleId')}
+                 ))
+         )
+         LIMIT ${MAX_REPORTED_MISMATCHES}`,
+    );
+    if (missing.length === 0 && extra.length === 0) {
+        return;
+    }
+    const format = (triples: Triple[]) =>
+        triples.map(t => `  user ${t.userId}, role ${t.roleId}, channel ${t.channelId}`).join('\n');
+    throw new Error(
+        'Role assignment verification failed: role_assignment does not match the legacy ' +
+            'user_roles_role and role_channels_channel tables. The legacy tables have not been ' +
+            'modified. Showing up to ' +
+            `${MAX_REPORTED_MISMATCHES} rows per kind.` +
+            (missing.length ? `\nGranted by the legacy tables but missing:\n${format(missing)}` : '') +
+            (extra.length ? `\nPresent but not granted by the legacy tables:\n${format(extra)}` : ''),
+    );
+}
+
+interface Triple {
+    userId: string | number;
+    roleId: string | number;
+    channelId: string | number;
 }
 
 /**

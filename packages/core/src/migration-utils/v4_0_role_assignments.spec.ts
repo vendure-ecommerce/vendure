@@ -165,6 +165,48 @@ describe('migrateRoleAssignmentData()', () => {
         ]);
     });
 
+    it('fails verification on a pre-existing row the legacy tables do not grant', async () => {
+        await createSchema();
+        await seedData();
+        // e.g. copied by an earlier pass of a staged rollout, then revoked in the legacy tables
+        await queryRunner.query(
+            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (2, 3, 1)`,
+        );
+
+        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
+            /Present but not granted by the legacy tables:\n {2}user 2, role 3, channel 1/,
+        );
+        // The Customer role is deleted only after a successful verification
+        const customerRoles = await queryRunner.query(
+            `SELECT "id" FROM "role" WHERE "code" = '__customer_role__'`,
+        );
+        expect(customerRoles.length).toBe(1);
+    });
+
+    it('fails verification on a SuperAdmin row outside the default channel', async () => {
+        await createSchema();
+        await seedData();
+        await queryRunner.query(
+            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (1, 1, 2)`,
+        );
+
+        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
+            /Present but not granted by the legacy tables:\n {2}user 1, role 1, channel 2/,
+        );
+    });
+
+    it('fails verification on a Customer role row', async () => {
+        await createSchema();
+        await seedData();
+        await queryRunner.query(
+            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (3, 2, 1)`,
+        );
+
+        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
+            /Present but not granted by the legacy tables:\n {2}user 3, role 2, channel 1/,
+        );
+    });
+
     it('generates uuid primary keys when the id column has no database-side default', async () => {
         await createSchema({ idType: 'uuid' });
         await seedData();
