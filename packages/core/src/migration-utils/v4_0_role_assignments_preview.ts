@@ -69,9 +69,11 @@ export interface RoleAssignmentMigrationPreview {
 export async function previewRoleAssignmentMigration(
     queryRunner: QueryRunner,
 ): Promise<RoleAssignmentMigrationPreview> {
+    // TypeORM applies the entityPrefix to join tables too
+    const prefix = queryRunner.connection.options.entityPrefix ?? '';
     const hasLegacyTables =
-        (await queryRunner.hasTable('user_roles_role')) &&
-        (await queryRunner.hasTable('role_channels_channel'));
+        (await queryRunner.hasTable(`${prefix}user_roles_role`)) &&
+        (await queryRunner.hasTable(`${prefix}role_channels_channel`));
     if (!hasLegacyTables) {
         throw new Error(
             'The user_roles_role and role_channels_channel tables do not exist. Run ' +
@@ -79,19 +81,20 @@ export async function previewRoleAssignmentMigration(
         );
     }
     const esc = (name: string) => queryRunner.connection.driver.escape(name);
-    const customerRoleId = `(SELECT ${esc('id')} FROM ${esc('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}')`;
+    const table = (name: string) => esc(`${prefix}${name}`);
+    const customerRoleId = `(SELECT ${esc('id')} FROM ${table('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}')`;
 
     const channelRows: Array<{ id: string | number; code: string }> = await queryRunner.query(
-        `SELECT ${esc('id')}, ${esc('code')} FROM ${esc('channel')}`,
+        `SELECT ${esc('id')}, ${esc('code')} FROM ${table('channel')}`,
     );
     const losingRows: ChannelCountRow[] = await queryRunner.query(
         `SELECT rc.${esc('channelId')} AS ${esc('channelId')}, COUNT(*) AS ${esc('count')}
-         FROM ${esc('user_roles_role')} ur
-         INNER JOIN ${esc('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
+         FROM ${table('user_roles_role')} ur
+         INNER JOIN ${table('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
          WHERE ur.${esc('roleId')} = ${customerRoleId}
          AND NOT EXISTS (
-             SELECT 1 FROM ${esc('customer')} cu
-             INNER JOIN ${esc('customer_channels_channel')} ccc ON ccc.${esc('customerId')} = cu.${esc('id')}
+             SELECT 1 FROM ${table('customer')} cu
+             INNER JOIN ${table('customer_channels_channel')} ccc ON ccc.${esc('customerId')} = cu.${esc('id')}
              WHERE cu.${esc('userId')} = ur.${esc('userId')}
              AND cu.${esc('deletedAt')} IS NULL
              AND ccc.${esc('channelId')} = rc.${esc('channelId')}
@@ -100,13 +103,13 @@ export async function previewRoleAssignmentMigration(
     );
     const gainingRows: ChannelCountRow[] = await queryRunner.query(
         `SELECT ccc.${esc('channelId')} AS ${esc('channelId')}, COUNT(*) AS ${esc('count')}
-         FROM ${esc('customer')} cu
-         INNER JOIN ${esc('customer_channels_channel')} ccc ON ccc.${esc('customerId')} = cu.${esc('id')}
+         FROM ${table('customer')} cu
+         INNER JOIN ${table('customer_channels_channel')} ccc ON ccc.${esc('customerId')} = cu.${esc('id')}
          WHERE cu.${esc('deletedAt')} IS NULL
          AND cu.${esc('userId')} IS NOT NULL
          AND NOT EXISTS (
-             SELECT 1 FROM ${esc('user_roles_role')} ur
-             INNER JOIN ${esc('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
+             SELECT 1 FROM ${table('user_roles_role')} ur
+             INNER JOIN ${table('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
              WHERE ur.${esc('userId')} = cu.${esc('userId')}
              AND ur.${esc('roleId')} = ${customerRoleId}
              AND rc.${esc('channelId')} = ccc.${esc('channelId')}
@@ -114,7 +117,7 @@ export async function previewRoleAssignmentMigration(
          GROUP BY ccc.${esc('channelId')}`,
     );
     const customerRoleRows: Array<{ permissions: string | null }> = await queryRunner.query(
-        `SELECT ${esc('permissions')} FROM ${esc('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
+        `SELECT ${esc('permissions')} FROM ${table('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
     );
     const rolesWithoutChannelsRows: Array<{
         roleId: string | number;
@@ -123,11 +126,11 @@ export async function previewRoleAssignmentMigration(
     }> = await queryRunner.query(
         `SELECT r.${esc('id')} AS ${esc('roleId')}, r.${esc('code')} AS ${esc('roleCode')},
                     COUNT(*) AS ${esc('holderCount')}
-             FROM ${esc('role')} r
-             INNER JOIN ${esc('user_roles_role')} ur ON ur.${esc('roleId')} = r.${esc('id')}
+             FROM ${table('role')} r
+             INNER JOIN ${table('user_roles_role')} ur ON ur.${esc('roleId')} = r.${esc('id')}
              WHERE r.${esc('code')} NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')
              AND NOT EXISTS (
-                 SELECT 1 FROM ${esc('role_channels_channel')} rc WHERE rc.${esc('roleId')} = r.${esc('id')}
+                 SELECT 1 FROM ${table('role_channels_channel')} rc WHERE rc.${esc('roleId')} = r.${esc('id')}
              )
              GROUP BY r.${esc('id')}, r.${esc('code')}`,
     );

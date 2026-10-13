@@ -148,3 +148,43 @@ describe('previewRoleAssignmentMigration()', () => {
         );
     });
 });
+
+describe('previewRoleAssignmentMigration() with an entityPrefix', () => {
+    it('reads the prefixed tables', async () => {
+        const dataSource = new DataSource({
+            type: 'better-sqlite3',
+            database: ':memory:',
+            entityPrefix: 'vdr_',
+        });
+        await dataSource.initialize();
+        const queryRunner = dataSource.createQueryRunner();
+        await queryRunner.query(
+            `CREATE TABLE "vdr_role" ("id" integer PRIMARY KEY, "code" varchar, "permissions" text)`,
+        );
+        await queryRunner.query(`CREATE TABLE "vdr_channel" ("id" integer PRIMARY KEY, "code" varchar)`);
+        await queryRunner.query(
+            `CREATE TABLE "vdr_customer" ("id" integer PRIMARY KEY, "deletedAt" datetime, "userId" integer)`,
+        );
+        await queryRunner.query(
+            `CREATE TABLE "vdr_customer_channels_channel" ("customerId" integer, "channelId" integer)`,
+        );
+        await queryRunner.query(`CREATE TABLE "vdr_user_roles_role" ("userId" integer, "roleId" integer)`);
+        await queryRunner.query(
+            `CREATE TABLE "vdr_role_channels_channel" ("roleId" integer, "channelId" integer)`,
+        );
+        await queryRunner.query(`INSERT INTO "vdr_role" VALUES (2, '__customer_role__', 'Authenticated')`);
+        await queryRunner.query(`INSERT INTO "vdr_channel" VALUES (1, '__default_channel__'), (2, 'second')`);
+        await queryRunner.query(`INSERT INTO "vdr_role_channels_channel" VALUES (2, 1), (2, 2)`);
+        await queryRunner.query(`INSERT INTO "vdr_user_roles_role" VALUES (3, 2)`);
+        await queryRunner.query(`INSERT INTO "vdr_customer" VALUES (1, NULL, 3)`);
+        await queryRunner.query(`INSERT INTO "vdr_customer_channels_channel" VALUES (1, 1)`);
+
+        const preview = await previewRoleAssignmentMigration(queryRunner);
+
+        expect(preview.customerChannelChanges).toEqual([
+            { channelId: '2', channelCode: 'second', customersLosingAccess: 1, customersGainingAccess: 0 },
+        ]);
+        await queryRunner.release();
+        await dataSource.destroy();
+    });
+});
