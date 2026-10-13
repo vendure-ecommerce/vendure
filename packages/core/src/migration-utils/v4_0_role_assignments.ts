@@ -46,21 +46,28 @@ import { QueryRunner } from 'typeorm';
  * without this step a migrated instance would present a stale permission list on the
  * SuperAdmin role.
  *
- * Call this from your migration's `up()` method **after** the `role_assignment` table
- * has been created and **before** `user_roles_role` and `role_channels_channel` are
- * dropped. If it runs out of order, the queries reference a table which does not exist
- * and the migration fails.
- *
  * After copying, the helper verifies that `role_assignment` holds exactly the grants the
- * legacy tables describe under these rules, and throws if any row is missing or extra. The
- * check runs before the Customer role is deleted, so a failed migration leaves the legacy
- * data intact. To review the intended behavior changes for your data before migrating,
- * see {@link previewRoleAssignmentMigration}.
+ * legacy tables describe under these rules, and throws if any row is missing or extra.
+ * Nothing else is changed before the check passes. To review the intended behavior
+ * changes for your data before migrating, see {@link previewRoleAssignmentMigration}.
  *
- * The helper is idempotent: rows which already exist are left as-is, so it is safe to
- * re-run, e.g. after a partial failure on MySQL (where DDL is non-transactional) or as
- * the delta pass of a staged rollout in which the bulk of the data was copied while the
- * previous version was still serving traffic.
+ * Once verified, the legacy tables are **archived, not dropped**: they are renamed to
+ * `_v3_user_roles_role` and `_v3_role_channels_channel` and their foreign keys removed, so
+ * they keep a frozen copy of the pre-v4 grants for auditing. Vendure refuses to start while
+ * `user_roles_role` still exists under its original name. Drop the archive with
+ * {@link dropArchivedRoleTables} once you no longer need it.
+ *
+ * Call this from your migration's `up()` method **after** the `role_assignment` table
+ * has been created. A generated migration does not touch the legacy tables, so nothing
+ * else in it needs to change.
+ *
+ * The helper is idempotent: rows which already exist are left as-is, a partially
+ * archived state is completed, and a fully archived one is skipped. It is safe to re-run,
+ * e.g. after a partial failure on MySQL (where DDL is non-transactional) or as the delta
+ * pass of a staged rollout in which the bulk of the data was copied while the previous
+ * version was still serving traffic.
+ *
+ * Table names honor the `entityPrefix` of the connection options.
  *
  * ```ts
  * import { MigrationInterface, QueryRunner } from 'typeorm';
@@ -68,16 +75,12 @@ import { QueryRunner } from 'typeorm';
  *
  * export class RoleAssignments1234567890 implements MigrationInterface {
  *     public async up(queryRunner: QueryRunner): Promise<any> {
- *         // --- Auto-generated DDL starts here ---
+ *         // --- Auto-generated DDL ---
  *         // (Create role_assignment table and FK constraints)
  *         // ...
  *
- *         // --- Populate new table with existing data ---
+ *         // --- Populate new table with existing data, verify, archive the old tables ---
  *         await migrateRoleAssignmentData(queryRunner);
- *
- *         // --- Auto-generated DDL continues ---
- *         // (Drop user_roles_role and role_channels_channel tables)
- *         // ...
  *     }
  *
  *     public async down(queryRunner: QueryRunner): Promise<any> {
@@ -91,27 +94,27 @@ import { QueryRunner } from 'typeorm';
  * @docsCategory migration
  */
 export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promise<number> {
-    if (!(await queryRunner.hasTable('role_assignment'))) {
+    const t = getTableNames(queryRunner);
+    if (!(await queryRunner.hasTable(t.roleAssignment))) {
         throw new Error(
-            'The role_assignment table does not exist. Call migrateRoleAssignmentData() after ' +
-                'the part of your migration which creates the role_assignment table.',
+            `The ${t.roleAssignment} table does not exist. Call migrateRoleAssignmentData() after ` +
+                `the part of your migration which creates the ${t.roleAssignment} table.`,
         );
     }
-    const hasUserRoles = await queryRunner.hasTable('user_roles_role');
-    const hasRoleChannels = await queryRunner.hasTable('role_channels_channel');
-    if (!hasUserRoles || !hasRoleChannels) {
+    const sources = await resolveSourceTables(queryRunner);
+    if (!sources) {
         console.log(
-            'The user_roles_role and/or role_channels_channel tables do not exist. ' +
-                'Skipping role assignment data migration (already completed?).',
+            `The ${t.userRoles} and ${t.roleChannels} tables have already been archived or do not ` +
+                'exist. Skipping role assignment data migration.',
         );
         return 0;
     }
 
     const esc = (name: string) => queryRunner.connection.driver.escape(name);
-    const idInsert = await getExplicitIdClauses(queryRunner);
+    const idInsert = await getExplicitIdClauses(queryRunner, t.roleAssignment);
     const countRows = async (): Promise<number> => {
         const rows: Array<{ count: string | number }> = await queryRunner.query(
-            `SELECT COUNT(*) AS ${esc('count')} FROM ${esc('role_assignment')}`,
+            `SELECT COUNT(*) AS ${esc('count')} FROM ${esc(t.roleAssignment)}`,
         );
         return Number(rows[0].count);
     };
@@ -122,21 +125,21 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
     // and the SuperAdmin role, which step 2 writes as a single default-channel row.
     // 2. Write one row on the default Channel per SuperAdmin role holder. The row stands for
     // every Channel: SuperAdmin access is derived from it at check time.
-    const pending = getPendingGrantQueries(queryRunner, idInsert.select);
+    const pending = getPendingGrantQueries(queryRunner, sources, idInsert.select);
     for (const pendingGrants of [pending.legacyGrants, pending.superAdminGrants]) {
         await queryRunner.query(
-            `INSERT INTO ${esc('role_assignment')} (${idInsert.columns}${esc('userId')}, ${esc('roleId')}, ${esc('channelId')})
+            `INSERT INTO ${esc(t.roleAssignment)} (${idInsert.columns}${esc('userId')}, ${esc('roleId')}, ${esc('channelId')})
              ${pendingGrants}`,
         );
     }
 
-    // Verify the copy before anything else is touched: the legacy tables are still intact at
-    // this point, so a mismatch aborts the migration with the source data preserved.
-    await verifyRoleAssignmentData(queryRunner);
+    // Verify the copy before anything else is touched: a mismatch aborts the migration with
+    // the source data preserved.
+    await verifyRoleAssignmentData(queryRunner, sources);
 
     // 3. Create the RoleEditor role if it does not yet exist, so that a migrated instance
     // presents the same system roles as a fresh one before RoleService.initRoles() runs.
-    const roleIdInsert = await getExplicitIdClauses(queryRunner, 'role');
+    const roleIdInsert = await getExplicitIdClauses(queryRunner, t.role);
     const roleCrudPermissions = ['CreateRole', 'ReadRole', 'UpdateRole', 'DeleteRole'];
     const roleEditorPermissions = ['Authenticated', ...roleCrudPermissions];
     const roleColumns =
@@ -146,11 +149,11 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
         `${roleIdInsert.select}CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '${ROLE_EDITOR_ROLE_CODE}', ` +
         `'${ROLE_EDITOR_ROLE_DESCRIPTION}', '${roleEditorPermissions.join(',')}'`;
     await queryRunner.query(
-        `INSERT INTO ${esc('role')} (${roleColumns})
+        `INSERT INTO ${esc(t.role)} (${roleColumns})
          SELECT ${roleValues}
          FROM (SELECT 1 AS ${esc('one')}) AS tmp
          WHERE NOT EXISTS (
-             SELECT 1 FROM ${esc('role')} r WHERE r.${esc('code')} = '${ROLE_EDITOR_ROLE_CODE}'
+             SELECT 1 FROM ${esc(t.role)} r WHERE r.${esc('code')} = '${ROLE_EDITOR_ROLE_CODE}'
          )`,
     );
 
@@ -160,7 +163,7 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
     // the stored array with all assignable permissions on boot and v4 no longer does, so
     // without this a migrated instance would present a stale permission list on the role.
     const superAdminRoleRows: Array<{ id: string | number; permissions: string }> = await queryRunner.query(
-        `SELECT ${esc('id')}, ${esc('permissions')} FROM ${esc('role')}
+        `SELECT ${esc('id')}, ${esc('permissions')} FROM ${esc(t.role)}
              WHERE ${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}'`,
     );
     for (const row of superAdminRoleRows) {
@@ -171,35 +174,180 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
         if (missingPermissions.length) {
             const idLiteral = typeof row.id === 'number' ? row.id : `'${row.id}'`;
             await queryRunner.query(
-                `UPDATE ${esc('role')}
+                `UPDATE ${esc(t.role)}
                  SET ${esc('permissions')} = '${[...currentPermissions, ...missingPermissions].join(',')}'
                  WHERE ${esc('id')} = ${idLiteral}`,
             );
         }
     }
 
-    // 5. Delete the Customer role row — v4 removes the Customer role entirely (permissions
-    // are membership-derived: Authenticated on every member Channel). The legacy join tables
-    // still reference the role at this point, so their rows go first; both tables are
-    // dropped by the surrounding migration right after this helper returns.
+    // 5. Archive the legacy tables: rename them and remove their foreign keys, so that the
+    // archive is a frozen copy which later User or Role deletes cannot cascade into.
+    await archiveLegacyTables(queryRunner);
+
+    // 6. Delete the Customer role row — v4 removes the Customer role entirely (permissions
+    // are membership-derived: Authenticated on every member Channel). The archived tables
+    // no longer reference the role, so their Customer rows stay as part of the archive.
     const customerRoleRows: Array<{ id: string | number }> = await queryRunner.query(
-        `SELECT ${esc('id')} FROM ${esc('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
+        `SELECT ${esc('id')} FROM ${esc(t.role)} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
     );
     for (const row of customerRoleRows) {
         const idLiteral = typeof row.id === 'number' ? row.id : `'${row.id}'`;
-        await queryRunner.query(
-            `DELETE FROM ${esc('user_roles_role')} WHERE ${esc('roleId')} = ${idLiteral}`,
-        );
-        await queryRunner.query(
-            `DELETE FROM ${esc('role_channels_channel')} WHERE ${esc('roleId')} = ${idLiteral}`,
-        );
-        await queryRunner.query(`DELETE FROM ${esc('role')} WHERE ${esc('id')} = ${idLiteral}`);
+        await queryRunner.query(`DELETE FROM ${esc(t.role)} WHERE ${esc('id')} = ${idLiteral}`);
         console.log('Deleted the Customer role (customer permissions are membership-derived in v4).');
     }
 
     const insertedCount = (await countRows()) - countBefore;
-    console.log(`Successfully migrated ${insertedCount} role assignments to the role_assignment table.`);
+    console.log(
+        `Successfully migrated ${insertedCount} role assignments to the ${t.roleAssignment} table. ` +
+            `The legacy tables were archived as ${t.archivedUserRoles} and ${t.archivedRoleChannels}.`,
+    );
     return insertedCount;
+}
+
+/**
+ * @description
+ * Drops the `_v3_user_roles_role` and `_v3_role_channels_channel` tables which
+ * {@link migrateRoleAssignmentData} archives the pre-v4 role grants to. Call it from a
+ * later migration once you no longer need the archive for auditing. Tables which do not
+ * exist are skipped, so it is safe to re-run.
+ *
+ * ```ts
+ * import { MigrationInterface, QueryRunner } from 'typeorm';
+ * import { dropArchivedRoleTables } from '\@vendure/core';
+ *
+ * export class DropArchivedRoleTables1234567890 implements MigrationInterface {
+ *     public async up(queryRunner: QueryRunner): Promise<any> {
+ *         await dropArchivedRoleTables(queryRunner);
+ *     }
+ *
+ *     public async down(queryRunner: QueryRunner): Promise<any> {
+ *         // The archive cannot be restored
+ *     }
+ * }
+ * ```
+ *
+ * @since 4.0.0
+ * @docsCategory migration
+ */
+export async function dropArchivedRoleTables(queryRunner: QueryRunner): Promise<void> {
+    const t = getTableNames(queryRunner);
+    for (const tableName of [t.archivedUserRoles, t.archivedRoleChannels]) {
+        if (await queryRunner.hasTable(tableName)) {
+            await queryRunner.dropTable(tableName);
+            console.log(`Dropped the archived ${tableName} table.`);
+        }
+    }
+}
+
+/**
+ * Throws if the pre-v4 `user_roles_role` table still exists under its original name and
+ * holds rows, meaning {@link migrateRoleAssignmentData} has not been run. Without the
+ * migration the `role_assignment` table is empty and every Administrator except the
+ * configured superadmin would be locked out. Called on bootstrap.
+ */
+export async function assertRoleAssignmentDataMigrated(queryRunner: QueryRunner): Promise<void> {
+    const t = getTableNames(queryRunner);
+    if (!(await queryRunner.hasTable(t.userRoles))) {
+        return;
+    }
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const rows: unknown[] = await queryRunner.query(`SELECT 1 FROM ${esc(t.userRoles)} LIMIT 1`);
+    if (rows.length === 0) {
+        return;
+    }
+    throw new Error(
+        `The pre-v4 ${t.userRoles} table still holds role grants which have not been migrated ` +
+            `to the ${t.roleAssignment} table. Run migrateRoleAssignmentData() from a database ` +
+            'migration before starting Vendure v4. See the v4 migration guide.',
+    );
+}
+
+interface TableNames {
+    role: string;
+    channel: string;
+    roleAssignment: string;
+    userRoles: string;
+    roleChannels: string;
+    archivedUserRoles: string;
+    archivedRoleChannels: string;
+}
+
+/**
+ * Table names with the `entityPrefix` of the connection options applied, which TypeORM
+ * also prefixes join tables with.
+ */
+function getTableNames(queryRunner: QueryRunner): TableNames {
+    const prefix = queryRunner.connection.options.entityPrefix ?? '';
+    return {
+        role: `${prefix}role`,
+        channel: `${prefix}channel`,
+        roleAssignment: `${prefix}role_assignment`,
+        userRoles: `${prefix}user_roles_role`,
+        roleChannels: `${prefix}role_channels_channel`,
+        archivedUserRoles: `${prefix}_v3_user_roles_role`,
+        archivedRoleChannels: `${prefix}_v3_role_channels_channel`,
+    };
+}
+
+interface SourceTables {
+    userRoles: string;
+    roleChannels: string;
+}
+
+/**
+ * The tables to read the legacy grants from. Normally the original join tables; after a
+ * partial failure between the two renames (possible on MySQL, where DDL is not
+ * transactional) one of them is already archived. Returns undefined when neither original
+ * table exists any more: the migration has completed, and the role_assignment table may
+ * have changed since, so the archive must not be compared against it.
+ */
+async function resolveSourceTables(queryRunner: QueryRunner): Promise<SourceTables | undefined> {
+    const t = getTableNames(queryRunner);
+    const hasUserRoles = await queryRunner.hasTable(t.userRoles);
+    const hasRoleChannels = await queryRunner.hasTable(t.roleChannels);
+    if (!hasUserRoles && !hasRoleChannels) {
+        return undefined;
+    }
+    const resolve = async (original: string, archived: string, hasOriginal: boolean) => {
+        if (hasOriginal) {
+            return original;
+        }
+        if (await queryRunner.hasTable(archived)) {
+            return archived;
+        }
+        throw new Error(
+            `Neither the ${original} table nor its archive ${archived} exists. The legacy role ` +
+                'data cannot be migrated.',
+        );
+    };
+    return {
+        userRoles: await resolve(t.userRoles, t.archivedUserRoles, hasUserRoles),
+        roleChannels: await resolve(t.roleChannels, t.archivedRoleChannels, hasRoleChannels),
+    };
+}
+
+async function archiveLegacyTables(queryRunner: QueryRunner): Promise<void> {
+    const t = getTableNames(queryRunner);
+    const pairs = [
+        { original: t.userRoles, archived: t.archivedUserRoles },
+        { original: t.roleChannels, archived: t.archivedRoleChannels },
+    ];
+    for (const { original, archived } of pairs) {
+        if (await queryRunner.hasTable(original)) {
+            if (await queryRunner.hasTable(archived)) {
+                throw new Error(
+                    `Cannot archive ${original}: a table named ${archived} already exists. ` +
+                        'Rename or drop it and run the migration again.',
+                );
+            }
+            await queryRunner.renameTable(original, archived);
+        }
+        const table = await queryRunner.getTable(archived);
+        if (table?.foreignKeys.length) {
+            await queryRunner.dropForeignKeys(table, table.foreignKeys);
+        }
+    }
 }
 
 /**
@@ -210,27 +358,29 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
  */
 function getPendingGrantQueries(
     queryRunner: QueryRunner,
+    sources: SourceTables,
     idSelect = '',
 ): { legacyGrants: string; superAdminGrants: string } {
     const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const t = getTableNames(queryRunner);
     const notYetAssigned = (userId: string, roleId: string, channelId: string) =>
         `NOT EXISTS (
-             SELECT 1 FROM ${esc('role_assignment')} ra
+             SELECT 1 FROM ${esc(t.roleAssignment)} ra
              WHERE ra.${esc('userId')} = ${userId}
              AND ra.${esc('roleId')} = ${roleId}
              AND ra.${esc('channelId')} = ${channelId}
          )`;
     return {
         legacyGrants: `SELECT ${idSelect}ur.${esc('userId')} AS ${esc('userId')}, ur.${esc('roleId')} AS ${esc('roleId')}, rc.${esc('channelId')} AS ${esc('channelId')}
-             FROM ${esc('user_roles_role')} ur
-             INNER JOIN ${esc('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
-             INNER JOIN ${esc('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
+             FROM ${esc(sources.userRoles)} ur
+             INNER JOIN ${esc(sources.roleChannels)} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
+             INNER JOIN ${esc(t.role)} r ON r.${esc('id')} = ur.${esc('roleId')}
              WHERE r.${esc('code')} NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')
              AND ${notYetAssigned(`ur.${esc('userId')}`, `ur.${esc('roleId')}`, `rc.${esc('channelId')}`)}`,
         superAdminGrants: `SELECT ${idSelect}ur.${esc('userId')} AS ${esc('userId')}, ur.${esc('roleId')} AS ${esc('roleId')}, c.${esc('id')} AS ${esc('channelId')}
-             FROM ${esc('user_roles_role')} ur
-             INNER JOIN ${esc('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
-             INNER JOIN ${esc('channel')} c ON c.${esc('code')} = '${DEFAULT_CHANNEL_CODE}'
+             FROM ${esc(sources.userRoles)} ur
+             INNER JOIN ${esc(t.role)} r ON r.${esc('id')} = ur.${esc('roleId')}
+             INNER JOIN ${esc(t.channel)} c ON c.${esc('code')} = '${DEFAULT_CHANNEL_CODE}'
              WHERE r.${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}'
              AND ${notYetAssigned(`ur.${esc('userId')}`, `ur.${esc('roleId')}`, `c.${esc('id')}`)}`,
     };
@@ -245,32 +395,33 @@ const MAX_REPORTED_MISMATCHES = 20;
  * extra row. An extra row is most likely a grant which was revoked in the legacy tables
  * after an earlier pass of a staged rollout copied it.
  */
-async function verifyRoleAssignmentData(queryRunner: QueryRunner): Promise<void> {
+async function verifyRoleAssignmentData(queryRunner: QueryRunner, sources: SourceTables): Promise<void> {
     const esc = (name: string) => queryRunner.connection.driver.escape(name);
-    const pending = getPendingGrantQueries(queryRunner);
+    const t = getTableNames(queryRunner);
+    const pending = getPendingGrantQueries(queryRunner, sources);
     const missing: Triple[] = [
         ...(await queryRunner.query(`${pending.legacyGrants} LIMIT ${MAX_REPORTED_MISMATCHES}`)),
         ...(await queryRunner.query(`${pending.superAdminGrants} LIMIT ${MAX_REPORTED_MISMATCHES}`)),
     ];
     const extra: Triple[] = await queryRunner.query(
         `SELECT ra.${esc('userId')}, ra.${esc('roleId')}, ra.${esc('channelId')}
-         FROM ${esc('role_assignment')} ra
-         LEFT JOIN ${esc('role')} r ON r.${esc('id')} = ra.${esc('roleId')}
+         FROM ${esc(t.roleAssignment)} ra
+         LEFT JOIN ${esc(t.role)} r ON r.${esc('id')} = ra.${esc('roleId')}
          WHERE NOT (
              (COALESCE(r.${esc('code')}, '') NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')
                  AND EXISTS (
-                     SELECT 1 FROM ${esc('user_roles_role')} ur
-                     INNER JOIN ${esc('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
+                     SELECT 1 FROM ${esc(sources.userRoles)} ur
+                     INNER JOIN ${esc(sources.roleChannels)} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
                      WHERE ur.${esc('userId')} = ra.${esc('userId')}
                      AND ur.${esc('roleId')} = ra.${esc('roleId')}
                      AND rc.${esc('channelId')} = ra.${esc('channelId')}
                  ))
              OR (COALESCE(r.${esc('code')}, '') = '${SUPER_ADMIN_ROLE_CODE}'
                  AND ra.${esc('channelId')} IN (
-                     SELECT c.${esc('id')} FROM ${esc('channel')} c WHERE c.${esc('code')} = '${DEFAULT_CHANNEL_CODE}'
+                     SELECT c.${esc('id')} FROM ${esc(t.channel)} c WHERE c.${esc('code')} = '${DEFAULT_CHANNEL_CODE}'
                  )
                  AND EXISTS (
-                     SELECT 1 FROM ${esc('user_roles_role')} ur
+                     SELECT 1 FROM ${esc(sources.userRoles)} ur
                      WHERE ur.${esc('userId')} = ra.${esc('userId')}
                      AND ur.${esc('roleId')} = ra.${esc('roleId')}
                  ))
@@ -281,10 +432,10 @@ async function verifyRoleAssignmentData(queryRunner: QueryRunner): Promise<void>
         return;
     }
     const format = (triples: Triple[]) =>
-        triples.map(t => `  user ${t.userId}, role ${t.roleId}, channel ${t.channelId}`).join('\n');
+        triples.map(row => `  user ${row.userId}, role ${row.roleId}, channel ${row.channelId}`).join('\n');
     throw new Error(
-        'Role assignment verification failed: role_assignment does not match the legacy ' +
-            'user_roles_role and role_channels_channel tables. The legacy tables have not been ' +
+        `Role assignment verification failed: ${t.roleAssignment} does not match the legacy ` +
+            `${sources.userRoles} and ${sources.roleChannels} tables. The legacy tables have not been ` +
             'modified. Showing up to ' +
             `${MAX_REPORTED_MISMATCHES} rows per kind.` +
             (missing.length ? `\nGranted by the legacy tables but missing:\n${format(missing)}` : '') +
@@ -306,7 +457,7 @@ interface Triple {
  */
 async function getExplicitIdClauses(
     queryRunner: QueryRunner,
-    tableName = 'role_assignment',
+    tableName: string,
 ): Promise<{ columns: string; select: string }> {
     const esc = (name: string) => queryRunner.connection.driver.escape(name);
     const table = await queryRunner.getTable(tableName);
