@@ -37,15 +37,13 @@
 
 # Why Vendure
 
-Vendure gives engineering teams a commerce backend they can change at the core, instead of a suite that fights every exception or a composable stack they have to assemble and then maintain. Model the catalogue, orders, pricing, promotions and customers the way the business actually works, and serve B2B, D2C, marketplace and omnichannel from one core through a GraphQL API.
+Vendure is a commerce backend that engineering teams can change at the core. Model the catalog, orders, pricing, promotions and customers the way your business works, and serve B2B, D2C, marketplace and omnichannel sales from one GraphQL API.
 
 - **Model your business, no forks required**: Extend or override any part of the system through stable plugin contracts and service overrides. Add custom entities, pricing logic, and workflows, and change core behaviour without patching it.
 - **One backend, every channel**: A single extensible core serves any frontend through a GraphQL API, across D2C, B2B, marketplace, and omnichannel. No stitching together separate commerce services.
 - **One TypeScript stack**: Node.js, NestJS, and GraphQL, with strong types across the stack and no proprietary query language. The introspectable GraphQL schema makes it straightforward to wire up LLM tool-calling, MCP servers, and agent frameworks.
 - **Commerce building blocks from day one**: Catalog, orders, customers, promotions, channels, tax, shipping, payments, and stock are built in. The same extension model lets you build the workflows specific to your business on top.
 - **Proven in production**: Used in production by enterprise teams and proven at high transaction volume. Stable plugin contracts give you safe extension points without forking.
-
-Vendure is the commerce platform you extend, deploy and version like the rest of your stack.
 
 <a href="https://vendure.io/core">Learn why we built Vendure this way</a> · <a href="https://vendure.io/compare">See how Vendure compares</a> · <a href="https://vendure.io/migrate">Moving from another platform</a>
 
@@ -61,40 +59,40 @@ Scaffold a project with the server, worker, admin dashboard and GraphQL APIs rea
 npx @vendure/create my-shop
 ```
 
-Requires Node.js 20.19+ or 22.12+ and a SQL database (PostgreSQL, MySQL, MariaDB or SQLite). The [getting started guide](https://docs.vendure.io/guides/getting-started/installation/) covers configuration, seed data and your first plugin. Questions? Join [our Discord](https://vendure.io/discord).
+Requires Node.js 20.19+ or 22.12+ and a SQL database (PostgreSQL, MySQL, MariaDB or SQLite). The [getting started guide](https://docs.vendure.io/guides/getting-started/installation/) covers configuration, seed data and your first plugin. Ask questions on [our Discord](https://vendure.io/discord).
 
 ### Self-hosting
 
-Vendure runs anywhere Node.js runs: Docker, Kubernetes, a single VM or any cloud, in any region. You own the deployment, the data and the stack, and self-hosting costs nothing. See the [deployment guides](https://docs.vendure.io/guides/deployment/).
+Vendure runs anywhere Node.js runs, including Docker, Kubernetes, a single VM or any cloud provider. Self-hosting is free, and your data stays in your own database. See the [deployment guides](https://docs.vendure.io/guides/deployment/).
 
 ### Vendure Cloud
 
-[Vendure Cloud](https://vendure.io/cloud) is the managed runtime: git-push deploys, a preview environment for every pull request, and a managed database, queues, search, backups and scaling. It runs the same application you can self-host, so you can move to Cloud without rebuilding it. Cloud is included in every paid plan at no extra cost, and is in design-partner preview ahead of general availability in Q1 2027.
+[Vendure Cloud](https://vendure.io/cloud) is the managed runtime for Vendure. It deploys on git push, creates a preview environment for every pull request, and manages the database, queues, search, backups and scaling. It runs the same application you can self-host, so you can move to Cloud without rebuilding it. Every paid plan includes Cloud at no extra cost. Cloud is in design-partner preview now, with general availability planned for Q1 2027.
 
 <br />
 
-# Everything you need
+# What Core includes
 
-Core ships the commerce primitives. The plugin model is how you make them yours.
+Plugins let you extend or replace any of the features below.
 
 | | |
 |---|---|
-| **[Catalogue](https://docs.vendure.io/guides/core-concepts/products/)** | Products, variants, facets, collections and [custom fields](https://docs.vendure.io/guides/developer-guide/custom-fields/) on any entity |
-| **[Orders](https://docs.vendure.io/guides/core-concepts/orders/)** | Carts, draft orders, modifications, fulfilment and returns |
+| **[Catalog](https://docs.vendure.io/guides/core-concepts/products/)** | Products, variants, facets, collections and [custom fields](https://docs.vendure.io/guides/developer-guide/custom-fields/) on any entity |
+| **[Orders](https://docs.vendure.io/guides/core-concepts/orders/)** | Carts, draft orders, modifications, fulfillment and returns |
 | **[Stock](https://docs.vendure.io/guides/core-concepts/stock-control/)** | Multi-location inventory, allocation and backorders |
 | **[Promotions](https://docs.vendure.io/guides/core-concepts/promotions/)** | Conditions and actions you compose, or write your own |
 | **[Payments](https://docs.vendure.io/guides/core-concepts/payment/)** | Provider-agnostic payment and shipping integrations |
 | **[Channels](https://docs.vendure.io/guides/core-concepts/channels/)** | Multi-channel, multi-region, multi-currency and multi-language from one instance |
-| **[Plugins](https://docs.vendure.io/guides/developer-guide/plugins/)** | Extend or override any service, entity or strategy through stable contracts, no fork required |
-| **[GraphQL APIs](https://docs.vendure.io/guides/developer-guide/extending-the-graphql-api/)** | Typed Shop and Admin APIs you can extend; an introspectable schema that agent frameworks and MCP servers can read |
+| **[Plugins](https://docs.vendure.io/guides/developer-guide/plugins/)** | Extend or override any service, entity or strategy without forking the core |
+| **[GraphQL APIs](https://docs.vendure.io/guides/developer-guide/extending-the-graphql-api/)** | Typed Shop and Admin APIs that you can extend. Agent frameworks and MCP servers can read the schema through introspection |
 | **[Dashboard](https://docs.vendure.io/guides/extending-the-dashboard/getting-started/)** | React and TanStack admin app, extensible with your own pages and form elements |
-| **[TypeScript API](https://docs.vendure.io/reference/typescript-api/)** | Every service, strategy and event documented and typed end to end |
+| **[TypeScript API](https://docs.vendure.io/reference/typescript-api/)** | Typed reference docs for every service, strategy and event |
 
 <br />
 
 # Beyond the open-source core
 
-Four paid plans are built on top of this repository: **Starter, Growth, Scale** and **Enterprise**. They add commercial B2B features such as company accounts, quotes, contract pricing, organisation hierarchies, approvals, single sign-on and audit trails, along with direct support from the team that builds Vendure and a commercial licence. Vendure Cloud is included in every paid plan at no extra cost. See [plans and pricing](https://vendure.io/pricing).
+Vendure has four paid plans built on top of this repository: Starter, Growth, Scale and Enterprise. They add B2B features such as company accounts, quotes, contract pricing, account hierarchies, approvals, single sign-on and audit logs. Every paid plan also includes direct support from the Vendure team, a commercial license and Vendure Cloud at no extra cost. See [plans and pricing](https://vendure.io/pricing).
 
 # What's in this repo
 
@@ -119,7 +117,7 @@ Patch releases ship regularly. Check our [release notes](https://github.com/vend
 
 # License
 
-Vendure is open source under the [GPLv3 license](./LICENSE.md). Building against the GraphQL API doesn't make your storefront or services subject to GPLv3, and a [plugin license exception](./license/plugin-exception.txt) lets you release your own Vendure plugins under any license you choose (see the [licensing FAQ](./license/license-faq.md)). Commercial licensing comes with the paid plans: see [pricing](https://vendure.io/pricing).
+Vendure is open source under the [GPLv3 license](./LICENSE.md). Building against the GraphQL API doesn't make your storefront or services subject to GPLv3, and a [plugin license exception](./license/plugin-exception.txt) lets you release your own Vendure plugins under any license you choose (see the [licensing FAQ](./license/license-faq.md)). Every paid plan includes a commercial license. See [pricing](https://vendure.io/pricing).
 
 # Professional services
 
