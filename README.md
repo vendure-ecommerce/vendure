@@ -1,9 +1,3 @@
-<p align="center">
-  <a href="https://vendure.io">
-    <img alt="Vendure logo" height="60" width="auto" src="https://assets.vendure.io/brand/logo-icon-vendure-blue.svg">
-  </a>
-</p>
-
 <h2 align="center">The ecommerce platform for complex B2B</h2>
 
 <p align="center">
