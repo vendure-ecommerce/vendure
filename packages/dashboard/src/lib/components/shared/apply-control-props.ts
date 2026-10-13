@@ -28,6 +28,6 @@ export function applyControlProps(
         fieldName !== undefined && NON_BLANK_FIELD_NAMES.has(fieldName) && elementProps.required !== false;
     return React.cloneElement(
         element as React.ReactElement<Record<string, unknown>>,
-        nonBlank ? { required: true, pattern: '.*\\S.*', ...props } : props,
+        nonBlank ? { required: true, pattern: String.raw`.*\S.*`, ...props } : props,
     );
 }
