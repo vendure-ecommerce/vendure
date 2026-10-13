@@ -525,43 +525,11 @@ export class ProductVariantService {
                 .map(c => c.id)
                 .filter(id => !idsAreEqual(id, ctx.channelId) && !idsAreEqual(id, defaultChannel.id));
 
-            if (additionalChannelIds.length) {
-                // Load the variant's options with their groups so we can assign them
-                // to the additional channels, matching ProductService.assignProductsToChannel()
-                const optionIds = input.optionIds || [];
-                let optionGroupIds: ID[] = [];
-                if (optionIds.length) {
-                    const variantOptions = await this.connection.getRepository(ctx, ProductOption).find({
-                        where: { id: In(optionIds) },
-                        relations: { group: true },
-                        loadEagerRelations: false,
-                    });
-                    optionGroupIds = unique(variantOptions.map(o => o.group.id));
-                }
-
-                for (const additionalChannelId of additionalChannelIds) {
-                    await this.assignProductVariantsToChannel(ctx, {
-                        productVariantIds: [createdVariant.id],
-                        channelId: additionalChannelId,
-                    });
-
-                    // Also assign option groups and options to the target channel,
-                    // matching ProductService.assignProductsToChannel()
-                    if (optionIds.length) {
-                        await Promise.all([
-                            ...optionGroupIds.map(id =>
-                                this.channelService.assignToChannels(ctx, ProductOptionGroup, id, [
-                                    additionalChannelId,
-                                ]),
-                            ),
-                            ...optionIds.map(id =>
-                                this.channelService.assignToChannels(ctx, ProductOption, id, [
-                                    additionalChannelId,
-                                ]),
-                            ),
-                        ]);
-                    }
-                }
+            for (const additionalChannelId of additionalChannelIds) {
+                await this.assignProductVariantsToChannel(ctx, {
+                    productVariantIds: [createdVariant.id],
+                    channelId: additionalChannelId,
+                });
             }
         }
 
@@ -942,7 +910,7 @@ export class ProductVariantService {
             input.productVariantIds,
             ctx.channelId,
             {
-                relations: { taxCategory: true, assets: true },
+                relations: { taxCategory: true, assets: true, options: true },
             },
         );
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
@@ -965,6 +933,18 @@ export class ProductVariantService {
             );
             const assetIds = variant.assets?.map(a => a.assetId) || [];
             await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
+            // Also assign the variant's options and their groups, matching
+            // ProductService.assignProductsToChannel(). Otherwise `ProductOption.group`
+            // cannot be resolved in the target channel.
+            const options = variant.options ?? [];
+            await Promise.all([
+                ...unique(options.map(o => o.groupId)).map(id =>
+                    this.channelService.assignToChannels(ctx, ProductOptionGroup, id, [input.channelId]),
+                ),
+                ...options.map(o =>
+                    this.channelService.assignToChannels(ctx, ProductOption, o.id, [input.channelId]),
+                ),
+            ]);
             assignedVariantIds.push(variant.id);
         }
         // Seed a StockLevel for each of the target channel's stock locations so that per-channel
