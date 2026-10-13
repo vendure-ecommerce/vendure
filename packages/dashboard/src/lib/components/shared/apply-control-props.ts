@@ -1,11 +1,19 @@
 import React from 'react';
 
 /**
- * Fields with these names identify an entity, so an empty or whitespace-only value is never valid.
+ * Fields with these names are never valid when empty or whitespace-only.
  * The GraphQL schema cannot tell us this: `String!` permits '', and translation and update inputs
  * are nullable throughout.
  */
-const NON_BLANK_FIELD_NAMES = new Set(['name', 'code', 'sku']);
+const NON_BLANK_FIELD_NAMES = new Set([
+    'name',
+    'code',
+    'sku',
+    'slug',
+    'firstName',
+    'lastName',
+    'emailAddress',
+]);
 
 /**
  * Injects `id` and `aria-invalid` props onto the rendered element via cloneElement.

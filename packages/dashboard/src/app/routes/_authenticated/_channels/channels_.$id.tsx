@@ -131,7 +131,7 @@ function ChannelDetailPage() {
             schema
                 .extend({
                     code: z.string().min(1, { message: t`This field is required` }),
-                    token: z.string().min(1, { message: t`This field is required` }),
+                    token: z.string().regex(/\S/, { message: t`This field is required` }),
                     ...(creatingNewEntity
                         ? {
                               defaultTaxZoneId: z.string().min(1, { message: t`This field is required` }),
