@@ -1,0 +1,35 @@
+---
+title: "DropArchivedRoleTables"
+generated: true
+---
+<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments.ts" sourceLine="233" packageName="@vendure/core" since="4.0.0" />
+
+Drops the `_v3_user_roles_role` and `_v3_role_channels_channel` tables which
+[migrateRoleAssignmentData](/reference/typescript-api/migration/migrate-role-assignment-data#migrateroleassignmentdata) archives the pre-v4 role grants to. Call it from a
+later migration once you no longer need the archive for auditing. Tables which do not
+exist are skipped, so it is safe to re-run.
+
+```ts
+import { MigrationInterface, QueryRunner } from 'typeorm';
+import { dropArchivedRoleTables } from '@vendure/core';
+
+export class DropArchivedRoleTables1234567890 implements MigrationInterface {
+    public async up(queryRunner: QueryRunner): Promise<any> {
+        await dropArchivedRoleTables(queryRunner);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<any> {
+        // The archive cannot be restored
+    }
+}
+```
+
+```ts title="Signature"
+function dropArchivedRoleTables(queryRunner: QueryRunner): Promise<void>
+```
+Parameters
+
+### queryRunner
+
+<MemberInfo kind="parameter" type={`QueryRunner`} />
+

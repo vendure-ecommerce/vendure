@@ -2,7 +2,7 @@
 title: "MigrateRoleAssignmentData"
 generated: true
 ---
-<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments.ts" sourceLine="87" packageName="@vendure/core" since="4.0.0" />
+<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments.ts" sourceLine="96" packageName="@vendure/core" since="4.0.0" />
 
 Populates the new `role_assignment` table from the pre-v4 `user_roles_role` and
 `role_channels_channel` join tables. In the old model a User received each of their
@@ -38,15 +38,28 @@ boot; v4 derives SuperAdmin permissions at check time and no longer re-syncs, so
 without this step a migrated instance would present a stale permission list on the
 SuperAdmin role.
 
-Call this from your migration's `up()` method **after** the `role_assignment` table
-has been created and **before** `user_roles_role` and `role_channels_channel` are
-dropped. If it runs out of order, the queries reference a table which does not exist
-and the migration fails.
+After copying, the helper verifies that `role_assignment` holds exactly the grants the
+legacy tables describe under these rules, and throws if any row is missing or extra.
+Nothing else is changed before the check passes. To review the intended behavior
+changes for your data before migrating, see [previewRoleAssignmentMigration](/reference/typescript-api/migration/preview-role-assignment-migration#previewroleassignmentmigration).
 
-The helper is idempotent: rows which already exist are left as-is, so it is safe to
-re-run, e.g. after a partial failure on MySQL (where DDL is non-transactional) or as
-the delta pass of a staged rollout in which the bulk of the data was copied while the
-previous version was still serving traffic.
+Once verified, the legacy tables are **archived, not dropped**: they are renamed to
+`_v3_user_roles_role` and `_v3_role_channels_channel` and their foreign keys removed, so
+they keep a frozen copy of the pre-v4 grants for auditing. Vendure refuses to start while
+`user_roles_role` still exists under its original name. Drop the archive with
+[dropArchivedRoleTables](/reference/typescript-api/migration/drop-archived-role-tables#droparchivedroletables) once you no longer need it.
+
+Call this from your migration's `up()` method **after** the `role_assignment` table
+has been created. A generated migration does not touch the legacy tables, so nothing
+else in it needs to change.
+
+The helper is idempotent: rows which already exist are left as-is, a partially
+archived state is completed, and a fully archived one is skipped. It is safe to re-run,
+e.g. after a partial failure on MySQL (where DDL is non-transactional) or as the delta
+pass of a staged rollout in which the bulk of the data was copied while the previous
+version was still serving traffic.
+
+Table names honor the `entityPrefix` of the connection options.
 
 ```ts
 import { MigrationInterface, QueryRunner } from 'typeorm';
@@ -54,16 +67,12 @@ import { migrateRoleAssignmentData } from '@vendure/core';
 
 export class RoleAssignments1234567890 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<any> {
-        // --- Auto-generated DDL starts here ---
+        // --- Auto-generated DDL ---
         // (Create role_assignment table and FK constraints)
         // ...
 
-        // --- Populate new table with existing data ---
+        // --- Populate new table with existing data, verify, archive the old tables ---
         await migrateRoleAssignmentData(queryRunner);
-
-        // --- Auto-generated DDL continues ---
-        // (Drop user_roles_role and role_channels_channel tables)
-        // ...
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {

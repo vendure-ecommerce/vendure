@@ -1,0 +1,96 @@
+---
+title: "PreviewRoleAssignmentMigration"
+generated: true
+---
+## previewRoleAssignmentMigration
+
+<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments_preview.ts" sourceLine="69" packageName="@vendure/core" since="4.0.0" />
+
+Reports, without writing anything, how the v4 role-assignment migration will change
+effective permissions for the Users of this database. Run it after upgrading the Vendure
+packages to v4 and **before** running the migration, while the database still has its
+pre-v4 shape. It is safe to run against a production database.
+
+Only intended behavior changes are reported; whether the migration copies the data
+correctly is verified by [migrateRoleAssignmentData](/reference/typescript-api/migration/migrate-role-assignment-data#migrateroleassignmentdata) itself.
+
+```ts
+import { formatRoleAssignmentMigrationPreview, previewRoleAssignmentMigration } from '@vendure/core';
+
+const queryRunner = dataSource.createQueryRunner();
+const preview = await previewRoleAssignmentMigration(queryRunner);
+console.log(formatRoleAssignmentMigrationPreview(preview));
+await queryRunner.release();
+```
+
+```ts title="Signature"
+function previewRoleAssignmentMigration(queryRunner: QueryRunner): Promise<RoleAssignmentMigrationPreview>
+```
+Parameters
+
+### queryRunner
+
+<MemberInfo kind="parameter" type={`QueryRunner`} />
+
+## RoleAssignmentMigrationPreview
+
+<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments_preview.ts" sourceLine="15" packageName="@vendure/core" since="4.0.0" />
+
+The intended behavior changes [migrateRoleAssignmentData](/reference/typescript-api/migration/migrate-role-assignment-data#migrateroleassignmentdata) will cause for a given
+database, as reported by [previewRoleAssignmentMigration](/reference/typescript-api/migration/preview-role-assignment-migration#previewroleassignmentmigration).
+
+```ts title="Signature"
+interface RoleAssignmentMigrationPreview {
+    customerChannelChanges: Array<{
+        channelId: string;
+        channelCode: string;
+        customersLosingAccess: number;
+        customersGainingAccess: number;
+    }>;
+    customerRoleDroppedPermissions: string[];
+    rolesWithoutChannels: Array<{ roleId: string; roleCode: string; holderCount: number }>;
+}
+```
+
+<div className="members-wrapper">
+
+### customerChannelChanges
+
+<MemberInfo kind="property" type={`Array<{         channelId: string;         channelCode: string;         customersLosingAccess: number;         customersGainingAccess: number;     }>`}   />
+
+Per Channel, how many Customers lose or gain the Customer role's permissions. Pre-v4,
+every holder of the Customer role held its permissions on every Channel the role was
+assigned to, regardless of membership. In v4, Customers hold `Authenticated` on their
+member Channels only. Counts are of Customer-role grants: a User may still hold the
+same permissions through another Role.
+### customerRoleDroppedPermissions
+
+<MemberInfo kind="property" type={`string[]`}   />
+
+Permissions the legacy Customer role carried beyond `Authenticated`. v4 removes the
+Customer role, so Customers lose these on every Channel.
+### rolesWithoutChannels
+
+<MemberInfo kind="property" type={`Array<{ roleId: string; roleCode: string; holderCount: number }>`}   />
+
+Roles which are held by Users but assigned to no Channel. They granted nothing
+pre-v4 and produce no assignment rows, so their holders lose nothing, but the
+holdings disappear.
+
+
+</div>
+## formatRoleAssignmentMigrationPreview
+
+<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments_preview.ts" sourceLine="172" packageName="@vendure/core" since="4.0.0" />
+
+Renders a [RoleAssignmentMigrationPreview](/reference/typescript-api/migration/preview-role-assignment-migration#roleassignmentmigrationpreview) as a human-readable report.
+
+```ts title="Signature"
+function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigrationPreview): string
+```
+Parameters
+
+### preview
+
+<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/migration/preview-role-assignment-migration#roleassignmentmigrationpreview'>RoleAssignmentMigrationPreview</a>`} />
+
