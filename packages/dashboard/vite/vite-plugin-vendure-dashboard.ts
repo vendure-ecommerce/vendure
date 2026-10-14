@@ -402,32 +402,24 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
 /**
  * @description
  * Walks up from `fromFile` until it finds a `package.json` whose `name` field
- * matches `packageName`, and returns that directory. Falls back to `fallback`
- * (a fixed-depth guess) if no matching `package.json` is found within a
- * reasonable number of levels.
+ * matches `packageName`, and returns that directory.
  */
-export function findPackageRoot(fromFile: string, packageName: string, fallback: string): string {
+export function findPackageRoot(fromFile: string, packageName: string): string {
     let dir = path.dirname(fromFile);
-    for (let i = 0; i < 10; i++) {
+    while (true) {
         const packageJsonPath = path.join(dir, 'package.json');
-        if (fs.existsSync(packageJsonPath)) {
-            try {
-                const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-                if (packageJson.name === packageName) {
-                    return dir;
-                }
-            } catch {
-                // Not a valid/readable package.json for this package, keep walking up.
-            }
+        if (
+            fs.existsSync(packageJsonPath) &&
+            JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')).name === packageName
+        ) {
+            return dir;
         }
         const parentDir = path.dirname(dir);
         if (parentDir === dir) {
-            break;
+            throw new Error(`Could not find the root of the "${packageName}" package above ${fromFile}`);
         }
         dir = parentDir;
     }
-
-    return fallback;
 }
 
 /**
@@ -440,13 +432,7 @@ function getDashboardPackageRoot(): string {
     const fileUrl = import.meta.resolve('@vendure/dashboard');
     const packagePath = fileUrl.startsWith('file:') ? fileURLToPath(fileUrl) : fileUrl;
 
-    // A fixed number of `..` segments assumes the resolved entry file is always
-    // the same number of directories below the package root, which only holds
-    // for this monorepo's own workspace-linked source. In other setups (e.g. an
-    // NX workspace, or any consumer resolving the published package) the entry
-    // file can sit at a different depth, so we look for the package's own
-    // package.json instead, falling back to the fixed-depth guess.
-    return findPackageRoot(packagePath, '@vendure/dashboard', path.join(packagePath, '../../../'));
+    return findPackageRoot(packagePath, '@vendure/dashboard');
 }
 
 /**
