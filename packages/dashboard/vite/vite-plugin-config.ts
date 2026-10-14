@@ -25,12 +25,14 @@ export function viteConfigPlugin({ packageRoot, useExperimentalBundle }: ViteCon
             // Therefore, we set `root` only for `serve` and, for `build`, we instead make sure that
             // an `outDir` **outside** of `node_modules` is used (defaulting to the current working
             // directory if the user did not provide one already).
+            // Relative paths in the user's config are relative to their own root, which we are about to replace.
+            const userRoot = config.root ? path.resolve(config.root) : process.cwd();
             config.root = packageRoot;
 
             config.publicDir = config.publicDir ?? path.join(packageRoot, 'public');
 
             // If we are building and no explicit outDir has been provided (or it is a relative path),
-            // set it to an **absolute** path relative to the cwd so that the output never ends up in
+            // set it to an **absolute** path relative to the user's root so that the output never ends up in
             // `node_modules`.
             if (env.command === 'build') {
                 const buildConfig = config.build ?? {};
@@ -42,8 +44,8 @@ export function viteConfigPlugin({ packageRoot, useExperimentalBundle }: ViteCon
                 const normalizedOutDir = hasOutDir
                     ? outDirIsAbsolute
                         ? outDir
-                        : path.resolve(process.cwd(), outDir)
-                    : path.resolve(process.cwd(), 'dist');
+                        : path.resolve(userRoot, outDir)
+                    : path.resolve(userRoot, 'dist');
 
                 config.build = {
                     ...buildConfig,
