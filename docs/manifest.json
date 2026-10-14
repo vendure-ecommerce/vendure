@@ -2332,13 +2332,25 @@
                   "title": "MigrateRoleAssignmentData",
                   "slug": "migrate-role-assignment-data",
                   "file": "docs/reference/typescript-api/migration/migrate-role-assignment-data.mdx",
-                  "lastModified": "2026-09-14T07:29:57Z"
+                  "lastModified": "2026-10-14T15:49:58+02:00"
                 },
                 {
                   "title": "MigrationOptions",
                   "slug": "migration-options",
                   "file": "docs/reference/typescript-api/migration/migration-options.mdx",
                   "lastModified": "2026-01-28T14:49:21+01:00"
+                },
+                {
+                  "title": "PreviewRoleAssignmentMigration",
+                  "slug": "preview-role-assignment-migration",
+                  "file": "docs/reference/typescript-api/migration/preview-role-assignment-migration.mdx",
+                  "lastModified": "2026-10-14T14:44:40+02:00"
+                },
+                {
+                  "title": "RemoveLegacyRoleData",
+                  "slug": "remove-legacy-role-data",
+                  "file": "docs/reference/typescript-api/migration/remove-legacy-role-data.mdx",
+                  "lastModified": "2026-10-14T15:49:58+02:00"
                 },
                 {
                   "title": "RevertLastMigration",
@@ -3012,7 +3024,7 @@
                   "title": "InitializerService",
                   "slug": "initializer-service",
                   "file": "docs/reference/typescript-api/services/initializer-service.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-14T14:44:39+02:00"
                 },
                 {
                   "title": "OrderService",
