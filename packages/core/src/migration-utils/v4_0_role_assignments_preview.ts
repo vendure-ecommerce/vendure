@@ -57,6 +57,10 @@ export interface RoleAssignmentMigrationPreview {
      * regardless of membership. In v4, Customers hold `Authenticated` on their member
      * Channels only. A User who keeps access to the Channel through another Role, or as a
      * SuperAdmin, is not counted.
+     *
+     * The loss is permanent only where the configured {@link CustomerChannelAssignmentStrategy}
+     * declines to assign the Customer. With the default strategy a signed-in Customer becomes
+     * a member of the Channel on their next request there.
      */
     customerChannelChanges: Array<{
         channelId: string;
@@ -405,8 +409,12 @@ export function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigr
             '   Losing access: the customer is not a member of the channel (a soft-deleted',
             '   customer counts as not a member). Gaining access: the customer is a member of a',
             '   channel the Customer role did not cover, usually one created programmatically.',
-            '   Check: if a channel your customers really use shows a high count, its customer',
-            '   memberships are incomplete. Add the missing memberships before migrating.',
+            '',
+            '   With the default CustomerChannelAssignmentStrategy, a signed-in customer becomes a',
+            '   member of a channel on their next request there, so access lost here comes back',
+            '   on its own. It stays lost only on channels where your strategy declines the',
+            '   assignment. If customers should keep access to such a channel, add the missing',
+            '   memberships before migrating.',
         );
     }
 

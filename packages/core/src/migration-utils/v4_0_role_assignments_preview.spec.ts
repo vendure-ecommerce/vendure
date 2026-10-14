@@ -138,6 +138,7 @@ describe('previewRoleAssignmentMigration()', () => {
             ].join('\n'),
         );
         expect(report).toContain('   Customers affected         3');
+        expect(report).toContain('With the default CustomerChannelAssignmentStrategy');
     });
 
     it('does not count a customer who keeps access through an admin role', async () => {
