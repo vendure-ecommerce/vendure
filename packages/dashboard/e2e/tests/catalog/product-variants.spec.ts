@@ -581,7 +581,10 @@ test.describe('variants that share a combination after a forced option group rem
                 },
             );
         const size = (
-            await createGroup('e2e-shared-size', 'Shared Size', [{ code: 'e2e-shared-small', name: 'Small' }])
+            await createGroup('e2e-shared-size', 'Shared Size', [
+                { code: 'e2e-shared-small', name: 'Small' },
+                { code: 'e2e-shared-medium', name: 'Medium' },
+            ])
         ).createProductOptionGroup;
         const colour = (
             await createGroup('e2e-shared-colour', 'Shared Colour', [
@@ -608,7 +611,10 @@ test.describe('variants that share a combination after a forced option group rem
                     productId,
                     sku: `E2E-SHARED-${option.code}`,
                     price: 1000,
-                    optionIds: [size.options[0].id, option.id],
+                    optionIds: [
+                        size.options.find((o: { code: string }) => o.code === 'e2e-shared-small').id,
+                        option.id,
+                    ],
                     translations: [{ languageCode: 'en', name: `E2E Shared ${option.code}` }],
                 })),
             },
@@ -654,6 +660,46 @@ test.describe('variants that share a combination after a forced option group rem
 
         await expect(page.getByText(/already exists/i)).toHaveCount(0);
         await expect(page.getByRole('button', { name: 'Update' })).toBeDisabled();
+    });
+
+    test('a failed option change is not sent with a later unrelated edit', async ({ page }) => {
+        await page.goto(`/product-variants/${variantId}`);
+        const sizeInput = page.getByLabel('Shared Size', { exact: true });
+        await expect(sizeInput).toHaveValue('Small', { timeout: 10_000 });
+
+        // Fail the first update, which carries the move to "Medium".
+        let failedOnce = false;
+        await page.route('**/admin-api**', async route => {
+            const isUpdate = (route.request().postData() ?? '').includes('mutation UpdateProductVariant(');
+            if (isUpdate && !failedOnce) {
+                failedOnce = true;
+                await route.fulfill({ json: { errors: [{ message: 'Simulated failure' }] } });
+                return;
+            }
+            await route.continue();
+        });
+        await sizeInput.fill('Medium');
+        await page.keyboard.press('Escape');
+        await page.getByRole('button', { name: 'Update' }).click();
+        await expect.poll(() => failedOnce).toBe(true);
+
+        // Back to the held option, then an edit that does not touch the options.
+        await sizeInput.fill('Small');
+        await page.keyboard.press('Escape');
+        const skuInput = page
+            .locator('[data-slot="field"]')
+            .filter({ has: page.getByText('SKU', { exact: true }) })
+            .getByRole('textbox');
+        await skuInput.fill(`E2E-SHARED-${Date.now()}`);
+
+        const updateRequest = page.waitForRequest(
+            req =>
+                req.method() === 'POST' && (req.postData() ?? '').includes('mutation UpdateProductVariant('),
+            { timeout: 15_000 },
+        );
+        await page.getByRole('button', { name: 'Update' }).click();
+        const input = (await updateRequest).postDataJSON()?.variables?.input;
+        expect(input).not.toHaveProperty('optionIds');
     });
 
     test.afterAll(async ({ browser }) => {
