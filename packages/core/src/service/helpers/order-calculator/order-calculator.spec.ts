@@ -338,15 +338,6 @@ describe('OrderCalculator', () => {
             },
         });
 
-        const freeShippingAction = new PromotionShippingAction({
-            code: 'free_shipping',
-            description: [{ languageCode: LanguageCode.en, value: 'Free shipping' }],
-            args: {},
-            execute(ctx, shippingLine, order, args) {
-                return ctx.channel.pricesIncludeTax ? -shippingLine.priceWithTax : -shippingLine.price;
-            },
-        });
-
         it('empty string couponCode does not prevent promotion being applied', async () => {
             const hasEmptyStringCouponCode = new Promotion({
                 id: 2,
@@ -908,11 +899,11 @@ describe('OrderCalculator', () => {
                     promotionConditions: [],
                     actions: [
                         {
-                            code: freeShippingAction.code,
+                            code: freeShipping.code,
                             args: [],
                         },
                     ],
-                    promotionActions: [freeShippingAction],
+                    promotionActions: [freeShipping],
                 });
 
                 it('prices exclude tax', async () => {
@@ -1042,7 +1033,7 @@ describe('OrderCalculator', () => {
             });
 
             // https://github.com/vendurehq/vendure/issues/3140
-            describe('multiple shipping promotions using the built-in free_shipping action', () => {
+            describe('stacked shipping promotions do not make shipping negative', () => {
                 const fixedShippingDiscountAction = new PromotionShippingAction({
                     code: 'fixed_shipping_discount',
                     description: [{ languageCode: LanguageCode.en, value: '200 off shipping' }],
@@ -1072,6 +1063,7 @@ describe('OrderCalculator', () => {
                     order.shippingLines = [
                         new ShippingLine({ shippingMethodId: mockShippingMethodId, adjustments: [] }),
                     ];
+                    order.promotions = [];
                     return { ctx, order };
                 }
 
@@ -1099,6 +1091,7 @@ describe('OrderCalculator', () => {
                     expect(order.shippingLines[0].adjustments.map(a => a.amount)).toEqual([-500]);
                     expect(order.total).toBe(order.subTotal);
                     expect(order.totalWithTax).toBe(order.subTotalWithTax);
+                    expect(order.promotions.map(p => p.id)).toEqual([1]);
                     assertOrderTotalsAddUp(order);
                 });
 
@@ -1114,6 +1107,7 @@ describe('OrderCalculator', () => {
                     expect(order.shippingLines[0].adjustments.map(a => a.amount)).toEqual([-500]);
                     expect(order.total).toBe(order.subTotal);
                     expect(order.totalWithTax).toBe(order.subTotalWithTax);
+                    expect(order.promotions.map(p => p.id)).toEqual([1]);
                     assertOrderTotalsAddUp(order);
                 });
 
@@ -1128,6 +1122,22 @@ describe('OrderCalculator', () => {
                     expect(order.shippingWithTax).toBe(0);
                     expect(order.shippingLines[0].adjustments.map(a => a.amount)).toEqual([-200, -300]);
                     expect(order.total).toBe(order.subTotal);
+                    expect(order.promotions.map(p => p.id)).toEqual([1, 2]);
+                    assertOrderTotalsAddUp(order);
+                });
+
+                it('a partial shipping discount after free_shipping does not make shipping negative', async () => {
+                    const { ctx, order } = createOrderWithShipping(false);
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [
+                        createShippingPromotion(1, freeShipping),
+                        createShippingPromotion(2, fixedShippingDiscountAction),
+                    ]);
+
+                    expect(order.shipping).toBe(0);
+                    expect(order.shippingWithTax).toBe(0);
+                    expect(order.shippingLines[0].adjustments.map(a => a.amount)).toEqual([-500]);
+                    expect(order.total).toBe(order.subTotal);
+                    expect(order.promotions.map(p => p.id)).toEqual([1]);
                     assertOrderTotalsAddUp(order);
                 });
             });
@@ -1764,8 +1774,8 @@ describe('OrderCalculator', () => {
                     name: 'Free shipping',
                     conditions: [{ code: alwaysTrueCondition.code, args: [] }],
                     promotionConditions: [alwaysTrueCondition],
-                    actions: [{ code: freeShippingAction.code, args: [] }],
-                    promotionActions: [freeShippingAction],
+                    actions: [{ code: freeShipping.code, args: [] }],
+                    promotionActions: [freeShipping],
                 });
                 const order = createOrder({
                     ctx,
