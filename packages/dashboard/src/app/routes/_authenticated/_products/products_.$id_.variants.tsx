@@ -443,7 +443,7 @@ function ManageProductVariants() {
                                                             value={value}
                                                             onValueChange={optionId => {
                                                                 if (optionId) {
-                                                                    assignOptionToVariant(
+                                                                    void assignOptionToVariant(
                                                                         variant,
                                                                         group.id,
                                                                         optionId,
