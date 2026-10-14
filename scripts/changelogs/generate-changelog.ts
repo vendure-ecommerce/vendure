@@ -31,6 +31,8 @@ const VALID_SCOPES: string[] = [
     'email-plugin',
     'email',
     'job-queue-plugin',
+    'mcp-plugin',
+    'mcp-sdk',
     'testing',
     'ui-devkit',
     'harden-plugin',

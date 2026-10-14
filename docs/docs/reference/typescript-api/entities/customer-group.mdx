@@ -15,7 +15,7 @@ class CustomerGroup extends VendureEntity implements HasCustomFields {
     customers: Customer[];
     @Column(type => CustomCustomerGroupFields)
     customFields: CustomCustomerGroupFields;
-    @OneToMany(type => TaxRate, taxRate => taxRate.zone)
+    @OneToMany(type => TaxRate, taxRate => taxRate.customerGroup)
     taxRates: TaxRate[];
 }
 ```

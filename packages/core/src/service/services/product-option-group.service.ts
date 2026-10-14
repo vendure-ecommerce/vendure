@@ -294,7 +294,7 @@ export class ProductOptionGroupService {
                 relationLoadStrategy: 'query',
                 loadEagerRelations: false,
                 where: { id: productId },
-                relations: ['optionGroups'],
+                relations: { optionGroups: true },
             });
             if (product) {
                 product.optionGroups = product.optionGroups.filter(og => !idsAreEqual(og.id, id));
@@ -330,7 +330,7 @@ export class ProductOptionGroupService {
             ProductOptionGroup,
             input.productOptionGroupIds,
             ctx.channelId,
-            { relations: ['options'] },
+            { relations: { options: true } },
         );
         const optionsToAssign = groupsToAssign.reduce(
             (options, group) => [...options, ...group.options],
@@ -383,7 +383,7 @@ export class ProductOptionGroupService {
             ProductOptionGroup,
             input.productOptionGroupIds,
             ctx.channelId,
-            { relations: ['options'] },
+            { relations: { options: true } },
         );
 
         const results: Array<
