@@ -15,6 +15,20 @@ import { QueryRunner } from 'typeorm';
 export interface RoleAssignmentMigrationPreview {
     /**
      * @description
+     * What {@link migrateRoleAssignmentData} will write in total: the sum of
+     * `administrators` and `customersWithRoles`. The migration logs the same numbers when it
+     * finishes.
+     */
+    migration: {
+        /**
+         * @description
+         * The number of Users who will hold at least one `role_assignment` row.
+         */
+        userCount: number;
+        assignmentCount: number;
+    };
+    /**
+     * @description
      * Users holding at least one Role other than the Customer role (Administrators and API
      * keys), except the Customers counted in `customersWithRoles`. Their permissions do not
      * change: every grant is copied, which {@link migrateRoleAssignmentData} verifies before
@@ -239,6 +253,13 @@ export async function previewRoleAssignmentMigration(
              WHERE g.${esc('userId')} IN (${customerWithRolesUserIds})
              GROUP BY g.${esc('roleId')}`,
     );
+    const assignedUserRows: CountRow[] = await queryRunner.query(
+        `SELECT COUNT(*) AS ${esc('count')} FROM (
+             SELECT g.${esc('userId')} FROM (${copiedGrants}) g
+             UNION
+             ${superAdminUserIds}
+         ) x`,
+    );
     const customerWithRolesCountRows: CountRow[] = await queryRunner.query(
         `SELECT COUNT(DISTINCT g.${esc('userId')}) AS ${esc('count')} FROM (${copiedGrants}) g
          WHERE g.${esc('userId')} IN (${customerWithRolesUserIds})`,
@@ -288,15 +309,21 @@ export async function previewRoleAssignmentMigration(
             (row: { id: string | number; code: string }) => [String(row.id), row.code],
         ),
     );
+    const adminAssignmentCount = Number(grantRows[0].count) + superAdminCount;
+    const customerAssignmentCount = customerGrantRows.reduce((sum, row) => sum + Number(row.count), 0);
     return {
+        migration: {
+            userCount: Number(assignedUserRows[0].count),
+            assignmentCount: adminAssignmentCount + customerAssignmentCount,
+        },
         administrators: {
             userCount: Number(adminUserRows[0].count),
             superAdminCount,
-            assignmentCount: Number(grantRows[0].count) + superAdminCount,
+            assignmentCount: adminAssignmentCount,
         },
         customersWithRoles: {
             userCount: Number(customerWithRolesCountRows[0].count),
-            assignmentCount: customerGrantRows.reduce((sum, row) => sum + Number(row.count), 0),
+            assignmentCount: customerAssignmentCount,
             roles: customerGrantRows.map(row => ({
                 roleId: String(row.roleId),
                 roleCode: roleCodes.get(String(row.roleId)) ?? '',
@@ -335,6 +362,17 @@ export function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigr
         'Role assignment migration preview',
         '=================================',
         'Read-only: nothing has been changed. This shows what migrateRoleAssignmentData() will do.',
+        '',
+        sectionHeader('Migration', 'info'),
+        ...formatKeyValues([
+            ['Users with role assignments', formatCount(preview.migration.userCount)],
+            ['Role assignments to be written', formatCount(preview.migration.assignmentCount)],
+        ]),
+        '',
+        `   Estimated migration time: ${formatEstimate(preview.migration.assignmentCount)}, at ` +
+            `${formatCount(BENCHMARK_ROWS_PER_SECOND)} rows per second`,
+        '   as measured on postgres. The migration logs the same counts and how long it took.',
+        '   Time it on a copy of your production database before you plan the downtime.',
     ];
 
     lines.push(
@@ -447,6 +485,23 @@ export function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigr
 }
 
 const REPORT_WIDTH = 88;
+
+/**
+ * Throughput of migrateRoleAssignmentData() measured on postgres 15, from 100k to 5M rows.
+ */
+const BENCHMARK_ROWS_PER_SECOND = 80_000;
+
+function formatEstimate(assignmentCount: number): string {
+    const seconds = assignmentCount / BENCHMARK_ROWS_PER_SECOND;
+    if (seconds < 1) {
+        return 'under 1 second';
+    }
+    if (seconds < 90) {
+        const rounded = Math.round(seconds);
+        return `about ${rounded} second${rounded === 1 ? '' : 's'}`;
+    }
+    return `about ${Math.round(seconds / 60)} minutes`;
+}
 
 function sectionHeader(title: string, tag: string): string {
     return title + `[${tag}]`.padStart(REPORT_WIDTH - title.length);

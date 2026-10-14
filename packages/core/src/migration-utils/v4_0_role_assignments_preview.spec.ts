@@ -80,6 +80,7 @@ describe('previewRoleAssignmentMigration()', () => {
         const preview = await previewRoleAssignmentMigration(queryRunner);
 
         expect(preview).toEqual({
+            migration: { userCount: 2, assignmentCount: 2 },
             administrators: { userCount: 2, superAdminCount: 1, assignmentCount: 2 },
             customersWithRoles: { userCount: 0, assignmentCount: 0, roles: [] },
             customersLosingAccess: 0,
@@ -179,6 +180,7 @@ describe('previewRoleAssignmentMigration()', () => {
 
         const preview = await previewRoleAssignmentMigration(queryRunner);
 
+        expect(preview.migration).toEqual({ userCount: 3, assignmentCount: 3 });
         expect(preview.administrators).toEqual({ userCount: 2, superAdminCount: 0, assignmentCount: 2 });
         expect(preview.customersWithRoles).toEqual({
             userCount: 1,
@@ -209,6 +211,25 @@ describe('previewRoleAssignmentMigration()', () => {
         const preview = await previewRoleAssignmentMigration(queryRunner);
 
         expect(preview.rolesWithoutChannels).toEqual([{ roleId: '4', roleCode: 'orphan', holderCount: 2 }]);
+        // their holders get no rows
+        expect(preview.migration).toEqual({ userCount: 0, assignmentCount: 0 });
+    });
+
+    it('estimates the migration time from the number of rows', async () => {
+        await queryRunner.query(`INSERT INTO "user_roles_role" ("userId", "roleId") VALUES (1, 1)`);
+        const preview = await previewRoleAssignmentMigration(queryRunner);
+        const withRows = (assignmentCount: number) =>
+            formatRoleAssignmentMigrationPreview({
+                ...preview,
+                migration: { userCount: 1, assignmentCount },
+            });
+
+        expect(withRows(1)).toContain(
+            '   Estimated migration time: under 1 second, at 80,000 rows per second',
+        );
+        expect(withRows(1_000_000)).toContain('about 13 seconds');
+        expect(withRows(5_000_000)).toContain('about 63 seconds');
+        expect(withRows(20_000_000)).toContain('about 4 minutes');
     });
 
     it('throws when the legacy tables no longer exist', async () => {
