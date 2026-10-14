@@ -420,6 +420,12 @@ describe('viteConfigPlugin', () => {
         expect(withOutDir.build.outDir).toBe(path.join(process.cwd(), 'dist', 'apps', 'admin'));
         const withDefault = callConfig(plugin, { root: userRoot }, { command: 'build' });
         expect(withDefault.build.outDir).toBe(path.join(userRoot, 'dist'));
+        const withRelativeRoot = callConfig(
+            plugin,
+            { root: 'apps/admin', build: { outDir: 'out' } },
+            { command: 'build' },
+        );
+        expect(withRelativeRoot.build.outDir).toBe(path.resolve(process.cwd(), 'apps/admin/out'));
     });
 
     it('build command: preserves absolute outDir', () => {

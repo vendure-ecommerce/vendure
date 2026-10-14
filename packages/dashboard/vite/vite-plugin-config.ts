@@ -20,7 +20,7 @@ export function viteConfigPlugin({ packageRoot, useExperimentalBundle }: ViteCon
         name: 'vendure:vite-config-plugin',
         config: (config: UserConfig, env: ConfigEnv) => {
             // Vite `root` is set to the dashboard package so that its source can be served and built.
-            // Relative paths in the user's config are relative to their own root, so keep it before replacing it.
+            // Keep the user's root before replacing it, so that a relative `build.outDir` resolves against it.
             const userRoot = config.root ? path.resolve(config.root) : process.cwd();
             config.root = packageRoot;
 
