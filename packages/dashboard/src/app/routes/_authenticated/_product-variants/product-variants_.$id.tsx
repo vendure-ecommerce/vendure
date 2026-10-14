@@ -252,9 +252,12 @@ function ProductVariantDetailPage() {
     };
 
     const anyOptionEmpty = optionGroups.some(group => !(optionTextByGroup[group.id] ?? '').trim());
+    // Compares resolved ids, not text, so retyping the held option in another case is not an edit.
     const optionsDirty = optionGroups.some(group => {
-        const original = entity?.options.find(o => o.group.id === group.id)?.name ?? '';
-        return (optionTextByGroup[group.id] ?? '').trim() !== original.trim();
+        const held = entity?.options.find(o => o.group.id === group.id);
+        const resolution = resolveGroupOption(group, optionTextByGroup[group.id] ?? '');
+        if (resolution.kind === 'empty') return !!held;
+        return resolution.kind === 'new' || resolution.id !== held?.id;
     });
 
     // A typed value that matches no existing option would create a new one on save, which

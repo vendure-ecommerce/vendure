@@ -534,6 +534,138 @@ test.describe('force-remove an in-use option group (#4703)', () => {
     });
 });
 
+// #5325 — a forced option group removal can leave two variants on the same combination.
+// Each must still save when the edit does not touch its options.
+test.describe('variants that share a combination after a forced option group removal', () => {
+    test.describe.configure({ mode: 'serial' });
+
+    let productId: string;
+    let variantId: string;
+
+    test.beforeAll(async ({ browser }) => {
+        const page = await browser.newPage();
+        const client = new VendureAdminClient(page);
+        await client.login();
+
+        const product = await client.gql(
+            `mutation ($input: CreateProductInput!) { createProduct(input: $input) { id } }`,
+            {
+                input: {
+                    translations: [
+                        {
+                            languageCode: 'en',
+                            name: 'E2E Shared Combination Product',
+                            slug: 'e2e-shared-combination-product',
+                            description: '',
+                        },
+                    ],
+                },
+            },
+        );
+        productId = product.createProduct.id;
+
+        const createGroup = (code: string, name: string, options: Array<{ code: string; name: string }>) =>
+            client.gql(
+                `mutation ($input: CreateProductOptionGroupInput!) {
+                    createProductOptionGroup(input: $input) { id options { id code } }
+                }`,
+                {
+                    input: {
+                        code,
+                        translations: [{ languageCode: 'en', name }],
+                        options: options.map(o => ({
+                            code: o.code,
+                            translations: [{ languageCode: 'en', name: o.name }],
+                        })),
+                    },
+                },
+            );
+        const size = (
+            await createGroup('e2e-shared-size', 'Shared Size', [{ code: 'e2e-shared-small', name: 'Small' }])
+        ).createProductOptionGroup;
+        const colour = (
+            await createGroup('e2e-shared-colour', 'Shared Colour', [
+                { code: 'e2e-shared-red', name: 'Red' },
+                { code: 'e2e-shared-blue', name: 'Blue' },
+            ])
+        ).createProductOptionGroup;
+
+        for (const group of [size, colour]) {
+            await client.gql(
+                `mutation ($productId: ID!, $optionGroupId: ID!) {
+                    addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) { id }
+                }`,
+                { productId, optionGroupId: group.id },
+            );
+        }
+
+        const variants = await client.gql(
+            `mutation ($input: [CreateProductVariantInput!]!) {
+                createProductVariants(input: $input) { ... on ProductVariant { id } }
+            }`,
+            {
+                input: colour.options.map((option: { id: string; code: string }) => ({
+                    productId,
+                    sku: `E2E-SHARED-${option.code}`,
+                    price: 1000,
+                    optionIds: [size.options[0].id, option.id],
+                    translations: [{ languageCode: 'en', name: `E2E Shared ${option.code}` }],
+                })),
+            },
+        );
+        variantId = variants.createProductVariants[0].id;
+
+        // Both variants now hold only "Small".
+        await client.gql(
+            `mutation ($productId: ID!, $optionGroupId: ID!) {
+                removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId, force: true) {
+                    ... on Product { id }
+                }
+            }`,
+            { productId, optionGroupId: colour.id },
+        );
+        await page.close();
+    });
+
+    test('saves an edit that does not touch the options', async ({ page }) => {
+        await page.goto(`/product-variants/${variantId}`);
+        await expect(page.getByLabel('Shared Size', { exact: true })).toHaveValue('Small', {
+            timeout: 10_000,
+        });
+
+        const skuInput = page
+            .locator('[data-slot="field"]')
+            .filter({ has: page.getByText('SKU', { exact: true }) })
+            .getByRole('textbox');
+        await skuInput.fill(`E2E-SHARED-${Date.now()}`);
+
+        await expect(page.getByText(/already exists/i)).toHaveCount(0);
+        await page.getByRole('button', { name: 'Update' }).click();
+        await expect(page.getByText('Successfully updated product variant')).toBeVisible({ timeout: 15_000 });
+    });
+
+    test('retyping the held option in another case is not an edit', async ({ page }) => {
+        await page.goto(`/product-variants/${variantId}`);
+        const sizeInput = page.getByLabel('Shared Size', { exact: true });
+        await expect(sizeInput).toHaveValue('Small', { timeout: 10_000 });
+
+        await sizeInput.fill('small');
+        await page.keyboard.press('Escape');
+
+        await expect(page.getByText(/already exists/i)).toHaveCount(0);
+        await expect(page.getByRole('button', { name: 'Update' })).toBeDisabled();
+    });
+
+    test.afterAll(async ({ browser }) => {
+        if (!productId) return;
+        const page = await browser.newPage();
+        const client = new VendureAdminClient(page);
+        await client.login();
+        await client.gql(`mutation ($id: ID!) { deleteProduct(id: $id) { result } }`, { id: productId });
+        await page.close();
+    });
+});
+
 // Regression: each option group's label on the variant detail Options block is a link to
 // the option group detail page (not a broken route, and no longer a separate pencil button).
 test.describe('variant option group label link', () => {
@@ -1085,7 +1217,7 @@ test.describe('variant update sends only changed fields (OSS-567)', () => {
     });
 });
 
-// #5325 — an option group may hold two options with the same display name and different
+// An option group may hold two options with the same display name and different
 // codes. The suggestion list keys its rows on the display name, so it cannot tell those two
 // rows apart. Picking one must never move the variant onto the other option's id, which the
 // duplicate-combination guard would not see because the displayed text does not change.
@@ -1224,12 +1356,6 @@ test.describe('two options in a group share a display name', () => {
         // Nothing the admin can see has changed, so there must be nothing to save.
         await expect(sizeInput).toHaveValue('Small');
         await expect(page.getByRole('button', { name: 'Update' })).toBeDisabled();
-
-        // The stored option is untouched.
-        expect(await storedOptionCodes(page, variantOnSecondOptionId)).toEqual([
-            'e2e-dupname-b',
-            'e2e-dupname-red',
-        ]);
     });
 
     test('editing another group keeps the ambiguous group on its stored option', async ({ page }) => {

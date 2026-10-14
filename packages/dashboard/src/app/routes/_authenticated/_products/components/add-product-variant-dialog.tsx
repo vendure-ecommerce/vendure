@@ -155,6 +155,12 @@ export function AddProductVariantDialog({
         generateNameFromOptions(form.getValues());
     }, [JSON.stringify(options), checkForDuplicateVariant, generateNameFromOptions, form]);
 
+    // Reload this dialog's own copy of the product on open. The page can add, delete or
+    // reassign variants and option groups, and the duplicate check must see the current set.
+    useEffect(() => {
+        if (open) refetch();
+    }, [open, refetch]);
+
     // Also check when the dialog opens and product data is loaded
     useEffect(() => {
         if (open && productData?.product) {
@@ -169,9 +175,6 @@ export function AddProductVariantDialog({
             // Clear the form so the next variant does not inherit this one's values.
             form.reset();
             setNameTouched(false);
-            // Reload this dialog's own copy of the product. Without it the duplicate-option
-            // check keeps using the variant list as it was when the page loaded.
-            refetch();
             setOpen(false);
             onSuccess?.();
         },
@@ -295,7 +298,17 @@ export function AddProductVariantDialog({
                             control={form.control}
                             name="name"
                             label={<Trans>Name</Trans>}
-                            render={({ field }) => <Input {...field} onFocus={() => setNameTouched(true)} />}
+                            // Only typing stops the generated name. Focus alone does not, since the
+                            // dialog can autofocus this field before the option groups load.
+                            render={({ field }) => (
+                                <Input
+                                    {...field}
+                                    onChange={e => {
+                                        field.onChange(e);
+                                        setNameTouched(true);
+                                    }}
+                                />
+                            )}
                         />
                         <FormFieldWrapper
                             control={form.control}

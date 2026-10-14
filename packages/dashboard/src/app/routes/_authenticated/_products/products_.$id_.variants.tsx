@@ -500,9 +500,6 @@ function ManageProductVariants() {
 
                     <div className="flex items-center gap-2">
                         <AddProductVariantDialog
-                            // The dialog loads its own copy of the product. Remounting it when
-                            // the option groups change makes it load them again.
-                            key={productData.product.optionGroups.map(group => group.id).join(',')}
                             productId={id}
                             onSuccess={() => {
                                 refetch();

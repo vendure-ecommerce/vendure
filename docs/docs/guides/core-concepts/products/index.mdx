@@ -17,7 +17,7 @@ Multiple variants are normally defined by adding one or more [`ProductOptionGrou
 the product. These option groups then define the available [`ProductOptions`](/reference/typescript-api/entities/product-option)
 
 A product does not have to use option groups. It may hold any number of variants with no options at all. Vendure
-does not check that their names or SKUs differ, so give each one a distinct name and SKU yourself.
+never checks that variant names or SKUs are unique, so give each variant a distinct name and SKU yourself.
 
 If we were to add a new option group to the example above for "Color", with 2 options, "Black" and "White", then in total
 we would be able to define up to 6 variants:
