@@ -104,54 +104,72 @@ export async function previewRoleAssignmentMigration(
     const table = (name: string) => esc(`${prefix}${name}`);
     const customerRoleId = `(SELECT ${esc('id')} FROM ${table('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}')`;
 
-    // The User keeps access to the Channel through a Role other than the Customer role
-    const keepsAccessThroughOtherRole = (userId: string, channelId: string) =>
-        `EXISTS (
-             SELECT 1 FROM ${table('user_roles_role')} ur2
-             INNER JOIN ${table('role')} r2 ON r2.${esc('id')} = ur2.${esc('roleId')}
-             LEFT JOIN ${table('role_channels_channel')} rc2
-                 ON rc2.${esc('roleId')} = ur2.${esc('roleId')} AND rc2.${esc('channelId')} = ${channelId}
-             WHERE ur2.${esc('userId')} = ${userId}
-             AND r2.${esc('code')} <> '${CUSTOMER_ROLE_CODE}'
-             AND (r2.${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}' OR rc2.${esc('roleId')} IS NOT NULL)
-         )`;
-    const losingFrom = `FROM ${table('user_roles_role')} ur
-         INNER JOIN ${table('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
-         WHERE ur.${esc('roleId')} = ${customerRoleId}
-         AND NOT EXISTS (
-             SELECT 1 FROM ${table('customer')} cu
-             INNER JOIN ${table('customer_channels_channel')} ccc ON ccc.${esc('customerId')} = cu.${esc('id')}
-             WHERE cu.${esc('userId')} = ur.${esc('userId')}
-             AND cu.${esc('deletedAt')} IS NULL
-             AND ccc.${esc('channelId')} = rc.${esc('channelId')}
-         )
-         AND NOT ${keepsAccessThroughOtherRole(`ur.${esc('userId')}`, `rc.${esc('channelId')}`)}`;
+    // Counted from set sizes rather than per (customer, channel) pair: the Customer role
+    // usually sits on every channel, so the pairs are |customers| x |channels|.
+    const superAdminUserIds = `SELECT sa.${esc('userId')} FROM ${table('user_roles_role')} sa
+         INNER JOIN ${table('role')} sar ON sar.${esc('id')} = sa.${esc('roleId')}
+         WHERE sar.${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}'`;
+    // Customer role holders, minus SuperAdmins, who keep access everywhere
+    const holderUserIds = `SELECT h.${esc('userId')} FROM ${table('user_roles_role')} h
+         WHERE h.${esc('roleId')} = ${customerRoleId}
+         AND h.${esc('userId')} NOT IN (${superAdminUserIds})`;
+    const customerRoleChannelIds = `SELECT crc.${esc('channelId')} AS ${esc('channelId')} FROM ${table('role_channels_channel')} crc
+         WHERE crc.${esc('roleId')} = ${customerRoleId}`;
+    // (holder, channel) pairs, on channels the Customer role covered, where the holder keeps
+    // access in v4: as a member of the channel, or through an admin role on it
+    const coveredPairs = `SELECT cu.${esc('userId')} AS ${esc('userId')}, ccc.${esc('channelId')} AS ${esc('channelId')}
+         FROM ${table('customer')} cu
+         INNER JOIN ${table('customer_channels_channel')} ccc ON ccc.${esc('customerId')} = cu.${esc('id')}
+         WHERE cu.${esc('deletedAt')} IS NULL
+         AND cu.${esc('userId')} IN (${holderUserIds})
+         AND ccc.${esc('channelId')} IN (${customerRoleChannelIds})
+         UNION
+         SELECT ur2.${esc('userId')} AS ${esc('userId')}, rc2.${esc('channelId')} AS ${esc('channelId')}
+         FROM ${table('user_roles_role')} ur2
+         INNER JOIN ${table('role_channels_channel')} rc2 ON rc2.${esc('roleId')} = ur2.${esc('roleId')}
+         WHERE ur2.${esc('roleId')} <> ${customerRoleId}
+         AND ur2.${esc('userId')} IN (${holderUserIds})
+         AND rc2.${esc('channelId')} IN (${customerRoleChannelIds})`;
 
     const channelRows: Array<{ id: string | number; code: string }> = await queryRunner.query(
         `SELECT ${esc('id')}, ${esc('code')} FROM ${table('channel')}`,
     );
-    const losingRows: ChannelCountRow[] = await queryRunner.query(
-        `SELECT rc.${esc('channelId')} AS ${esc('channelId')}, COUNT(*) AS ${esc('count')}
-         ${losingFrom}
-         GROUP BY rc.${esc('channelId')}`,
+    const holderCountRows: CountRow[] = await queryRunner.query(
+        `SELECT COUNT(*) AS ${esc('count')} FROM (${holderUserIds}) x`,
     );
-    const customersLosingRows: CountRow[] = await queryRunner.query(
-        `SELECT COUNT(DISTINCT ur.${esc('userId')}) AS ${esc('count')} ${losingFrom}`,
+    const customerRoleChannelRows: Array<{ channelId: string | number }> =
+        await queryRunner.query(customerRoleChannelIds);
+    const coveredRows: ChannelCountRow[] = await queryRunner.query(
+        `SELECT p.${esc('channelId')} AS ${esc('channelId')}, COUNT(*) AS ${esc('count')}
+         FROM (${coveredPairs}) p
+         GROUP BY p.${esc('channelId')}`,
     );
+    const fullyCoveredRows: CountRow[] = await queryRunner.query(
+        `SELECT COUNT(*) AS ${esc('count')} FROM (
+             SELECT p.${esc('userId')} FROM (${coveredPairs}) p
+             GROUP BY p.${esc('userId')}
+             HAVING COUNT(*) = ${customerRoleChannelRows.length}
+         ) x`,
+    );
+    // Members of a channel who did not hold the Customer role there and keep no admin access to it
     const gainingRows: ChannelCountRow[] = await queryRunner.query(
         `SELECT ccc.${esc('channelId')} AS ${esc('channelId')}, COUNT(*) AS ${esc('count')}
          FROM ${table('customer')} cu
          INNER JOIN ${table('customer_channels_channel')} ccc ON ccc.${esc('customerId')} = cu.${esc('id')}
          WHERE cu.${esc('deletedAt')} IS NULL
          AND cu.${esc('userId')} IS NOT NULL
-         AND NOT EXISTS (
-             SELECT 1 FROM ${table('user_roles_role')} ur
-             INNER JOIN ${table('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
-             WHERE ur.${esc('userId')} = cu.${esc('userId')}
-             AND ur.${esc('roleId')} = ${customerRoleId}
-             AND rc.${esc('channelId')} = ccc.${esc('channelId')}
+         AND NOT (
+             cu.${esc('userId')} IN (${holderUserIds})
+             AND ccc.${esc('channelId')} IN (${customerRoleChannelIds})
          )
-         AND NOT ${keepsAccessThroughOtherRole(`cu.${esc('userId')}`, `ccc.${esc('channelId')}`)}
+         AND cu.${esc('userId')} NOT IN (${superAdminUserIds})
+         AND NOT EXISTS (
+             SELECT 1 FROM ${table('user_roles_role')} ur2
+             INNER JOIN ${table('role_channels_channel')} rc2 ON rc2.${esc('roleId')} = ur2.${esc('roleId')}
+             WHERE ur2.${esc('userId')} = cu.${esc('userId')}
+             AND ur2.${esc('roleId')} <> ${customerRoleId}
+             AND rc2.${esc('channelId')} = ccc.${esc('channelId')}
+         )
          GROUP BY ccc.${esc('channelId')}`,
     );
     const adminUserRows: CountRow[] = await queryRunner.query(
@@ -194,7 +212,14 @@ export async function previewRoleAssignmentMigration(
              GROUP BY r.${esc('id')}, r.${esc('code')}`,
     );
 
-    const losing = toCountMap(losingRows);
+    const holderCount = Number(holderCountRows[0].count);
+    const covered = toCountMap(coveredRows);
+    const losing = new Map(
+        customerRoleChannelRows.map(row => [
+            String(row.channelId),
+            holderCount - (covered.get(String(row.channelId)) ?? 0),
+        ]),
+    );
     const gaining = toCountMap(gainingRows);
     const customerChannelChanges = channelRows
         .map(channel => ({
@@ -214,7 +239,8 @@ export async function previewRoleAssignmentMigration(
             superAdminCount,
             assignmentCount: Number(grantRows[0].count) + superAdminCount,
         },
-        customersLosingAccess: Number(customersLosingRows[0].count),
+        customersLosingAccess:
+            customerRoleChannelRows.length === 0 ? 0 : holderCount - Number(fullyCoveredRows[0].count),
         customerChannelChanges,
         customerRoleDroppedPermissions: customerRolePermissions.filter(
             permission => permission !== 'Authenticated',
