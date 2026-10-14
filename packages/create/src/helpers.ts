@@ -387,16 +387,7 @@ export function getMonorepoRootPackageJson(
     if (pmInfo.usesPackageJsonWorkspaces) {
         pkg.workspaces = ['apps/*'];
     }
-    if (pmInfo.name === 'yarn') {
-        pkg.dependenciesMeta = getYarnDependenciesMeta(dbType);
-    }
-    if (pmInfo.name === 'bun') {
-        pkg.trustedDependencies = getNativeBuildDependencies(dbType);
-    }
-    if (pmInfo.name === 'npm') {
-        pkg.allowScripts = getNpmAllowScripts(dbType);
-    }
-    return pkg;
+    return { ...pkg, ...getBuildScriptAllowlistFields(pmInfo, dbType) };
 }
 
 /**
@@ -413,16 +404,7 @@ export function getSingleProjectPackageJson(
         private: true,
         scripts: getServerPackageScripts(),
     };
-    if (pmInfo.name === 'yarn') {
-        pkg.dependenciesMeta = getYarnDependenciesMeta(dbType);
-    }
-    if (pmInfo.name === 'bun') {
-        pkg.trustedDependencies = getNativeBuildDependencies(dbType);
-    }
-    if (pmInfo.name === 'npm') {
-        pkg.allowScripts = getNpmAllowScripts(dbType);
-    }
-    return pkg;
+    return { ...pkg, ...getBuildScriptAllowlistFields(pmInfo, dbType) };
 }
 
 /**
@@ -445,6 +427,27 @@ export function getNativeBuildDependencies(dbType: DbType): string[] {
         deps.push('better-sqlite3', 're2');
     }
     return deps.sort((a, b) => a.localeCompare(b));
+}
+
+/**
+ * Returns the root package.json fields that allowlist native dependency build scripts for
+ * the given package manager. pnpm gets none: its allowlist lives in pnpm-workspace.yaml
+ * (see `getPnpmWorkspaceYaml()`).
+ */
+export function getBuildScriptAllowlistFields(
+    pmInfo: PackageManagerInfo,
+    dbType: DbType,
+): Record<string, unknown> {
+    switch (pmInfo.name) {
+        case 'npm':
+            return { allowScripts: getNpmAllowScripts(dbType) };
+        case 'yarn':
+            return { dependenciesMeta: getYarnDependenciesMeta(dbType) };
+        case 'bun':
+            return { trustedDependencies: getNativeBuildDependencies(dbType) };
+        case 'pnpm':
+            return {};
+    }
 }
 
 /**

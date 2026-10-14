@@ -489,8 +489,13 @@ describe('getSingleProjectPackageJson', () => {
             },
         );
         expect(
-            getSingleProjectPackageJson('x', getPackageManagerInfo('yarn'), 'sqlite').allowScripts,
-        ).toBeUndefined();
+            getSingleProjectPackageJson('x', getPackageManagerInfo('npm'), 'postgres').allowScripts,
+        ).toEqual({ bcrypt: true, esbuild: true, sharp: true });
+        for (const pm of ['yarn', 'pnpm', 'bun'] as const) {
+            expect(
+                getSingleProjectPackageJson('x', getPackageManagerInfo(pm), 'sqlite').allowScripts,
+            ).toBeUndefined();
+        }
     });
 });
 
