@@ -286,7 +286,7 @@ describe('migrateRoleAssignmentData()', () => {
         expect((await getAssignments()).filter(a => a.roleId === 10)).toEqual([]);
     });
 
-    it('deletes the Customer role row', async () => {
+    it('keeps the Customer role row for the archive', async () => {
         await createSchema();
         await seedData();
 
@@ -295,7 +295,7 @@ describe('migrateRoleAssignmentData()', () => {
         const customerRoles = await queryRunner.query(
             `SELECT "id" FROM "role" WHERE "code" = '__customer_role__'`,
         );
-        expect(customerRoles).toEqual([]);
+        expect(customerRoles).toEqual([{ id: 2 }]);
     });
 
     it('archives the legacy tables with all their rows and without foreign keys', async () => {
@@ -377,7 +377,31 @@ describe('migrateRoleAssignmentData()', () => {
 });
 
 describe('dropArchivedRoleTables()', () => {
-    it('drops the archive tables and skips missing ones', async () => {
+    it('drops the archive tables and deletes the Customer role', async () => {
+        const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
+        await dataSource.initialize();
+        const queryRunner = dataSource.createQueryRunner();
+        await queryRunner.query(`CREATE TABLE "_v3_user_roles_role" ("userId" integer, "roleId" integer)`);
+        await queryRunner.query(
+            `CREATE TABLE "_v3_role_channels_channel" ("roleId" integer, "channelId" integer)`,
+        );
+        await queryRunner.query(`CREATE TABLE "role" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
+        await queryRunner.query(
+            `INSERT INTO "role" ("id", "code") VALUES (1, '__super_admin_role__'), (2, '__customer_role__')`,
+        );
+
+        await dropArchivedRoleTables(queryRunner);
+
+        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
+        expect(await queryRunner.hasTable('_v3_role_channels_channel')).toBe(false);
+        expect(await queryRunner.query(`SELECT "code" FROM "role"`)).toEqual([
+            { code: '__super_admin_role__' },
+        ]);
+        await queryRunner.release();
+        await dataSource.destroy();
+    });
+
+    it('skips missing tables and roles', async () => {
         const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
         await dataSource.initialize();
         const queryRunner = dataSource.createQueryRunner();

@@ -20,15 +20,15 @@ import { QueryRunner } from 'typeorm';
  *
  * Two Roles are treated specially:
  *
- * - **Customer role**: no rows are written, and the role row itself is **deleted** — v4
- *   removes the Customer role entirely. Customer permissions are derived at check time
- *   from the Customer's channel memberships (`Authenticated` on every member Channel), so
- *   migrating the old rows (which granted every customer permissions on every Channel)
- *   would both reintroduce that permission leak and write one row per customer per
- *   channel. If your instance broadened the Customer role's permissions via a direct
- *   repository write, be aware that this customization has no v4 equivalent: the row and
- *   its permissions array are gone after migrating, and customers hold exactly
- *   `Authenticated` on their member Channels.
+ * - **Customer role**: no rows are written. v4 has no Customer role: Customer permissions
+ *   are derived at check time from the Customer's channel memberships (`Authenticated` on
+ *   every member Channel), so migrating the old rows (which granted every customer
+ *   permissions on every Channel) would both reintroduce that permission leak and write
+ *   one row per customer per channel. The role row itself is kept, so that the archived
+ *   legacy rows can still be matched to it; v4 never reads it, and
+ *   {@link dropArchivedRoleTables} deletes it. If your instance broadened the Customer
+ *   role's permissions via a direct repository write, be aware that this customization has
+ *   no v4 equivalent: customers hold exactly `Authenticated` on their member Channels.
  * - **SuperAdmin role**: holders receive exactly one row, on the default Channel, whatever
  *   `role_channels_channel` records for the role. In v4 the SuperAdmin Role is held on every
  *   Channel or not at all: access is derived at check time from that single row, which
@@ -53,9 +53,11 @@ import { QueryRunner } from 'typeorm';
  *
  * Once verified, the legacy tables are **archived, not dropped**: they are renamed to
  * `_v3_user_roles_role` and `_v3_role_channels_channel` and their foreign keys removed, so
- * they keep a frozen copy of the pre-v4 grants for auditing. Vendure refuses to start while
- * `user_roles_role` still exists under its original name. Drop the archive with
- * {@link dropArchivedRoleTables} once you no longer need it.
+ * they keep a frozen copy of the pre-v4 grants for auditing. The archive is not a way back
+ * to v3: after going live on v4, rolling back means restoring a backup taken before the
+ * migration. Vendure refuses to start while `user_roles_role` still exists under its
+ * original name. Drop the archive with {@link dropArchivedRoleTables} once you no longer
+ * need it.
  *
  * Call this from your migration's `up()` method **after** the `role_assignment` table
  * has been created. A generated migration does not touch the legacy tables, so nothing
@@ -182,20 +184,10 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
     }
 
     // 5. Archive the legacy tables: rename them and remove their foreign keys, so that the
-    // archive is a frozen copy which later User or Role deletes cannot cascade into.
+    // archive is a frozen copy which later User or Role deletes cannot cascade into. The
+    // Customer role row stays, so the archived Customer rows can still be identified;
+    // dropArchivedRoleTables() deletes it.
     await archiveLegacyTables(queryRunner);
-
-    // 6. Delete the Customer role row — v4 removes the Customer role entirely (permissions
-    // are membership-derived: Authenticated on every member Channel). The archived tables
-    // no longer reference the role, so their Customer rows stay as part of the archive.
-    const customerRoleRows: Array<{ id: string | number }> = await queryRunner.query(
-        `SELECT ${esc('id')} FROM ${esc(t.role)} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
-    );
-    for (const row of customerRoleRows) {
-        const idLiteral = typeof row.id === 'number' ? row.id : `'${row.id}'`;
-        await queryRunner.query(`DELETE FROM ${esc(t.role)} WHERE ${esc('id')} = ${idLiteral}`);
-        console.log('Deleted the Customer role (customer permissions are membership-derived in v4).');
-    }
 
     const insertedCount = (await countRows()) - countBefore;
     console.log(
@@ -208,9 +200,14 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
 /**
  * @description
  * Drops the `_v3_user_roles_role` and `_v3_role_channels_channel` tables which
- * {@link migrateRoleAssignmentData} archives the pre-v4 role grants to. Call it from a
- * later migration once you no longer need the archive for auditing. Tables which do not
- * exist are skipped, so it is safe to re-run.
+ * {@link migrateRoleAssignmentData} archives the pre-v4 role grants to, and deletes the
+ * legacy Customer role, which v4 does not use. Call it from a later migration once you no
+ * longer need the archive for auditing. Tables and roles which do not exist are skipped,
+ * so it is safe to re-run.
+ *
+ * The archive has no foreign keys, so hard-deleting a User does not remove its rows from
+ * the archive. If you erase personal data on request (e.g. under the GDPR), drop the
+ * archive once your audit period ends, and include it in your erasure process until then.
  *
  * ```ts
  * import { MigrationInterface, QueryRunner } from 'typeorm';
@@ -237,6 +234,18 @@ export async function dropArchivedRoleTables(queryRunner: QueryRunner): Promise<
             await queryRunner.dropTable(tableName);
             console.log(`Dropped the archived ${tableName} table.`);
         }
+    }
+    if (!(await queryRunner.hasTable(t.role))) {
+        return;
+    }
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const customerRoleRows: Array<{ id: string | number }> = await queryRunner.query(
+        `SELECT ${esc('id')} FROM ${esc(t.role)} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
+    );
+    for (const row of customerRoleRows) {
+        const idLiteral = typeof row.id === 'number' ? row.id : `'${row.id}'`;
+        await queryRunner.query(`DELETE FROM ${esc(t.role)} WHERE ${esc('id')} = ${idLiteral}`);
+        console.log('Deleted the legacy Customer role (customer permissions are membership-derived in v4).');
     }
 }
 
