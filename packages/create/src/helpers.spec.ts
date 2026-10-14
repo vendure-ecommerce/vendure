@@ -435,6 +435,25 @@ describe('getMonorepoRootPackageJson', () => {
             getMonorepoRootPackageJson('x', getPackageManagerInfo('yarn'), 'sqlite').trustedDependencies,
         ).toBeUndefined();
     });
+
+    // npm ≥12 blocks dependency install scripts unless listed in `allowScripts`.
+    it('adds allowScripts only for npm, driver-aware', () => {
+        expect(getMonorepoRootPackageJson('x', getPackageManagerInfo('npm'), 'sqlite').allowScripts).toEqual({
+            bcrypt: true,
+            'better-sqlite3': true,
+            esbuild: true,
+            re2: true,
+            sharp: true,
+        });
+        expect(
+            getMonorepoRootPackageJson('x', getPackageManagerInfo('npm'), 'postgres').allowScripts,
+        ).toEqual({ bcrypt: true, esbuild: true, sharp: true });
+        for (const pm of ['yarn', 'pnpm', 'bun'] as const) {
+            expect(
+                getMonorepoRootPackageJson('x', getPackageManagerInfo(pm), 'sqlite').allowScripts,
+            ).toBeUndefined();
+        }
+    });
 });
 
 describe('getSingleProjectPackageJson', () => {
@@ -459,6 +478,18 @@ describe('getSingleProjectPackageJson', () => {
         });
         expect(
             getSingleProjectPackageJson('x', getPackageManagerInfo('npm'), 'sqlite').dependenciesMeta,
+        ).toBeUndefined();
+        expect(getSingleProjectPackageJson('x', getPackageManagerInfo('npm'), 'sqlite').allowScripts).toEqual(
+            {
+                bcrypt: true,
+                'better-sqlite3': true,
+                esbuild: true,
+                re2: true,
+                sharp: true,
+            },
+        );
+        expect(
+            getSingleProjectPackageJson('x', getPackageManagerInfo('yarn'), 'sqlite').allowScripts,
         ).toBeUndefined();
     });
 });

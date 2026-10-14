@@ -393,6 +393,9 @@ export function getMonorepoRootPackageJson(
     if (pmInfo.name === 'bun') {
         pkg.trustedDependencies = getNativeBuildDependencies(dbType);
     }
+    if (pmInfo.name === 'npm') {
+        pkg.allowScripts = getNpmAllowScripts(dbType);
+    }
     return pkg;
 }
 
@@ -416,15 +419,18 @@ export function getSingleProjectPackageJson(
     if (pmInfo.name === 'bun') {
         pkg.trustedDependencies = getNativeBuildDependencies(dbType);
     }
+    if (pmInfo.name === 'npm') {
+        pkg.allowScripts = getNpmAllowScripts(dbType);
+    }
     return pkg;
 }
 
 /**
  * Native dependencies whose install/build scripts must run for the scaffolded project to
  * work — otherwise e.g. better-sqlite3's native binding is never compiled and the server
- * crashes on startup. pnpm (v10+), yarn (v4.14+) and bun block dependency build scripts
- * unless allowlisted, so this list feeds their respective allowlist mechanisms
- * (`onlyBuiltDependencies`, `dependenciesMeta.built`, `trustedDependencies`).
+ * crashes on startup. npm (v12+), pnpm (v10+), yarn (v4.14+) and bun block dependency
+ * build scripts unless allowlisted, so this list feeds their respective allowlist mechanisms
+ * (`allowScripts`, `onlyBuiltDependencies`, `dependenciesMeta.built`, `trustedDependencies`).
  * `bcrypt` (core), `sharp` (asset-server-plugin) and `esbuild` (vite) are always present;
  * SQLite adds `better-sqlite3` and `re2`. `re2` lets core evaluate `regex` list filters in
  * guaranteed linear time; without its native binding those filters fall back to the built-in
@@ -447,6 +453,16 @@ export function getNativeBuildDependencies(dbType: DbType): string[] {
  */
 export function getYarnDependenciesMeta(dbType: DbType): Record<string, { built: true }> {
     return Object.fromEntries(getNativeBuildDependencies(dbType).map(dep => [dep, { built: true }]));
+}
+
+/**
+ * npm ≥12 does not run dependency install scripts unless they are allowlisted via
+ * `allowScripts` in the top-level package.json. Entries are name-only (not pinned to a
+ * version) so they keep matching as dependencies are upgraded. Older npm versions ignore
+ * the field.
+ */
+export function getNpmAllowScripts(dbType: DbType): Record<string, true> {
+    return Object.fromEntries(getNativeBuildDependencies(dbType).map(dep => [dep, true]));
 }
 
 /**
