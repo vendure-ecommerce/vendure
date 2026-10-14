@@ -253,23 +253,63 @@ export async function dropArchivedRoleTables(queryRunner: QueryRunner): Promise<
  * Throws if the pre-v4 `user_roles_role` table still exists under its original name and
  * holds rows, meaning {@link migrateRoleAssignmentData} has not been run. Without the
  * migration the `role_assignment` table is empty and every Administrator except the
- * configured superadmin would be locked out. Called on bootstrap.
+ * configured superadmin would be locked out.
  */
 export async function assertRoleAssignmentDataMigrated(queryRunner: QueryRunner): Promise<void> {
+    if (!(await hasUnmigratedRoleGrants(queryRunner))) {
+        return;
+    }
     const t = getTableNames(queryRunner);
-    if (!(await queryRunner.hasTable(t.userRoles))) {
-        return;
-    }
-    const esc = (name: string) => queryRunner.connection.driver.escape(name);
-    const rows: unknown[] = await queryRunner.query(`SELECT 1 FROM ${esc(t.userRoles)} LIMIT 1`);
-    if (rows.length === 0) {
-        return;
-    }
     throw new Error(
         `The pre-v4 ${t.userRoles} table still holds role grants which have not been migrated ` +
             `to the ${t.roleAssignment} table. Run migrateRoleAssignmentData() from a database ` +
-            'migration before starting Vendure v4. See the v4 migration guide.',
+            'migration before starting Vendure v4. With dbConnectionOptions.synchronize enabled, ' +
+            'Vendure runs it on startup instead. See the v4 migration guide.',
     );
+}
+
+/**
+ * Called on bootstrap. With `synchronize` enabled there is no migration to call
+ * {@link migrateRoleAssignmentData} from, so unmigrated pre-v4 grants are migrated here, in
+ * one transaction. Otherwise this is {@link assertRoleAssignmentDataMigrated}.
+ *
+ * @returns whether a migration ran.
+ */
+export async function ensureRoleAssignmentDataMigrated(
+    queryRunner: QueryRunner,
+    options: { synchronize: boolean },
+): Promise<boolean> {
+    if (!options.synchronize) {
+        await assertRoleAssignmentDataMigrated(queryRunner);
+        return false;
+    }
+    if (!(await hasUnmigratedRoleGrants(queryRunner))) {
+        return false;
+    }
+    await queryRunner.startTransaction();
+    try {
+        await migrateRoleAssignmentData(queryRunner);
+        await queryRunner.commitTransaction();
+        return true;
+    } catch (e: unknown) {
+        await queryRunner.rollbackTransaction();
+        // The server and the worker bootstrap at the same time. If the other process
+        // migrated first, this one failed on its archive step and has nothing left to do.
+        if (!(await hasUnmigratedRoleGrants(queryRunner))) {
+            return false;
+        }
+        throw e;
+    }
+}
+
+async function hasUnmigratedRoleGrants(queryRunner: QueryRunner): Promise<boolean> {
+    const t = getTableNames(queryRunner);
+    if (!(await queryRunner.hasTable(t.userRoles))) {
+        return false;
+    }
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const rows: unknown[] = await queryRunner.query(`SELECT 1 FROM ${esc(t.userRoles)} LIMIT 1`);
+    return rows.length > 0;
 }
 
 interface TableNames {

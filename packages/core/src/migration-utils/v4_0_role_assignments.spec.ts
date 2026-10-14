@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
     assertRoleAssignmentDataMigrated,
     dropArchivedRoleTables,
+    ensureRoleAssignmentDataMigrated,
     migrateRoleAssignmentData,
 } from './v4_0_role_assignments';
 
@@ -364,6 +365,43 @@ describe('migrateRoleAssignmentData()', () => {
         await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
             'Neither the user_roles_role table nor its archive _v3_user_roles_role exists',
         );
+    });
+
+    it('runs on startup when synchronize is enabled', async () => {
+        await createSchema();
+        await seedData();
+
+        const migrated = await ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: true });
+
+        expect(migrated).toBe(true);
+        expect((await getAssignments()).length).toBe(3);
+        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(true);
+        expect(await ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: true })).toBe(false);
+    });
+
+    it('refuses to start on unmigrated grants when synchronize is disabled', async () => {
+        await createSchema();
+        await seedData();
+
+        await expect(ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: false })).rejects.toThrow(
+            'Run migrateRoleAssignmentData() from a database migration before starting Vendure v4',
+        );
+        expect(await getAssignments()).toEqual([]);
+    });
+
+    it('rolls back a failed migration on startup', async () => {
+        await createSchema();
+        await seedData();
+        // a row the legacy tables do not grant fails the verification
+        await queryRunner.query(
+            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (2, 3, 1)`,
+        );
+
+        await expect(ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: true })).rejects.toThrow(
+            'Role assignment verification failed',
+        );
+        expect(await getAssignments()).toEqual([{ userId: 2, roleId: 3, channelId: 1 }]);
+        expect(await queryRunner.hasTable('user_roles_role')).toBe(true);
     });
 
     it('throws when the role_assignment table has not been created yet', async () => {
