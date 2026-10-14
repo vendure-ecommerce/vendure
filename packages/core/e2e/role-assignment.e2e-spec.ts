@@ -232,9 +232,7 @@ describe('RoleAssignment', () => {
             });
 
             const assignments = await getUserRoleAssignments(createAdministrator.id);
-            expect(assignments).toEqual([
-                { roleCode: adminManagerRole.code, channelId: DEFAULT_CHANNEL_ID },
-            ]);
+            expect(assignments).toEqual([{ roleCode: adminManagerRole.code, channelId: DEFAULT_CHANNEL_ID }]);
         });
     });
 
@@ -276,7 +274,9 @@ describe('RoleAssignment', () => {
                 },
             });
 
-            expect(toRoleCodeAndChannel(assignRolesToUser.roleAssignments).sort(byRoleCodeAndChannel)).toEqual(
+            expect(
+                toRoleCodeAndChannel(assignRolesToUser.roleAssignments).sort(byRoleCodeAndChannel),
+            ).toEqual(
                 [
                     { roleCode: adminManagerRole.code, channelId: secondChannel.id },
                     { roleCode: ROLE_EDITOR_ROLE_CODE, channelId: secondChannel.id },
@@ -299,7 +299,9 @@ describe('RoleAssignment', () => {
                 },
             });
 
-            expect(toRoleCodeAndChannel(assignRolesToUser.roleAssignments).sort(byRoleCodeAndChannel)).toEqual(
+            expect(
+                toRoleCodeAndChannel(assignRolesToUser.roleAssignments).sort(byRoleCodeAndChannel),
+            ).toEqual(
                 [
                     { roleCode: adminManagerRole.code, channelId: secondChannel.id },
                     { roleCode: ROLE_EDITOR_ROLE_CODE, channelId: secondChannel.id },
@@ -315,7 +317,9 @@ describe('RoleAssignment', () => {
                 },
             });
 
-            expect(toRoleCodeAndChannel(removeRolesFromUser.roleAssignments).sort(byRoleCodeAndChannel)).toEqual(
+            expect(
+                toRoleCodeAndChannel(removeRolesFromUser.roleAssignments).sort(byRoleCodeAndChannel),
+            ).toEqual(
                 [
                     { roleCode: adminManagerRole.code, channelId: secondChannel.id },
                     { roleCode: ROLE_EDITOR_ROLE_CODE, channelId: secondChannel.id },
@@ -361,9 +365,7 @@ describe('RoleAssignment', () => {
             });
 
             const assignments = await getUserRoleAssignments(channelAdmin.id);
-            expect(assignments).toEqual([
-                { roleCode: adminManagerRole.code, channelId: secondChannel.id },
-            ]);
+            expect(assignments).toEqual([{ roleCode: adminManagerRole.code, channelId: secondChannel.id }]);
 
             // restore RoleEditor for the suites below
             await asSuperAdminOnDefaultChannel();
@@ -406,7 +408,9 @@ describe('RoleAssignment', () => {
             adminClient.setChannelToken(secondChannel.token);
             await adminClient.asUserWithCredentials(secondSuperAdmin.emailAddress, 'test');
             const { me } = await adminClient.query(MeDocument);
-            const secondChannelPermissions = me?.channels.find(c => c.token === secondChannel.token)?.permissions;
+            const secondChannelPermissions = me?.channels.find(
+                c => c.token === secondChannel.token,
+            )?.permissions;
 
             expect(me?.channels.map(c => c.token).sort()).toEqual(
                 [E2E_DEFAULT_CHANNEL_TOKEN, secondChannel.token].sort(),
@@ -735,11 +739,14 @@ describe('RoleAssignment', () => {
         // see would revoke it. The subject holds that pair, so it is outside the actor's
         // authority and the update is refused before any pair is looked at.
         it('the deprecated roleIds input fails when it omits a pair the actor cannot see', async () => {
-            await assertThrowsWithMessage(async () => {
-                await adminClient.query(updateAdministratorDocument, {
-                    input: { id: subject.id, roleIds: [adminManagerRole.id] },
-                });
-            }, `No Administrator with the id "${subject.id.replace('T_', '')}" could be found`)();
+            await assertThrowsWithMessage(
+                async () => {
+                    await adminClient.query(updateAdministratorDocument, {
+                        input: { id: subject.id, roleIds: [adminManagerRole.id] },
+                    });
+                },
+                `No Administrator with the id "${subject.id.replace('T_', '')}" could be found`,
+            )();
 
             await asSuperAdminOnDefaultChannel();
             const assignments = await getUserRoleAssignments(subject.id);
@@ -800,9 +807,12 @@ describe('RoleAssignment', () => {
             // The SuperAdmin holds every permission everywhere, so every stored row is visible.
             // The SuperAdmin pairs of the matrix collapse into the single default-channel row.
             await asSuperAdminOnDefaultChannel();
-            const { roleAssignments: superAdminView } = await adminClient.query(roleAssignmentsOfUserDocument, {
-                userId: subject.user.id,
-            });
+            const { roleAssignments: superAdminView } = await adminClient.query(
+                roleAssignmentsOfUserDocument,
+                {
+                    userId: subject.user.id,
+                },
+            );
             const storedRowCount = matrix.filter(
                 pair => pair.roleId !== superAdminRoleId || pair.channelId === DEFAULT_CHANNEL_ID,
             ).length;
@@ -987,7 +997,9 @@ describe('RoleAssignment', () => {
             await asSuperAdminOnDefaultChannel();
             subscription = server.app
                 .get(EventBus)
-                .filter<VendureEvent>(e => e instanceof RoleAssignmentEvent || e instanceof AdministratorEvent)
+                .filter<VendureEvent>(
+                    e => e instanceof RoleAssignmentEvent || e instanceof AdministratorEvent,
+                )
                 .subscribe(event => {
                     if (event instanceof RoleAssignmentEvent) {
                         recorded.push({
@@ -1230,7 +1242,9 @@ describe('RoleAssignment', () => {
 
             const assigned = await collectEvents();
             expect(kindsOf(assigned)).toEqual(['RoleAssignmentEvent:assigned']);
-            expect(assigned[0].assignments).toEqual([{ roleId: superAdminRoleId, channelId: DEFAULT_CHANNEL_ID }]);
+            expect(assigned[0].assignments).toEqual([
+                { roleId: superAdminRoleId, channelId: DEFAULT_CHANNEL_ID },
+            ]);
 
             await adminClient.query(removeRolesFromUserDocument, {
                 input: {
@@ -1241,7 +1255,9 @@ describe('RoleAssignment', () => {
 
             const removed = await collectEvents();
             expect(kindsOf(removed)).toEqual(['RoleAssignmentEvent:removed']);
-            expect(removed[0].assignments).toEqual([{ roleId: superAdminRoleId, channelId: DEFAULT_CHANNEL_ID }]);
+            expect(removed[0].assignments).toEqual([
+                { roleId: superAdminRoleId, channelId: DEFAULT_CHANNEL_ID },
+            ]);
         });
 
         it('deleteAdministrator removes the assignments and emits RoleAssignmentEvent removed, then AdministratorEvent deleted', async () => {
