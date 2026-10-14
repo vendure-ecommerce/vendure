@@ -112,6 +112,7 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
         return 0;
     }
 
+    const startedAt = Date.now();
     const esc = (name: string) => queryRunner.connection.driver.escape(name);
     const idInsert = await getExplicitIdClauses(queryRunner, t.roleAssignment);
     const countRows = async (): Promise<number> => {
@@ -189,10 +190,17 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
     // dropArchivedRoleTables() deletes it.
     await archiveLegacyTables(queryRunner);
 
-    const insertedCount = (await countRows()) - countBefore;
+    const countAfter = await countRows();
+    const insertedCount = countAfter - countBefore;
+    const userRows: Array<{ count: string | number }> = await queryRunner.query(
+        `SELECT COUNT(DISTINCT ${esc('userId')}) AS ${esc('count')} FROM ${esc(t.roleAssignment)}`,
+    );
+    const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
     console.log(
-        `Successfully migrated ${insertedCount} role assignments to the ${t.roleAssignment} table. ` +
-            `The legacy tables were archived as ${t.archivedUserRoles} and ${t.archivedRoleChannels}.`,
+        `Successfully migrated ${insertedCount} role assignments to the ${t.roleAssignment} table in ` +
+            `${seconds} s. It now holds ${countAfter} role assignments for ${Number(userRows[0].count)} ` +
+            'users; compare with the counts of previewRoleAssignmentMigration(). The legacy tables were ' +
+            `archived as ${t.archivedUserRoles} and ${t.archivedRoleChannels}.`,
     );
     return insertedCount;
 }
