@@ -57,6 +57,13 @@ describe('AssetServerPlugin', () => {
     );
 
     beforeAll(async () => {
+        // Multiple test servers in this file share AssetServerPlugin's static options
+        // (read at bootstrap), so reassert this suite's config immediately before boot.
+        AssetServerPlugin.init({
+            assetUploadDir: path.join(__dirname, TEST_ASSET_DIR),
+            route: 'assets',
+            imageTransformStrategy: new TestImageTransformStrategy(),
+        });
         await fs.emptyDir(path.join(__dirname, TEST_ASSET_DIR, 'source'));
         await fs.emptyDir(path.join(__dirname, TEST_ASSET_DIR, 'preview'));
         await fs.emptyDir(path.join(__dirname, TEST_ASSET_DIR, 'cache'));
@@ -343,6 +350,13 @@ describe('AssetServerPlugin', () => {
         });
     });
 
+    it('ImageTransformStrategy can throw to prevent transform', async () => {
+        const res = await fetch(`${asset.preview}?preset=test`);
+        expect(res.status).toBe(400);
+        const text = await res.text();
+        expect(text).toContain('Invalid parameters');
+    });
+
     describe('deletion', () => {
         it('deleting Asset deletes binary file', async () => {
             const { deleteAsset } = await adminClient.query(deleteAssetDocument, {
@@ -432,13 +446,6 @@ describe('AssetServerPlugin', () => {
         expect(createAssets.length).toBe(1);
         expect(createAssets[0].name).toBe('bad-image.jpg');
     });
-
-    it('ImageTransformStrategy can throw to prevent transform', async () => {
-        const res = await fetch(`${asset.preview}?preset=test`);
-        expect(res.status).toBe(400);
-        const text = await res.text();
-        expect(text).toContain('Invalid parameters');
-    });
 });
 
 describe('AssetServerPlugin custom Cache-Control header', () => {
@@ -451,6 +458,9 @@ describe('AssetServerPlugin custom Cache-Control header', () => {
     );
 
     beforeAll(async () => {
+        // Multiple test servers in this file share AssetServerPlugin's static options
+        // (read at bootstrap), so reassert this suite's config immediately before boot.
+        AssetServerPlugin.init({ assetUploadDir, route: 'assets', cacheHeader });
         await fs.emptyDir(assetUploadDir);
         await server.init({
             initialData,
@@ -493,6 +503,9 @@ describe('AssetServerPlugin no-store Cache-Control header', () => {
     );
 
     beforeAll(async () => {
+        // Multiple test servers in this file share AssetServerPlugin's static options
+        // (read at bootstrap), so reassert this suite's config immediately before boot.
+        AssetServerPlugin.init({ assetUploadDir, route: 'assets', cacheHeader });
         await fs.emptyDir(assetUploadDir);
         await server.init({
             initialData,
