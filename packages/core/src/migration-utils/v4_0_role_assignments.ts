@@ -26,7 +26,7 @@ import { QueryRunner } from 'typeorm';
  *   permissions on every Channel) would both reintroduce that permission leak and write
  *   one row per customer per channel. The role row itself is kept, so that the archived
  *   legacy rows can still be matched to it; v4 never reads it, and
- *   {@link dropArchivedRoleTables} deletes it. If your instance broadened the Customer
+ *   {@link removeLegacyRoleData} deletes it. If your instance broadened the Customer
  *   role's permissions via a direct repository write, be aware that this customization has
  *   no v4 equivalent: customers hold exactly `Authenticated` on their member Channels.
  * - **SuperAdmin role**: holders receive exactly one row, on the default Channel, whatever
@@ -56,7 +56,7 @@ import { QueryRunner } from 'typeorm';
  * they keep a frozen copy of the pre-v4 grants for auditing. The archive is not a way back
  * to v3: after going live on v4, rolling back means restoring a backup taken before the
  * migration. Vendure refuses to start while `user_roles_role` still exists under its
- * original name. Drop the archive with {@link dropArchivedRoleTables} once you no longer
+ * original name. Drop the archive with {@link removeLegacyRoleData} once you no longer
  * need it.
  *
  * Call this from your migration's `up()` method **after** the `role_assignment` table
@@ -187,7 +187,7 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
     // 5. Archive the legacy tables: rename them and remove their foreign keys, so that the
     // archive is a frozen copy which later User or Role deletes cannot cascade into. The
     // Customer role row stays, so the archived Customer rows can still be identified;
-    // dropArchivedRoleTables() deletes it.
+    // removeLegacyRoleData() deletes it.
     await archiveLegacyTables(queryRunner);
 
     const countAfter = await countRows();
@@ -221,11 +221,11 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
  *
  * ```ts
  * import { MigrationInterface, QueryRunner } from 'typeorm';
- * import { dropArchivedRoleTables } from '\@vendure/core';
+ * import { removeLegacyRoleData } from '\@vendure/core';
  *
- * export class DropArchivedRoleTables1234567890 implements MigrationInterface {
+ * export class RemoveLegacyRoleData1234567890 implements MigrationInterface {
  *     public async up(queryRunner: QueryRunner): Promise<any> {
- *         await dropArchivedRoleTables(queryRunner);
+ *         await removeLegacyRoleData(queryRunner);
  *     }
  *
  *     public async down(queryRunner: QueryRunner): Promise<any> {
@@ -237,7 +237,7 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
  * @since 4.0.0
  * @docsCategory migration
  */
-export async function dropArchivedRoleTables(queryRunner: QueryRunner): Promise<void> {
+export async function removeLegacyRoleData(queryRunner: QueryRunner): Promise<void> {
     const t = getTableNames(queryRunner);
     // Deleting the Customer role before the legacy tables are archived would cascade into
     // them and remove its grants from what becomes the archive.
@@ -246,7 +246,7 @@ export async function dropArchivedRoleTables(queryRunner: QueryRunner): Promise<
             throw new Error(
                 `The ${tableName} table still exists, so the role assignment data has not been ` +
                     'migrated and archived yet. Run migrateRoleAssignmentData() before ' +
-                    'dropArchivedRoleTables().',
+                    'removeLegacyRoleData().',
             );
         }
     }

@@ -3,9 +3,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
     assertRoleAssignmentDataMigrated,
-    dropArchivedRoleTables,
     ensureRoleAssignmentDataMigrated,
     migrateRoleAssignmentData,
+    removeLegacyRoleData,
 } from './v4_0_role_assignments';
 
 describe('migrateRoleAssignmentData()', () => {
@@ -414,7 +414,7 @@ describe('migrateRoleAssignmentData()', () => {
     });
 });
 
-describe('dropArchivedRoleTables()', () => {
+describe('removeLegacyRoleData()', () => {
     it('drops the archive tables and deletes the Customer role', async () => {
         const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
         await dataSource.initialize();
@@ -428,7 +428,7 @@ describe('dropArchivedRoleTables()', () => {
             `INSERT INTO "role" ("id", "code") VALUES (1, '__super_admin_role__'), (2, '__customer_role__')`,
         );
 
-        await dropArchivedRoleTables(queryRunner);
+        await removeLegacyRoleData(queryRunner);
 
         expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
         expect(await queryRunner.hasTable('_v3_role_channels_channel')).toBe(false);
@@ -445,8 +445,8 @@ describe('dropArchivedRoleTables()', () => {
         const queryRunner = dataSource.createQueryRunner();
         await queryRunner.query(`CREATE TABLE "_v3_user_roles_role" ("userId" integer, "roleId" integer)`);
 
-        await dropArchivedRoleTables(queryRunner);
-        await dropArchivedRoleTables(queryRunner);
+        await removeLegacyRoleData(queryRunner);
+        await removeLegacyRoleData(queryRunner);
 
         expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
         await queryRunner.release();
@@ -466,8 +466,8 @@ describe('dropArchivedRoleTables()', () => {
         await queryRunner.query(`CREATE TABLE "role" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
         await queryRunner.query(`INSERT INTO "role" ("id", "code") VALUES (2, '__customer_role__')`);
 
-        await expect(dropArchivedRoleTables(queryRunner)).rejects.toThrow(
-            'Run migrateRoleAssignmentData() before dropArchivedRoleTables()',
+        await expect(removeLegacyRoleData(queryRunner)).rejects.toThrow(
+            'Run migrateRoleAssignmentData() before removeLegacyRoleData()',
         );
 
         expect(await queryRunner.query(`SELECT "code" FROM "role"`)).toEqual([{ code: '__customer_role__' }]);
