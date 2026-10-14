@@ -2068,7 +2068,7 @@ describe('Custom field relations', () => {
             const collectionId = await createCollectionWithProducts('delete-blocked', ['T_1', 'T_2']);
             await awaitRunningJobs(adminClient);
             const variantCount = await getVariantCount(collectionId);
-            expect(variantCount).toBeGreaterThan(0);
+            expect(variantCount).toBe(6);
             await referenceFromProduct(collectionId);
 
             await expect(deleteCollection(collectionId)).rejects.toThrow(/foreign key/i);
@@ -2081,7 +2081,7 @@ describe('Custom field relations', () => {
             const childId = await createCollectionWithProducts('delete-blocked-child', ['T_1'], parentId);
             await awaitRunningJobs(adminClient);
             const variantCount = await getVariantCount(parentId);
-            expect(variantCount).toBeGreaterThan(0);
+            expect(variantCount).toBe(6);
             await referenceFromProduct(childId);
 
             await expect(deleteCollection(parentId)).rejects.toThrow(/foreign key/i);
