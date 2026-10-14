@@ -212,8 +212,8 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
  * legacy Customer role, which v4 does not use. Call it from a later migration once you no
  * longer need the archive for auditing. Tables and roles which do not exist are skipped,
  * so it is safe to re-run. It throws while `user_roles_role` or `role_channels_channel`
- * still exists under its original name, that is, before {@link migrateRoleAssignmentData}
- * has archived the legacy tables.
+ * still exists under its original name, that is, before {@link migrateRoleAssignmentData} has
+ * archived the legacy tables.
  *
  * The archive has no foreign keys, so hard-deleting a User does not remove its rows from
  * the archive. If you erase personal data on request (e.g. under the GDPR), drop the
