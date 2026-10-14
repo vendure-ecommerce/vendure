@@ -354,8 +354,10 @@ function ProductVariantDetailPage() {
         }
         // Nothing to resolve when no option was edited. Leaving `optionIds` out of the
         // submission stops an unrelated edit, such as a price change, from reassigning
-        // the variant's options.
+        // the variant's options. A failed earlier save can leave other ids in the form, so
+        // restore the held ones.
         if (!optionsDirty) {
+            form.setValue('optionIds', entity.options.map(option => option.id));
             submitHandler(event);
             return;
         }

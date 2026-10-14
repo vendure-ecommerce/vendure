@@ -858,14 +858,18 @@ test.describe('variant detail option & stock editing (PRD)', () => {
         await sizeInput.fill('ZZZ');
         await sizeInput.press('Enter');
         await expect(sizeInput).toHaveValue('ZZZ');
-        await expect(page.locator('[data-sonner-toast]').filter({ hasText: /updated/i })).toHaveCount(0);
+        await expect(
+            page.locator('[data-sonner-toast]').filter({ hasText: /updated/i }),
+        ).toHaveCount(0);
 
         // Picking a suggestion with Enter (popup open) still works — and still no submit.
         await sizeInput.fill('La');
         await sizeInput.press('ArrowDown');
         await sizeInput.press('Enter');
         await expect(sizeInput).toHaveValue('Large');
-        await expect(page.locator('[data-sonner-toast]').filter({ hasText: /updated/i })).toHaveCount(0);
+        await expect(
+            page.locator('[data-sonner-toast]').filter({ hasText: /updated/i }),
+        ).toHaveCount(0);
 
         // Definitive: a reload shows the original option — nothing was persisted.
         await page.reload();
@@ -908,7 +912,9 @@ test.describe('variant detail option & stock editing (PRD)', () => {
         await skuInput.press('Enter');
 
         // No success toast, and a reload shows the option unchanged.
-        await expect(page.locator('[data-sonner-toast]').filter({ hasText: /updated/i })).toHaveCount(0);
+        await expect(
+            page.locator('[data-sonner-toast]').filter({ hasText: /updated/i }),
+        ).toHaveCount(0);
         await page.reload();
         await expect(page.getByLabel('Size', { exact: true })).toHaveValue('Small', {
             timeout: 10_000,
