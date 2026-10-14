@@ -35,6 +35,10 @@ describe('previewRoleAssignmentMigration()', () => {
              "userId" integer)`,
         );
         await queryRunner.query(
+            `CREATE TABLE "administrator" ("id" integer PRIMARY KEY AUTOINCREMENT, "deletedAt" datetime,
+             "userId" integer)`,
+        );
+        await queryRunner.query(
             `CREATE TABLE "customer_channels_channel" ("customerId" integer NOT NULL,
              "channelId" integer NOT NULL, PRIMARY KEY ("customerId", "channelId"))`,
         );
@@ -67,6 +71,7 @@ describe('previewRoleAssignmentMigration()', () => {
         await queryRunner.query(
             `INSERT INTO "user_roles_role" ("userId", "roleId") VALUES (1, 1), (2, 3), (3, 2)`,
         );
+        await queryRunner.query(`INSERT INTO "administrator" ("id", "userId") VALUES (1, 1), (2, 2)`);
         await queryRunner.query(`INSERT INTO "customer" ("id", "userId") VALUES (1, 3)`);
         await queryRunner.query(
             `INSERT INTO "customer_channels_channel" ("customerId", "channelId") VALUES (1, 1), (1, 2)`,
@@ -76,6 +81,7 @@ describe('previewRoleAssignmentMigration()', () => {
 
         expect(preview).toEqual({
             administrators: { userCount: 2, superAdminCount: 1, assignmentCount: 2 },
+            customersWithRoles: { userCount: 0, assignmentCount: 0, roles: [] },
             customersLosingAccess: 0,
             customerChannelChanges: [],
             customerRoleDroppedPermissions: [],
@@ -149,7 +155,38 @@ describe('previewRoleAssignmentMigration()', () => {
 
         expect(preview.customerChannelChanges).toEqual([]);
         expect(preview.customersLosingAccess).toBe(0);
-        expect(preview.administrators).toEqual({ userCount: 2, superAdminCount: 1, assignmentCount: 2 });
+        // user 3 is not an Administrator: a customer holding another role
+        expect(preview.administrators).toEqual({ userCount: 1, superAdminCount: 1, assignmentCount: 1 });
+        expect(preview.customersWithRoles).toEqual({
+            userCount: 1,
+            assignmentCount: 1,
+            roles: [{ roleId: '3', roleCode: 'sales', holderCount: 1 }],
+        });
+    });
+
+    it('separates customers holding other roles from administrators', async () => {
+        // user 2: administrator holding sales; user 3: customer holding sales;
+        // user 4: customer who is also an administrator, holding sales
+        await queryRunner.query(
+            `INSERT INTO "user_roles_role" ("userId", "roleId") VALUES (2, 3), (3, 2), (3, 3), (4, 2), (4, 3)`,
+        );
+        await queryRunner.query(`INSERT INTO "administrator" ("id", "userId") VALUES (1, 2), (2, 4)`);
+        await queryRunner.query(`INSERT INTO "customer" ("id", "userId") VALUES (1, 3), (2, 4)`);
+        await queryRunner.query(
+            `INSERT INTO "customer_channels_channel" ("customerId", "channelId") VALUES (1, 1), (1, 2), (2, 1), (2, 2)`,
+        );
+
+        const preview = await previewRoleAssignmentMigration(queryRunner);
+
+        expect(preview.administrators).toEqual({ userCount: 2, superAdminCount: 0, assignmentCount: 2 });
+        expect(preview.customersWithRoles).toEqual({
+            userCount: 1,
+            assignmentCount: 1,
+            roles: [{ roleId: '3', roleCode: 'sales', holderCount: 1 }],
+        });
+        const report = formatRoleAssignmentMigrationPreview(preview);
+        expect(report).toContain('Customers holding other roles');
+        expect(report).toContain('   sales    3           1');
     });
 
     it('reports Customer role permissions beyond Authenticated', async () => {
@@ -200,6 +237,9 @@ describe('previewRoleAssignmentMigration() with an entityPrefix', () => {
         );
         await queryRunner.query(
             `CREATE TABLE "vdr_customer_channels_channel" ("customerId" integer, "channelId" integer)`,
+        );
+        await queryRunner.query(
+            `CREATE TABLE "vdr_administrator" ("id" integer PRIMARY KEY, "deletedAt" datetime, "userId" integer)`,
         );
         await queryRunner.query(`CREATE TABLE "vdr_user_roles_role" ("userId" integer, "roleId" integer)`);
         await queryRunner.query(

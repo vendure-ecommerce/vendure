@@ -16,17 +16,34 @@ export interface RoleAssignmentMigrationPreview {
     /**
      * @description
      * Users holding at least one Role other than the Customer role (Administrators and API
-     * keys). Their permissions do not change: every grant is copied, which
-     * {@link migrateRoleAssignmentData} verifies before it changes anything.
+     * keys), except the Customers counted in `customersWithRoles`. Their permissions do not
+     * change: every grant is copied, which {@link migrateRoleAssignmentData} verifies before
+     * it changes anything.
      */
     administrators: {
         userCount: number;
         superAdminCount: number;
         /**
          * @description
-         * The number of `role_assignment` rows the migration will write.
+         * The number of `role_assignment` rows the migration will write for these Users.
          */
         assignmentCount: number;
+    };
+    /**
+     * @description
+     * Customers who are not Administrators but hold a Role other than the Customer role, for
+     * example to unlock B2B features. Their grants are copied like an Administrator's and keep
+     * working, but `assignRolesToUser` and `removeRolesFromUser` accept only Administrators
+     * and API keys, so these grants cannot be changed through the Admin API after migrating.
+     */
+    customersWithRoles: {
+        userCount: number;
+        /**
+         * @description
+         * The number of `role_assignment` rows the migration will write for these Customers.
+         */
+        assignmentCount: number;
+        roles: Array<{ roleId: string; roleCode: string; holderCount: number }>;
     };
     /**
      * @description
@@ -131,6 +148,24 @@ export async function previewRoleAssignmentMigration(
          AND ur2.${esc('userId')} IN (${holderUserIds})
          AND rc2.${esc('channelId')} IN (${customerRoleChannelIds})`;
 
+    // Customers holding a copied Role (not the Customer or SuperAdmin role) who are not
+    // Administrators: their grants are written like an Administrator's
+    const customerWithRolesUserIds = `SELECT cu2.${esc('userId')} FROM ${table('customer')} cu2
+         WHERE cu2.${esc('deletedAt')} IS NULL
+         AND cu2.${esc('userId')} IS NOT NULL
+         AND cu2.${esc('userId')} NOT IN (
+             SELECT a.${esc('userId')} FROM ${table('administrator')} a
+             WHERE a.${esc('deletedAt')} IS NULL AND a.${esc('userId')} IS NOT NULL
+         )
+         AND cu2.${esc('userId')} NOT IN (${superAdminUserIds})`;
+    // The rows migrateRoleAssignmentData() writes for every Role except the Customer and
+    // SuperAdmin roles; the SuperAdmin role adds one default-channel row per holder
+    const copiedGrants = `SELECT ur.${esc('userId')} AS ${esc('userId')}, ur.${esc('roleId')} AS ${esc('roleId')}
+         FROM ${table('user_roles_role')} ur
+         INNER JOIN ${table('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
+         INNER JOIN ${table('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
+         WHERE r.${esc('code')} NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')`;
+
     const channelRows: Array<{ id: string | number; code: string }> = await queryRunner.query(
         `SELECT ${esc('id')}, ${esc('code')} FROM ${table('channel')}`,
     );
@@ -176,7 +211,8 @@ export async function previewRoleAssignmentMigration(
         `SELECT COUNT(DISTINCT ur.${esc('userId')}) AS ${esc('count')}
          FROM ${table('user_roles_role')} ur
          INNER JOIN ${table('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
-         WHERE r.${esc('code')} <> '${CUSTOMER_ROLE_CODE}'`,
+         WHERE r.${esc('code')} <> '${CUSTOMER_ROLE_CODE}'
+         AND ur.${esc('userId')} NOT IN (${customerWithRolesUserIds})`,
     );
     const superAdminRows: CountRow[] = await queryRunner.query(
         `SELECT COUNT(DISTINCT ur.${esc('userId')}) AS ${esc('count')}
@@ -184,14 +220,24 @@ export async function previewRoleAssignmentMigration(
          INNER JOIN ${table('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
          WHERE r.${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}'`,
     );
-    // The rows migrateRoleAssignmentData() writes: every triple except the Customer role's,
-    // plus one default-channel row per SuperAdmin
     const grantRows: CountRow[] = await queryRunner.query(
-        `SELECT COUNT(*) AS ${esc('count')}
-         FROM ${table('user_roles_role')} ur
-         INNER JOIN ${table('role_channels_channel')} rc ON rc.${esc('roleId')} = ur.${esc('roleId')}
-         INNER JOIN ${table('role')} r ON r.${esc('id')} = ur.${esc('roleId')}
-         WHERE r.${esc('code')} NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')`,
+        `SELECT COUNT(*) AS ${esc('count')} FROM (${copiedGrants}) g
+         WHERE g.${esc('userId')} NOT IN (${customerWithRolesUserIds})`,
+    );
+    const customerGrantRows: Array<{
+        roleId: string | number;
+        userCount: string | number;
+        count: string | number;
+    }> = await queryRunner.query(
+        `SELECT g.${esc('roleId')} AS ${esc('roleId')}, COUNT(DISTINCT g.${esc('userId')}) AS ${esc('userCount')},
+                    COUNT(*) AS ${esc('count')}
+             FROM (${copiedGrants}) g
+             WHERE g.${esc('userId')} IN (${customerWithRolesUserIds})
+             GROUP BY g.${esc('roleId')}`,
+    );
+    const customerWithRolesCountRows: CountRow[] = await queryRunner.query(
+        `SELECT COUNT(DISTINCT g.${esc('userId')}) AS ${esc('count')} FROM (${copiedGrants}) g
+         WHERE g.${esc('userId')} IN (${customerWithRolesUserIds})`,
     );
     const customerRoleRows: Array<{ permissions: string | null }> = await queryRunner.query(
         `SELECT ${esc('permissions')} FROM ${table('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
@@ -233,11 +279,25 @@ export async function previewRoleAssignmentMigration(
     const customerRolePermissions = customerRoleRows[0]?.permissions?.split(',') ?? [];
 
     const superAdminCount = Number(superAdminRows[0].count);
+    const roleCodes = new Map<string, string>(
+        (await queryRunner.query(`SELECT ${esc('id')}, ${esc('code')} FROM ${table('role')}`)).map(
+            (row: { id: string | number; code: string }) => [String(row.id), row.code],
+        ),
+    );
     return {
         administrators: {
             userCount: Number(adminUserRows[0].count),
             superAdminCount,
             assignmentCount: Number(grantRows[0].count) + superAdminCount,
+        },
+        customersWithRoles: {
+            userCount: Number(customerWithRolesCountRows[0].count),
+            assignmentCount: customerGrantRows.reduce((sum, row) => sum + Number(row.count), 0),
+            roles: customerGrantRows.map(row => ({
+                roleId: String(row.roleId),
+                roleCode: roleCodes.get(String(row.roleId)) ?? '',
+                holderCount: Number(row.userCount),
+            })),
         },
         customersLosingAccess:
             customerRoleChannelRows.length === 0 ? 0 : holderCount - Number(fullyCoveredRows[0].count),
@@ -286,6 +346,30 @@ export function formatRoleAssignmentMigrationPreview(preview: RoleAssignmentMigr
         '   the same channels. The migration checks this before it changes anything, and stops',
         '   if a single grant does not match.',
     );
+
+    if (preview.customersWithRoles.userCount > 0) {
+        const roles = [...preview.customersWithRoles.roles].sort((a, b) =>
+            a.roleCode.localeCompare(b.roleCode),
+        );
+        lines.push(
+            '',
+            sectionHeader('Customers holding other roles', 'review'),
+            ...formatKeyValues([
+                ['Customers', formatCount(preview.customersWithRoles.userCount)],
+                ['Role assignments to be written', formatCount(preview.customersWithRoles.assignmentCount)],
+            ]),
+            '',
+            '   These customers are not administrators but hold roles besides the Customer role,',
+            '   for example to unlock B2B features. Their grants are copied and keep working. In',
+            '   v4, assignRolesToUser and removeRolesFromUser accept only administrators and API',
+            '   keys, so these grants cannot be changed through the Admin API after migrating.',
+            '',
+            ...formatTable(
+                ['Role', 'Id', 'Customers'],
+                roles.map(role => [role.roleCode, role.roleId, formatCount(role.holderCount)]),
+            ),
+        );
+    }
 
     lines.push('', sectionHeader('Shop customers', 'expected'));
     if (channelChanges.length === 0) {
