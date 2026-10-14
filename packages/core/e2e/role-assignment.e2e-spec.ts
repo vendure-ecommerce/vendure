@@ -1,7 +1,13 @@
 import { CurrencyCode, DeletionResult, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { ROLE_EDITOR_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
 import { ID } from '@vendure/common/lib/shared-types';
-import { AdministratorEvent, EventBus, RoleAssignmentEvent, VendureEvent } from '@vendure/core';
+import {
+    AdministratorEvent,
+    AdministratorService,
+    EventBus,
+    RoleAssignmentEvent,
+    VendureEvent,
+} from '@vendure/core';
 import {
     createErrorResultGuard,
     createTestEnvironment,
@@ -558,6 +564,50 @@ describe('RoleAssignment', () => {
             }, 'The sole SuperAdmin cannot be deleted')();
 
             await adminClient.query(deleteApiKeysDocument, { ids: [createApiKey.entityId] });
+        });
+
+        // Soft-deleting an Administrator removes its assignments, so the bootstrap re-seed of
+        // a deleted superadmin must write the SuperAdmin row again.
+        it('a deleted superadmin is restored at bootstrap as a SuperAdmin', async () => {
+            const { activeAdministrator: superAdmin } = await adminClient.query(
+                getActiveAdministratorDocument,
+            );
+            if (!superAdmin) {
+                throw new Error('Expected the SuperAdmin to be logged in');
+            }
+            await adminClient.query(assignRolesToUserDocument, {
+                input: {
+                    userId: secondSuperAdmin.user.id,
+                    assignments: [{ roleId: superAdminRoleId, channelId: DEFAULT_CHANNEL_ID }],
+                },
+            });
+            await adminClient.asUserWithCredentials(secondSuperAdmin.emailAddress, 'test');
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { deleteAdministrator } = await adminClient.query(deleteAdministratorDocument, {
+                id: superAdmin.id,
+            });
+            expect(deleteAdministrator.result).toBe(DeletionResult.DELETED);
+
+            await server.app.get(AdministratorService).initAdministrators();
+
+            await asSuperAdminOnDefaultChannel();
+            expect(await getUserRoleAssignments(superAdmin.id)).toEqual([
+                { roleCode: SUPER_ADMIN_ROLE_CODE, channelId: DEFAULT_CHANNEL_ID },
+            ]);
+            const { me } = await adminClient.query(MeDocument);
+            expect(me?.channels.map(c => c.token)).toEqual(
+                expect.arrayContaining([E2E_DEFAULT_CHANNEL_TOKEN, secondChannel.token]),
+            );
+            for (const channel of me?.channels ?? []) {
+                expect(channel.permissions).toContain(Permission.SuperAdmin);
+            }
+
+            await adminClient.query(removeRolesFromUserDocument, {
+                input: {
+                    userId: secondSuperAdmin.user.id,
+                    assignments: [{ roleId: superAdminRoleId, channelId: DEFAULT_CHANNEL_ID }],
+                },
+            });
         });
     });
 

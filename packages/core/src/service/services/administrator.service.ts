@@ -352,9 +352,15 @@ export class AdministratorService {
             },
         });
 
+        const ctx = await this.requestContextService.create({ apiType: 'admin' });
+        const superAdminRole = await this.roleService.getSuperAdminRole();
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        // The SuperAdmin Role is stored as one row on the default Channel (see
+        // RoleAssignment); effective permissions on every Channel are derived from it at
+        // check time by the RolePermissionResolver.
+        const superAdminPair = { roleId: superAdminRole.id, channelId: defaultChannel.id };
+
         if (!superAdminUser) {
-            const ctx = await this.requestContextService.create({ apiType: 'admin' });
-            const superAdminRole = await this.roleService.getSuperAdminRole();
             const administrator = new Administrator({
                 emailAddress: superadminCredentials.identifier,
                 firstName: 'Super',
@@ -366,13 +372,7 @@ export class AdministratorService {
                 superadminCredentials.password,
             );
             await this.connection.getRepository(ctx, Administrator).save(administrator);
-            // The SuperAdmin Role is stored as one row on the default Channel (see
-            // RoleAssignment); effective permissions on every Channel are derived from it at
-            // check time by the RolePermissionResolver.
-            const defaultChannel = await this.channelService.getDefaultChannel(ctx);
-            await this.roleAssignmentService.createAssignments(ctx, administrator.user.id, [
-                { roleId: superAdminRole.id, channelId: defaultChannel.id },
-            ]);
+            await this.roleAssignmentService.createAssignments(ctx, administrator.user.id, [superAdminPair]);
         } else {
             const superAdministrator = await this.connection.rawConnection
                 .getRepository(Administrator)
@@ -383,6 +383,7 @@ export class AdministratorService {
                         },
                     },
                 });
+            const wasDeleted = superAdministrator?.deletedAt != null || superAdminUser.deletedAt != null;
             if (!superAdministrator) {
                 const administrator = new Administrator({
                     emailAddress: superadminCredentials.identifier,
@@ -402,6 +403,13 @@ export class AdministratorService {
             if (superAdminUser.deletedAt != null) {
                 superAdminUser.deletedAt = null;
                 await this.connection.rawConnection.getRepository(User).save(superAdminUser);
+            }
+
+            // Soft-deleting an Administrator removes its RoleAssignments, so a restored
+            // superadmin would come back holding no Role. A live superadmin whose SuperAdmin
+            // Role was revoked keeps that revocation.
+            if (wasDeleted) {
+                await this.roleAssignmentService.createAssignments(ctx, superAdminUser.id, [superAdminPair]);
             }
         }
     }
