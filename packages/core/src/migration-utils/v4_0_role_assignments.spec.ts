@@ -1,5 +1,5 @@
 import { DataSource, QueryRunner } from 'typeorm';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
     assertRoleAssignmentDataMigrated,
@@ -325,17 +325,62 @@ describe('migrateRoleAssignmentData()', () => {
         expect((await queryRunner.query(`SELECT * FROM "_v3_user_roles_role"`)).length).toBe(5);
     });
 
-    it('completes a partially archived migration', async () => {
+    // On MySQL each DDL statement commits on its own, so a run can stop after any of them.
+    // The archive runs four: two foreign key drops, then two renames.
+    it.each([1, 2, 3, 4])(
+        'refuses to start and completes on a re-run after the archive stopped at DDL statement %i',
+        async failingStatement => {
+            await createSchema();
+            await seedData();
+            let statements = 0;
+            const failAt = <T extends (...args: any[]) => Promise<any>>(original: T) =>
+                (async (...args: Parameters<T>) => {
+                    if (++statements === failingStatement) {
+                        throw new Error('Connection lost');
+                    }
+                    return original(...args);
+                }) as T;
+            const originalDropForeignKeys = queryRunner.dropForeignKeys.bind(queryRunner);
+            const originalRenameTable = queryRunner.renameTable.bind(queryRunner);
+            const dropForeignKeys = vi
+                .spyOn(queryRunner, 'dropForeignKeys')
+                .mockImplementation(failAt(originalDropForeignKeys));
+            const renameTable = vi
+                .spyOn(queryRunner, 'renameTable')
+                .mockImplementation(failAt(originalRenameTable));
+
+            await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow('Connection lost');
+            dropForeignKeys.mockRestore();
+            renameTable.mockRestore();
+
+            await expect(assertRoleAssignmentDataMigrated(queryRunner)).rejects.toThrow();
+            await migrateRoleAssignmentData(queryRunner);
+            await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
+            expect((await getAssignments()).length).toBe(3);
+            expect(await queryRunner.hasTable('role_channels_channel')).toBe(false);
+            expect((await queryRunner.getTable('_v3_user_roles_role'))?.foreignKeys).toEqual([]);
+            expect((await queryRunner.getTable('_v3_role_channels_channel'))?.foreignKeys).toEqual([]);
+        },
+    );
+
+    it('names the recovery when a previous run stopped between the two renames', async () => {
         await createSchema();
         await seedData();
-        // A failure between the two renames, possible on MySQL where DDL is not transactional
-        await queryRunner.renameTable('user_roles_role', '_v3_user_roles_role');
+        await queryRunner.renameTable('role_channels_channel', '_v3_role_channels_channel');
 
-        const insertedCount = await migrateRoleAssignmentData(queryRunner);
+        await expect(assertRoleAssignmentDataMigrated(queryRunner)).rejects.toThrow(
+            'A previous run of migrateRoleAssignmentData() stopped before archiving the user_roles_role table',
+        );
+    });
 
-        expect(insertedCount).toBe(3);
-        expect(await queryRunner.hasTable('role_channels_channel')).toBe(false);
-        expect(await queryRunner.hasTable('_v3_role_channels_channel')).toBe(true);
+    it('completes a partially archived migration on startup when synchronize is enabled', async () => {
+        await createSchema();
+        await seedData();
+        await queryRunner.renameTable('role_channels_channel', '_v3_role_channels_channel');
+
+        expect(await ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: true })).toBe(true);
+        expect((await getAssignments()).length).toBe(3);
+        expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
     });
 
     it('throws when the archive table name is already taken', async () => {

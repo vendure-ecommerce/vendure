@@ -184,7 +184,7 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
         }
     }
 
-    // 5. Archive the legacy tables: rename them and remove their foreign keys, so that the
+    // 5. Archive the legacy tables: remove their foreign keys and rename them, so that the
     // archive is a frozen copy which later User or Role deletes cannot cascade into. The
     // Customer role row stays, so the archived Customer rows can still be identified;
     // removeLegacyRoleData() deletes it.
@@ -272,20 +272,31 @@ export async function removeLegacyRoleData(queryRunner: QueryRunner): Promise<vo
 
 /**
  * Throws if the pre-v4 `user_roles_role` table still exists under its original name and
- * holds rows, meaning {@link migrateRoleAssignmentData} has not been run. Without the
- * migration the `role_assignment` table is empty and every Administrator except the
- * configured superadmin would be locked out.
+ * holds rows, meaning {@link migrateRoleAssignmentData} has not been run or did not finish.
+ * Without the migration the `role_assignment` table is empty and every Administrator
+ * except the configured superadmin would be locked out.
  */
 export async function assertRoleAssignmentDataMigrated(queryRunner: QueryRunner): Promise<void> {
     if (!(await hasUnmigratedRoleGrants(queryRunner))) {
         return;
     }
     const t = getTableNames(queryRunner);
+    if (await queryRunner.hasTable(t.archivedRoleChannels)) {
+        throw new Error(
+            `A previous run of migrateRoleAssignmentData() stopped before archiving the ` +
+                `${t.userRoles} table. On MySQL and MariaDB, where DDL statements are not ` +
+                'transactional, the migration which called it is not recorded as executed and ' +
+                'cannot simply be run again. Restore the backup taken before the migration, or ' +
+                'run migrateRoleAssignmentData() again to finish the archive and record the ' +
+                'migration as executed. See the v4 migration guide.',
+        );
+    }
     throw new Error(
-        `The pre-v4 ${t.userRoles} table still holds role grants which have not been migrated ` +
-            `to the ${t.roleAssignment} table. Run migrateRoleAssignmentData() from a database ` +
-            'migration before starting Vendure v4. With dbConnectionOptions.synchronize enabled, ' +
-            'Vendure runs it on startup instead. See the v4 migration guide.',
+        `The pre-v4 ${t.userRoles} table still holds role grants, so they have not been ` +
+            `migrated to the ${t.roleAssignment} table, or the migration did not finish. Run ` +
+            'migrateRoleAssignmentData() from a database migration before starting Vendure v4. ' +
+            'With dbConnectionOptions.synchronize enabled, Vendure runs it on startup instead. ' +
+            'See the v4 migration guide.',
     );
 }
 
@@ -399,25 +410,36 @@ async function resolveSourceTables(queryRunner: QueryRunner): Promise<SourceTabl
     };
 }
 
+/**
+ * On MySQL each DDL statement commits on its own, so a run can stop between any two of
+ * them. The boot check looks for `user_roles_role`, so renaming it is the last statement:
+ * a run which stopped earlier keeps Vendure from starting until it is completed.
+ */
 async function archiveLegacyTables(queryRunner: QueryRunner): Promise<void> {
     const t = getTableNames(queryRunner);
     const pairs = [
-        { original: t.userRoles, archived: t.archivedUserRoles },
         { original: t.roleChannels, archived: t.archivedRoleChannels },
+        { original: t.userRoles, archived: t.archivedUserRoles },
     ];
     for (const { original, archived } of pairs) {
-        if (await queryRunner.hasTable(original)) {
-            if (await queryRunner.hasTable(archived)) {
-                throw new Error(
-                    `Cannot archive ${original}: a table named ${archived} already exists. ` +
-                        'Rename or drop it and run the migration again.',
-                );
-            }
-            await queryRunner.renameTable(original, archived);
+        if ((await queryRunner.hasTable(original)) && (await queryRunner.hasTable(archived))) {
+            throw new Error(
+                `Cannot archive ${original}: a table named ${archived} already exists. ` +
+                    'Rename or drop it and run the migration again.',
+            );
         }
-        const table = await queryRunner.getTable(archived);
+    }
+    for (const { original, archived } of pairs) {
+        const table = await queryRunner.getTable(
+            (await queryRunner.hasTable(original)) ? original : archived,
+        );
         if (table?.foreignKeys.length) {
             await queryRunner.dropForeignKeys(table, table.foreignKeys);
+        }
+    }
+    for (const { original, archived } of pairs) {
+        if (await queryRunner.hasTable(original)) {
+            await queryRunner.renameTable(original, archived);
         }
     }
 }
