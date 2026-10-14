@@ -801,16 +801,17 @@ export class CollectionService implements OnModuleInit {
         const deletedCollection = new Collection(collection);
         const descendants = await this.getDescendants(ctx, collection.id);
         for (const coll of [...descendants.reverse(), collection]) {
-            const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
+            const affectedVariantIds = await this.getCollectionProductVariantIds(coll, ctx);
             const deletedColl = new Collection(coll);
             // To avoid performance issues on huge collections, we first delete the links
             // between the product variants and the collection by chunks
             const chunkedDeleteIds = this.chunkArray(affectedVariantIds, 500);
             for (const chunkedDeleteId of chunkedDeleteIds) {
-                await this.connection.rawConnection
+                await this.connection
+                    .getRepository(ctx, Collection)
                     .createQueryBuilder()
                     .relation(Collection, 'productVariants')
-                    .of(collection)
+                    .of(coll)
                     .remove(chunkedDeleteId);
             }
             await this.connection.getRepository(ctx, Collection).remove(coll);
