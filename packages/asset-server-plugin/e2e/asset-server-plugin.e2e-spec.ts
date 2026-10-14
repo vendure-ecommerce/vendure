@@ -14,6 +14,7 @@ import {
     ImageTransformParameters,
     ImageTransformStrategy,
 } from '../src/config/image-transform-strategy';
+import { DEFAULT_CACHE_HEADER } from '../src/constants';
 import { AssetServerPlugin } from '../src/plugin';
 
 import { createAssetsDocument, deleteAssetDocument } from './graphql/admin-definitions';
@@ -264,6 +265,37 @@ describe('AssetServerPlugin', () => {
         });
     });
 
+    describe('Cache-Control headers', () => {
+        it('sets the default header on generated and cached GET and HEAD responses', async () => {
+            const { createAssets } = await adminClient.fileUploadMutation({
+                mutation: createAssetsDocument,
+                filePaths: [path.join(__dirname, 'fixtures/assets/test.jpg')],
+                mapVariables: filePaths => ({ input: filePaths.map(() => ({ file: null })) }),
+            });
+            const testAsset = createAssets[0];
+
+            const generatedGet = await fetch(`${testAsset.preview}?w=53&h=53`);
+            expect(generatedGet.status).toBe(200);
+            expect(generatedGet.headers.get('cache-control')).toBe(DEFAULT_CACHE_HEADER);
+
+            const cachedGet = await fetch(`${testAsset.preview}?w=53&h=53`);
+            expect(cachedGet.status).toBe(200);
+            expect(cachedGet.headers.get('cache-control')).toBe(DEFAULT_CACHE_HEADER);
+
+            const uncached = await fetch(`${testAsset.preview}?w=57&h=57&cache=false`);
+            expect(uncached.status).toBe(200);
+            expect(uncached.headers.get('cache-control')).toBe(DEFAULT_CACHE_HEADER);
+
+            const generatedHead = await fetch(`${testAsset.preview}?w=54&h=54`, { method: 'HEAD' });
+            expect(generatedHead.status).toBe(200);
+            expect(generatedHead.headers.get('cache-control')).toBe(DEFAULT_CACHE_HEADER);
+
+            const cachedHead = await fetch(`${testAsset.preview}?w=54&h=54`, { method: 'HEAD' });
+            expect(cachedHead.status).toBe(200);
+            expect(cachedHead.headers.get('cache-control')).toBe(DEFAULT_CACHE_HEADER);
+        });
+    });
+
     describe('unexpected input', () => {
         it('does not error on non-integer width', async () => {
             return fetch(`${asset.preview}?w=10.5`);
@@ -406,5 +438,89 @@ describe('AssetServerPlugin', () => {
         expect(res.status).toBe(400);
         const text = await res.text();
         expect(text).toContain('Invalid parameters');
+    });
+});
+
+describe('AssetServerPlugin custom Cache-Control header', () => {
+    const assetUploadDir = path.join(__dirname, 'test-assets-cache-custom');
+    const cacheHeader = 'public, max-age=3600';
+    const { server, adminClient } = createTestEnvironment(
+        mergeConfig(testConfig(), {
+            plugins: [AssetServerPlugin.init({ assetUploadDir, route: 'assets', cacheHeader })],
+        }),
+    );
+
+    beforeAll(async () => {
+        await fs.emptyDir(assetUploadDir);
+        await server.init({
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
+    }, TEST_SETUP_TIMEOUT_MS);
+
+    afterAll(async () => {
+        await server.destroy();
+    });
+
+    it('sets the configured header on generated and cached image responses', async () => {
+        const { createAssets } = await adminClient.fileUploadMutation({
+            mutation: createAssetsDocument,
+            filePaths: [path.join(__dirname, 'fixtures/assets/test.jpg')],
+            mapVariables: filePaths => ({ input: filePaths.map(() => ({ file: null })) }),
+        });
+        const testAsset = createAssets[0];
+        const url = `${testAsset.preview}?w=55&h=55`;
+
+        const generated = await fetch(url);
+        expect(generated.status).toBe(200);
+        expect(generated.headers.get('cache-control')).toBe(cacheHeader);
+
+        const cached = await fetch(url);
+        expect(cached.status).toBe(200);
+        expect(cached.headers.get('cache-control')).toBe(cacheHeader);
+    });
+});
+
+describe('AssetServerPlugin no-store Cache-Control header', () => {
+    const assetUploadDir = path.join(__dirname, 'test-assets-cache-nostore');
+    const cacheHeader = 'no-store';
+    const { server, adminClient } = createTestEnvironment(
+        mergeConfig(testConfig(), {
+            plugins: [AssetServerPlugin.init({ assetUploadDir, route: 'assets', cacheHeader })],
+        }),
+    );
+
+    beforeAll(async () => {
+        await fs.emptyDir(assetUploadDir);
+        await server.init({
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
+    }, TEST_SETUP_TIMEOUT_MS);
+
+    afterAll(async () => {
+        await server.destroy();
+    });
+
+    it('sets the configured header on generated and cached image responses', async () => {
+        const { createAssets } = await adminClient.fileUploadMutation({
+            mutation: createAssetsDocument,
+            filePaths: [path.join(__dirname, 'fixtures/assets/test.jpg')],
+            mapVariables: filePaths => ({ input: filePaths.map(() => ({ file: null })) }),
+        });
+        const testAsset = createAssets[0];
+        const url = `${testAsset.preview}?w=56&h=56`;
+
+        const generated = await fetch(url);
+        expect(generated.status).toBe(200);
+        expect(generated.headers.get('cache-control')).toBe(cacheHeader);
+
+        const cached = await fetch(url);
+        expect(cached.status).toBe(200);
+        expect(cached.headers.get('cache-control')).toBe(cacheHeader);
     });
 });

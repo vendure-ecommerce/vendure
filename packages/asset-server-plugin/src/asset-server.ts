@@ -147,6 +147,7 @@ export class AssetServer {
                         }
                         res.set('Content-Type', mimeType);
                         this.setAssetSecurityHeaders(res, mimeType);
+                        res.setHeader('Cache-Control', this.cacheHeader);
                         res.send(imageBuffer);
                         return;
                     } catch (e: any) {
