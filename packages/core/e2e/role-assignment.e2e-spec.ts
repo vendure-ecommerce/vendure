@@ -160,6 +160,34 @@ describe('RoleAssignment', () => {
         expect(createRole.code).toBe('created-on-second-channel');
     });
 
+    // User.roles is derived from the assignment rows: each Role once, however many Channels
+    // it is assigned on.
+    it('User.roles of an administrator lists each assigned Role once', async () => {
+        await asSuperAdminOnDefaultChannel();
+        const { createAdministrator } = await adminClient.query(createAdministratorDocument, {
+            input: {
+                firstName: 'Derived',
+                lastName: 'Roles',
+                emailAddress: 'derived-roles@test.com',
+                password: 'test',
+                roleAssignments: [
+                    { roleId: adminManagerRole.id, channelId: DEFAULT_CHANNEL_ID },
+                    { roleId: adminManagerRole.id, channelId: secondChannel.id },
+                    { roleId: roleEditorRoleId, channelId: secondChannel.id },
+                ],
+            },
+        });
+
+        const { administrator } = await adminClient.query(administratorUserRolesDocument, {
+            id: createAdministrator.id,
+        });
+        expect(administrator?.user.roles.map(r => r.code).sort()).toEqual(
+            [adminManagerRole.code, ROLE_EDITOR_ROLE_CODE].sort(),
+        );
+
+        await adminClient.query(deleteAdministratorDocument, { id: createAdministrator.id });
+    });
+
     // RoleEditor is an ordinary Role granted explicitly (OSS-749): creating an
     // Administrator stores exactly the given assignments and nothing else.
     describe('RoleEditor is an explicit grant', () => {
@@ -1314,6 +1342,20 @@ const administratorRoleAssignmentsDocument = graphql(`
                         code
                     }
                     channelId
+                }
+            }
+        }
+    }
+`);
+
+const administratorUserRolesDocument = graphql(`
+    query AdministratorUserRoles($id: ID!) {
+        administrator(id: $id) {
+            id
+            user {
+                id
+                roles {
+                    code
                 }
             }
         }
