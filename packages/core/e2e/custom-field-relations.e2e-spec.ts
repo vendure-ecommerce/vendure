@@ -10,6 +10,7 @@ import {
     defaultShippingEligibilityChecker,
     Facet,
     FacetValue,
+    Logger,
     manualFulfillmentHandler,
     mergeConfig,
     Product,
@@ -25,7 +26,7 @@ import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { Repository } from 'typeorm';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
@@ -621,6 +622,36 @@ describe('Custom field relations', () => {
                     }
                 `);
                 assertCustomFieldIds(updateCustomer.customFields, 'T_2', ['T_3', 'T_4']);
+            });
+
+            // https://github.com/vendurehq/vendure/issues/5543
+            it('does not warn about relation custom field input keys', async () => {
+                const warnSpy = vi.spyOn(Logger, 'warn');
+                try {
+                    await adminClient.query(gql`
+                        mutation {
+                            createCustomer(
+                                input: {
+                                    emailAddress: "test-5543@test.com"
+                                    firstName: "Test"
+                                    lastName: "Person"
+                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                                }
+                            ) {
+                                ... on Customer {
+                                    id
+                                }
+                            }
+                        }
+                    `);
+
+                    const customFieldWarnings = warnSpy.mock.calls.filter(([message]) =>
+                        String(message).startsWith('Custom field '),
+                    );
+                    expect(customFieldWarnings).toEqual([]);
+                } finally {
+                    warnSpy.mockRestore();
+                }
             });
 
             it('shop updateCustomer', async () => {

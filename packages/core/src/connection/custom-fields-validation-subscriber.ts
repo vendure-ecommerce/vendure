@@ -26,7 +26,14 @@ export class CustomFieldsValidationSubscriber implements EntitySubscriberInterfa
         if (!config || config.length === 0) {
             return;
         }
-        const validFieldNames = new Set(config.map(field => field.name));
+        // Relation fields are set via their input keys `<name>Id` / `<name>Ids`
+        const validFieldNames = new Set(
+            config.flatMap(field =>
+                field.type === 'relation'
+                    ? [field.name, field.list ? `${field.name}Ids` : `${field.name}Id`]
+                    : [field.name],
+            ),
+        );
         for (const key of Object.keys(cf)) {
             if (!validFieldNames.has(key)) {
                 Logger.warn(`Custom field ${key} not found for entity ${entityName}`);
