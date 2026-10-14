@@ -284,7 +284,11 @@ export class ChannelService {
             ctx,
             this.tokenCache,
             channelToken,
-            repository => this.findChannel(repository, { token: channelToken }),
+            // The database collation may be case-insensitive (e.g. MySQL), but tokens must match exactly
+            repository =>
+                this.findChannel(repository, { token: channelToken }).then(result =>
+                    result?.token === channelToken ? result : undefined,
+                ),
             { maxSize: TOKEN_CACHE_SIZE, missCache: this.missCache },
         );
         if (!channel) {

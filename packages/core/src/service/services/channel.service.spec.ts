@@ -35,8 +35,13 @@ describe('ChannelService cache', () => {
             },
             findOne: ({ where }: any) => {
                 queries.push({ source, where });
+                // Tokens are compared case-insensitively, like a MySQL `_ci` collation
                 return Promise.resolve(
-                    rows().find(c => (where.token ? c.token === where.token : c.code === where.code)) ?? null,
+                    rows().find(c =>
+                        where.token
+                            ? c.token.toLowerCase() === where.token.toLowerCase()
+                            : c.code === where.code,
+                    ) ?? null,
                 );
             },
         };
@@ -108,6 +113,10 @@ describe('ChannelService cache', () => {
         await expect(service.getChannelFromToken('unknown')).rejects.toThrow('error.channel-not-found');
 
         expect(tokenQueries('unknown')).toHaveLength(1);
+    });
+
+    it('does not match a token which differs only in case', async () => {
+        await expect(service.getChannelFromToken('SECOND-TOKEN')).rejects.toThrow('error.channel-not-found');
     });
 
     it('shares one query between concurrent lookups of the same token', async () => {
