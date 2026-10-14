@@ -452,6 +452,28 @@ describe('dropArchivedRoleTables()', () => {
         await queryRunner.release();
         await dataSource.destroy();
     });
+
+    it.each([
+        { state: 'not migrated', legacyTables: ['user_roles_role', 'role_channels_channel'] },
+        { state: 'partially archived', legacyTables: ['role_channels_channel'] },
+    ])('refuses to run when the legacy tables are $state', async ({ legacyTables }) => {
+        const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
+        await dataSource.initialize();
+        const queryRunner = dataSource.createQueryRunner();
+        for (const tableName of legacyTables) {
+            await queryRunner.query(`CREATE TABLE "${tableName}" ("a" integer, "b" integer)`);
+        }
+        await queryRunner.query(`CREATE TABLE "role" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
+        await queryRunner.query(`INSERT INTO "role" ("id", "code") VALUES (2, '__customer_role__')`);
+
+        await expect(dropArchivedRoleTables(queryRunner)).rejects.toThrow(
+            'Run migrateRoleAssignmentData() before dropArchivedRoleTables()',
+        );
+
+        expect(await queryRunner.query(`SELECT "code" FROM "role"`)).toEqual([{ code: '__customer_role__' }]);
+        await queryRunner.release();
+        await dataSource.destroy();
+    });
 });
 
 describe('assertRoleAssignmentDataMigrated()', () => {

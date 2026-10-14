@@ -211,7 +211,9 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
  * {@link migrateRoleAssignmentData} archives the pre-v4 role grants to, and deletes the
  * legacy Customer role, which v4 does not use. Call it from a later migration once you no
  * longer need the archive for auditing. Tables and roles which do not exist are skipped,
- * so it is safe to re-run.
+ * so it is safe to re-run. It throws while `user_roles_role` or `role_channels_channel`
+ * still exists under its original name, that is, before {@link migrateRoleAssignmentData}
+ * has archived the legacy tables.
  *
  * The archive has no foreign keys, so hard-deleting a User does not remove its rows from
  * the archive. If you erase personal data on request (e.g. under the GDPR), drop the
@@ -237,6 +239,17 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
  */
 export async function dropArchivedRoleTables(queryRunner: QueryRunner): Promise<void> {
     const t = getTableNames(queryRunner);
+    // Deleting the Customer role before the legacy tables are archived would cascade into
+    // them and remove its grants from what becomes the archive.
+    for (const tableName of [t.userRoles, t.roleChannels]) {
+        if (await queryRunner.hasTable(tableName)) {
+            throw new Error(
+                `The ${tableName} table still exists, so the role assignment data has not been ` +
+                    'migrated and archived yet. Run migrateRoleAssignmentData() before ' +
+                    'dropArchivedRoleTables().',
+            );
+        }
+    }
     for (const tableName of [t.archivedUserRoles, t.archivedRoleChannels]) {
         if (await queryRunner.hasTable(tableName)) {
             await queryRunner.dropTable(tableName);
