@@ -1,5 +1,5 @@
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { RequestContext } from '../../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../../common/constants';
@@ -99,6 +99,10 @@ describe('ChannelService cache', () => {
         );
     });
 
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
     it('queries a known token once', async () => {
         await service.getChannelFromToken('second-token');
         await service.getChannelFromToken('second-token');
@@ -128,11 +132,51 @@ describe('ChannelService cache', () => {
         expect(tokenQueries('second-token')).toHaveLength(1);
     });
 
-    it('loads a miss inside a transaction through that transaction without storing it', async () => {
+    it('loads a miss inside a transaction through that transaction and fills the cache in the background', async () => {
+        await service.getChannelFromToken(transactionalContext(), 'second-token');
         await service.getChannelFromToken(transactionalContext(), 'second-token');
         await service.getChannelFromToken('second-token');
 
-        expect(tokenQueries('second-token').map(q => q.source)).toEqual(['transaction', 'pool']);
+        expect(
+            tokenQueries('second-token')
+                .map(q => q.source)
+                .sort(),
+        ).toEqual(['pool', 'transaction']);
+    });
+
+    it('fills the default Channel cache from inside a transaction', async () => {
+        await service.getDefaultChannel(transactionalContext());
+        await service.getDefaultChannel(transactionalContext());
+
+        expect(
+            queries
+                .filter(q => q.where?.code === DEFAULT_CHANNEL_CODE)
+                .map(q => q.source)
+                .sort(),
+        ).toEqual(['pool', 'transaction']);
+    });
+
+    it('queries a token again after the TTL expires', async () => {
+        vi.useFakeTimers();
+        await service.getChannelFromToken('second-token');
+        vi.advanceTimersByTime(30_001);
+        await service.getChannelFromToken('second-token');
+
+        expect(tokenQueries('second-token')).toHaveLength(2);
+    });
+
+    it('does not evict the count or the default Channel when unknown tokens fill the miss cache', async () => {
+        await service.getDefaultChannel();
+        for (let i = 0; i < 1_001; i++) {
+            await expect(service.getChannelFromToken(`unknown-${i}`)).rejects.toThrow();
+        }
+        await service.getDefaultChannel();
+
+        expect(queries.filter(q => !q.where)).toHaveLength(1);
+        expect(queries.filter(q => q.where?.code === DEFAULT_CHANNEL_CODE)).toHaveLength(1);
+        // The oldest miss was evicted, so it is queried again
+        await expect(service.getChannelFromToken('unknown-0')).rejects.toThrow();
+        expect(tokenQueries('unknown-0')).toHaveLength(2);
     });
 
     it('uses a cached Channel inside a transaction', async () => {

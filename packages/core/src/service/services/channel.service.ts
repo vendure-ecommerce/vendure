@@ -589,10 +589,11 @@ export class ChannelService {
     /**
      * Cached entries are shared by every request in the process, so they are loaded outside of
      * any transaction. A caller inside a transaction still uses a cached Channel, but on a miss it
-     * loads through its own transaction and does not store the result, so it does not need a second
-     * pool connection while holding one. Resolved misses are ignored inside a transaction. A
-     * transaction which has written a Channel skips the cache entirely, so it always sees its own
-     * writes and never shares them with other requests.
+     * loads through its own transaction and does not store the result, so it does not wait for a
+     * second pool connection while holding one. The shared cache is filled in the background instead.
+     * Resolved misses are ignored inside a transaction. A transaction which has written a Channel
+     * skips the cache entirely, so it always sees its own writes and never shares them with other
+     * requests.
      *
      * Loads go to the repository directly rather than through `TransactionalConnection.getRepository(ctx)`,
      * because resolving a Channel is not subject to the {@link EntityAccessControlStrategy}, and
@@ -610,15 +611,36 @@ export class ChannelService {
         const now = Date.now();
         const transactionManager: EntityManager | undefined = ctx && (ctx as any)[TRANSACTION_MANAGER_KEY];
         if (transactionManager) {
-            const cachedHit = this.channelWriters.has(transactionManager) ? undefined : cache.get(key);
-            return cachedHit && now < cachedHit.expires
-                ? cachedHit.value
-                : load(transactionManager.getRepository(Channel));
+            if (this.channelWriters.has(transactionManager)) {
+                return load(transactionManager.getRepository(Channel));
+            }
+            const cachedHit = cache.get(key);
+            if (cachedHit && now < cachedHit.expires) {
+                return cachedHit.value;
+            }
+            const cachedMiss = missCache?.get(key);
+            if (!cachedMiss || now >= cachedMiss.expires) {
+                // Fill the shared cache in the background, so that callers which only ever run
+                // inside a transaction do not query the database on every call
+                void this.fill(cache, key, load, now, maxSize, missCache);
+            }
+            return load(transactionManager.getRepository(Channel));
         }
         const hit = cache.get(key) ?? missCache?.get(key);
         if (hit && now < hit.expires) {
             return hit.value;
         }
+        return this.fill(cache, key, load, now, maxSize, missCache);
+    }
+
+    private fill<T>(
+        cache: Map<string, CacheEntry<T>>,
+        key: string,
+        load: (repository: Repository<Channel>) => Promise<T>,
+        now: number,
+        maxSize: number,
+        missCache?: Map<string, CacheEntry<T>>,
+    ): Promise<T> {
         cache.delete(key);
         missCache?.delete(key);
         const entry = {
