@@ -4,6 +4,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { EntityNotFoundError, UnverifiedExternalEmailError } from '../../../common/error/errors';
+import { isEmailAddressLike, normalizeEmailAddress } from '../../../common/utils';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Administrator } from '../../../entity/administrator/administrator.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
@@ -110,8 +111,9 @@ export class ExternalAuthenticationService {
         },
     ): Promise<User> {
         let user: User;
+        const emailAddress = normalizeEmailAddress(config.emailAddress);
 
-        const existingUser = await this.findExistingCustomerUserByEmailAddress(ctx, config.emailAddress);
+        const existingUser = await this.findExistingCustomerUserByEmailAddress(ctx, emailAddress);
 
         if (existingUser) {
             // SECURITY: only link a newly-presented external identity to a pre-existing account when the
@@ -125,7 +127,7 @@ export class ExternalAuthenticationService {
         } else {
             const customerRole = await this.roleService.getCustomerRole(ctx);
             user = new User({
-                identifier: config.emailAddress,
+                identifier: emailAddress,
                 roles: [customerRole],
                 verified: config.verified || false,
                 authenticationMethods: [],
@@ -147,7 +149,7 @@ export class ExternalAuthenticationService {
             customer = existingCustomer;
         } else {
             customer = new Customer({
-                emailAddress: config.emailAddress,
+                emailAddress,
                 firstName: config.firstName,
                 lastName: config.lastName,
                 user: savedUser,
@@ -288,15 +290,23 @@ export class ExternalAuthenticationService {
     }
 
     private async findExistingCustomerUserByEmailAddress(ctx: RequestContext, emailAddress: string) {
-        const customer = await this.connection
+        const qb = this.connection
             .getRepository(ctx, Customer)
             .createQueryBuilder('customer')
             .leftJoinAndSelect('customer.user', 'user')
             .leftJoin('customer.channels', 'channel')
             .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
-            .andWhere('customer.emailAddress = :emailAddress', { emailAddress })
-            .andWhere('user.deletedAt IS NULL')
-            .getOne();
+            .andWhere('user.deletedAt IS NULL');
+        // Compare case-insensitively, so that a Customer whose email address was saved with
+        // capital letters is also found
+        if (isEmailAddressLike(emailAddress)) {
+            qb.andWhere('LOWER(customer.emailAddress) = :emailAddress', {
+                emailAddress: normalizeEmailAddress(emailAddress),
+            });
+        } else {
+            qb.andWhere('customer.emailAddress = :emailAddress', { emailAddress });
+        }
+        const customer = await qb.getOne();
 
         return customer?.user;
     }

@@ -310,34 +310,42 @@ export class CustomerService {
         if (hasEmailAddress(input)) {
             input.emailAddress = normalizeEmailAddress(input.emailAddress);
             if (input.emailAddress !== customer.emailAddress) {
-                const existingCustomerInChannel = await this.connection
-                    .getRepository(ctx, Customer)
-                    .createQueryBuilder('customer')
-                    .leftJoin('customer.channels', 'channel')
-                    .where('channel.id = :channelId', { channelId: ctx.channelId })
-                    .andWhere('customer.emailAddress = :emailAddress', {
-                        emailAddress: input.emailAddress,
-                    })
-                    .andWhere('customer.id != :customerId', { customerId: input.id })
-                    .andWhere('customer.deletedAt is null')
-                    .getOne();
+                // A Customer may have been saved with capital letters. A difference only in case is
+                // not a new email address, so it cannot conflict with another Customer. The
+                // email address and User identifier are still saved in lowercase.
+                const isNewEmailAddress = input.emailAddress !== normalizeEmailAddress(customer.emailAddress);
+                if (isNewEmailAddress) {
+                    const existingCustomerInChannel = await this.connection
+                        .getRepository(ctx, Customer)
+                        .createQueryBuilder('customer')
+                        .leftJoin('customer.channels', 'channel')
+                        .where('channel.id = :channelId', { channelId: ctx.channelId })
+                        .andWhere('customer.emailAddress = :emailAddress', {
+                            emailAddress: input.emailAddress,
+                        })
+                        .andWhere('customer.id != :customerId', { customerId: input.id })
+                        .andWhere('customer.deletedAt is null')
+                        .getOne();
 
-                if (existingCustomerInChannel) {
-                    return new EmailAddressConflictAdminError();
+                    if (existingCustomerInChannel) {
+                        return new EmailAddressConflictAdminError();
+                    }
                 }
 
                 if (customer.user) {
-                    const existingUserWithEmailAddress = await this.userService.getUserByEmailAddress(
-                        ctx,
-                        input.emailAddress,
-                        'customer',
-                    );
+                    if (isNewEmailAddress) {
+                        const existingUserWithEmailAddress = await this.userService.getUserByEmailAddress(
+                            ctx,
+                            input.emailAddress,
+                            'customer',
+                        );
 
-                    if (
-                        existingUserWithEmailAddress &&
-                        !idsAreEqual(customer.user.id, existingUserWithEmailAddress.id)
-                    ) {
-                        return new EmailAddressConflictAdminError();
+                        if (
+                            existingUserWithEmailAddress &&
+                            !idsAreEqual(customer.user.id, existingUserWithEmailAddress.id)
+                        ) {
+                            return new EmailAddressConflictAdminError();
+                        }
                     }
 
                     await this.userService.changeUserAndNativeIdentifier(

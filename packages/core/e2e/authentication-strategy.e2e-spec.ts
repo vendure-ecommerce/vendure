@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ErrorCode, HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
-import { mergeConfig, NativeAuthenticationStrategy } from '@vendure/core';
+import {
+    Customer,
+    mergeConfig,
+    NativeAuthenticationStrategy,
+    TransactionalConnection,
+    User,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -27,9 +33,11 @@ import {
     deleteCustomerDocument,
     getActiveAdministratorAvatarDocument,
     getCustomerHistoryDocument,
+    getCustomerListDocument,
     getCustomersDocument,
     getCustomerUserAuthDocument,
     MeDocument,
+    updateCustomerDocument,
 } from './graphql/shared-definitions';
 import { registerAccountDocument } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -407,6 +415,159 @@ describe('AuthenticationStrategy', () => {
             });
             currentUserGuard.assertSuccess(authenticate);
             expect(authenticate.identifier).toBe(newEmail);
+        });
+    });
+
+    // #5559 — external logins should store the email address in lowercase and match it regardless of case
+    describe('email address case of external logins', () => {
+        async function getCustomersByEmail(emailAddress: string) {
+            const { customers } = await adminClient.query(getCustomerListDocument, {
+                options: { filter: { emailAddress: { contains: emailAddress } } },
+            });
+            return customers.items;
+        }
+
+        // Simulates a Customer which an external login saved with capital letters before this fix
+        async function setStoredEmailAddress(customer: CustomerFragmentType, emailAddress: string) {
+            const { rawConnection } = server.app.get(TransactionalConnection);
+            await rawConnection
+                .getRepository(Customer)
+                .update(customer.id.replace('T_', ''), { emailAddress });
+            await rawConnection
+                .getRepository(User)
+                .update(customer.user!.id.replace('T_', ''), { identifier: emailAddress });
+        }
+
+        it('stores the email address of a new Customer in lowercase', async () => {
+            await shopClient.asAnonymousUser();
+            const { authenticate } = await shopClient.query(authenticateDocument, {
+                input: { test_sso_strategy_shop: { email: 'Case.Test@test-domain.com' } },
+            });
+            currentUserGuard.assertSuccess(authenticate);
+
+            expect(authenticate.identifier).toBe('case.test@test-domain.com');
+            const customers = await getCustomersByEmail('case.test@test-domain.com');
+            expect(customers.map(c => c.emailAddress)).toEqual(['case.test@test-domain.com']);
+        });
+
+        it('links a login with the same email address in different case to the existing Customer', async () => {
+            await shopClient.asAnonymousUser();
+            const { authenticate: first } = await shopClient.query(authenticateDocument, {
+                input: { test_sso_strategy_shop: { email: 'Case.Test@test-domain.com' } },
+            });
+            currentUserGuard.assertSuccess(first);
+
+            await shopClient.asAnonymousUser();
+            const { authenticate: second } = await shopClient.query(authenticateDocument, {
+                input: { test_sso_strategy_shop: { email: 'case.test@test-domain.com' } },
+            });
+            currentUserGuard.assertSuccess(second);
+
+            expect(second.id).toBe(first.id);
+            const customers = await getCustomersByEmail('case.test@test-domain.com');
+            expect(customers).toHaveLength(1);
+
+            // Both logins are recorded in the history of the one Customer
+            const { customer } = await adminClient.query(getCustomerHistoryDocument, {
+                id: customers[0].id,
+                options: { filter: { type: { eq: HistoryEntryType.CUSTOMER_REGISTERED } } },
+            });
+            expect(customer?.history.items.map(i => i.data)).toEqual([
+                { strategy: 'test_sso_strategy_shop' },
+                { strategy: 'test_sso_strategy_shop' },
+            ]);
+        });
+
+        it('finds an existing Customer whose email address was stored with capital letters', async () => {
+            const { createCustomer } = await adminClient.query(createCustomerDocument, {
+                input: {
+                    firstName: 'Legacy',
+                    lastName: 'Case',
+                    emailAddress: 'legacy.login@test-domain.com',
+                },
+            });
+            customerGuard.assertSuccess(createCustomer);
+            await setStoredEmailAddress(createCustomer, 'Legacy.Login@test-domain.com');
+
+            await shopClient.asAnonymousUser();
+            const { authenticate } = await shopClient.query(authenticateDocument, {
+                input: { test_sso_strategy_shop: { email: 'legacy.login@test-domain.com' } },
+            });
+            currentUserGuard.assertSuccess(authenticate);
+
+            const customers = await getCustomersByEmail('legacy.login@test-domain.com');
+            expect(customers.map(c => c.id)).toEqual([createCustomer.id]);
+            expect(customers[0].user?.id).toBe(authenticate.id);
+        });
+
+        it('rejects linking an unverified login whose email address differs only in case', async () => {
+            const { createCustomer } = await adminClient.query(createCustomerDocument, {
+                input: { firstName: 'Case', lastName: 'Victim', emailAddress: 'case.victim@test-domain.com' },
+                password: 'victim-password',
+            });
+            customerGuard.assertSuccess(createCustomer);
+
+            await shopClient.asAnonymousUser();
+            await expect(
+                shopClient.query(authenticateDocument, {
+                    input: { test_unverified_strategy: { email: 'Case.Victim@test-domain.com' } },
+                }),
+            ).rejects.toThrow(
+                'Cannot link an unverified external authentication method to an existing account',
+            );
+        });
+
+        it('can save a Customer whose email address was stored with capital letters', async () => {
+            // Two Customers whose email addresses differ only in case, as created by external logins
+            // before this fix
+            const { createCustomer: lowercase } = await adminClient.query(createCustomerDocument, {
+                input: {
+                    firstName: 'Lower',
+                    lastName: 'Case',
+                    emailAddress: 'duplicate.case@test-domain.com',
+                },
+            });
+            customerGuard.assertSuccess(lowercase);
+            const { createCustomer: capitalized } = await adminClient.query(createCustomerDocument, {
+                input: { firstName: 'Upper', lastName: 'Case', emailAddress: 'temp.case@test-domain.com' },
+            });
+            customerGuard.assertSuccess(capitalized);
+            await setStoredEmailAddress(capitalized, 'Duplicate.Case@test-domain.com');
+
+            const { updateCustomer } = await adminClient.query(updateCustomerDocument, {
+                input: {
+                    id: capitalized.id,
+                    emailAddress: 'Duplicate.Case@test-domain.com',
+                    firstName: 'Changed',
+                },
+            });
+            customerGuard.assertSuccess(updateCustomer);
+
+            expect(updateCustomer.firstName).toBe('Changed');
+            // The email address, the User identifier and the history all use the lowercase form
+            expect(updateCustomer.emailAddress).toBe('duplicate.case@test-domain.com');
+            expect(updateCustomer.user?.identifier).toBe('duplicate.case@test-domain.com');
+            const { customer } = await adminClient.query(getCustomerHistoryDocument, {
+                id: capitalized.id,
+                options: { filter: { type: { eq: HistoryEntryType.CUSTOMER_DETAIL_UPDATED } } },
+            });
+            expect(customer?.history.items.map(i => i.data.input.emailAddress)).toEqual([
+                'duplicate.case@test-domain.com',
+            ]);
+        });
+
+        it('still rejects changing the email address to one used by another Customer', async () => {
+            const { createCustomer } = await adminClient.query(createCustomerDocument, {
+                input: { firstName: 'Other', lastName: 'Case', emailAddress: 'other.case@test-domain.com' },
+            });
+            customerGuard.assertSuccess(createCustomer);
+
+            const { updateCustomer } = await adminClient.query(updateCustomerDocument, {
+                input: { id: createCustomer.id, emailAddress: 'Duplicate.Case@test-domain.com' },
+            });
+            customerGuard.assertErrorResult(updateCustomer);
+
+            expect(updateCustomer.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
         });
     });
 
