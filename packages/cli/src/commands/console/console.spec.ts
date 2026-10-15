@@ -783,6 +783,26 @@ describe('console command', () => {
         });
     });
 
+    it('reports the kept link as not attributed when the forced link fails after the detach', async () => {
+        const root = previouslyLinkedWithAttribution();
+        const fetchMock = sequenceFetch(
+            new Response(null, { status: 204 }),
+            jsonResponse(projectList()),
+            jsonResponse({ message: 'unavailable' }, 503),
+        );
+
+        expect(
+            await consoleCommand('link', { force: true }, testDependencies(root, fetchMock).dependencies),
+        ).toBe(1);
+
+        expect(fetchMock.mock.calls[0][1]?.method).toBe('DELETE');
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root)).link.id).toBe(OTHER_LINK_ID);
+        expect(fs.existsSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toBe(false);
+        const status = testDependencies(root, vi.fn() as unknown as typeof fetch);
+        expect(await consoleCommand('status', {}, status.dependencies)).toBe(0);
+        expect(status.messages.join('\n')).toContain('Telemetry: not attributed');
+    });
+
     it('names the replaced attribution and still links when Console cannot detach it', async () => {
         const root = previouslyLinkedWithAttribution();
         const fetchMock = vi

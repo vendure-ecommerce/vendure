@@ -424,8 +424,13 @@ async function link(
     // Project, so its attribution ends also when telemetry is off.
     const previousAttribution =
         existing.kind === 'valid' ? readTelemetryAttribution(projectRoot, existing.manifest) : undefined;
-    if (existing.kind === 'valid' && previousAttribution) {
-        await detachTelemetry(existing.manifest, previousAttribution, 'replace', dependencies, signal);
+    if (
+        existing.kind === 'valid' &&
+        previousAttribution &&
+        (await detachTelemetry(existing.manifest, previousAttribution, 'replace', dependencies, signal))
+    ) {
+        // Console no longer attributes the old link, also when the new link does not complete.
+        removeTelemetryAttribution(projectRoot);
     }
 
     const login = await signIn(endpoints, options.organization, dependencies, signal);
@@ -1271,8 +1276,8 @@ async function unlink(
 
 /**
  * Asks Console to stop attributing the telemetry of this installation to the
- * linked project. A failure does not stop the unlink, or the link that
- * replaces this one. A replacement uses only a stored login for the old
+ * linked project, and returns whether it did. A failure does not stop the
+ * unlink, or the link that replaces this one. A replacement uses only a stored login for the old
  * account, so the user does not sign in to an account they are leaving.
  */
 async function detachTelemetry(
@@ -1281,7 +1286,7 @@ async function detachTelemetry(
     reason: 'unlink' | 'replace',
     dependencies: ConsoleCommandDependencies,
     signal: AbortSignal,
-): Promise<void> {
+): Promise<boolean> {
     try {
         const endpoints = resolveConsoleEndpoints(dependencies.env, manifest.console);
         const login =
@@ -1302,6 +1307,7 @@ async function detachTelemetry(
         dependencies.reporter.info(
             `Telemetry from this installation is no longer attributed to Console Project ${manifest.project.name}.`,
         );
+        return true;
     } catch (error) {
         if (signal.aborted || error instanceof CommandInterruptedError) {
             throw new CommandInterruptedError();
@@ -1315,6 +1321,7 @@ async function detachTelemetry(
                 : `Could not tell Vendure Console to stop attributing telemetry to ${manifest.project.name}: ${detail} ` +
                       'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
         );
+        return false;
     }
 }
 
