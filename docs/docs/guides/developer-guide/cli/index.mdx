@@ -468,8 +468,9 @@ project that has `node_modules`. If that file does not exist, the CLI creates it
 start. A server that already keeps a different ID in its database, for example a production deployment, continues to
 send telemetry with that ID. Only the installation that ran `vendure console link` is attributed.
 
-With `VENDURE_DISABLE_TELEMETRY=true` (or `1`), the link sends no installation ID and the CLI creates none. An
-unlinked project sends anonymous telemetry, as before.
+With `VENDURE_DISABLE_TELEMETRY=true` (or `1`), the link sends no installation ID and the CLI creates none. A
+project that was never linked sends anonymous telemetry, as before. After an unlink, telemetry is anonymous only if
+Console removed the attribution. See [Unlink a project](#unlink-a-project).
 
 A link to another Project with `--force` moves the attribution to that Project only when that Project belongs to the
 same Console account. If it belongs to a different account, the attribution stays with the first account until that
@@ -561,8 +562,9 @@ npx vendure console unlink
 
 This command removes `.vendure/project.json`. If the link attributed telemetry, the CLI first tells Vendure Console to
 stop the attribution. For this, it uses your CLI login, and signs you in when it runs in a terminal. If Console cannot
-be reached or refuses the request, the CLI shows a warning and still removes the local link. In that case, set
-`VENDURE_DISABLE_TELEMETRY=true` to stop telemetry from this installation.
+be reached or refuses the request, the CLI shows a warning and still removes the local link and its attribution
+record. Console then continues to attribute telemetry from this installation to the Project until the attribution is
+removed. In that case, set `VENDURE_DISABLE_TELEMETRY=true` to stop telemetry from this installation.
 
 The command does not delete the Console Project or its Project Link, and it does not revoke server-side credentials.
 Your CLI login stays. Run `vendure auth logout` to sign out.
