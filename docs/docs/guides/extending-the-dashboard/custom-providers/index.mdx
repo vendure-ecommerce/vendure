@@ -64,3 +64,45 @@ If `order` is omitted, it defaults to `0`.
 - Wiring up feature flags or experimentation frameworks
 - Adding analytics/telemetry providers
 - Providing localization or formatting helpers specific to your organization
+
+## Reporting granted Vendure Platform capabilities
+
+The user menu opens the Vendure Platform page. This page reads the public capability catalog
+of Vendure Console and shows each capability as granted or locked. Without more data, it shows
+all capabilities as locked.
+
+To show the capabilities that your application has, mount a `PlatformCapabilitiesProvider`
+with a custom provider at the `'app'` location:
+
+```tsx
+import { defineDashboardExtension, PlatformCapabilitiesProvider } from '@vendure/dashboard';
+import type { ReactNode } from 'react';
+
+function GrantedCapabilities({ children }: { children: ReactNode }) {
+    // Get the granted capability keys from your own API.
+    const granted = useMyGrantedCapabilities();
+    return (
+        <PlatformCapabilitiesProvider
+            value={{ grantedCapabilities: granted, consoleProjectId: 'project-123' }}
+        >
+            {children}
+        </PlatformCapabilitiesProvider>
+    );
+}
+
+export default defineDashboardExtension({
+    customProviders: [{ id: 'granted-capabilities', component: GrantedCapabilities }],
+});
+```
+
+The provider takes these values:
+
+- `grantedCapabilities`: the capability keys that the application has, for example `'org.accounts'`.
+  The keys are the `key` values of the catalog. The page shows each listed key as granted.
+- `consoleProjectId` (optional): the Vendure Console Project that the application is linked to.
+  When it is set, the "Open Vendure Console" button opens the subscription page of that Project.
+  When the provider is mounted without it, the button opens the Console start page. When no
+  provider is mounted, the button opens the Console signup page.
+
+Extension components can read the same values with the `usePlatformCapabilities()` hook. It returns
+`undefined` when no provider is mounted.
