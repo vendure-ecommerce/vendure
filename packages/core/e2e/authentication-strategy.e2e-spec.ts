@@ -39,7 +39,11 @@ import {
     MeDocument,
     updateCustomerDocument,
 } from './graphql/shared-definitions';
-import { registerAccountDocument } from './graphql/shop-definitions';
+import {
+    addItemToOrderDocument,
+    registerAccountDocument,
+    setCustomerDocument,
+} from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 type CurrentUserFragmentType = FragmentOf<typeof currentUserFragment>;
@@ -500,6 +504,60 @@ describe('AuthenticationStrategy', () => {
             expect(customers[0].user?.id).toBe(authenticate.id);
         });
 
+        it('is not hidden by a guest Customer with the same email address', async () => {
+            // A guest checkout creates a Customer without a User
+            await shopClient.asAnonymousUser();
+            await shopClient.query(addItemToOrderDocument, { productVariantId: 'T_1', quantity: 1 });
+            await shopClient.query(setCustomerDocument, {
+                input: { firstName: 'Guest', lastName: 'Case', emailAddress: 'guest.case@test-domain.com' },
+            });
+            const { createCustomer } = await adminClient.query(createCustomerDocument, {
+                input: {
+                    firstName: 'Registered',
+                    lastName: 'Case',
+                    emailAddress: 'temp.guest@test-domain.com',
+                },
+            });
+            customerGuard.assertSuccess(createCustomer);
+            await setStoredEmailAddress(createCustomer, 'Guest.Case@test-domain.com');
+
+            await shopClient.asAnonymousUser();
+            const { authenticate } = await shopClient.query(authenticateDocument, {
+                input: { test_sso_strategy_shop: { email: 'guest.case@test-domain.com' } },
+            });
+            currentUserGuard.assertSuccess(authenticate);
+
+            expect(authenticate.id).toBe(createCustomer.user?.id);
+            expect(await getCustomersByEmail('guest.case@test-domain.com')).toHaveLength(2);
+        });
+
+        it('links the oldest of several Customers with the same email address in different case', async () => {
+            const { createCustomer: lowerId } = await adminClient.query(createCustomerDocument, {
+                input: { firstName: 'Lower', lastName: 'Case', emailAddress: 'temp.lower@test-domain.com' },
+            });
+            customerGuard.assertSuccess(lowerId);
+            const { createCustomer: higherId } = await adminClient.query(createCustomerDocument, {
+                input: { firstName: 'Higher', lastName: 'Case', emailAddress: 'temp.higher@test-domain.com' },
+            });
+            customerGuard.assertSuccess(higherId);
+            await setStoredEmailAddress(lowerId, 'Several.Case@test-domain.com');
+            await setStoredEmailAddress(higherId, 'several.case@test-domain.com');
+            // Make the Customer with the higher id the older one, so that the order of the ids
+            // does not decide the result
+            const { rawConnection } = server.app.get(TransactionalConnection);
+            await rawConnection
+                .getRepository(Customer)
+                .update(higherId.id.replace('T_', ''), { createdAt: new Date('2020-01-01') });
+
+            await shopClient.asAnonymousUser();
+            const { authenticate } = await shopClient.query(authenticateDocument, {
+                input: { test_sso_strategy_shop: { email: 'SEVERAL.CASE@test-domain.com' } },
+            });
+            currentUserGuard.assertSuccess(authenticate);
+
+            expect(authenticate.id).toBe(higherId.user?.id);
+        });
+
         it('rejects linking an unverified login whose email address differs only in case', async () => {
             const { createCustomer } = await adminClient.query(createCustomerDocument, {
                 input: { firstName: 'Case', lastName: 'Victim', emailAddress: 'case.victim@test-domain.com' },
@@ -557,13 +615,17 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('still rejects changing the email address to one used by another Customer', async () => {
+            const { createCustomer: existing } = await adminClient.query(createCustomerDocument, {
+                input: { firstName: 'Taken', lastName: 'Case', emailAddress: 'taken.case@test-domain.com' },
+            });
+            customerGuard.assertSuccess(existing);
             const { createCustomer } = await adminClient.query(createCustomerDocument, {
                 input: { firstName: 'Other', lastName: 'Case', emailAddress: 'other.case@test-domain.com' },
             });
             customerGuard.assertSuccess(createCustomer);
 
             const { updateCustomer } = await adminClient.query(updateCustomerDocument, {
-                input: { id: createCustomer.id, emailAddress: 'Duplicate.Case@test-domain.com' },
+                input: { id: createCustomer.id, emailAddress: 'Taken.Case@test-domain.com' },
             });
             customerGuard.assertErrorResult(updateCustomer);
 

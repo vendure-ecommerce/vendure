@@ -293,12 +293,16 @@ export class ExternalAuthenticationService {
         const qb = this.connection
             .getRepository(ctx, Customer)
             .createQueryBuilder('customer')
-            .leftJoinAndSelect('customer.user', 'user')
+            // A guest Customer has no User, so it must not hide a registered account.
+            .innerJoinAndSelect('customer.user', 'user')
             .leftJoin('customer.channels', 'channel')
             .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
-            .andWhere('user.deletedAt IS NULL');
+            .andWhere('user.deletedAt IS NULL')
+            // Several Customers can have the same email address in different case. Use the oldest,
+            // so that the result does not depend on the database. See #5559
+            .orderBy('customer.createdAt', 'ASC');
         // Compare case-insensitively, so that a Customer whose email address was saved with
-        // capital letters is also found
+        // capital letters is also found. See #5559
         if (isEmailAddressLike(emailAddress)) {
             qb.andWhere('LOWER(customer.emailAddress) = :emailAddress', {
                 emailAddress: normalizeEmailAddress(emailAddress),
