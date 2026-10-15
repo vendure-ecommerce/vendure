@@ -122,12 +122,6 @@ describe('BullMQJobQueuePlugin', () => {
     describe('jobs with a custom jobId', () => {
         let customJobId: string;
 
-        // The e2e testConfig uses an entity id strategy which prefixes all ids in API
-        // responses with "T_", so we strip it to compare against the raw BullMQ job ids.
-        function normalizeId(id: string): string {
-            return id.replace(/^T_/, '');
-        }
-
         beforeAll(async () => {
             const job = await server.app.get(CustomIdTestService).queue.add({ n: 1 });
             customJobId = job.id as string;
@@ -152,14 +146,14 @@ describe('BullMQJobQueuePlugin', () => {
             const { job } = await adminClient.query(GET_JOB, { id: customJobId });
 
             expect(job).not.toBeNull();
-            expect(normalizeId(job.id)).toBe(customJobId);
+            expect(job.id).toBe(customJobId);
             expect(job.state).toBe(JobState.COMPLETED);
         });
 
         it('jobsById query returns the job', async () => {
             const { jobsById } = await adminClient.query(GET_JOBS_BY_ID, { ids: [customJobId] });
 
-            expect(jobsById.map((j: { id: string }) => normalizeId(j.id))).toEqual([customJobId]);
+            expect(jobsById.map((j: { id: string }) => j.id)).toEqual([customJobId]);
         });
 
         it('the job id returned by the Admin API can be used to query the job again', async () => {
@@ -180,7 +174,7 @@ describe('BullMQJobQueuePlugin', () => {
         it('cancelJob mutation finds the job', async () => {
             const { cancelJob } = await adminClient.query(CANCEL_JOB, { id: customJobId });
 
-            expect(normalizeId(cancelJob.id)).toBe(customJobId);
+            expect(cancelJob.id).toBe(customJobId);
         });
     });
 });
