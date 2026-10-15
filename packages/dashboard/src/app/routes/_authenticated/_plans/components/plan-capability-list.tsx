@@ -29,7 +29,17 @@ async function fetchCatalog(): Promise<CatalogResponse> {
     if (!response.ok) {
         throw new Error(`The catalog request failed with status ${response.status}`);
     }
-    return response.json();
+    const catalog = await response.json();
+    // A failed check puts the query in the error state, so the page shows the static message.
+    if (
+        !Array.isArray(catalog?.offers) ||
+        !catalog.offers.every((offer: { headlineCapabilities?: unknown } | null) =>
+            Array.isArray(offer?.headlineCapabilities),
+        )
+    ) {
+        throw new Error('The catalog response has an unexpected shape');
+    }
+    return catalog;
 }
 
 export function OpenConsoleButton() {

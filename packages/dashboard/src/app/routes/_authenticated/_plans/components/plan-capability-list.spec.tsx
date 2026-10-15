@@ -136,4 +136,15 @@ describe('PlanCapabilityList', () => {
 
         expect(container.textContent).toContain('The capability catalog is not available');
     });
+
+    it.each([
+        ['without an offers list', {}],
+        ['with an offer without capabilities', { offers: [{ displayName: 'Starter' }] }],
+    ])('shows a static message when the catalog answers %s', async (_case, body) => {
+        fetchMock.mockResolvedValue(new Response(JSON.stringify(body)));
+
+        await renderPage();
+
+        expect(container.textContent).toContain('The capability catalog is not available');
+    });
 });
