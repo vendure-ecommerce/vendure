@@ -1275,8 +1275,8 @@ msgid "Table settings"
 msgstr "Nastavení tabulky"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Prozkoumat Platform & Cloud"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Prozkoumat Platform & Cloud"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -4246,6 +4246,10 @@ msgstr "Soukromé vlastnosti nejsou viditelné v obchodě"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Vyberte daňovou kategorii"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "Vytvořeno"

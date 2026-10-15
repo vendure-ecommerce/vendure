@@ -1275,8 +1275,8 @@ msgid "Table settings"
 msgstr "Tabellinnstillinger"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Utforsk Platform & Cloud"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Utforsk Platform & Cloud"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -4246,6 +4246,10 @@ msgstr "Private fasetter er ikke synlige i butikken"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Velg en skattekategori"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "Opprettet"
