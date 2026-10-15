@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ErrorCode, HistoryEntryType } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, ErrorCode, HistoryEntryType, LanguageCode } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
     Customer,
     mergeConfig,
+    NativeAuthenticationMethod,
     NativeAuthenticationStrategy,
     TransactionalConnection,
     User,
 } from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -29,6 +35,7 @@ import { FragmentOf } from './graphql/graphql-admin';
 import {
     attemptLoginDocument,
     authenticateDocument,
+    createChannelDocument,
     createCustomerDocument,
     deleteCustomerDocument,
     getActiveAdministratorAvatarDocument,
@@ -42,6 +49,7 @@ import {
 import {
     addItemToOrderDocument,
     registerAccountDocument,
+    requestUpdateEmailAddressDocument,
     setCustomerDocument,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -614,6 +622,36 @@ describe('AuthenticationStrategy', () => {
             ]);
         });
 
+        it('keeps a pending email address change when only the case differs', async () => {
+            const { createCustomer } = await adminClient.query(createCustomerDocument, {
+                input: {
+                    firstName: 'Pending',
+                    lastName: 'Case',
+                    emailAddress: 'pending.case@test-domain.com',
+                },
+                password: 'test',
+            });
+            customerGuard.assertSuccess(createCustomer);
+            await shopClient.asUserWithCredentials('pending.case@test-domain.com', 'test');
+            await shopClient.query(requestUpdateEmailAddressDocument, {
+                password: 'test',
+                newEmailAddress: 'pending.new@test-domain.com',
+            });
+            await setStoredEmailAddress(createCustomer, 'Pending.Case@test-domain.com');
+
+            const { updateCustomer } = await adminClient.query(updateCustomerDocument, {
+                input: { id: createCustomer.id, emailAddress: 'Pending.Case@test-domain.com' },
+            });
+            customerGuard.assertSuccess(updateCustomer);
+
+            const nativeAuthMethod = await server.app
+                .get(TransactionalConnection)
+                .rawConnection.getRepository(NativeAuthenticationMethod)
+                .findOne({ where: { user: { id: createCustomer.user!.id.replace('T_', '') } } });
+            expect(nativeAuthMethod?.pendingIdentifier).toBe('pending.new@test-domain.com');
+            expect(nativeAuthMethod?.identifierChangeToken).not.toBeNull();
+        });
+
         it('still rejects changing the email address to one used by another Customer', async () => {
             const { createCustomer: existing } = await adminClient.query(createCustomerDocument, {
                 input: { firstName: 'Taken', lastName: 'Case', emailAddress: 'taken.case@test-domain.com' },
@@ -630,6 +668,78 @@ describe('AuthenticationStrategy', () => {
             customerGuard.assertErrorResult(updateCustomer);
 
             expect(updateCustomer.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+        });
+
+        describe('in several Channels', () => {
+            const SECOND_CHANNEL_TOKEN = 'email-case-second-channel';
+
+            beforeAll(async () => {
+                await adminClient.query(createChannelDocument, {
+                    input: {
+                        code: 'email-case-second-channel',
+                        token: SECOND_CHANNEL_TOKEN,
+                        defaultLanguageCode: LanguageCode.en,
+                        currencyCode: CurrencyCode.USD,
+                        pricesIncludeTax: true,
+                        defaultShippingZoneId: 'T_1',
+                        defaultTaxZoneId: 'T_1',
+                    },
+                });
+            });
+
+            afterAll(() => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            });
+
+            async function createCustomerInChannel(channelToken: string, emailAddress: string) {
+                adminClient.setChannelToken(channelToken);
+                const { createCustomer } = await adminClient.query(createCustomerDocument, {
+                    input: { firstName: 'Channel', lastName: 'Case', emailAddress: `temp.${emailAddress}` },
+                });
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                customerGuard.assertSuccess(createCustomer);
+                await setStoredEmailAddress(createCustomer, emailAddress);
+                return createCustomer;
+            }
+
+            async function authenticateInSecondChannel(emailAddress: string) {
+                shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                await shopClient.asAnonymousUser();
+                const { authenticate } = await shopClient.query(authenticateDocument, {
+                    input: { test_sso_strategy_shop: { email: emailAddress } },
+                });
+                shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                currentUserGuard.assertSuccess(authenticate);
+                return authenticate;
+            }
+
+            it('links a Customer of another Channel and assigns it to the current Channel', async () => {
+                const customer = await createCustomerInChannel(
+                    E2E_DEFAULT_CHANNEL_TOKEN,
+                    'Other.Channel@test-domain.com',
+                );
+
+                const authenticate = await authenticateInSecondChannel('other.channel@test-domain.com');
+
+                expect(authenticate.id).toBe(customer.user?.id);
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                const customers = await getCustomersByEmail('other.channel@test-domain.com');
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                expect(customers.map(c => c.id)).toEqual([customer.id]);
+            });
+
+            it('prefers a Customer of the current Channel', async () => {
+                await createCustomerInChannel(E2E_DEFAULT_CHANNEL_TOKEN, 'Current.Channel@test-domain.com');
+                const inSecondChannel = await createCustomerInChannel(
+                    SECOND_CHANNEL_TOKEN,
+                    'current.channel@test-domain.com',
+                );
+
+                const authenticate = await authenticateInSecondChannel('current.channel@test-domain.com');
+
+                expect(authenticate.id).toBe(inSecondChannel.user?.id);
+            });
         });
     });
 

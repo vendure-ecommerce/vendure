@@ -144,7 +144,8 @@ export class ExternalAuthenticationService {
         const savedUser = await this.connection.getRepository(ctx, User).save(user);
 
         let customer: Customer;
-        const existingCustomer = await this.customerService.findOneByUserId(ctx, savedUser.id);
+        // The existing Customer may be in another Channel. It is assigned to the current Channel below.
+        const existingCustomer = await this.customerService.findOneByUserId(ctx, savedUser.id, false);
         if (existingCustomer) {
             customer = existingCustomer;
         } else {
@@ -290,6 +291,15 @@ export class ExternalAuthenticationService {
     }
 
     private async findExistingCustomerUserByEmailAddress(ctx: RequestContext, emailAddress: string) {
+        // Prefer a Customer in the current Channel, as several Customers can have the same email
+        // address in different case. See #5559
+        return (
+            (await this.findCustomerUserByEmailAddress(ctx, emailAddress, ctx.channelId)) ??
+            this.findCustomerUserByEmailAddress(ctx, emailAddress)
+        );
+    }
+
+    private async findCustomerUserByEmailAddress(ctx: RequestContext, emailAddress: string, channelId?: ID) {
         const qb = this.connection
             .getRepository(ctx, Customer)
             .createQueryBuilder('customer')
@@ -298,9 +308,12 @@ export class ExternalAuthenticationService {
             .leftJoin('customer.channels', 'channel')
             .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
             .andWhere('user.deletedAt IS NULL')
-            // Several Customers can have the same email address in different case. Use the oldest,
-            // so that the result does not depend on the database. See #5559
+            // Use the oldest of several matching Customers, so that the result does not depend
+            // on the database.
             .orderBy('customer.createdAt', 'ASC');
+        if (channelId) {
+            qb.andWhere('channel.id = :channelId', { channelId });
+        }
         // Compare case-insensitively, so that a Customer whose email address was saved with
         // capital letters is also found. See #5559
         if (isEmailAddressLike(emailAddress)) {
