@@ -58,6 +58,9 @@ describe('devCommand() Console hint', () => {
 
         expect(exitCode).toBe(0);
         expect(infoMock.mock.calls.filter(([message]) => message === CONSOLE_HINT)).toHaveLength(1);
+        expect(CONSOLE_HINT).toBe(
+            'Paid plans add 30+ features and include Vendure Cloud: https://vendure.io/pricing?utm_source=vendure-dev. Already on a plan? Run `vendure console link`.',
+        );
     });
 
     // OSS-882 - a linked project (.vendure/project.json present) prints nothing.

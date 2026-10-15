@@ -3,12 +3,12 @@ import { log } from '@clack/prompts';
 import { readProjectLinkManifest } from '../commands/console/project-link-manifest';
 
 /**
- * The one-line Console hint. `@vendure/create` prints the same text after install
- * (CONSOLE_HINT in packages/create/src/constants.ts). Keep both in sync: the two packages
- * cannot share code without a new dependency.
+ * The one-line pricing hint. `@vendure/create` prints the same text after install
+ * (CONSOLE_HINT in packages/create/src/console-hint.ts), with `utm_source=vendure-create`.
+ * Keep both in sync: the two packages cannot share code without a new dependency.
  */
 export const CONSOLE_HINT =
-    'Platform capabilities and Vendure Cloud are managed in Vendure Console. Run `vendure console link` or visit https://console.vendure.io';
+    'Paid plans add 30+ features and include Vendure Cloud: https://vendure.io/pricing?utm_source=vendure-dev. Already on a plan? Run `vendure console link`.';
 
 /**
  * Prints {@link CONSOLE_HINT} unless a Project Link Manifest file exists in `projectDir`.
