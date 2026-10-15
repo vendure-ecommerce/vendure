@@ -461,9 +461,7 @@ function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSen
             onSent();
         },
         onError: err => {
-            toast.error(t`Failed to send password reset email`, {
-                description: err instanceof Error ? err.message : undefined,
-            });
+            toast.error(err instanceof Error ? err.message : t`Unknown error`);
         },
     });
 
@@ -477,9 +475,6 @@ function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSen
                     <DialogTitle>
                         <Trans>Reset password</Trans>
                     </DialogTitle>
-                    <DialogDescription>
-                        <Trans>Sends the customer an email with a link to set a new password.</Trans>
-                    </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose render={<Button type="button" variant="secondary" />}>
@@ -490,7 +485,7 @@ function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSen
                         disabled={isPending}
                         onClick={() => requestPasswordReset({ id: customerId })}
                     >
-                        <Trans>Send email</Trans>
+                        <Trans>Send reset link</Trans>
                     </Button>
                 </DialogFooter>
             </DialogContent>

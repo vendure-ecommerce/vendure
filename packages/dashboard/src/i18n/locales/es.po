@@ -845,10 +845,6 @@ msgstr "Alternar fila de encabezado"
 msgid "useWidgetConfig must be used within an Insights page widget"
 msgstr "useWidgetConfig debe usarse dentro de un widget de la página de Información"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Send email"
-msgstr ""
-
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx
 msgid "Select address"
 msgstr "Seleccionar dirección"
@@ -1107,10 +1103,6 @@ msgstr ""
 #: src/lib/components/shared/error-page.tsx
 msgid "Page not found"
 msgstr "Página no encontrada"
-
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Failed to send password reset email"
-msgstr ""
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
@@ -1563,8 +1555,6 @@ msgstr "Usar umbral de agotamiento global"
 msgid "Payment state updated successfully"
 msgstr "Estado de pago actualizado exitosamente"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
 msgstr "Crear nuevo"
@@ -1953,7 +1943,6 @@ msgstr "Insertar tabla de {row} por {col}"
 #: src/app/routes/_authenticated/_api-keys/components/rotate-api-key-button.tsx
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx
@@ -3155,10 +3144,6 @@ msgstr "Nuevo Producto"
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 msgid "New asset"
 msgstr "Nuevo recurso"
-
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Sends the customer an email with a link to set a new password."
-msgstr ""
 
 #: src/app/routes/_authenticated/index.tsx
 msgid "Tidy"
@@ -5604,8 +5589,6 @@ msgstr "Artículo incorrecto"
 msgid "Summary of modifications"
 msgstr "Resumen de modificaciones"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/lib/components/login/reset-password-form.tsx
 msgid "Reset password"
 msgstr "Restablecer contraseña"
@@ -5927,7 +5910,6 @@ msgstr "Restablecer su contraseña"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Password reset requested"
 msgstr "Restablecimiento de contraseña solicitado"
 

@@ -845,10 +845,6 @@ msgstr "切换标题行"
 msgid "useWidgetConfig must be used within an Insights page widget"
 msgstr "useWidgetConfig 必须在洞察页面的小部件内使用"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Send email"
-msgstr ""
-
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx
 msgid "Select address"
 msgstr "选择地址"
@@ -1107,10 +1103,6 @@ msgstr ""
 #: src/lib/components/shared/error-page.tsx
 msgid "Page not found"
 msgstr "页面未找到"
-
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Failed to send password reset email"
-msgstr ""
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
@@ -1563,8 +1555,6 @@ msgstr "使用全局缺货阈值"
 msgid "Payment state updated successfully"
 msgstr "支付状态已成功更新"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
 msgstr "新建"
@@ -1953,7 +1943,6 @@ msgstr "插入 {row}×{col} 表格"
 #: src/app/routes/_authenticated/_api-keys/components/rotate-api-key-button.tsx
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx
@@ -3155,10 +3144,6 @@ msgstr "新商品"
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 msgid "New asset"
 msgstr "新资源"
-
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Sends the customer an email with a link to set a new password."
-msgstr ""
 
 #: src/app/routes/_authenticated/index.tsx
 msgid "Tidy"
@@ -5604,8 +5589,6 @@ msgstr "发错商品"
 msgid "Summary of modifications"
 msgstr "修改摘要"
 
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/lib/components/login/reset-password-form.tsx
 msgid "Reset password"
 msgstr "重置密码"
@@ -5927,7 +5910,6 @@ msgstr "重置您的密码"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Password reset requested"
 msgstr "已请求重置密码"
 
