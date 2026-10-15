@@ -3158,6 +3158,10 @@ msgstr "New Product"
 msgid "New asset"
 msgstr "New asset"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Sends the customer an email with a link to set a new password."
+msgstr "Sends the customer an email with a link to set a new password."
+
 #: src/app/routes/_authenticated/index.tsx
 msgid "Tidy"
 msgstr "Tidy"
@@ -6194,8 +6198,6 @@ msgid "Successfully updated seller"
 msgstr "Successfully updated seller"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Sends the customer an email with a link to set a new password. Their current password keeps working until they do."
-msgstr "Sends the customer an email with a link to set a new password. Their current password keeps working until they do."
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

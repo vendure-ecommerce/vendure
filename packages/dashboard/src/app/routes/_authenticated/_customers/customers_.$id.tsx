@@ -482,10 +482,7 @@ function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSen
                         <Trans>Reset password</Trans>
                     </DialogTitle>
                     <DialogDescription>
-                        <Trans>
-                            Sends the customer an email with a link to set a new password. Their current
-                            password keeps working until they do.
-                        </Trans>
+                        <Trans>Sends the customer an email with a link to set a new password.</Trans>
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

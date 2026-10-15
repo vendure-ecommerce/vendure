@@ -3158,6 +3158,10 @@ msgstr "新增商品"
 msgid "New asset"
 msgstr "新增資源"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Sends the customer an email with a link to set a new password."
+msgstr ""
+
 #: src/app/routes/_authenticated/index.tsx
 msgid "Tidy"
 msgstr "整理"
@@ -6194,8 +6198,6 @@ msgid "Successfully updated seller"
 msgstr "已成功更新賣家"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Sends the customer an email with a link to set a new password. Their current password keeps working until they do."
-msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

@@ -61,6 +61,7 @@ import {
     activeOrderCustomerDocument,
     addItemToOrderDocument,
     registerAccountDocument,
+    resetPasswordDocument,
     setCustomerDocument,
     updatedOrderFragment,
 } from './graphql/shop-definitions';
@@ -1096,7 +1097,7 @@ describe('Customer resolver', () => {
             expect(customer.history.items[0].administrator?.id).toBe('T_1');
         });
 
-        it('sends a reset email to a Customer who has not verified their account', async () => {
+        it('verifies a Customer who completes a reset sent before they verified their account', async () => {
             const emailAddress = 'unverified-admin-reset@test.com';
             const customerId = await createCustomer(emailAddress);
             const eventPromise = nextPasswordResetEvent();
@@ -1105,6 +1106,25 @@ describe('Customer resolver', () => {
 
             const event = await eventPromise;
             expect(event.user.identifier).toBe(emailAddress);
+            const token = event.user.getNativeAuthenticationMethod().passwordResetToken;
+            expect(token).toBeTruthy();
+            const { customer: history } = await adminClient.query(getCustomerHistoryDocument, {
+                id: customerId,
+                options: {
+                    filter: { type: { eq: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED } },
+                },
+            });
+            customerHistoryGuard.assertSuccess(history);
+            expect(history.history.items.length).toBe(1);
+
+            await shopClient.asAnonymousUser();
+            const { resetPassword } = await shopClient.query(resetPasswordDocument, {
+                token: token!,
+                password: 'new-password',
+            });
+            expect(resetPassword).toEqual(expect.objectContaining({ identifier: emailAddress }));
+            const { customer } = await adminClient.query(getCustomerWithUserDocument, { id: customerId });
+            expect(customer?.user?.verified).toBe(true);
         });
 
         it(

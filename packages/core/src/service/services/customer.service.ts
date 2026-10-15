@@ -609,20 +609,24 @@ export class CustomerService {
      * a token which can be used in the `resetPassword()` method.
      */
     async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
-        const user = await this.userService.setPasswordResetToken(ctx, emailAddress, 'customer');
+        const user = await this.userService.setPasswordResetToken(ctx, emailAddress);
         if (user) {
-            await this.eventBus.publish(new PasswordResetEvent(ctx, user));
             const customer = await this.findOneByUserId(ctx, user.id);
             if (!customer) {
                 throw new InternalServerError('error.cannot-locate-customer-for-user');
             }
-            await this.historyService.createHistoryEntryForCustomer({
-                customerId: customer.id,
-                ctx,
-                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
-                data: {},
-            });
+            await this.publishPasswordResetRequested(ctx, user, customer.id);
         }
+    }
+
+    private async publishPasswordResetRequested(ctx: RequestContext, user: User, customerId: ID) {
+        await this.eventBus.publish(new PasswordResetEvent(ctx, user));
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+            data: {},
+        });
     }
 
     /**
@@ -662,7 +666,7 @@ export class CustomerService {
      * verified when they complete the reset.
      *
      * A Customer with no User (a guest checkout), or whose User has no native authentication method,
-     * has no password to reset, and is rejected.
+     * has no native credential to reset, and is rejected.
      *
      * @since 3.9.0
      */
@@ -674,10 +678,11 @@ export class CustomerService {
         if (!customer.user) {
             throw new UserInputError('error.customer-has-no-user-account');
         }
-        if (!customer.user.getNativeAuthenticationMethod(false)) {
+        const user = await this.userService.setPasswordResetTokenForUser(ctx, customer.user);
+        if (!user) {
             throw new UserInputError('error.cannot-set-password-without-native-credential');
         }
-        await this.requestPasswordReset(ctx, customer.user.identifier);
+        await this.publishPasswordResetRequested(ctx, user, customer.id);
     }
 
     /**

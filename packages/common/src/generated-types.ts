@@ -3188,7 +3188,7 @@ export type Mutation = {
    * verified when they complete the reset.
    *
    * Throws for a Customer with no User (a guest checkout), and for a User with no native
-   * authentication method, since neither has a password to reset.
+   * authentication method, since neither has a native credential to reset.
    */
   requestCustomerPasswordReset: Success;
   /**
