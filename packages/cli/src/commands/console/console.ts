@@ -44,6 +44,14 @@ import {
     writeProjectLinkManifestAtomic,
 } from './project-link-manifest';
 import { nonEmptyString, objectValue, uuid } from './project-link-validation';
+import {
+    TelemetryAttribution,
+    ensureTelemetryInstallationId,
+    isTelemetryDisabled,
+    readTelemetryAttribution,
+    removeTelemetryAttribution,
+    writeTelemetryAttribution,
+} from './telemetry-attribution';
 
 const PROJECTS_PATH = '/v1/projects';
 const REQUEST_TIMEOUT_MS = 10_000;
@@ -310,7 +318,7 @@ async function runConsoleCommand(
         return status(projectRoot, dependencies.env, dependencies.reporter);
     }
     if (normalizedAction === 'unlink') {
-        return unlink(projectRoot, options, dependencies);
+        return unlink(projectRoot, options, dependencies, signal);
     }
     return link(projectRoot, options, dependencies, signal, state);
 }
@@ -430,7 +438,17 @@ async function link(
         endpoints,
         dependencies,
     );
-    const linkedManifest = await linkProject(endpoints, login, project, accountName, dependencies, signal);
+    const telemetryDisabled = isTelemetryDisabled(dependencies.env);
+    const installationId = telemetryDisabled ? undefined : ensureTelemetryInstallationId(projectRoot);
+    const linkedManifest = await linkProject(
+        endpoints,
+        login,
+        project,
+        accountName,
+        installationId,
+        dependencies,
+        signal,
+    );
     throwIfAborted(signal);
     const manifest = withConsoleOrigins(linkedManifest, {
         appOrigin: endpoints.consoleUrl,
@@ -443,6 +461,21 @@ async function link(
     dependencies.reporter.success(`Linked ${manifest.project.name} to ${manifest.account.name}.`);
     dependencies.reporter.info(`Wrote ${manifestPath}`);
     reportProjectLinkGitignore(projectRoot, dependencies.reporter);
+    if (installationId) {
+        writeTelemetryAttribution(projectRoot, { linkId: manifest.link.id, installationId });
+        dependencies.reporter.info(
+            `Telemetry from this installation is attributed to Console Project ${manifest.project.name}. ` +
+                'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
+        );
+    } else if (telemetryDisabled) {
+        dependencies.reporter.info(
+            'VENDURE_DISABLE_TELEMETRY is set, so this link does not attribute telemetry to the Console Project.',
+        );
+    } else {
+        dependencies.reporter.warn(
+            'Could not read or create the telemetry installation ID, so this link does not attribute telemetry to the Console Project.',
+        );
+    }
 
     const code = await runConsoleLinkHooks(
         {
@@ -738,12 +771,16 @@ async function chooseProject(
     return chosen;
 }
 
-/** Links the project through Console's `POST /v1/projects/:projectId/link` and returns the manifest. */
+/**
+ * Links the project through Console's `POST /v1/projects/:projectId/link` and returns the manifest.
+ * With `installationId`, Console attributes the telemetry of that installation to the project.
+ */
 async function linkProject(
     endpoints: ConsoleEndpoints,
     login: ConsoleLogin,
     project: ConsoleProject,
     accountName: string,
+    installationId: string | undefined,
     dependencies: ConsoleCommandDependencies,
     signal: AbortSignal,
 ): Promise<ProjectLinkManifest> {
@@ -751,7 +788,13 @@ async function linkProject(
     try {
         value = await requestWithLogin(
             `${endpoints.apiUrl}${PROJECTS_PATH}/${encodeURIComponent(project.id)}/link`,
-            { method: 'POST' },
+            installationId
+                ? {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ telemetryInstallationId: installationId }),
+                  }
+                : { method: 'POST' },
             login,
             dependencies,
             signal,
@@ -786,7 +829,13 @@ async function requestWithLogin(
     const send = () =>
         requestJson(
             url,
-            { ...init, headers: { Authorization: `Bearer ${login.accessToken}` } },
+            {
+                ...init,
+                headers: {
+                    ...(init.headers as Record<string, string>),
+                    Authorization: `Bearer ${login.accessToken}`,
+                },
+            },
             dependencies,
             signal,
         );
@@ -1132,6 +1181,7 @@ function status(projectRoot: string, env: NodeJS.ProcessEnv, reporter: ConsoleRe
 
     const { manifest } = result;
     const endpoints = resolveConsoleEndpoints(env, manifest.console);
+    const attribution = readTelemetryAttribution(projectRoot, manifest);
     reporter.info(
         [
             `Account: ${manifest.account.name} (${manifest.account.id})`,
@@ -1142,6 +1192,11 @@ function status(projectRoot: string, env: NodeJS.ProcessEnv, reporter: ConsoleRe
             `Console: ${endpoints.consoleUrl}`,
             `Console API: ${endpoints.apiUrl}`,
             `Manifest: ${result.path}`,
+            isTelemetryDisabled(env)
+                ? 'Telemetry: off (VENDURE_DISABLE_TELEMETRY)'
+                : attribution
+                  ? `Telemetry: attributed to ${manifest.project.name} (installation ${attribution.installationId})`
+                  : 'Telemetry: not attributed. Run vendure console link --force to attribute it.',
             LOGIN_STATUS_HINT,
         ].join('\n'),
     );
@@ -1173,6 +1228,7 @@ async function unlink(
     projectRoot: string,
     options: ConsoleCommandOptions,
     dependencies: ConsoleCommandDependencies,
+    signal: AbortSignal,
 ): Promise<number> {
     const existing = readProjectLinkManifest(projectRoot);
     if (existing.kind === 'missing') {
@@ -1184,12 +1240,59 @@ async function unlink(
     if (confirmed !== 'confirmed') {
         return confirmed === 'cancelled' ? 0 : 1;
     }
+    const attribution =
+        existing.kind === 'valid' ? readTelemetryAttribution(projectRoot, existing.manifest) : undefined;
+    if (existing.kind === 'valid' && attribution) {
+        await detachTelemetry(existing.manifest, attribution, dependencies, signal);
+    }
     removeProjectLinkManifest(projectRoot);
+    removeTelemetryAttribution(projectRoot);
     dependencies.reporter.success(`Removed local Project Link Manifest at ${existing.path}.`);
     dependencies.reporter.info(
         'The Console Project, its Project Link and your CLI login were not changed. Run vendure auth logout to sign out.',
     );
     return 0;
+}
+
+/**
+ * Asks Console to stop attributing the telemetry of this installation to the
+ * linked project. A failure does not stop the local unlink.
+ */
+async function detachTelemetry(
+    manifest: ProjectLinkManifest,
+    attribution: TelemetryAttribution,
+    dependencies: ConsoleCommandDependencies,
+    signal: AbortSignal,
+): Promise<void> {
+    try {
+        const endpoints = resolveConsoleEndpoints(dependencies.env, manifest.console);
+        const login = dependencies.isNonInteractive()
+            ? await storedLogin(consoleAuthOptions(endpoints, dependencies, signal), manifest.account.id)
+            : await signIn(endpoints, manifest.account.id, dependencies, signal);
+        if (!login) {
+            throw new Error(`No CLI login for ${manifest.account.name} is stored on this machine.`);
+        }
+        const linkUrl = `${endpoints.apiUrl}${PROJECTS_PATH}/${encodeURIComponent(manifest.project.id)}/link`;
+        await requestWithLogin(
+            `${linkUrl}/telemetry-installations/${encodeURIComponent(attribution.installationId)}`,
+            { method: 'DELETE' },
+            login,
+            dependencies,
+            signal,
+        );
+        dependencies.reporter.info(
+            `Telemetry from this installation is no longer attributed to Console Project ${manifest.project.name}.`,
+        );
+    } catch (error) {
+        if (signal.aborted || error instanceof CommandInterruptedError) {
+            throw new CommandInterruptedError();
+        }
+        const detail = error instanceof Error ? error.message : String(error);
+        dependencies.reporter.warn(
+            `Could not tell Vendure Console to stop attributing telemetry to ${manifest.project.name}: ${detail} ` +
+                'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
+        );
+    }
 }
 
 async function confirmManifestChange(
@@ -1255,6 +1358,9 @@ async function requestJson(
                 `Vendure Console API request failed with HTTP ${response.status}.`,
                 response.status,
             );
+        }
+        if (response.status === 204) {
+            return undefined;
         }
         return await readJsonBody(response, requestController.signal);
     } catch (error) {

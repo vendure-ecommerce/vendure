@@ -27,6 +27,7 @@ import { PROJECT_LINK_KEEP_MANIFEST } from './project-link-gitignore';
 import { ProjectLinkManifest, getProjectLinkManifestPath } from './project-link-manifest';
 
 const UUID_V7_LINK_ID = '33333333-3333-7333-8333-333333333333';
+const INSTALLATION_ID = '77777777-7777-4777-8777-777777777777';
 const LOCAL_CONSOLE = {
     appOrigin: 'http://localhost:3000',
     apiOrigin: 'http://localhost:3001',
@@ -263,10 +264,81 @@ describe('console command', () => {
         expect(fetchMock.mock.calls[1][1]?.method).toBe('POST');
         for (const [, init] of fetchMock.mock.calls) {
             expect(init?.redirect).toBe('error');
-            expect(init?.headers).toEqual({ Authorization: `Bearer ${STORED_ACCESS_TOKEN}` });
+            expect(init?.headers).toMatchObject({ Authorization: `Bearer ${STORED_ACCESS_TOKEN}` });
         }
         expect(test.messages.join('\n')).toContain('Updated');
         expect(test.messages.join('\n')).toContain('.gitignore');
+    });
+
+    // OSS-884: a link attributes the Core telemetry of this installation to the Console Project.
+    it('creates the telemetry installation ID, sends it with the link and states the attribution', async () => {
+        const root = vendureProject();
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+
+        const installationId = fs.readFileSync(path.join(root, '.vendure', '.installation-id'), 'utf8');
+        expect(installationId).toMatch(
+            /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+        );
+        const [, init] = fetchMock.mock.calls[1];
+        expect(init?.headers).toEqual({
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${STORED_ACCESS_TOKEN}`,
+        });
+        expect(JSON.parse(init?.body as string)).toEqual({ telemetryInstallationId: installationId });
+        expect(test.messages).toContain(
+            'Telemetry from this installation is attributed to Console Project Storefront. ' +
+                'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
+        );
+    });
+
+    it('sends the installation ID the Vendure server already uses', async () => {
+        const root = vendureProject();
+        fs.outputFileSync(path.join(root, '.vendure', '.installation-id'), `${INSTALLATION_ID}\n`);
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+
+        expect(await consoleCommand('link', {}, testDependencies(root, fetchMock).dependencies)).toBe(0);
+
+        expect(JSON.parse(fetchMock.mock.calls[1][1]?.body as string)).toEqual({
+            telemetryInstallationId: INSTALLATION_ID,
+        });
+    });
+
+    it('keeps the installation ID next to the hoisted node_modules, where the server reads it', async () => {
+        const { workspace, project } = vendureMonorepo();
+        fs.ensureDirSync(path.join(workspace, 'node_modules'));
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+
+        expect(
+            await consoleCommand('link', { project }, testDependencies(workspace, fetchMock).dependencies),
+        ).toBe(0);
+
+        expect(fs.existsSync(path.join(project, '.vendure', '.installation-id'))).toBe(false);
+        expect(JSON.parse(fetchMock.mock.calls[1][1]?.body as string)).toEqual({
+            telemetryInstallationId: fs.readFileSync(
+                path.join(workspace, '.vendure', '.installation-id'),
+                'utf8',
+            ),
+        });
+    });
+
+    it('sends no installation ID and creates none when telemetry is turned off', async () => {
+        const root = vendureProject();
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+        const test = testDependencies(root, fetchMock, {
+            env: { ...LOCAL_CONSOLE_ENV, VENDURE_DISABLE_TELEMETRY: 'true' },
+        });
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+
+        expect(fetchMock.mock.calls[1][1]?.body).toBeUndefined();
+        expect(fetchMock.mock.calls[1][1]?.headers).toEqual({
+            Authorization: `Bearer ${STORED_ACCESS_TOKEN}`,
+        });
+        expect(fs.existsSync(path.join(root, '.vendure', '.installation-id'))).toBe(false);
+        expect(test.messages.join('\n')).toContain('does not attribute telemetry');
     });
 
     // PDEV-478: a link is the step before the docs MCP grants development workflows.
@@ -1053,6 +1125,35 @@ describe('console command', () => {
         expect(fetchMock).not.toHaveBeenCalled();
     });
 
+    it('shows whether this link attributes telemetry', async () => {
+        const root = vendureProject();
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(localManifest));
+        expect(await consoleCommand('link', {}, testDependencies(root, fetchMock).dependencies)).toBe(0);
+        const installationId = fs.readFileSync(path.join(root, '.vendure', '.installation-id'), 'utf8');
+
+        const attributed = testDependencies(root, fetchMock);
+        expect(await consoleCommand('status', {}, attributed.dependencies)).toBe(0);
+        expect(attributed.messages.join('\n')).toContain(
+            `Telemetry: attributed to Storefront (installation ${installationId})`,
+        );
+
+        const off = testDependencies(root, fetchMock, {
+            env: { ...LOCAL_CONSOLE_ENV, VENDURE_DISABLE_TELEMETRY: '1' },
+        });
+        expect(await consoleCommand('status', {}, off.dependencies)).toBe(0);
+        expect(off.messages.join('\n')).toContain('Telemetry: off (VENDURE_DISABLE_TELEMETRY)');
+
+        // A link made before attribution, or by another machine, sent no installation ID.
+        fs.writeJsonSync(getProjectLinkManifestPath(root), {
+            ...localManifest,
+            link: { ...localManifest.link, id: OTHER_LINK_ID },
+        });
+        const other = testDependencies(root, fetchMock);
+        expect(await consoleCommand('status', {}, other.dependencies)).toBe(0);
+        expect(other.messages.join('\n')).toContain('Telemetry: not attributed');
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
     it('uses explicit staging origins for status when the manifest has no Console metadata', async () => {
         const root = vendureProject();
         fs.ensureDirSync(path.dirname(getProjectLinkManifestPath(root)));
@@ -1075,12 +1176,51 @@ describe('console command', () => {
         fs.ensureDirSync(path.dirname(manifestPath));
         fs.writeJsonSync(manifestPath, manifest);
         fs.writeFileSync(siblingPath, 'machine-local');
-        const test = testDependencies(root, vi.fn() as unknown as typeof fetch);
+        const fetchMock = vi.fn() as unknown as typeof fetch;
+        const test = testDependencies(root, fetchMock);
 
         expect(await consoleCommand('unlink', { force: true }, test.dependencies)).toBe(0);
         expect(fs.existsSync(manifestPath)).toBe(false);
         expect(fs.readFileSync(siblingPath, 'utf8')).toBe('machine-local');
         expect(fs.existsSync(path.dirname(manifestPath))).toBe(true);
+        // This link attributed no telemetry, so Console is not asked.
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('tells Console to drop the telemetry attribution on unlink', async () => {
+        const root = linkedWithAttribution();
+        const fetchMock = sequenceFetch(new Response(null, { status: 204 }));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('unlink', { force: true }, test.dependencies)).toBe(0);
+
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(fetchMock.mock.calls[0][0]).toBe(
+            `http://localhost:3001/v1/projects/${PROJECT_ID}/link/telemetry-installations/${INSTALLATION_ID}`,
+        );
+        expect(fetchMock.mock.calls[0][1]?.method).toBe('DELETE');
+        expect(fetchMock.mock.calls[0][1]?.headers).toEqual({
+            Authorization: `Bearer ${STORED_ACCESS_TOKEN}`,
+        });
+        expect(test.messages).toContain(
+            'Telemetry from this installation is no longer attributed to Console Project Storefront.',
+        );
+        expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
+        expect(fs.existsSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toBe(false);
+    });
+
+    it('still unlinks locally and warns when Console cannot drop the attribution', async () => {
+        const root = linkedWithAttribution();
+        const fetchMock = vi.fn().mockRejectedValue(new TypeError('fetch failed'));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('unlink', { force: true }, test.dependencies)).toBe(0);
+
+        expect(test.messages.join('\n')).toContain(
+            'Could not tell Vendure Console to stop attributing telemetry to Storefront',
+        );
+        expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
+        expect(fs.existsSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toBe(false);
     });
 
     it('returns an interrupt exit code and leaves no partial manifest', async () => {
@@ -1160,6 +1300,23 @@ function testDependencies(
         messages,
         urls,
     };
+}
+
+const LOCAL_CONSOLE_ENV = {
+    VENDURE_CLI_NON_INTERACTIVE: 'true',
+    VENDURE_CONSOLE_APP_URL: LOCAL_CONSOLE.appOrigin,
+    VENDURE_CONSOLE_API_URL: LOCAL_CONSOLE.apiOrigin,
+};
+
+/** A project whose link attributed `INSTALLATION_ID`. */
+function linkedWithAttribution(): string {
+    const root = vendureProject();
+    fs.outputJsonSync(getProjectLinkManifestPath(root), localManifest);
+    fs.outputJsonSync(path.join(root, '.vendure', 'telemetry-attribution.json'), {
+        linkId: localManifest.link.id,
+        installationId: INSTALLATION_ID,
+    });
+    return root;
 }
 
 function jsonResponse(value: unknown, status = 200): Response {
