@@ -2350,7 +2350,7 @@
                   "title": "RemoveLegacyRoleData",
                   "slug": "remove-legacy-role-data",
                   "file": "docs/reference/typescript-api/migration/remove-legacy-role-data.mdx",
-                  "lastModified": "2026-10-14T15:49:58+02:00"
+                  "lastModified": "2026-10-15T14:07:53+02:00"
                 },
                 {
                   "title": "RevertLastMigration",
