@@ -617,10 +617,6 @@ msgstr "Productoptie succesvol aangemaakt"
 msgid "Create new customer"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
-msgstr ""
-
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr "We konden de voorraadniveaus niet laden"
@@ -1020,7 +1016,7 @@ msgstr "Afmetingen"
 msgid "Show password"
 msgstr "Wachtwoord tonen"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Capability"
 msgstr ""
 
@@ -1398,6 +1394,10 @@ msgstr "Bestand bewerken"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "Betaling annuleren"
+
+#: src/app/routes/_authenticated/_plans/plans.tsx
+msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2107,7 +2107,7 @@ msgstr "Uitgeschakeld"
 msgid "New promotion"
 msgstr "Nieuwe promotie"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Granted"
 msgstr ""
 
@@ -2991,11 +2991,11 @@ msgstr "{count, plural, one {Weet u zeker dat u {count} klant uit deze groep wil
 msgid "Search countries..."
 msgstr "Landen zoeken..."
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Locked"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Open Vendure Console"
 msgstr ""
 
@@ -3035,6 +3035,10 @@ msgstr "Bestaande toewijzen"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
 msgstr "Varianten genereren"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "Plan"
+msgstr ""
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
 #: src/lib/components/data-table/human-readable-operator.tsx
@@ -3378,7 +3382,7 @@ msgstr "Factuuradres gewijzigd"
 msgid "Manage option groups"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "The capability catalog is not available"
 msgstr ""
 
@@ -4265,6 +4269,12 @@ msgstr "Privéfacetten zijn niet zichtbaar in de winkel"
 msgid "Select a tax category"
 msgstr "Selecteer een belastingcategorie"
 
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Not Running"
 msgstr "Niet actief"
@@ -4318,10 +4328,6 @@ msgstr "Betaalmethode aanmaken mislukt"
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx
 msgid "Successfully created facet value"
 msgstr "Facetwaarde succesvol aangemaakt"
-
-#: src/app/routes/_authenticated/_platform/platform.tsx
-msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -4618,10 +4624,6 @@ msgstr "Geen meldingen"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "{0} collectie(s) verplaatsen naar {2}"
-
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "Tier"
-msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5829,12 +5831,6 @@ msgstr "Variant succesvol verwijderd"
 #~ msgid "Edit the selected link properties"
 #~ msgstr "De eigenschappen van de geselecteerde link bewerken"
 
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/lib/components/layout/nav-user.tsx
-msgid "Vendure Platform"
-msgstr ""
-
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6302,7 +6298,7 @@ msgstr "Standaardtaal"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "Status"
 
@@ -6329,6 +6325,10 @@ msgstr "Binair"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "Optiegroep succesvol bijgewerkt"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx

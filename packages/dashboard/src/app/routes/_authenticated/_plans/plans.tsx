@@ -8,18 +8,18 @@ import {
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
-import { OpenConsoleButton, PlatformCapabilityList } from './components/platform-capability-list.js';
+import { OpenConsoleButton, PlanCapabilityList } from './components/plan-capability-list.js';
 
-export const Route = createFileRoute('/_authenticated/_platform/platform')({
-    component: PlatformPage,
-    loader: () => ({ breadcrumb: () => <Trans>Vendure Platform</Trans> }),
+export const Route = createFileRoute('/_authenticated/_plans/plans')({
+    component: PlansPage,
+    loader: () => ({ breadcrumb: () => <Trans>Plans</Trans> }),
 });
 
-function PlatformPage() {
+function PlansPage() {
     return (
-        <Page pageId="platform">
+        <Page pageId="plans">
             <PageTitle>
-                <Trans>Vendure Platform</Trans>
+                <Trans>Plans</Trans>
             </PageTitle>
             <PageActionBar>
                 <ActionBarItem itemId="open-console-button">
@@ -32,12 +32,12 @@ function PlatformPage() {
                     blockId="capabilities"
                     description={
                         <Trans>
-                            Vendure Platform adds capabilities to your Vendure application. The list shows
-                            which capabilities this application has.
+                            Paid plans add capabilities to your Vendure application. The list shows which
+                            capabilities this application has.
                         </Trans>
                     }
                 >
-                    <PlatformCapabilityList />
+                    <PlanCapabilityList />
                 </PageBlock>
             </PageLayout>
         </Page>

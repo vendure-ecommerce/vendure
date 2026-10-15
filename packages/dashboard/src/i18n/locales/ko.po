@@ -605,10 +605,6 @@ msgstr "상품 옵션이 생성되었습니다"
 msgid "Create new customer"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
-msgstr ""
-
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr ""
@@ -1008,7 +1004,7 @@ msgstr "크기"
 msgid "Show password"
 msgstr "비밀번호 표시"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Capability"
 msgstr ""
 
@@ -1386,6 +1382,10 @@ msgstr "에셋 편집"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "결제 취소"
+
+#: src/app/routes/_authenticated/_plans/plans.tsx
+msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2095,7 +2095,7 @@ msgstr "비활성화됨"
 msgid "New promotion"
 msgstr "새 프로모션"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Granted"
 msgstr ""
 
@@ -2979,11 +2979,11 @@ msgstr "{count, plural, other {이 그룹에서 {count}명의 고객을 제거�
 msgid "Search countries..."
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Locked"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Open Vendure Console"
 msgstr ""
 
@@ -3022,6 +3022,10 @@ msgstr "기존 항목 할당"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
+msgstr ""
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "Plan"
 msgstr ""
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
@@ -3366,7 +3370,7 @@ msgstr "청구지 주소가 변경되었습니다"
 msgid "Manage option groups"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "The capability catalog is not available"
 msgstr ""
 
@@ -4249,6 +4253,12 @@ msgstr "비공개 속성은 상점에 표시되지 않습니다"
 msgid "Select a tax category"
 msgstr "세금 카테고리 선택"
 
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Not Running"
 msgstr "실행 중 아님"
@@ -4302,10 +4312,6 @@ msgstr "결제 방법 생성 실패"
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx
 msgid "Successfully created facet value"
 msgstr "속성 값이 생성되었습니다"
-
-#: src/app/routes/_authenticated/_platform/platform.tsx
-msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -4594,10 +4600,6 @@ msgstr "알림 없음"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "{0}개 컬렉션을 {2}로 이동 중"
-
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "Tier"
-msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5793,12 +5795,6 @@ msgstr "변형이 삭제되었습니다"
 #~ msgid "Edit the selected link properties"
 #~ msgstr "선택한 링크 속성 편집"
 
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/lib/components/layout/nav-user.tsx
-msgid "Vendure Platform"
-msgstr ""
-
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6243,7 +6239,7 @@ msgstr "기본 언어"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "상태"
 
@@ -6270,6 +6266,10 @@ msgstr "바이너리"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "옵션 그룹이 업데이트되었습니다"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx

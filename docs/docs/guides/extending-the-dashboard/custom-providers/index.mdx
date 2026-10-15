@@ -65,28 +65,28 @@ If `order` is omitted, it defaults to `0`.
 - Adding analytics/telemetry providers
 - Providing localization or formatting helpers specific to your organization
 
-## Reporting granted Vendure Platform capabilities
+## Reporting granted plan capabilities
 
-The user menu opens the Vendure Platform page. This page reads the public capability catalog
+The user menu opens the Plans page. This page reads the public capability catalog
 of Vendure Console and shows each capability as granted or locked. Without more data, it shows
 all capabilities as locked.
 
-To show the capabilities that your application has, mount a `PlatformCapabilitiesProvider`
+To show the capabilities that your application has, mount a `PlanCapabilitiesProvider`
 with a custom provider at the `'app'` location:
 
 ```tsx
-import { defineDashboardExtension, PlatformCapabilitiesProvider } from '@vendure/dashboard';
+import { defineDashboardExtension, PlanCapabilitiesProvider } from '@vendure/dashboard';
 import type { ReactNode } from 'react';
 
 function GrantedCapabilities({ children }: { children: ReactNode }) {
     // Get the granted capability keys from your own API.
     const granted = useMyGrantedCapabilities();
     return (
-        <PlatformCapabilitiesProvider
+        <PlanCapabilitiesProvider
             value={{ grantedCapabilities: granted, consoleProjectId: 'project-123' }}
         >
             {children}
-        </PlatformCapabilitiesProvider>
+        </PlanCapabilitiesProvider>
     );
 }
 
@@ -104,5 +104,5 @@ The provider takes these values:
   When the provider is mounted without it, the button opens the Console start page. When no
   provider is mounted, the button opens the Console signup page.
 
-Extension components can read the same values with the `usePlatformCapabilities()` hook. It returns
+Extension components can read the same values with the `usePlanCapabilities()` hook. It returns
 `undefined` when no provider is mounted.

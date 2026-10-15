@@ -1,7 +1,4 @@
-import {
-    PlatformCapabilities,
-    PlatformCapabilitiesProvider,
-} from '@/vdb/framework/platform/platform-capabilities.js';
+import { PlanCapabilities, PlanCapabilitiesProvider } from '@/vdb/framework/plan/plan-capabilities.js';
 import { setupI18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -9,7 +6,7 @@ import { act, ReactNode } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { OpenConsoleButton, PlatformCapabilityList } from './platform-capability-list.js';
+import { OpenConsoleButton, PlanCapabilityList } from './plan-capability-list.js';
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -54,16 +51,16 @@ afterEach(() => {
     vi.unstubAllGlobals();
 });
 
-async function renderPage(platform?: PlatformCapabilities) {
+async function renderPage(plan?: PlanCapabilities) {
     const queryClient = new QueryClient();
     let content: ReactNode = (
         <>
             <OpenConsoleButton />
-            <PlatformCapabilityList />
+            <PlanCapabilityList />
         </>
     );
-    if (platform) {
-        content = <PlatformCapabilitiesProvider value={platform}>{content}</PlatformCapabilitiesProvider>;
+    if (plan) {
+        content = <PlanCapabilitiesProvider value={plan}>{content}</PlanCapabilitiesProvider>;
     }
     await act(async () => {
         root.render(
@@ -83,7 +80,7 @@ function consoleHref() {
     return container.querySelector('a')?.getAttribute('href');
 }
 
-describe('PlatformCapabilityList', () => {
+describe('PlanCapabilityList', () => {
     it('shows every catalog capability as locked when no extension reports granted capabilities', async () => {
         fetchMock.mockResolvedValue(new Response(JSON.stringify(catalog)));
 

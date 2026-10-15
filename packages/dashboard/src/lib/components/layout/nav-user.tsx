@@ -79,9 +79,9 @@ export function NavUser() {
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem render={<Link to="/platform" />}>
+                                <DropdownMenuItem render={<Link to="/plans" />}>
                                     <Sparkles />
-                                    <Trans>Vendure Platform</Trans>
+                                    <Trans>Plans</Trans>
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />

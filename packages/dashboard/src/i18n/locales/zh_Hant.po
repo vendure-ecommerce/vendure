@@ -617,10 +617,6 @@ msgstr "成功建立產品選項"
 msgid "Create new customer"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
-msgstr ""
-
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr "無法載入庫存水準"
@@ -1020,7 +1016,7 @@ msgstr "尺寸"
 msgid "Show password"
 msgstr "顯示密碼"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Capability"
 msgstr ""
 
@@ -1394,6 +1390,10 @@ msgstr "編輯資源"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "取消付款"
+
+#: src/app/routes/_authenticated/_plans/plans.tsx
+msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2103,7 +2103,7 @@ msgstr "已停用"
 msgid "New promotion"
 msgstr "新增促銷"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Granted"
 msgstr ""
 
@@ -2993,11 +2993,11 @@ msgstr "{count, plural, other {您確定要從此群組中移除{count}位客戶
 msgid "Search countries..."
 msgstr "搜尋國家..."
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Locked"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Open Vendure Console"
 msgstr ""
 
@@ -3037,6 +3037,10 @@ msgstr "指派現有"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
 msgstr "產生變體"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "Plan"
+msgstr ""
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
 #: src/lib/components/data-table/human-readable-operator.tsx
@@ -3384,7 +3388,7 @@ msgstr "帳單地址已變更"
 msgid "Manage option groups"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "The capability catalog is not available"
 msgstr ""
 
@@ -4271,6 +4275,12 @@ msgstr "私人屬性在商店中不可見"
 msgid "Select a tax category"
 msgstr "選取一個稅務類別"
 
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
+
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "已建立"
 
@@ -4327,10 +4337,6 @@ msgstr "建立付款方式失敗"
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx
 msgid "Successfully created facet value"
 msgstr "已成功建立屬性值"
-
-#: src/app/routes/_authenticated/_platform/platform.tsx
-msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -4627,10 +4633,6 @@ msgstr "無提醒"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "正在將 {0} 個集合移動到 {2}"
-
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "Tier"
-msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5834,12 +5836,6 @@ msgstr "變體已成功刪除"
 #~ msgid "Edit the selected link properties"
 #~ msgstr "編輯所選連結的屬性"
 
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/lib/components/layout/nav-user.tsx
-msgid "Vendure Platform"
-msgstr ""
-
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6307,7 +6303,7 @@ msgstr "預設語言"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "狀態"
 
@@ -6334,6 +6330,10 @@ msgstr "二進位"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "選項群組更新成功"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx

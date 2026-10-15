@@ -2,7 +2,7 @@ import { Badge } from '@/vdb/components/ui/badge.js';
 import { buttonVariants } from '@/vdb/components/ui/button.js';
 import { EmptyState, LoadingState } from '@/vdb/components/ui/state-views.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
-import { usePlatformCapabilities } from '@/vdb/hooks/use-platform-capabilities.js';
+import { usePlanCapabilities } from '@/vdb/hooks/use-plan-capabilities.js';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { Check, ExternalLink, Lock } from 'lucide-react';
@@ -33,11 +33,11 @@ async function fetchCatalog(): Promise<CatalogResponse> {
 }
 
 export function OpenConsoleButton() {
-    const platform = usePlatformCapabilities();
+    const plan = usePlanCapabilities();
     let href = `${CONSOLE_URL}/signup`;
-    if (platform?.consoleProjectId) {
-        href = `${CONSOLE_URL}/projects/${encodeURIComponent(platform.consoleProjectId)}/subscription`;
-    } else if (platform) {
+    if (plan?.consoleProjectId) {
+        href = `${CONSOLE_URL}/projects/${encodeURIComponent(plan.consoleProjectId)}/subscription`;
+    } else if (plan) {
         href = CONSOLE_URL;
     }
     return (
@@ -48,10 +48,10 @@ export function OpenConsoleButton() {
     );
 }
 
-export function PlatformCapabilityList() {
-    const platform = usePlatformCapabilities();
+export function PlanCapabilityList() {
+    const plan = usePlanCapabilities();
     const { data, isPending, isError } = useQuery({
-        queryKey: ['vendurePlatformCatalog'],
+        queryKey: ['vendureCatalog'],
         queryFn: fetchCatalog,
         retry: false,
         staleTime: 5 * 60 * 1000,
@@ -67,14 +67,14 @@ export function PlatformCapabilityList() {
                 description={
                     <Trans>
                         The Dashboard cannot get the capability list from Vendure Console. Open Vendure
-                        Console to see the Vendure Platform capabilities.
+                        Console to see the capabilities of each plan.
                     </Trans>
                 }
             />
         );
     }
 
-    const granted = new Set(platform?.grantedCapabilities ?? []);
+    const granted = new Set(plan?.grantedCapabilities ?? []);
     const rows = data.offers.flatMap(offer =>
         offer.headlineCapabilities.map(capability => ({ ...capability, tier: offer.displayName })),
     );
@@ -87,7 +87,7 @@ export function PlatformCapabilityList() {
                         <Trans>Capability</Trans>
                     </TableHead>
                     <TableHead>
-                        <Trans>Tier</Trans>
+                        <Trans>Plan</Trans>
                     </TableHead>
                     <TableHead>
                         <Trans>Status</Trans>

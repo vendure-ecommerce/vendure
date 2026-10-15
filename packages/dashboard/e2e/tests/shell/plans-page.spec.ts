@@ -27,22 +27,22 @@ const catalog = {
     ],
 };
 
-async function openPlatformPageFromUserMenu(page: Page) {
+async function openPlansPageFromUserMenu(page: Page) {
     await page.goto('/');
     await page.locator('[data-sidebar="footer"]').getByRole('button').first().click();
     await expect(page.getByRole('menuitem', { name: 'Explore Platform & Cloud' })).toHaveCount(0);
-    await page.getByRole('menuitem', { name: 'Vendure Platform' }).click();
-    await expect(page).toHaveURL(/\/platform$/);
+    await page.getByRole('menuitem', { name: 'Plans' }).click();
+    await expect(page).toHaveURL(/\/plans$/);
 }
 
-// OSS-883 — the user menu opens the Vendure Platform page, which lists the public capability catalog
-test.describe('Vendure Platform page', () => {
+// OSS-883 — the user menu opens the Plans page, which lists the public capability catalog
+test.describe('Plans page', () => {
     test('lists the catalog capabilities as locked without a capabilities provider', async ({ page }) => {
         await page.route(CATALOG_URL, route =>
             route.fulfill({ json: catalog, headers: { 'access-control-allow-origin': '*' } }),
         );
 
-        await openPlatformPageFromUserMenu(page);
+        await openPlansPageFromUserMenu(page);
 
         const row = page.getByRole('row', { name: /Company Accounts/ });
         await expect(row).toContainText('Starter');
@@ -57,7 +57,7 @@ test.describe('Vendure Platform page', () => {
     test('shows a static message when the catalog is not reachable', async ({ page }) => {
         await page.route(CATALOG_URL, route => route.abort());
 
-        await openPlatformPageFromUserMenu(page);
+        await openPlansPageFromUserMenu(page);
 
         await expect(page.getByText('The capability catalog is not available')).toBeVisible();
         await expect(page.getByRole('table')).toHaveCount(0);

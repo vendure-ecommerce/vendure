@@ -617,10 +617,6 @@ msgstr "商品オプションを正常に作成しました"
 msgid "Create new customer"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
-msgstr ""
-
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr "在庫レベルを読み込めませんでした"
@@ -1020,7 +1016,7 @@ msgstr "寸法"
 msgid "Show password"
 msgstr "パスワードを表示"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Capability"
 msgstr ""
 
@@ -1394,6 +1390,10 @@ msgstr "アセットを編集"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "支払いをキャンセル"
+
+#: src/app/routes/_authenticated/_plans/plans.tsx
+msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2103,7 +2103,7 @@ msgstr "無効"
 msgid "New promotion"
 msgstr "新しいプロモーション"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Granted"
 msgstr ""
 
@@ -2993,11 +2993,11 @@ msgstr "{count, plural, other {このグループから{count}人の顧客を削
 msgid "Search countries..."
 msgstr "国を検索..."
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Locked"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Open Vendure Console"
 msgstr ""
 
@@ -3037,6 +3037,10 @@ msgstr "既存を割り当て"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
 msgstr "バリアントを生成"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "Plan"
+msgstr ""
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
 #: src/lib/components/data-table/human-readable-operator.tsx
@@ -3384,7 +3388,7 @@ msgstr "請求先住所を変更しました"
 msgid "Manage option groups"
 msgstr ""
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "The capability catalog is not available"
 msgstr ""
 
@@ -4271,6 +4275,12 @@ msgstr "非公開ファセットはショップに表示されません"
 msgid "Select a tax category"
 msgstr "税カテゴリを選択"
 
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
+
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "作成済み"
 
@@ -4327,10 +4337,6 @@ msgstr "支払い方法の作成に失敗しました"
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx
 msgid "Successfully created facet value"
 msgstr "ファセット値を作成しました"
-
-#: src/app/routes/_authenticated/_platform/platform.tsx
-msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -4627,10 +4633,6 @@ msgstr "アラートなし"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "{0}個のコレクションを{2}に移動中"
-
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "Tier"
-msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5834,12 +5836,6 @@ msgstr "バリエーションを削除しました"
 #~ msgid "Edit the selected link properties"
 #~ msgstr "選択したリンクのプロパティを編集"
 
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/lib/components/layout/nav-user.tsx
-msgid "Vendure Platform"
-msgstr ""
-
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6307,7 +6303,7 @@ msgstr "デフォルト言語"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "ステータス"
 
@@ -6334,6 +6330,10 @@ msgstr "バイナリ"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "オプショングループの更新に成功しました"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx

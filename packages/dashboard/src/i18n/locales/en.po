@@ -617,10 +617,6 @@ msgstr "Successfully created product option"
 msgid "Create new customer"
 msgstr "Create new customer"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
-msgstr "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
-
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr "We couldn't load the stock levels"
@@ -1020,7 +1016,7 @@ msgstr "Dimensions"
 msgid "Show password"
 msgstr "Show password"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Capability"
 msgstr "Capability"
 
@@ -1394,6 +1390,10 @@ msgstr "Edit asset"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "Cancel payment"
+
+#: src/app/routes/_authenticated/_plans/plans.tsx
+msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2103,7 +2103,7 @@ msgstr "Disabled"
 msgid "New promotion"
 msgstr "New promotion"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Granted"
 msgstr "Granted"
 
@@ -2993,11 +2993,11 @@ msgstr "{count, plural, one {Are you sure you want to remove {count} customer fr
 msgid "Search countries..."
 msgstr "Search countries..."
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Locked"
 msgstr "Locked"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Open Vendure Console"
 msgstr "Open Vendure Console"
 
@@ -3037,6 +3037,10 @@ msgstr "Assign existing"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
 msgstr "Generate variants"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "Plan"
+msgstr "Plan"
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
 #: src/lib/components/data-table/human-readable-operator.tsx
@@ -3384,7 +3388,7 @@ msgstr "Billing address changed"
 msgid "Manage option groups"
 msgstr "Manage option groups"
 
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "The capability catalog is not available"
 msgstr "The capability catalog is not available"
 
@@ -4271,6 +4275,12 @@ msgstr "Private facets are not visible in the shop"
 msgid "Select a tax category"
 msgstr "Select a tax category"
 
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/app/routes/_authenticated/_plans/plans.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr "Plans"
+
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "Created"
 
@@ -4327,10 +4337,6 @@ msgstr "Failed to create payment method"
 #: src/app/routes/_authenticated/_facets/facets_.$facetId.values_.$id.tsx
 msgid "Successfully created facet value"
 msgstr "Successfully created facet value"
-
-#: src/app/routes/_authenticated/_platform/platform.tsx
-msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -4627,10 +4633,6 @@ msgstr "No alerts"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "Moving {0} collection{1} into {2}"
-
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
-msgid "Tier"
-msgstr "Tier"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5834,12 +5836,6 @@ msgstr "Variant deleted successfully"
 #~ msgid "Edit the selected link properties"
 #~ msgstr "Edit the selected link properties"
 
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/app/routes/_authenticated/_platform/platform.tsx
-#: src/lib/components/layout/nav-user.tsx
-msgid "Vendure Platform"
-msgstr "Vendure Platform"
-
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6307,7 +6303,7 @@ msgstr "Default language"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "Status"
 
@@ -6334,6 +6330,10 @@ msgstr "Binary"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "Successfully updated option group"
+
+#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
+msgstr "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
