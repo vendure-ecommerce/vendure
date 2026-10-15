@@ -452,6 +452,28 @@ If the organization has no active Project, the command stops and links nothing. 
 at [console.vendure.io](https://console.vendure.io). You can create it without a plan or trial. Then run
 `vendure console link` again.
 
+### Telemetry attribution
+
+A link attributes the [telemetry](/guides/developer-guide/telemetry/) of this installation to the Console Project.
+The CLI sends the telemetry installation ID with the link request, and Vendure Console stores it with the Project.
+Vendure can then see whether a linked Project has started and taken orders. Linking is your consent to this. The CLI
+prints:
+
+```text
+Telemetry from this installation is attributed to Console Project <name>. Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.
+```
+
+The installation ID is the one the Vendure server uses: `.vendure/.installation-id` in the nearest directory above the
+project that has `node_modules`. If that file does not exist, the CLI creates it. The server reads the file at its next
+start. A server that already keeps a different ID in its database, for example a production deployment, continues to
+send telemetry with that ID. Only the installation that ran `vendure console link` is attributed.
+
+With `VENDURE_DISABLE_TELEMETRY=true` (or `1`), the link sends no installation ID and the CLI creates none. An
+unlinked project sends anonymous telemetry, as before.
+
+A repeated link without `--force` does not contact Console, so it does not attribute a project that was linked before
+this feature or on another machine. Run `vendure console link --force` to attribute it.
+
 ### Use Vendure development workflows in your coding assistant
 
 A linked Project gives you Vendure development workflows and patterns through your coding assistant. After a
@@ -520,8 +542,9 @@ Use `status` to validate and display the local link:
 npx vendure console status
 ```
 
-The output includes the Account, Project, Console origins, schema version, and protocol version. This command reads
-local state only. It does not contact Vendure Console and does not sign you in. Use `vendure auth status` to see who is
+The output includes the Account, Project, Console origins, schema version, protocol version, and telemetry
+attribution. The telemetry line is `attributed` when the current link sent this installation's ID, `off` when
+`VENDURE_DISABLE_TELEMETRY` is set, and `not attributed` otherwise. This command reads local state only. It does not contact Vendure Console and does not sign you in. Use `vendure auth status` to see who is
 signed in.
 
 ### Unlink a project
@@ -532,8 +555,13 @@ Use `unlink` to remove the local manifest:
 npx vendure console unlink
 ```
 
-This command removes only `.vendure/project.json`. It does not delete the Console Project or its Project Link, and it
-does not revoke server-side credentials. Your CLI login stays. Run `vendure auth logout` to sign out.
+This command removes `.vendure/project.json`. If the link attributed telemetry, the CLI first tells Vendure Console to
+stop the attribution. For this, it uses your CLI login, and signs you in when it runs in a terminal. If Console cannot
+be reached or refuses the request, the CLI shows a warning and still removes the local link. In that case, set
+`VENDURE_DISABLE_TELEMETRY=true` to stop telemetry from this installation.
+
+The command does not delete the Console Project or its Project Link, and it does not revoke server-side credentials.
+Your CLI login stays. Run `vendure auth logout` to sign out.
 
 ### Project selection and confirmation
 
