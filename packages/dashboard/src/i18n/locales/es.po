@@ -1275,8 +1275,8 @@ msgid "Table settings"
 msgstr "Configuración de la tabla"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Explorar Platform & Cloud"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Explorar Platform & Cloud"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -4246,6 +4246,10 @@ msgstr "Las facetas privadas no son visibles en la tienda"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Seleccionar una categoría de impuesto"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "Creado"
