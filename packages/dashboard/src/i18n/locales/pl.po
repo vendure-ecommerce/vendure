@@ -1275,8 +1275,8 @@ msgid "Table settings"
 msgstr "Ustawienia tabeli"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Odkryj Platform & Cloud"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Odkryj Platform & Cloud"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -4246,6 +4246,10 @@ msgstr "Prywatne aspekty nie są widoczne w sklepie"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Wybierz kategorię podatkową"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "Utworzone"

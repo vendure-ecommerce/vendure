@@ -494,6 +494,26 @@ describe('viteConfigPlugin', () => {
         expect(result.build.outDir).toBe(path.resolve(process.cwd(), 'my-output'));
     });
 
+    // #4053 — NX sets root to the project dir and runs the build from the workspace root
+    it('build command: resolves relative outDir and default dist from the user root, not cwd', () => {
+        const plugin = viteConfigPlugin({ packageRoot });
+        const userRoot = path.join(process.cwd(), 'apps', 'admin');
+        const withOutDir = callConfig(
+            plugin,
+            { root: userRoot, build: { outDir: '../../dist/apps/admin' } },
+            { command: 'build' },
+        );
+        expect(withOutDir.build.outDir).toBe(path.join(process.cwd(), 'dist', 'apps', 'admin'));
+        const withDefault = callConfig(plugin, { root: userRoot }, { command: 'build' });
+        expect(withDefault.build.outDir).toBe(path.join(userRoot, 'dist'));
+        const withRelativeRoot = callConfig(
+            plugin,
+            { root: 'apps/admin', build: { outDir: 'out' } },
+            { command: 'build' },
+        );
+        expect(withRelativeRoot.build.outDir).toBe(path.resolve(process.cwd(), 'apps/admin/out'));
+    });
+
     it('build command: preserves absolute outDir', () => {
         const plugin = viteConfigPlugin({ packageRoot });
         const result = callConfig(plugin, { build: { outDir: '/abs/output' } }, { command: 'build' });
