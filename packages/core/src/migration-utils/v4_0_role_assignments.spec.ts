@@ -519,6 +519,53 @@ describe('removeLegacyRoleData()', () => {
         await queryRunner.release();
         await dataSource.destroy();
     });
+
+    it('refuses to run while role_assignment holds Customer-role rows', async () => {
+        const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
+        await dataSource.initialize();
+        const queryRunner = dataSource.createQueryRunner();
+        await queryRunner.query(`CREATE TABLE "_v3_user_roles_role" ("userId" integer, "roleId" integer)`);
+        await queryRunner.query(`CREATE TABLE "role" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
+        await queryRunner.query(
+            `CREATE TABLE "user" ("id" integer PRIMARY KEY, "identifier" varchar NOT NULL)`,
+        );
+        await queryRunner.query(`CREATE TABLE "channel" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
+        await queryRunner.query(
+            `CREATE TABLE "role_assignment" ("id" integer PRIMARY KEY, "userId" integer, "roleId" integer, "channelId" integer)`,
+        );
+        await queryRunner.query(
+            `INSERT INTO "role" ("id", "code") VALUES (1, '__super_admin_role__'), (2, '__customer_role__')`,
+        );
+        await queryRunner.query(
+            `INSERT INTO "user" ("id", "identifier") VALUES (1, 'superadmin'), (2, 'alice')`,
+        );
+        await queryRunner.query(`INSERT INTO "channel" ("id", "code") VALUES (1, '__default_channel__')`);
+        await queryRunner.query(
+            `INSERT INTO "role_assignment" ("id", "userId", "roleId", "channelId") VALUES (1, 1, 1, 1), (2, 2, 2, 1)`,
+        );
+
+        const error = await removeLegacyRoleData(queryRunner).catch((e: Error) => e);
+
+        expect(error).toBeInstanceOf(Error);
+        expect((error as Error).message).toContain('holds 1 assignment(s) of the legacy Customer role');
+        expect((error as Error).message).toContain('alice: __customer_role__ on __default_channel__');
+        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(true);
+        expect(await queryRunner.query(`SELECT "code" FROM "role" ORDER BY "id"`)).toEqual([
+            { code: '__super_admin_role__' },
+            { code: '__customer_role__' },
+        ]);
+
+        await queryRunner.query(`DELETE FROM "role_assignment" WHERE "id" = 2`);
+        await removeLegacyRoleData(queryRunner);
+
+        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
+        expect(await queryRunner.query(`SELECT "code" FROM "role"`)).toEqual([
+            { code: '__super_admin_role__' },
+        ]);
+        expect(await queryRunner.query(`SELECT "id" FROM "role_assignment"`)).toEqual([{ id: 1 }]);
+        await queryRunner.release();
+        await dataSource.destroy();
+    });
 });
 
 describe('assertRoleAssignmentDataMigrated()', () => {

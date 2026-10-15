@@ -213,7 +213,10 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
  * longer need the archive for auditing. Tables and roles which do not exist are skipped,
  * so it is safe to re-run. It throws while `user_roles_role` or `role_channels_channel`
  * still exists under its original name, that is, before {@link migrateRoleAssignmentData} has
- * archived the legacy tables.
+ * archived the legacy tables. It also throws while `role_assignment` holds rows of the
+ * Customer role, which can still be granted until this helper runs: deleting the role would
+ * remove those rows without a `RoleAssignmentEvent` or a session eviction. Remove them
+ * with `removeRolesFromUser` first. Nothing is changed when it throws.
  *
  * The archive has no foreign keys, so hard-deleting a User does not remove its rows from
  * the archive. If you erase personal data on request (e.g. under the GDPR), drop the
@@ -250,6 +253,7 @@ export async function removeLegacyRoleData(queryRunner: QueryRunner): Promise<vo
             );
         }
     }
+    await assertNoCustomerRoleAssignments(queryRunner);
     for (const tableName of [t.archivedUserRoles, t.archivedRoleChannels]) {
         if (await queryRunner.hasTable(tableName)) {
             await queryRunner.dropTable(tableName);
@@ -546,6 +550,39 @@ async function verifyRoleAssignmentData(queryRunner: QueryRunner, sources: Sourc
         );
     }
     throw new Error(lines.join('\n'));
+}
+
+/**
+ * Throws if `role_assignment` holds rows of the legacy Customer role. Its `roleId` foreign key
+ * cascades, so deleting the role would remove them with no `RoleAssignmentEvent` and no
+ * session eviction.
+ */
+async function assertNoCustomerRoleAssignments(queryRunner: QueryRunner): Promise<void> {
+    const t = getTableNames(queryRunner);
+    if (!(await queryRunner.hasTable(t.role)) || !(await queryRunner.hasTable(t.roleAssignment))) {
+        return;
+    }
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const customerGrants = await describeGrants(
+        queryRunner,
+        `SELECT ra.${esc('userId')} AS ${esc('userId')}, ra.${esc('roleId')} AS ${esc('roleId')}, ra.${esc('channelId')} AS ${esc('channelId')}
+         FROM ${esc(t.roleAssignment)} ra
+         INNER JOIN ${esc(t.role)} r ON r.${esc('id')} = ra.${esc('roleId')}
+         WHERE r.${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
+    );
+    if (customerGrants.total === 0) {
+        return;
+    }
+    throw new Error(
+        [
+            `The ${t.roleAssignment} table holds ${customerGrants.total} assignment(s) of the legacy ` +
+                'Customer role, granted after the migration. Deleting the role would remove them ' +
+                'without a RoleAssignmentEvent or a session eviction, so nothing has been changed. ' +
+                'Remove them with removeRolesFromUser and run removeLegacyRoleData() again.',
+            '',
+            ...formatGrantsByUser(customerGrants.grants),
+        ].join('\n'),
+    );
 }
 
 interface DescribedGrant {
