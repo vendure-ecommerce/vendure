@@ -21,6 +21,8 @@ vi.mock('../../shared/cli-process-utils', async importOriginal => ({
     resolvePackageBin: () => '/fake/bin.js',
 }));
 
+vi.mock('../../shared/star-prompt', () => ({ showStarPromptOnce: () => false }));
+
 import { devCommand } from './dev';
 
 describe('devCommand() Console hint', () => {
@@ -72,4 +74,37 @@ describe('devCommand() Console hint', () => {
 
         expect(infoMock).not.toHaveBeenCalledWith(getConsoleHint(false));
     });
+
+    // OSS-882 - a file-watcher restart does not print the hint again.
+    it('prints the hint once across a file-watcher restart', async () => {
+        // A child that runs until it is killed, as the server does.
+        spawnMock.mockImplementation(() => {
+            const child = Object.assign(new EventEmitter(), {
+                exitCode: null as number | null,
+                signalCode: null as NodeJS.Signals | null,
+                kill(signal: NodeJS.Signals) {
+                    child.signalCode = signal;
+                    setImmediate(() => child.emit('close', null, signal));
+                    return true;
+                },
+            });
+            return child;
+        });
+        const run = devCommand('server', { project: projectDir });
+        const configPath = path.join(projectDir, 'src', 'vendure-config.ts');
+
+        // The save is repeated because chokidar reports nothing for a file that appeared before
+        // it finished its initial scan of the directory.
+        await vi.waitFor(
+            () => {
+                writeFileSync(configPath, `export const config = { revision: ${Date.now()} };`);
+                expect(spawnMock.mock.calls.length).toBeGreaterThanOrEqual(2);
+            },
+            { timeout: 15000, interval: 300 },
+        );
+        process.emit('SIGINT');
+        await run;
+
+        expect(infoMock.mock.calls.filter(([message]) => message === getConsoleHint(false))).toHaveLength(1);
+    }, 20000);
 });

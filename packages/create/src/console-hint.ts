@@ -3,6 +3,8 @@ import { log } from '@clack/prompts';
 // The pricing URL shown in the hint, and the tag that names the surface that printed it.
 const PRICING_URL = 'https://vendure.io/pricing';
 const UTM_SOURCE = 'vendure-create';
+// TERM values of terminals that render OSC 8 hyperlinks but set no TERM_PROGRAM.
+const HYPERLINK_TERMS = ['xterm-kitty', 'xterm-ghostty', 'alacritty', 'foot', 'foot-extra'];
 
 /**
  * Whether the terminal renders OSC 8 hyperlinks. `FORCE_HYPERLINK` overrides the other checks.
@@ -25,14 +27,18 @@ export function supportsHyperlinks(
     if (['iTerm.app', 'vscode', 'WezTerm', 'WarpTerminal'].includes(env.TERM_PROGRAM ?? '')) {
         return true;
     }
+    if (HYPERLINK_TERMS.includes(env.TERM ?? '')) {
+        return true;
+    }
     return Number.parseInt(env.VTE_VERSION ?? '', 10) >= 5000;
 }
 
 /**
  * The hint line. A terminal with hyperlink support shows `https://vendure.io/pricing` and links
  * to it with the `utm_source` tag. Other terminals get the plain URL without the tag.
- * `packages/cli/src/shared/console-hint.ts` holds the same text with `utm_source=vendure-dev`. Keep both in sync: the two
- * packages cannot share code without a new dependency.
+ * `packages/cli/src/shared/console-hint.ts` holds the same text with
+ * `utm_source=vendure-dev`. Keep both in sync: the two packages cannot share code without a
+ * new dependency.
  */
 export function getConsoleHint(hyperlinks: boolean = supportsHyperlinks()): string {
     const link = hyperlinks
