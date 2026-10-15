@@ -1,5 +1,5 @@
 import { Badge } from '@/vdb/components/ui/badge.js';
-import { Button } from '@/vdb/components/ui/button.js';
+import { buttonVariants } from '@/vdb/components/ui/button.js';
 import { EmptyState, LoadingState } from '@/vdb/components/ui/state-views.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { usePlatformCapabilities } from '@/vdb/hooks/use-platform-capabilities.js';
@@ -41,10 +41,10 @@ export function OpenConsoleButton() {
         href = CONSOLE_URL;
     }
     return (
-        <Button render={<a href={href} target="_blank" rel="noopener noreferrer" />}>
+        <a className={buttonVariants()} href={href} target="_blank" rel="noopener noreferrer">
             <Trans>Open Vendure Console</Trans>
             <ExternalLink />
-        </Button>
+        </a>
     );
 }
 
