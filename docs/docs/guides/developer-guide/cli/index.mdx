@@ -471,9 +471,12 @@ send telemetry with that ID. Only the installation that ran `vendure console lin
 With `VENDURE_DISABLE_TELEMETRY=true` (or `1`), the link sends no installation ID and the CLI creates none. An
 unlinked project sends anonymous telemetry, as before.
 
-A link to another Project with `--force` moves the attribution to that Project. A repeated link without `--force`
-does not contact Console, so it does not attribute a project that was linked before this feature or on another
-machine. Run `vendure console link --force` to attribute it.
+A link to another Project with `--force` moves the attribution to that Project only when that Project belongs to the
+same Console account. If it belongs to a different account, the attribution stays with the first account until that
+account unlinks the installation.
+
+A repeated link without `--force` does not contact Console, so it does not attribute a project that was linked before
+this feature or on another machine. Run `vendure console link --force` to attribute it.
 
 ### Use Vendure development workflows in your coding assistant
 
