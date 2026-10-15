@@ -2376,7 +2376,7 @@
                   "title": "InspectableJobQueueStrategy",
                   "slug": "inspectable-job-queue-strategy",
                   "file": "docs/reference/typescript-api/job-queue/inspectable-job-queue-strategy.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-15T13:00:14Z"
                 },
                 {
                   "title": "Job",
@@ -3953,7 +3953,7 @@
                   "title": "BullMQJobQueueStrategy",
                   "slug": "bull-mqjob-queue-strategy",
                   "file": "docs/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-strategy.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-15T13:00:14Z"
                 },
                 {
                   "title": "BullMQPluginOptions",
