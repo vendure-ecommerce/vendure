@@ -21,6 +21,8 @@ describe('ChannelService cache', () => {
     let onChannelEvent: () => void;
     let queryRunnerModes: string[];
     let queries: Array<{ source: Source; where?: any }>;
+    /** When set, queries on the pool never return, like when the pool is exhausted. */
+    let poolStalled: boolean;
     /** The rows visible on the pool, i.e. committed data. */
     let committed: Channel[];
     /** The rows visible inside the transaction of `transactionalContext()`. */
@@ -28,13 +30,17 @@ describe('ChannelService cache', () => {
 
     function repository(source: Source) {
         const rows = () => (source === 'pool' ? committed : inTransaction);
+        const stalled = () => source === 'pool' && poolStalled;
         return {
             count: () => {
                 queries.push({ source });
-                return Promise.resolve(rows().length);
+                return stalled() ? new Promise(() => undefined) : Promise.resolve(rows().length);
             },
             findOne: ({ where }: any) => {
                 queries.push({ source, where });
+                if (stalled()) {
+                    return new Promise(() => undefined);
+                }
                 // Tokens are compared case-insensitively, like a MySQL `_ci` collation
                 return Promise.resolve(
                     rows().find(c =>
@@ -55,6 +61,11 @@ describe('ChannelService cache', () => {
         return ctx;
     }
 
+    /** Lets loads started in the background resolve. */
+    function backgroundLoads() {
+        return new Promise(resolve => setImmediate(resolve));
+    }
+
     function tokenQueries(token: string) {
         return queries.filter(q => q.where?.token === token);
     }
@@ -62,6 +73,7 @@ describe('ChannelService cache', () => {
     beforeEach(() => {
         queries = [];
         queryRunnerModes = [];
+        poolStalled = false;
         committed = [
             new Channel({ id: 1, code: DEFAULT_CHANNEL_CODE, token: 'default-token' }),
             new Channel({ id: 2, code: 'second', token: 'second-token' }),
@@ -134,6 +146,7 @@ describe('ChannelService cache', () => {
 
     it('loads a miss inside a transaction through that transaction and fills the cache in the background', async () => {
         await service.getChannelFromToken(transactionalContext(), 'second-token');
+        await backgroundLoads();
         await service.getChannelFromToken(transactionalContext(), 'second-token');
         await service.getChannelFromToken('second-token');
 
@@ -144,8 +157,17 @@ describe('ChannelService cache', () => {
         ).toEqual(['pool', 'transaction']);
     });
 
+    it('does not wait inside a transaction for a cache load which is still in flight', async () => {
+        poolStalled = true;
+        void service.getChannelFromToken('second-token');
+
+        const channel = await service.getChannelFromToken(transactionalContext(), 'second-token');
+        expect(channel.id).toBe(2);
+    });
+
     it('fills the default Channel cache from inside a transaction', async () => {
         await service.getDefaultChannel(transactionalContext());
+        await backgroundLoads();
         await service.getDefaultChannel(transactionalContext());
 
         expect(

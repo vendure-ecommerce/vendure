@@ -57,7 +57,7 @@ import { GlobalSettingsService } from './global-settings.service';
 const TOKEN_CACHE_SIZE = 10_000;
 const MISS_CACHE_SIZE = 1_000;
 
-type CacheEntry<T> = { value: Promise<T>; expires: number };
+type CacheEntry<T> = { value: Promise<T>; expires: number; resolved?: boolean };
 
 /**
  * @description
@@ -588,7 +588,7 @@ export class ChannelService {
 
     /**
      * Cached entries are shared by every request in the process, so they are loaded outside of
-     * any transaction. A caller inside a transaction still uses a cached Channel, but on a miss it
+     * any transaction. A caller inside a transaction still uses a loaded cached Channel, but on a miss it
      * loads through its own transaction and does not store the result, so it does not wait for a
      * second pool connection while holding one. The shared cache is filled in the background instead.
      * Resolved misses are ignored inside a transaction. A transaction which has written a Channel
@@ -616,7 +616,9 @@ export class ChannelService {
             }
             const cachedHit = cache.get(key);
             if (cachedHit && now < cachedHit.expires) {
-                return cachedHit.value;
+                // A load still in flight needs a second pool connection, so waiting for it while
+                // holding the transaction's connection could exhaust the pool
+                return cachedHit.resolved ? cachedHit.value : load(transactionManager.getRepository(Channel));
             }
             const cachedMiss = missCache?.get(key);
             if (!cachedMiss || now >= cachedMiss.expires) {
@@ -643,13 +645,14 @@ export class ChannelService {
     ): Promise<T> {
         cache.delete(key);
         missCache?.delete(key);
-        const entry = {
+        const entry: CacheEntry<T> = {
             value: this.loadFromMaster(load),
             expires: now + this.configService.entityOptions.channelCacheTtl,
         };
         this.setBounded(cache, key, entry, maxSize);
         entry.value.then(
             result => {
+                entry.resolved = true;
                 if (missCache && result == null && cache.get(key) === entry) {
                     cache.delete(key);
                     this.setBounded(missCache, key, entry, MISS_CACHE_SIZE);
