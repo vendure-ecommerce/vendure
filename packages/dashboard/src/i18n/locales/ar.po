@@ -1016,10 +1016,6 @@ msgstr "الأبعاد"
 msgid "Show password"
 msgstr "إظهار كلمة المرور"
 
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Capability"
-msgstr ""
-
 #. placeholder {0}: formatCurrency(refund.totalRefundableAmount, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "(max: {0})"
@@ -1390,10 +1386,6 @@ msgstr "تحرير الملف"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "إلغاء الدفع"
-
-#: src/app/routes/_authenticated/_plans/plans.tsx
-msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr ""
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2102,10 +2094,6 @@ msgstr "معطل"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx
 msgid "New promotion"
 msgstr "عرض ترويجي جديد"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Granted"
-msgstr ""
 
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Default Shipping Address"
@@ -2993,14 +2981,6 @@ msgstr "{count, plural, one {هل أنت متأكد أنك تريد إزالة �
 msgid "Search countries..."
 msgstr "البحث في الدول..."
 
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Locked"
-msgstr ""
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Open Vendure Console"
-msgstr ""
-
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Stock on Hand"
@@ -3037,10 +3017,6 @@ msgstr "تعيين موجود"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
 msgstr "إنشاء المتغيرات"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Plan"
-msgstr ""
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
 #: src/lib/components/data-table/human-readable-operator.tsx
@@ -3386,10 +3362,6 @@ msgstr "تم تغيير عنوان الفوترة"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Manage option groups"
-msgstr ""
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "The capability catalog is not available"
 msgstr ""
 
 #: src/lib/components/data-input/select-with-options.tsx
@@ -4275,8 +4247,6 @@ msgstr "الخصائص الخاصة غير مرئية في المتجر"
 msgid "Select a tax category"
 msgstr "حدد فئة ضريبية"
 
-#: src/app/routes/_authenticated/_plans/plans.tsx
-#: src/app/routes/_authenticated/_plans/plans.tsx
 #: src/lib/components/layout/nav-user.tsx
 msgid "Plans"
 msgstr ""
@@ -6303,7 +6273,6 @@ msgstr "اللغة الافتراضية"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "الحالة"
 
@@ -6330,10 +6299,6 @@ msgstr "ثنائي"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "تم تحديث مجموعة الخيارات بنجاح"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
-msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx

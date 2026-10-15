@@ -79,7 +79,16 @@ export function NavUser() {
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem render={<Link to="/plans" />}>
+                                <DropdownMenuItem
+                                    render={
+                                        <a
+                                            href="https://vendure.io/pricing?utm_source=vendure-dashboard"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label="Plans"
+                                        />
+                                    }
+                                >
                                     <Sparkles />
                                     <Trans>Plans</Trans>
                                 </DropdownMenuItem>

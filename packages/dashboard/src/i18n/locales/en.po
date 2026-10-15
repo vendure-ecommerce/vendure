@@ -1016,10 +1016,6 @@ msgstr "Dimensions"
 msgid "Show password"
 msgstr "Show password"
 
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Capability"
-msgstr "Capability"
-
 #. placeholder {0}: formatCurrency(refund.totalRefundableAmount, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "(max: {0})"
@@ -1390,10 +1386,6 @@ msgstr "Edit asset"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "Cancel payment"
-
-#: src/app/routes/_authenticated/_plans/plans.tsx
-msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2102,10 +2094,6 @@ msgstr "Disabled"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx
 msgid "New promotion"
 msgstr "New promotion"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Granted"
-msgstr "Granted"
 
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Default Shipping Address"
@@ -2993,14 +2981,6 @@ msgstr "{count, plural, one {Are you sure you want to remove {count} customer fr
 msgid "Search countries..."
 msgstr "Search countries..."
 
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Locked"
-msgstr "Locked"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Open Vendure Console"
-msgstr "Open Vendure Console"
-
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Stock on Hand"
@@ -3037,10 +3017,6 @@ msgstr "Assign existing"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
 msgstr "Generate variants"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Plan"
-msgstr "Plan"
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
 #: src/lib/components/data-table/human-readable-operator.tsx
@@ -3387,10 +3363,6 @@ msgstr "Billing address changed"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Manage option groups"
 msgstr "Manage option groups"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "The capability catalog is not available"
-msgstr "The capability catalog is not available"
 
 #: src/lib/components/data-input/select-with-options.tsx
 msgid "Select an option"
@@ -4275,8 +4247,6 @@ msgstr "Private facets are not visible in the shop"
 msgid "Select a tax category"
 msgstr "Select a tax category"
 
-#: src/app/routes/_authenticated/_plans/plans.tsx
-#: src/app/routes/_authenticated/_plans/plans.tsx
 #: src/lib/components/layout/nav-user.tsx
 msgid "Plans"
 msgstr "Plans"
@@ -6303,7 +6273,6 @@ msgstr "Default language"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "Status"
 
@@ -6330,10 +6299,6 @@ msgstr "Binary"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "Successfully updated option group"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
-msgstr "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx

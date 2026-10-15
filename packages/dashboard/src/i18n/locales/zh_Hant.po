@@ -1016,10 +1016,6 @@ msgstr "尺寸"
 msgid "Show password"
 msgstr "顯示密碼"
 
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Capability"
-msgstr ""
-
 #. placeholder {0}: formatCurrency(refund.totalRefundableAmount, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "(max: {0})"
@@ -1390,10 +1386,6 @@ msgstr "編輯資源"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "取消付款"
-
-#: src/app/routes/_authenticated/_plans/plans.tsx
-msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr ""
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2102,10 +2094,6 @@ msgstr "已停用"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx
 msgid "New promotion"
 msgstr "新增促銷"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Granted"
-msgstr ""
 
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Default Shipping Address"
@@ -2993,14 +2981,6 @@ msgstr "{count, plural, other {您確定要從此群組中移除{count}位客戶
 msgid "Search countries..."
 msgstr "搜尋國家..."
 
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Locked"
-msgstr ""
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Open Vendure Console"
-msgstr ""
-
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Stock on Hand"
@@ -3037,10 +3017,6 @@ msgstr "指派現有"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
 msgstr "產生變體"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Plan"
-msgstr ""
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
 #: src/lib/components/data-table/human-readable-operator.tsx
@@ -3386,10 +3362,6 @@ msgstr "帳單地址已變更"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Manage option groups"
-msgstr ""
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "The capability catalog is not available"
 msgstr ""
 
 #: src/lib/components/data-input/select-with-options.tsx
@@ -4275,8 +4247,6 @@ msgstr "私人屬性在商店中不可見"
 msgid "Select a tax category"
 msgstr "選取一個稅務類別"
 
-#: src/app/routes/_authenticated/_plans/plans.tsx
-#: src/app/routes/_authenticated/_plans/plans.tsx
 #: src/lib/components/layout/nav-user.tsx
 msgid "Plans"
 msgstr ""
@@ -6303,7 +6273,6 @@ msgstr "預設語言"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "狀態"
 
@@ -6330,10 +6299,6 @@ msgstr "二進位"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "選項群組更新成功"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
-msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx

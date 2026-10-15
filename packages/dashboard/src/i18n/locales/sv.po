@@ -1016,10 +1016,6 @@ msgstr "Mått"
 msgid "Show password"
 msgstr "Visa lösenord"
 
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Capability"
-msgstr ""
-
 #. placeholder {0}: formatCurrency(refund.totalRefundableAmount, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "(max: {0})"
@@ -1390,10 +1386,6 @@ msgstr "Redigera tillgång"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Cancel payment"
 msgstr "Avbryt betalning"
-
-#: src/app/routes/_authenticated/_plans/plans.tsx
-msgid "Paid plans add capabilities to your Vendure application. The list shows which capabilities this application has."
-msgstr ""
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
@@ -2102,10 +2094,6 @@ msgstr "Inaktiverad"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx
 msgid "New promotion"
 msgstr "Ny kampanj"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Granted"
-msgstr ""
 
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Default Shipping Address"
@@ -2993,14 +2981,6 @@ msgstr "{count, plural, one {Är du säker på att du vill ta bort {count} kund 
 msgid "Search countries..."
 msgstr "Sök länder..."
 
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Locked"
-msgstr ""
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Open Vendure Console"
-msgstr ""
-
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Stock on Hand"
@@ -3037,10 +3017,6 @@ msgstr "Tilldela befintlig"
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 msgid "Generate variants"
 msgstr "Generera varianter"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "Plan"
-msgstr ""
 
 #: src/lib/components/data-table/filters/data-table-enum-filter.tsx
 #: src/lib/components/data-table/human-readable-operator.tsx
@@ -3386,10 +3362,6 @@ msgstr "Fakturaadress ändrad"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Manage option groups"
-msgstr ""
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "The capability catalog is not available"
 msgstr ""
 
 #: src/lib/components/data-input/select-with-options.tsx
@@ -4275,8 +4247,6 @@ msgstr "Privata facetter är inte synliga i butiken"
 msgid "Select a tax category"
 msgstr "Välj en skattekategori"
 
-#: src/app/routes/_authenticated/_plans/plans.tsx
-#: src/app/routes/_authenticated/_plans/plans.tsx
 #: src/lib/components/layout/nav-user.tsx
 msgid "Plans"
 msgstr ""
@@ -6303,7 +6273,6 @@ msgstr "Standardspråk"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
 msgid "Status"
 msgstr "Status"
 
@@ -6330,10 +6299,6 @@ msgstr "Binär"
 #: src/app/routes/_authenticated/_option-groups/option-groups_.$id.tsx
 msgid "Successfully updated option group"
 msgstr "Alternativgrupp uppdaterad"
-
-#: src/app/routes/_authenticated/_plans/components/plan-capability-list.tsx
-msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the capabilities of each plan."
-msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx
 #: src/app/routes/_authenticated/_shipping-methods/shipping-methods_.$id.tsx

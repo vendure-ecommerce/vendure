@@ -28,7 +28,6 @@ import { Route as AuthenticatedPromotionsPromotionsRouteImport } from './routes/
 import { Route as AuthenticatedProfileProfileRouteImport } from './routes/_authenticated/_profile/profile'
 import { Route as AuthenticatedProductsProductsRouteImport } from './routes/_authenticated/_products/products'
 import { Route as AuthenticatedProductVariantsProductVariantsRouteImport } from './routes/_authenticated/_product-variants/product-variants'
-import { Route as AuthenticatedPlansPlansRouteImport } from './routes/_authenticated/_plans/plans'
 import { Route as AuthenticatedPaymentMethodsPaymentMethodsRouteImport } from './routes/_authenticated/_payment-methods/payment-methods'
 import { Route as AuthenticatedOrdersOrdersRouteImport } from './routes/_authenticated/_orders/orders'
 import { Route as AuthenticatedOptionGroupsOptionGroupsRouteImport } from './routes/_authenticated/_option-groups/option-groups'
@@ -177,11 +176,6 @@ const AuthenticatedProductVariantsProductVariantsRoute =
     path: '/product-variants',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedPlansPlansRoute = AuthenticatedPlansPlansRouteImport.update({
-  id: '/_plans/plans',
-  path: '/plans',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedPaymentMethodsPaymentMethodsRoute =
   AuthenticatedPaymentMethodsPaymentMethodsRouteImport.update({
     id: '/_payment-methods/payment-methods',
@@ -449,7 +443,6 @@ export interface FileRoutesByFullPath {
   '/option-groups': typeof AuthenticatedOptionGroupsOptionGroupsRoute
   '/orders': typeof AuthenticatedOrdersOrdersRoute
   '/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute
-  '/plans': typeof AuthenticatedPlansPlansRoute
   '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute
   '/products': typeof AuthenticatedProductsProductsRoute
   '/profile': typeof AuthenticatedProfileProfileRoute
@@ -511,7 +504,6 @@ export interface FileRoutesByTo {
   '/option-groups': typeof AuthenticatedOptionGroupsOptionGroupsRoute
   '/orders': typeof AuthenticatedOrdersOrdersRoute
   '/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute
-  '/plans': typeof AuthenticatedPlansPlansRoute
   '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute
   '/products': typeof AuthenticatedProductsProductsRoute
   '/profile': typeof AuthenticatedProfileProfileRoute
@@ -575,7 +567,6 @@ export interface FileRoutesById {
   '/_authenticated/_option-groups/option-groups': typeof AuthenticatedOptionGroupsOptionGroupsRoute
   '/_authenticated/_orders/orders': typeof AuthenticatedOrdersOrdersRoute
   '/_authenticated/_payment-methods/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute
-  '/_authenticated/_plans/plans': typeof AuthenticatedPlansPlansRoute
   '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute
   '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute
   '/_authenticated/_profile/profile': typeof AuthenticatedProfileProfileRoute
@@ -639,7 +630,6 @@ export interface FileRouteTypes {
     | '/option-groups'
     | '/orders'
     | '/payment-methods'
-    | '/plans'
     | '/product-variants'
     | '/products'
     | '/profile'
@@ -701,7 +691,6 @@ export interface FileRouteTypes {
     | '/option-groups'
     | '/orders'
     | '/payment-methods'
-    | '/plans'
     | '/product-variants'
     | '/products'
     | '/profile'
@@ -764,7 +753,6 @@ export interface FileRouteTypes {
     | '/_authenticated/_option-groups/option-groups'
     | '/_authenticated/_orders/orders'
     | '/_authenticated/_payment-methods/payment-methods'
-    | '/_authenticated/_plans/plans'
     | '/_authenticated/_product-variants/product-variants'
     | '/_authenticated/_products/products'
     | '/_authenticated/_profile/profile'
@@ -949,13 +937,6 @@ declare module '@tanstack/react-router' {
       path: '/product-variants'
       fullPath: '/product-variants'
       preLoaderRoute: typeof AuthenticatedProductVariantsProductVariantsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/_plans/plans': {
-      id: '/_authenticated/_plans/plans'
-      path: '/plans'
-      fullPath: '/plans'
-      preLoaderRoute: typeof AuthenticatedPlansPlansRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/_payment-methods/payment-methods': {
@@ -1263,7 +1244,6 @@ interface AuthenticatedRouteChildren {
   AuthenticatedOptionGroupsOptionGroupsRoute: typeof AuthenticatedOptionGroupsOptionGroupsRoute
   AuthenticatedOrdersOrdersRoute: typeof AuthenticatedOrdersOrdersRoute
   AuthenticatedPaymentMethodsPaymentMethodsRoute: typeof AuthenticatedPaymentMethodsPaymentMethodsRoute
-  AuthenticatedPlansPlansRoute: typeof AuthenticatedPlansPlansRoute
   AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute
   AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute
   AuthenticatedProfileProfileRoute: typeof AuthenticatedProfileProfileRoute
@@ -1329,7 +1309,6 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOrdersOrdersRoute: AuthenticatedOrdersOrdersRoute,
   AuthenticatedPaymentMethodsPaymentMethodsRoute:
     AuthenticatedPaymentMethodsPaymentMethodsRoute,
-  AuthenticatedPlansPlansRoute: AuthenticatedPlansPlansRoute,
   AuthenticatedProductVariantsProductVariantsRoute:
     AuthenticatedProductVariantsProductVariantsRoute,
   AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,
