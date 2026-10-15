@@ -845,6 +845,10 @@ msgstr "切換標題列"
 msgid "useWidgetConfig must be used within an Insights page widget"
 msgstr "useWidgetConfig 必須在洞察頁面的小工具內使用"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Send email"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx
 msgid "Select address"
 msgstr "選取地址"
@@ -1103,6 +1107,11 @@ msgstr ""
 #: src/lib/components/shared/error-page.tsx
 msgid "Page not found"
 msgstr "找不到頁面"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Failed to send password reset email"
+msgstr ""
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
@@ -1555,6 +1564,10 @@ msgstr "使用全域缺貨臨界值"
 msgid "Payment state updated successfully"
 msgstr "付款狀態已成功更新"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Password reset email sent"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
 msgstr "新建"
@@ -1943,6 +1956,7 @@ msgstr "插入 {row}×{col} 表格"
 #: src/app/routes/_authenticated/_api-keys/components/rotate-api-key-button.tsx
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx
@@ -5589,6 +5603,8 @@ msgstr "發錯商品"
 msgid "Summary of modifications"
 msgstr "修改摘要"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/lib/components/login/reset-password-form.tsx
 msgid "Reset password"
 msgstr "重設密碼"
@@ -6177,6 +6193,10 @@ msgstr "{0} 的預覽"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "已成功更新賣家"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Sends the customer an email with a link to set a new password. Their current password keeps working until they do."
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

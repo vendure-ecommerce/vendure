@@ -845,6 +845,10 @@ msgstr "Toggle header row"
 msgid "useWidgetConfig must be used within an Insights page widget"
 msgstr "useWidgetConfig must be used within an Insights page widget"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Send email"
+msgstr "Send email"
+
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx
 msgid "Select address"
 msgstr "Select address"
@@ -1103,6 +1107,11 @@ msgstr "Update address"
 #: src/lib/components/shared/error-page.tsx
 msgid "Page not found"
 msgstr "Page not found"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Failed to send password reset email"
+msgstr "Failed to send password reset email"
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
@@ -1555,6 +1564,10 @@ msgstr "Use global out-of-stock threshold"
 msgid "Payment state updated successfully"
 msgstr "Payment state updated successfully"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Password reset email sent"
+msgstr "Password reset email sent"
+
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
 msgstr "Create new"
@@ -1943,6 +1956,7 @@ msgstr "Insert {row} by {col} table"
 #: src/app/routes/_authenticated/_api-keys/components/rotate-api-key-button.tsx
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx
@@ -5589,6 +5603,8 @@ msgstr "Wrong item shipped"
 msgid "Summary of modifications"
 msgstr "Summary of modifications"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/lib/components/login/reset-password-form.tsx
 msgid "Reset password"
 msgstr "Reset password"
@@ -6177,6 +6193,10 @@ msgstr "Preview of {0}"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "Successfully updated seller"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Sends the customer an email with a link to set a new password. Their current password keeps working until they do."
+msgstr "Sends the customer an email with a link to set a new password. Their current password keeps working until they do."
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

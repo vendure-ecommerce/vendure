@@ -612,7 +612,7 @@ export class CustomerService {
      * a token which can be used in the `resetPassword()` method.
      */
     async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
-        const user = await this.userService.setPasswordResetToken(ctx, emailAddress);
+        const user = await this.userService.setPasswordResetToken(ctx, emailAddress, 'customer');
         if (user) {
             await this.eventBus.publish(new PasswordResetEvent(ctx, user));
             const customer = await this.findOneByUserId(ctx, user.id);

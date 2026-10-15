@@ -817,6 +817,10 @@ msgstr "Comută rândul antet"
 msgid "useWidgetConfig must be used within an Insights page widget"
 msgstr "useWidgetConfig trebuie folosit în interiorul unui widget al paginii Perspective"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Send email"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/customer-address-selector.tsx
 msgid "Select address"
 msgstr "Selectează adresa"
@@ -1075,6 +1079,11 @@ msgstr ""
 #: src/lib/components/shared/error-page.tsx
 msgid "Page not found"
 msgstr "Pagina nu a fost găsită"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Failed to send password reset email"
+msgstr ""
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
@@ -1515,6 +1524,10 @@ msgstr "Folosește pragul global de stoc epuizat"
 msgid "Payment state updated successfully"
 msgstr "Status plată actualizat cu succes"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Password reset email sent"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
 msgstr "Creează nou"
@@ -1890,6 +1903,7 @@ msgstr "Inserează tabel de {row} pe {col}"
 #: src/app/routes/_authenticated/_api-keys/components/rotate-api-key-button.tsx
 #: src/app/routes/_authenticated/_assets/components/manage-tags-dialog.tsx
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_orders/components/add-manual-payment-dialog.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfill-order-dialog.tsx
@@ -5437,6 +5451,8 @@ msgstr "Articol greșit"
 msgid "Summary of modifications"
 msgstr "Rezumat modificări"
 
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/lib/components/login/reset-password-form.tsx
 msgid "Reset password"
 msgstr "Resetează parola"
@@ -6001,6 +6017,10 @@ msgstr "Previzualizare a {0}"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "Vânzătorul a fost actualizat cu succes"
+
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
+msgid "Sends the customer an email with a link to set a new password. Their current password keeps working until they do."
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

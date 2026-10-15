@@ -186,7 +186,9 @@ function CustomerDetailPage() {
                         <ResetPasswordDialog
                             customerId={entity.id}
                             onSent={() =>
-                                queryClient.invalidateQueries({ queryKey: customerHistoryQueryKey(entity.id) })
+                                queryClient.invalidateQueries({
+                                    queryKey: customerHistoryQueryKey(entity.id),
+                                })
                             }
                         />
                     </ActionBarItem>
@@ -496,11 +498,7 @@ function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSen
                     <DialogClose render={<Button type="button" variant="secondary" />}>
                         <Trans>Cancel</Trans>
                     </DialogClose>
-                    <Button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => resetPassword({ customerId })}
-                    >
+                    <Button type="button" disabled={isPending} onClick={() => resetPassword({ customerId })}>
                         <Trans>Send email</Trans>
                     </Button>
                 </DialogFooter>

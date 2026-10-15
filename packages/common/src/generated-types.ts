@@ -1575,6 +1575,18 @@ export type CustomerOrdersArgs = {
   options?: InputMaybe<OrderListOptions>;
 };
 
+/**
+ * Returned when an administrator action does not apply to the Customer's account state, e.g.
+ * resetting the password of a guest Customer or of one who has not verified their account.
+ * `accountState` is one of `guest`, `registered` or `verified`.
+ */
+export type CustomerAccountStateError = ErrorResult & {
+  __typename?: 'CustomerAccountStateError';
+  accountState: Scalars['String']['output'];
+  errorCode: ErrorCode;
+  message: Scalars['String']['output'];
+};
+
 export type CustomerFilterParameter = {
   _and?: InputMaybe<Array<CustomerFilterParameter>>;
   _or?: InputMaybe<Array<CustomerFilterParameter>>;
@@ -1826,6 +1838,7 @@ export enum ErrorCode {
   COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
   COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
   CREATE_FULFILLMENT_ERROR = 'CREATE_FULFILLMENT_ERROR',
+  CUSTOMER_ACCOUNT_STATE_ERROR = 'CUSTOMER_ACCOUNT_STATE_ERROR',
   DUPLICATE_ENTITY_ERROR = 'DUPLICATE_ENTITY_ERROR',
   EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
@@ -3189,6 +3202,12 @@ export type Mutation = {
    */
   requestPasswordReset?: Maybe<RequestPasswordResetResult>;
   /**
+   * Sends a verified Customer a password reset email. The same as the Customer calling
+   * `requestPasswordReset` from the Shop API: a reset token is issued and a `PasswordResetEvent`
+   * is published, so the configured email handler sends the Customer a reset link.
+   */
+  resetCustomerPasswordAsAdmin: ResetCustomerPasswordAsAdminResult;
+  /**
    * Resets an Administrator's password based on the provided token, which is obtained via the email
    * sent as a result of the `requestPasswordReset` mutation. Upon success, the Administrator will be
    * signed in.
@@ -3951,6 +3970,11 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
 
 export type MutationRequestPasswordResetArgs = {
   emailAddress: Scalars['String']['input'];
+};
+
+
+export type MutationResetCustomerPasswordAsAdminArgs = {
+  customerId: Scalars['ID']['input'];
 };
 
 
@@ -6314,6 +6338,8 @@ export type RemoveStockLocationsFromChannelInput = {
 };
 
 export type RequestPasswordResetResult = NativeAuthStrategyError | Success;
+
+export type ResetCustomerPasswordAsAdminResult = CustomerAccountStateError | Success;
 
 export type ResetPasswordResult = CurrentUser | NativeAuthStrategyError | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError;
 

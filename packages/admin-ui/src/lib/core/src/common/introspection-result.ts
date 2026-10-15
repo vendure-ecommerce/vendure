@@ -71,6 +71,7 @@ const result: PossibleTypesResultData = {
             'CouponCodeInvalidError',
             'CouponCodeLimitError',
             'CreateFulfillmentError',
+            'CustomerAccountStateError',
             'DuplicateEntityError',
             'EmailAddressConflictError',
             'EmptyOrderLineSelectionError',
@@ -229,6 +230,7 @@ const result: PossibleTypesResultData = {
         RemoveOrderItemsResult: ['Order', 'OrderInterceptorError', 'OrderModificationError'],
         RemoveProductOptionGroupFromChannelResult: ['ProductOptionGroup', 'ProductOptionGroupInUseError'],
         RequestPasswordResetResult: ['NativeAuthStrategyError', 'Success'],
+        ResetCustomerPasswordAsAdminResult: ['CustomerAccountStateError', 'Success'],
         ResetPasswordResult: [
             'CurrentUser',
             'NativeAuthStrategyError',

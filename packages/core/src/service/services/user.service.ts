@@ -456,8 +456,12 @@ export class UserService {
      * Sets the {@link NativeAuthenticationMethod} `passwordResetToken` as part of the User password reset
      * flow.
      */
-    async setPasswordResetToken(ctx: RequestContext, emailAddress: string): Promise<User | undefined> {
-        const user = await this.getUserByEmailAddress(ctx, emailAddress);
+    async setPasswordResetToken(
+        ctx: RequestContext,
+        emailAddress: string,
+        userType?: 'administrator' | 'customer',
+    ): Promise<User | undefined> {
+        const user = await this.getUserByEmailAddress(ctx, emailAddress, userType);
         if (!user) {
             return;
         }
