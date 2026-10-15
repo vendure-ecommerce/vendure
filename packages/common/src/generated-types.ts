@@ -1575,18 +1575,6 @@ export type CustomerOrdersArgs = {
   options?: InputMaybe<OrderListOptions>;
 };
 
-/**
- * Returned when an administrator action does not apply to the Customer's account state, e.g.
- * resetting the password of a guest Customer or of one who has not verified their account.
- * `accountState` is one of `guest`, `registered` or `verified`.
- */
-export type CustomerAccountStateError = ErrorResult & {
-  __typename?: 'CustomerAccountStateError';
-  accountState: Scalars['String']['output'];
-  errorCode: ErrorCode;
-  message: Scalars['String']['output'];
-};
-
 export type CustomerFilterParameter = {
   _and?: InputMaybe<Array<CustomerFilterParameter>>;
   _or?: InputMaybe<Array<CustomerFilterParameter>>;
@@ -1838,7 +1826,6 @@ export enum ErrorCode {
   COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
   COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
   CREATE_FULFILLMENT_ERROR = 'CREATE_FULFILLMENT_ERROR',
-  CUSTOMER_ACCOUNT_STATE_ERROR = 'CUSTOMER_ACCOUNT_STATE_ERROR',
   DUPLICATE_ENTITY_ERROR = 'DUPLICATE_ENTITY_ERROR',
   EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
@@ -3196,17 +3183,20 @@ export type Mutation = {
   /** Removes StockLocations from the specified Channel */
   removeStockLocationsFromChannel: Array<StockLocation>;
   /**
+   * Sends the Customer a password reset email, the same as the Customer calling
+   * `requestPasswordReset` from the Shop API. A Customer who has not verified their account is
+   * verified when they complete the reset.
+   *
+   * Throws for a Customer with no User (a guest checkout), and for a User with no native
+   * authentication method, since neither has a password to reset.
+   */
+  requestCustomerPasswordReset: Success;
+  /**
    * Requests a password reset email to be sent to the Administrator with the given email address. To
    * prevent leaking information about which email addresses exist, the mutation resolves to `Success`
    * even if no Administrator with that email address was found.
    */
   requestPasswordReset?: Maybe<RequestPasswordResetResult>;
-  /**
-   * Sends a verified Customer a password reset email. The same as the Customer calling
-   * `requestPasswordReset` from the Shop API: a reset token is issued and a `PasswordResetEvent`
-   * is published, so the configured email handler sends the Customer a reset link.
-   */
-  resetCustomerPasswordAsAdmin: ResetCustomerPasswordAsAdminResult;
   /**
    * Resets an Administrator's password based on the provided token, which is obtained via the email
    * sent as a result of the `requestPasswordReset` mutation. Upon success, the Administrator will be
@@ -3968,13 +3958,13 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
 };
 
 
-export type MutationRequestPasswordResetArgs = {
-  emailAddress: Scalars['String']['input'];
+export type MutationRequestCustomerPasswordResetArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
-export type MutationResetCustomerPasswordAsAdminArgs = {
-  customerId: Scalars['ID']['input'];
+export type MutationRequestPasswordResetArgs = {
+  emailAddress: Scalars['String']['input'];
 };
 
 
@@ -6338,8 +6328,6 @@ export type RemoveStockLocationsFromChannelInput = {
 };
 
 export type RequestPasswordResetResult = NativeAuthStrategyError | Success;
-
-export type ResetCustomerPasswordAsAdminResult = CustomerAccountStateError | Success;
 
 export type ResetPasswordResult = CurrentUser | NativeAuthStrategyError | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError;
 

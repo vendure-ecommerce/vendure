@@ -1113,7 +1113,6 @@ msgid "Page not found"
 msgstr "Pagina niet gevonden"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Failed to send password reset email"
 msgstr ""
 

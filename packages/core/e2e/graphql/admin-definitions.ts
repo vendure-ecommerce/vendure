@@ -495,18 +495,10 @@ export const testRemoveStockLocationsFromChannelDocument = graphql(`
     }
 `);
 
-export const resetCustomerPasswordAsAdminDocument = graphql(`
-    mutation ResetCustomerPasswordAsAdmin($customerId: ID!) {
-        resetCustomerPasswordAsAdmin(customerId: $customerId) {
-            __typename
-            ... on Success {
-                success
-            }
-            ... on CustomerAccountStateError {
-                errorCode
-                message
-                accountState
-            }
+export const requestCustomerPasswordResetDocument = graphql(`
+    mutation RequestCustomerPasswordReset($id: ID!) {
+        requestCustomerPasswordReset(id: $id) {
+            success
         }
     }
 `);

@@ -49,7 +49,7 @@ import {
     createCustomerDocument,
     customerDetailDocument,
     removeCustomerFromGroupDocument,
-    resetCustomerPasswordAsAdminDocument,
+    requestCustomerPasswordResetDocument,
     updateCustomerDocument,
     verifyCustomerAccountDocument,
 } from './customers.graphql.js';
@@ -181,7 +181,7 @@ function CustomerDetailPage() {
                         <VerifyAccountDialog customerId={entity.id} onVerified={refreshEntity} />
                     </ActionBarItem>
                 )}
-                {entity?.user?.verified && (
+                {entity?.user && (
                     <ActionBarItem itemId="reset-password-button" requiresPermission={['UpdateCustomer']}>
                         <ResetPasswordDialog
                             customerId={entity.id}
@@ -450,22 +450,16 @@ function VerifyAccountDialog({ customerId, onVerified }: { customerId: string; o
 }
 
 /**
- * Sends a verified Customer a password reset email. The Customer sets the new password themselves
- * through the reset link.
+ * Sends the Customer a password reset email. The Customer sets the new password themselves through
+ * the reset link.
  */
 function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSent: () => void }) {
     const { t } = useLingui();
     const [open, setOpen] = useState(false);
 
-    const { mutate: resetPassword, isPending } = useMutation({
-        mutationFn: api.mutate(resetCustomerPasswordAsAdminDocument),
-        onSuccess: ({
-            resetCustomerPasswordAsAdmin: result,
-        }: ResultOf<typeof resetCustomerPasswordAsAdminDocument>) => {
-            if (result.__typename !== 'Success') {
-                toast.error(t`Failed to send password reset email`, { description: result.message });
-                return;
-            }
+    const { mutate: requestPasswordReset, isPending } = useMutation({
+        mutationFn: api.mutate(requestCustomerPasswordResetDocument),
+        onSuccess: () => {
             toast.success(t`Password reset email sent`);
             setOpen(false);
             onSent();
@@ -498,7 +492,11 @@ function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSen
                     <DialogClose render={<Button type="button" variant="secondary" />}>
                         <Trans>Cancel</Trans>
                     </DialogClose>
-                    <Button type="button" disabled={isPending} onClick={() => resetPassword({ customerId })}>
+                    <Button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => requestPasswordReset({ id: customerId })}
+                    >
                         <Trans>Send email</Trans>
                     </Button>
                 </DialogFooter>

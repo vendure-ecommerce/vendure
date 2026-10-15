@@ -29,10 +29,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
-import {
-    CustomerAccountStateError,
-    EmailAddressConflictError as EmailAddressConflictAdminError,
-} from '../../common/error/generated-graphql-admin-errors';
+import { EmailAddressConflictError as EmailAddressConflictAdminError } from '../../common/error/generated-graphql-admin-errors';
 import {
     EmailAddressConflictError,
     IdentifierChangeTokenExpiredError,
@@ -660,26 +657,27 @@ export class CustomerService {
 
     /**
      * @description
-     * Sends a verified Customer a password reset email on behalf of an administrator. The same as the
-     * Customer calling `requestPasswordReset` from the Shop API: a reset token is issued and a
-     * {@link PasswordResetEvent} is published.
+     * Sends the Customer a password reset email on behalf of an administrator, the same as
+     * {@link CustomerService.requestPasswordReset}. A Customer who has not verified their account is
+     * verified when they complete the reset.
+     *
+     * A Customer with no User (a guest checkout), or whose User has no native authentication method,
+     * has no password to reset, and is rejected.
+     *
+     * @since 3.9.0
      */
-    async resetCustomerPasswordAsAdmin(
-        ctx: RequestContext,
-        customerId: ID,
-    ): Promise<{ success: boolean } | CustomerAccountStateError> {
-        const customer = await this.findOne(ctx, customerId, ['user']);
-        if (!customer) {
-            throw new EntityNotFoundError('Customer', customerId);
-        }
+    async requestCustomerPasswordReset(ctx: RequestContext, customerId: ID): Promise<void> {
+        const customer = await this.connection.getEntityOrThrow(ctx, Customer, customerId, {
+            channelId: ctx.channelId,
+            relations: ['user', 'user.authenticationMethods'],
+        });
         if (!customer.user) {
-            return new CustomerAccountStateError({ accountState: 'guest' });
+            throw new UserInputError('error.customer-has-no-user-account');
         }
-        if (!customer.user.verified) {
-            return new CustomerAccountStateError({ accountState: 'registered' });
+        if (!customer.user.getNativeAuthenticationMethod(false)) {
+            throw new UserInputError('error.cannot-set-password-without-native-credential');
         }
-        await this.requestPasswordReset(ctx, customer.emailAddress);
-        return { success: true };
+        await this.requestPasswordReset(ctx, customer.user.identifier);
     }
 
     /**

@@ -1115,7 +1115,6 @@ msgid "Page not found"
 msgstr "Страницата не е намерена"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Failed to send password reset email"
 msgstr ""
 
