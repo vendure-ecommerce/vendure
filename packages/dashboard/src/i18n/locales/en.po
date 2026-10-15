@@ -617,6 +617,10 @@ msgstr "Successfully created product option"
 msgid "Create new customer"
 msgstr "Create new customer"
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
+msgstr "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
+
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr "We couldn't load the stock levels"
@@ -1016,6 +1020,10 @@ msgstr "Dimensions"
 msgid "Show password"
 msgstr "Show password"
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Capability"
+msgstr "Capability"
+
 #. placeholder {0}: formatCurrency(refund.totalRefundableAmount, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "(max: {0})"
@@ -1275,8 +1283,8 @@ msgid "Table settings"
 msgstr "Table settings"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Explore Platform & Cloud"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Explore Platform & Cloud"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -2094,6 +2102,10 @@ msgstr "Disabled"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx
 msgid "New promotion"
 msgstr "New promotion"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Granted"
+msgstr "Granted"
 
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Default Shipping Address"
@@ -2981,6 +2993,14 @@ msgstr "{count, plural, one {Are you sure you want to remove {count} customer fr
 msgid "Search countries..."
 msgstr "Search countries..."
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Locked"
+msgstr "Locked"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Open Vendure Console"
+msgstr "Open Vendure Console"
+
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Stock on Hand"
@@ -3363,6 +3383,10 @@ msgstr "Billing address changed"
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Manage option groups"
 msgstr "Manage option groups"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "The capability catalog is not available"
+msgstr "The capability catalog is not available"
 
 #: src/lib/components/data-input/select-with-options.tsx
 msgid "Select an option"
@@ -4304,6 +4328,10 @@ msgstr "Failed to create payment method"
 msgid "Successfully created facet value"
 msgstr "Successfully created facet value"
 
+#: src/app/routes/_authenticated/_platform/platform.tsx
+msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Marketing"
@@ -4599,6 +4627,10 @@ msgstr "No alerts"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "Moving {0} collection{1} into {2}"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Tier"
+msgstr "Tier"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5802,6 +5834,12 @@ msgstr "Variant deleted successfully"
 #~ msgid "Edit the selected link properties"
 #~ msgstr "Edit the selected link properties"
 
+#: src/app/routes/_authenticated/_platform/platform.tsx
+#: src/app/routes/_authenticated/_platform/platform.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Vendure Platform"
+msgstr "Vendure Platform"
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6269,6 +6307,7 @@ msgstr "Default language"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
 msgid "Status"
 msgstr "Status"
 

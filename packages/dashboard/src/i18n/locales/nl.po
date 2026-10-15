@@ -617,6 +617,10 @@ msgstr "Productoptie succesvol aangemaakt"
 msgid "Create new customer"
 msgstr ""
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
+msgstr ""
+
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr "We konden de voorraadniveaus niet laden"
@@ -1016,6 +1020,10 @@ msgstr "Afmetingen"
 msgid "Show password"
 msgstr "Wachtwoord tonen"
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Capability"
+msgstr ""
+
 #. placeholder {0}: formatCurrency(refund.totalRefundableAmount, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "(max: {0})"
@@ -1279,8 +1287,8 @@ msgid "Table settings"
 msgstr "Tabelinstellingen"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Platform en Cloud verkennen"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Platform en Cloud verkennen"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -2098,6 +2106,10 @@ msgstr "Uitgeschakeld"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx
 msgid "New promotion"
 msgstr "Nieuwe promotie"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Granted"
+msgstr ""
 
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Default Shipping Address"
@@ -2979,6 +2991,14 @@ msgstr "{count, plural, one {Weet u zeker dat u {count} klant uit deze groep wil
 msgid "Search countries..."
 msgstr "Landen zoeken..."
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Locked"
+msgstr ""
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Open Vendure Console"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Stock on Hand"
@@ -3356,6 +3376,10 @@ msgstr "Factuuradres gewijzigd"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Manage option groups"
+msgstr ""
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "The capability catalog is not available"
 msgstr ""
 
 #: src/lib/components/data-input/select-with-options.tsx
@@ -4295,6 +4319,10 @@ msgstr "Betaalmethode aanmaken mislukt"
 msgid "Successfully created facet value"
 msgstr "Facetwaarde succesvol aangemaakt"
 
+#: src/app/routes/_authenticated/_platform/platform.tsx
+msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr ""
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Marketing"
@@ -4590,6 +4618,10 @@ msgstr "Geen meldingen"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "{0} collectie(s) verplaatsen naar {2}"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Tier"
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5797,6 +5829,12 @@ msgstr "Variant succesvol verwijderd"
 #~ msgid "Edit the selected link properties"
 #~ msgstr "De eigenschappen van de geselecteerde link bewerken"
 
+#: src/app/routes/_authenticated/_platform/platform.tsx
+#: src/app/routes/_authenticated/_platform/platform.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Vendure Platform"
+msgstr ""
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6264,6 +6302,7 @@ msgstr "Standaardtaal"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
 msgid "Status"
 msgstr "Status"
 

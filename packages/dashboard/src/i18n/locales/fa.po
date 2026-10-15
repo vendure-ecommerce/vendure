@@ -617,6 +617,10 @@ msgstr "گزینه محصول با موفقیت ایجاد شد"
 msgid "Create new customer"
 msgstr ""
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
+msgstr ""
+
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr "نتوانستیم سطوح موجودی را بارگذاری کنیم"
@@ -1016,6 +1020,10 @@ msgstr "ابعاد"
 msgid "Show password"
 msgstr "نمایش رمز عبور"
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Capability"
+msgstr ""
+
 #. placeholder {0}: formatCurrency(refund.totalRefundableAmount, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "(max: {0})"
@@ -1275,8 +1283,8 @@ msgid "Table settings"
 msgstr "تنظیمات جدول"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "کاوش پلتفرم و ابر"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "کاوش پلتفرم و ابر"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -2094,6 +2102,10 @@ msgstr "غیرفعال"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx
 msgid "New promotion"
 msgstr "تبلیغات جدید"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Granted"
+msgstr ""
 
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Default Shipping Address"
@@ -2981,6 +2993,14 @@ msgstr "{count, plural, one {آیا مطمئن هستید که می‌خواهی
 msgid "Search countries..."
 msgstr "جستجوی کشورها..."
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Locked"
+msgstr ""
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Open Vendure Console"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Stock on Hand"
@@ -3362,6 +3382,10 @@ msgstr "آدرس صورتحساب تغییر کرد"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Manage option groups"
+msgstr ""
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "The capability catalog is not available"
 msgstr ""
 
 #: src/lib/components/data-input/select-with-options.tsx
@@ -4304,6 +4328,10 @@ msgstr "ایجاد روش پرداخت ناموفق بود"
 msgid "Successfully created facet value"
 msgstr "مقدار ویژگی با موفقیت ایجاد شد"
 
+#: src/app/routes/_authenticated/_platform/platform.tsx
+msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr ""
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Marketing"
@@ -4599,6 +4627,10 @@ msgstr "هیچ هشداری وجود ندارد"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "جابجایی {0} مجموعه به {2}"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Tier"
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5802,6 +5834,12 @@ msgstr "نوع با موفقیت حذف شد"
 #~ msgid "Edit the selected link properties"
 #~ msgstr "ویرایش ویژگی‌های لینک انتخاب شده"
 
+#: src/app/routes/_authenticated/_platform/platform.tsx
+#: src/app/routes/_authenticated/_platform/platform.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Vendure Platform"
+msgstr ""
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6269,6 +6307,7 @@ msgstr "زبان پیش‌فرض"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
 msgid "Status"
 msgstr "وضعیت"
 

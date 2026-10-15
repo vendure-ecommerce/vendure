@@ -617,6 +617,10 @@ msgstr "उत्पादन विकल्प सफलतापूर्व�
 msgid "Create new customer"
 msgstr ""
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "The Dashboard cannot get the capability list from Vendure Console. Open Vendure Console to see the Vendure Platform capabilities."
+msgstr ""
+
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
 msgid "We couldn't load the stock levels"
 msgstr "हामीले स्टक स्तरहरू लोड गर्न सकेनौं"
@@ -1016,6 +1020,10 @@ msgstr "आयाम"
 msgid "Show password"
 msgstr "पासवर्ड देखाउनुहोस्"
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Capability"
+msgstr ""
+
 #. placeholder {0}: formatCurrency(refund.totalRefundableAmount, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "(max: {0})"
@@ -1275,8 +1283,8 @@ msgid "Table settings"
 msgstr "तालिका सेटिङहरू"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Platform & Cloud अन्वेषण गर्नुहोस्"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Platform & Cloud अन्वेषण गर्नुहोस्"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -2094,6 +2102,10 @@ msgstr "असक्षम"
 #: src/app/routes/_authenticated/_promotions/promotions_.$id.tsx
 msgid "New promotion"
 msgstr "नयाँ प्रमोशन"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Granted"
+msgstr ""
 
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Default Shipping Address"
@@ -2981,6 +2993,14 @@ msgstr "{count, plural, one {के तपाईं यो समूहबाट
 msgid "Search countries..."
 msgstr "देशहरू खोज्नुहोस्..."
 
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Locked"
+msgstr ""
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Open Vendure Console"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Stock on Hand"
@@ -3362,6 +3382,10 @@ msgstr "बिलिङ ठेगाना परिवर्तन भयो"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Manage option groups"
+msgstr ""
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "The capability catalog is not available"
 msgstr ""
 
 #: src/lib/components/data-input/select-with-options.tsx
@@ -4304,6 +4328,10 @@ msgstr "भुक्तानी विधि सिर्जना गर्न
 msgid "Successfully created facet value"
 msgstr "विशेषता मान सफलतापूर्वक सिर्जना गरियो"
 
+#: src/app/routes/_authenticated/_platform/platform.tsx
+msgid "Vendure Platform adds capabilities to your Vendure application. The list shows which capabilities this application has."
+msgstr ""
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Marketing"
@@ -4599,6 +4627,10 @@ msgstr "कुनै सतर्कता छैन"
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Moving {0} collection{1} into {2}"
 msgstr "{0} संग्रह(हरू) {2} मा सार्दै"
+
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
+msgid "Tier"
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -5802,6 +5834,12 @@ msgstr "भेरियन्ट सफलतापूर्वक मेटि�
 #~ msgid "Edit the selected link properties"
 #~ msgstr "चयन गरिएको लिंकको गुणहरू सम्पादन गर्नुहोस्"
 
+#: src/app/routes/_authenticated/_platform/platform.tsx
+#: src/app/routes/_authenticated/_platform/platform.tsx
+#: src/lib/components/layout/nav-user.tsx
+msgid "Vendure Platform"
+msgstr ""
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Sales"
@@ -6269,6 +6307,7 @@ msgstr "पूर्वनिर्धारित भाषा"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 #: src/app/routes/_authenticated/_customers/customers.tsx
+#: src/app/routes/_authenticated/_platform/components/platform-capability-list.tsx
 msgid "Status"
 msgstr "स्थिति"
 

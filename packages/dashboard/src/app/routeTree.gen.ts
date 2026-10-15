@@ -28,6 +28,7 @@ import { Route as AuthenticatedPromotionsPromotionsRouteImport } from './routes/
 import { Route as AuthenticatedProfileProfileRouteImport } from './routes/_authenticated/_profile/profile'
 import { Route as AuthenticatedProductsProductsRouteImport } from './routes/_authenticated/_products/products'
 import { Route as AuthenticatedProductVariantsProductVariantsRouteImport } from './routes/_authenticated/_product-variants/product-variants'
+import { Route as AuthenticatedPlatformPlatformRouteImport } from './routes/_authenticated/_platform/platform'
 import { Route as AuthenticatedPaymentMethodsPaymentMethodsRouteImport } from './routes/_authenticated/_payment-methods/payment-methods'
 import { Route as AuthenticatedOrdersOrdersRouteImport } from './routes/_authenticated/_orders/orders'
 import { Route as AuthenticatedOptionGroupsOptionGroupsRouteImport } from './routes/_authenticated/_option-groups/option-groups'
@@ -174,6 +175,12 @@ const AuthenticatedProductVariantsProductVariantsRoute =
   AuthenticatedProductVariantsProductVariantsRouteImport.update({
     id: '/_product-variants/product-variants',
     path: '/product-variants',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPlatformPlatformRoute =
+  AuthenticatedPlatformPlatformRouteImport.update({
+    id: '/_platform/platform',
+    path: '/platform',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedPaymentMethodsPaymentMethodsRoute =
@@ -443,6 +450,7 @@ export interface FileRoutesByFullPath {
   '/option-groups': typeof AuthenticatedOptionGroupsOptionGroupsRoute
   '/orders': typeof AuthenticatedOrdersOrdersRoute
   '/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute
+  '/platform': typeof AuthenticatedPlatformPlatformRoute
   '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute
   '/products': typeof AuthenticatedProductsProductsRoute
   '/profile': typeof AuthenticatedProfileProfileRoute
@@ -504,6 +512,7 @@ export interface FileRoutesByTo {
   '/option-groups': typeof AuthenticatedOptionGroupsOptionGroupsRoute
   '/orders': typeof AuthenticatedOrdersOrdersRoute
   '/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute
+  '/platform': typeof AuthenticatedPlatformPlatformRoute
   '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute
   '/products': typeof AuthenticatedProductsProductsRoute
   '/profile': typeof AuthenticatedProfileProfileRoute
@@ -567,6 +576,7 @@ export interface FileRoutesById {
   '/_authenticated/_option-groups/option-groups': typeof AuthenticatedOptionGroupsOptionGroupsRoute
   '/_authenticated/_orders/orders': typeof AuthenticatedOrdersOrdersRoute
   '/_authenticated/_payment-methods/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute
+  '/_authenticated/_platform/platform': typeof AuthenticatedPlatformPlatformRoute
   '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute
   '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute
   '/_authenticated/_profile/profile': typeof AuthenticatedProfileProfileRoute
@@ -630,6 +640,7 @@ export interface FileRouteTypes {
     | '/option-groups'
     | '/orders'
     | '/payment-methods'
+    | '/platform'
     | '/product-variants'
     | '/products'
     | '/profile'
@@ -691,6 +702,7 @@ export interface FileRouteTypes {
     | '/option-groups'
     | '/orders'
     | '/payment-methods'
+    | '/platform'
     | '/product-variants'
     | '/products'
     | '/profile'
@@ -753,6 +765,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_option-groups/option-groups'
     | '/_authenticated/_orders/orders'
     | '/_authenticated/_payment-methods/payment-methods'
+    | '/_authenticated/_platform/platform'
     | '/_authenticated/_product-variants/product-variants'
     | '/_authenticated/_products/products'
     | '/_authenticated/_profile/profile'
@@ -937,6 +950,13 @@ declare module '@tanstack/react-router' {
       path: '/product-variants'
       fullPath: '/product-variants'
       preLoaderRoute: typeof AuthenticatedProductVariantsProductVariantsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/_platform/platform': {
+      id: '/_authenticated/_platform/platform'
+      path: '/platform'
+      fullPath: '/platform'
+      preLoaderRoute: typeof AuthenticatedPlatformPlatformRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/_payment-methods/payment-methods': {
@@ -1244,6 +1264,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedOptionGroupsOptionGroupsRoute: typeof AuthenticatedOptionGroupsOptionGroupsRoute
   AuthenticatedOrdersOrdersRoute: typeof AuthenticatedOrdersOrdersRoute
   AuthenticatedPaymentMethodsPaymentMethodsRoute: typeof AuthenticatedPaymentMethodsPaymentMethodsRoute
+  AuthenticatedPlatformPlatformRoute: typeof AuthenticatedPlatformPlatformRoute
   AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute
   AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute
   AuthenticatedProfileProfileRoute: typeof AuthenticatedProfileProfileRoute
@@ -1309,6 +1330,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOrdersOrdersRoute: AuthenticatedOrdersOrdersRoute,
   AuthenticatedPaymentMethodsPaymentMethodsRoute:
     AuthenticatedPaymentMethodsPaymentMethodsRoute,
+  AuthenticatedPlatformPlatformRoute: AuthenticatedPlatformPlatformRoute,
   AuthenticatedProductVariantsProductVariantsRoute:
     AuthenticatedProductVariantsProductVariantsRoute,
   AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,

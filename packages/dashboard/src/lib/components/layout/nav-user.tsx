@@ -79,18 +79,9 @@ export function NavUser() {
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem
-                                    render={
-                                        <a
-                                            href="https://vendure.io/pricing"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            aria-label="Explore Platform & Cloud"
-                                        />
-                                    }
-                                >
+                                <DropdownMenuItem render={<Link to="/platform" />}>
                                     <Sparkles />
-                                    <Trans>Explore Platform & Cloud</Trans>
+                                    <Trans>Vendure Platform</Trans>
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
