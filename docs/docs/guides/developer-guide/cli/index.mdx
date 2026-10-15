@@ -472,9 +472,15 @@ With `VENDURE_DISABLE_TELEMETRY=true` (or `1`), the link sends no installation I
 project that was never linked sends anonymous telemetry, as before. After an unlink, telemetry is anonymous only if
 Console removed the attribution. See [Unlink a project](#unlink-a-project).
 
-A link to another Project with `--force` moves the attribution to that Project only when that Project belongs to the
-same Console account. If it belongs to a different account, the attribution stays with the first account until that
-account unlinks the installation.
+A link with `--force` first tells Console to stop the attribution of the link it replaces. It does this also when
+`VENDURE_DISABLE_TELEMETRY` is set. For this request the CLI uses only a stored login for the account of the replaced
+link. It does not sign you in to that account. If the request fails, the CLI shows a warning that names the replaced
+Project, its ID and the installation ID, and continues with the new link. The attribution can then stay with the
+replaced Project until someone removes it in Console.
+
+Console moves an existing attribution to the new Project only within the same Console account. If an attribution that
+the CLI could not stop belongs to a different account, it stays with that account until that account unlinks the
+installation. The CLI cannot see this case, so it still reports the new Project as attributed.
 
 A repeated link without `--force` does not contact Console, so it does not attribute a project that was linked before
 this feature or on another machine. Run `vendure console link --force` to attribute it.
@@ -585,6 +591,9 @@ confirmation:
 npx vendure console link --force
 npx vendure console unlink --force
 ```
+
+Before it links, `vendure console link --force` tells Console to stop the telemetry attribution of the link it
+replaces. See [Telemetry attribution](#telemetry-attribution).
 
 `--force` also permits replacement of an invalid manifest. It does not bypass ambiguous project selection or a manifest
 that belongs to another project root.

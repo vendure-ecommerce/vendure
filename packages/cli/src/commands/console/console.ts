@@ -420,6 +420,13 @@ async function link(
             return confirmed === 'cancelled' ? 0 : 1;
         }
     }
+    // Only `--force` gets here with a valid manifest. The user leaves its
+    // Project, so its attribution ends also when telemetry is off.
+    const previousAttribution =
+        existing.kind === 'valid' ? readTelemetryAttribution(projectRoot, existing.manifest) : undefined;
+    if (existing.kind === 'valid' && previousAttribution) {
+        await detachTelemetry(existing.manifest, previousAttribution, 'replace', dependencies, signal);
+    }
 
     const login = await signIn(endpoints, options.organization, dependencies, signal);
     const stored = readAuthStatus(login.auth).organization;
@@ -471,14 +478,18 @@ async function link(
             `Telemetry from this installation is attributed to Console Project ${manifest.project.name}. ` +
                 'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
         );
-    } else if (telemetryDisabled) {
-        dependencies.reporter.info(
-            'VENDURE_DISABLE_TELEMETRY is set, so this link does not attribute telemetry to the Console Project.',
-        );
     } else {
-        dependencies.reporter.warn(
-            'Could not read or create a telemetry installation ID that Console accepts, so this link does not attribute telemetry to the Console Project.',
-        );
+        // A record of the replaced link is no longer of use. A failed detach printed its details.
+        removeTelemetryAttribution(projectRoot);
+        if (telemetryDisabled) {
+            dependencies.reporter.info(
+                'VENDURE_DISABLE_TELEMETRY is set, so this link does not attribute telemetry to the Console Project.',
+            );
+        } else {
+            dependencies.reporter.warn(
+                'Could not read or create a telemetry installation ID that Console accepts, so this link does not attribute telemetry to the Console Project.',
+            );
+        }
     }
 
     const code = await runConsoleLinkHooks(
@@ -1247,7 +1258,7 @@ async function unlink(
     const attribution =
         existing.kind === 'valid' ? readTelemetryAttribution(projectRoot, existing.manifest) : undefined;
     if (existing.kind === 'valid' && attribution) {
-        await detachTelemetry(existing.manifest, attribution, dependencies, signal);
+        await detachTelemetry(existing.manifest, attribution, 'unlink', dependencies, signal);
     }
     removeProjectLinkManifest(projectRoot);
     removeTelemetryAttribution(projectRoot);
@@ -1260,19 +1271,23 @@ async function unlink(
 
 /**
  * Asks Console to stop attributing the telemetry of this installation to the
- * linked project. A failure does not stop the local unlink.
+ * linked project. A failure does not stop the unlink, or the link that
+ * replaces this one. A replacement uses only a stored login for the old
+ * account, so the user does not sign in to an account they are leaving.
  */
 async function detachTelemetry(
     manifest: ProjectLinkManifest,
     attribution: TelemetryAttribution,
+    reason: 'unlink' | 'replace',
     dependencies: ConsoleCommandDependencies,
     signal: AbortSignal,
 ): Promise<void> {
     try {
         const endpoints = resolveConsoleEndpoints(dependencies.env, manifest.console);
-        const login = dependencies.isNonInteractive()
-            ? await storedLogin(consoleAuthOptions(endpoints, dependencies, signal), manifest.account.id)
-            : await signIn(endpoints, manifest.account.id, dependencies, signal);
+        const login =
+            reason === 'replace' || dependencies.isNonInteractive()
+                ? await storedLogin(consoleAuthOptions(endpoints, dependencies, signal), manifest.account.id)
+                : await signIn(endpoints, manifest.account.id, dependencies, signal);
         if (!login) {
             throw new Error(`No CLI login for ${manifest.account.name} is stored on this machine.`);
         }
@@ -1293,8 +1308,12 @@ async function detachTelemetry(
         }
         const detail = error instanceof Error ? error.message : String(error);
         dependencies.reporter.warn(
-            `Could not tell Vendure Console to stop attributing telemetry to ${manifest.project.name}: ${detail} ` +
-                'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
+            reason === 'replace'
+                ? `Could not tell Vendure Console to stop attributing telemetry to ${manifest.project.name} ` +
+                      `(project ${manifest.project.id}, installation ${attribution.installationId}): ${detail} ` +
+                      'Its attribution may stay in Console until someone unlinks it there.'
+                : `Could not tell Vendure Console to stop attributing telemetry to ${manifest.project.name}: ${detail} ` +
+                      'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
         );
     }
 }

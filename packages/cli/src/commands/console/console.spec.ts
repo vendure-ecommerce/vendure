@@ -750,9 +750,72 @@ describe('console command', () => {
         });
 
         expect(await consoleCommand('link', { force: true }, test.dependencies)).toBe(0);
+        // The replaced link attributed no telemetry, so there is no detach request.
         expect(fetchMock).toHaveBeenCalledTimes(2);
         expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(localManifest);
         expect(contexts).toEqual([{ force: true, outcome: 'linked' }]);
+    });
+
+    // OSS-884: a forced link ends the attribution of the link it replaces before it links.
+    it('detaches the telemetry of the replaced link before a forced link', async () => {
+        const root = previouslyLinkedWithAttribution();
+        const fetchMock = sequenceFetch(
+            new Response(null, { status: 204 }),
+            jsonResponse(projectList()),
+            jsonResponse(manifest),
+        );
+
+        expect(
+            await consoleCommand('link', { force: true }, testDependencies(root, fetchMock).dependencies),
+        ).toBe(0);
+
+        expect(fetchMock.mock.calls.map(([url, init]) => `${init?.method} ${url}`)).toEqual([
+            `DELETE http://localhost:3001/v1/projects/${OTHER_PROJECT_ID}/link/telemetry-installations/${INSTALLATION_ID}`,
+            'GET http://localhost:3001/v1/projects',
+            `POST http://localhost:3001/v1/projects/${PROJECT_ID}/link`,
+        ]);
+        expect(JSON.parse(fetchMock.mock.calls[2][1]?.body as string)).toEqual({
+            telemetryInstallationId: INSTALLATION_ID,
+        });
+        expect(fs.readJsonSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toEqual({
+            linkId: manifest.link.id,
+            installationId: INSTALLATION_ID,
+        });
+    });
+
+    it('names the replaced attribution and still links when Console cannot detach it', async () => {
+        const root = previouslyLinkedWithAttribution();
+        const fetchMock = vi
+            .fn()
+            .mockRejectedValueOnce(new TypeError('fetch failed'))
+            .mockResolvedValueOnce(jsonResponse(projectList()))
+            .mockResolvedValueOnce(jsonResponse(manifest));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('link', { force: true }, test.dependencies)).toBe(0);
+
+        const warning = test.messages.find(message => message.startsWith('Could not tell Vendure Console'));
+        expect(warning).toContain(`Previous (project ${OTHER_PROJECT_ID}, installation ${INSTALLATION_ID})`);
+        expect(warning).toContain('may stay in Console until someone unlinks it there');
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(localManifest);
+    });
+
+    it('detaches the replaced attribution but sends no installation ID when telemetry is turned off', async () => {
+        const root = previouslyLinkedWithAttribution();
+        const fetchMock = sequenceFetch(
+            new Response(null, { status: 204 }),
+            jsonResponse(projectList()),
+            jsonResponse(manifest),
+        );
+        const test = testDependencies(root, fetchMock, {
+            env: { ...LOCAL_CONSOLE_ENV, VENDURE_DISABLE_TELEMETRY: 'true' },
+        });
+
+        expect(await consoleCommand('link', { force: true }, test.dependencies)).toBe(0);
+
+        expect(fetchMock.mock.calls[0][1]?.method).toBe('DELETE');
+        expect(fetchMock.mock.calls[2][1]?.body).toBeUndefined();
+        expect(fs.existsSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toBe(false);
     });
 
     it('uses --yes for every CLI confirmation without forcing a new link', async () => {
@@ -1330,6 +1393,22 @@ function linkedWithAttribution(): string {
         linkId: localManifest.link.id,
         installationId: INSTALLATION_ID,
     });
+    return root;
+}
+
+/** A project linked to the Previous Project, whose link attributed `INSTALLATION_ID`. */
+function previouslyLinkedWithAttribution(): string {
+    const root = vendureProject();
+    fs.outputJsonSync(getProjectLinkManifestPath(root), {
+        ...localManifest,
+        project: { id: OTHER_PROJECT_ID, name: 'Previous' },
+        link: { ...localManifest.link, id: OTHER_LINK_ID },
+    });
+    fs.outputJsonSync(path.join(root, '.vendure', 'telemetry-attribution.json'), {
+        linkId: OTHER_LINK_ID,
+        installationId: INSTALLATION_ID,
+    });
+    fs.outputFileSync(path.join(root, '.vendure', '.installation-id'), INSTALLATION_ID);
     return root;
 }
 
