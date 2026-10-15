@@ -661,9 +661,13 @@ export class CustomerService {
 
     /**
      * @description
-     * Sends the Customer a password reset email on behalf of an administrator, the same as
-     * {@link CustomerService.requestPasswordReset}. A Customer who has not verified their account is
-     * verified when they complete the reset.
+     * Requests a password reset email for the Customer on behalf of an administrator, the same as
+     * {@link CustomerService.requestPasswordReset}: sets a reset token and publishes a
+     * {@link PasswordResetEvent}. The event carries the administrator's RequestContext, so an email
+     * sent from it uses the administrator's language.
+     *
+     * When `authOptions.requireVerification` is on, a Customer who has not verified their account is
+     * marked as verified when they complete the reset. No {@link AccountVerifiedEvent} is published.
      *
      * A Customer with no User (a guest checkout), or whose User has no native authentication method,
      * has no native credential to reset, and is rejected.

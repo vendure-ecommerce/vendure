@@ -1556,8 +1556,6 @@ msgid "Payment state updated successfully"
 msgstr "결제 상태가 업데이트되었습니다"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Password reset email sent"
-msgstr ""
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
@@ -5888,6 +5886,7 @@ msgstr ""
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Password reset requested"
 msgstr "비밀번호 재설정이 요청되었습니다"
 
@@ -6131,8 +6130,6 @@ msgstr "{0} 미리보기"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "판매자가 업데이트되었습니다"
-
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

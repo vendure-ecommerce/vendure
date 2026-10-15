@@ -449,10 +449,6 @@ function VerifyAccountDialog({ customerId, onVerified }: { customerId: string; o
     );
 }
 
-/**
- * Sends the Customer a password reset email. The Customer sets the new password themselves through
- * the reset link.
- */
 function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSent: () => void }) {
     const { t } = useLingui();
     const [open, setOpen] = useState(false);
@@ -460,7 +456,7 @@ function ResetPasswordDialog({ customerId, onSent }: { customerId: string; onSen
     const { mutate: requestPasswordReset, isPending } = useMutation({
         mutationFn: api.mutate(requestCustomerPasswordResetDocument),
         onSuccess: () => {
-            toast.success(t`Password reset email sent`);
+            toast.success(t`Password reset requested`);
             setOpen(false);
             onSent();
         },

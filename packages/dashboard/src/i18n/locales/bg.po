@@ -1570,8 +1570,6 @@ msgid "Payment state updated successfully"
 msgstr "Състоянието на плащането е актуализирано успешно"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Password reset email sent"
-msgstr ""
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
@@ -5958,6 +5956,7 @@ msgstr "Нулирайте паролата си"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Password reset requested"
 msgstr "Изисква се повторно задаване на парола"
 
@@ -6225,8 +6224,6 @@ msgstr "Преглед на {0}"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "Успешно актуализиран продавач"
-
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

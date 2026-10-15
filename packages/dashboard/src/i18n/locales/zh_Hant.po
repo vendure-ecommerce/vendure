@@ -1564,8 +1564,6 @@ msgid "Payment state updated successfully"
 msgstr "付款狀態已成功更新"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Password reset email sent"
-msgstr ""
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
@@ -5929,6 +5927,7 @@ msgstr "重設您的密碼"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Password reset requested"
 msgstr "已要求重設密碼"
 
@@ -6196,8 +6195,6 @@ msgstr "{0} 的預覽"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "已成功更新賣家"
-
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

@@ -3183,9 +3183,13 @@ export type Mutation = {
   /** Removes StockLocations from the specified Channel */
   removeStockLocationsFromChannel: Array<StockLocation>;
   /**
-   * Sends the Customer a password reset email, the same as the Customer calling
-   * `requestPasswordReset` from the Shop API. A Customer who has not verified their account is
-   * verified when they complete the reset.
+   * Requests a password reset email to be sent to the Customer, the same as the Customer calling
+   * `requestPasswordReset` from the Shop API: it sets a reset token and publishes a
+   * `PasswordResetEvent`, which the EmailPlugin uses to send the email. The event carries the
+   * administrator's RequestContext, so the email uses the administrator's language.
+   *
+   * When `authOptions.requireVerification` is on, a Customer who has not verified their account is
+   * marked as verified when they complete the reset. No `AccountVerifiedEvent` is published.
    *
    * Throws for a Customer with no User (a guest checkout), and for a User with no native
    * authentication method, since neither has a native credential to reset.

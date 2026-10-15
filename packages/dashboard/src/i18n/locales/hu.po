@@ -1564,8 +1564,6 @@ msgid "Payment state updated successfully"
 msgstr "Fizetés állapota sikeresen frissítve"
 
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
-msgid "Password reset email sent"
-msgstr ""
 
 #: src/app/routes/_authenticated/_products/components/add-option-group-dialog.tsx
 msgid "Create new"
@@ -5916,6 +5914,7 @@ msgstr "Jelszava visszaállítása"
 
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/default-customer-history-components.tsx
+#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Password reset requested"
 msgstr "Jelszó-visszaállítás kérve"
 
@@ -6183,8 +6182,6 @@ msgstr "{0} előnézete"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "Eladó sikeresen frissítve"
-
-#: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"
