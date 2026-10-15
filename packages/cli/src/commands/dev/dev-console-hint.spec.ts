@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { CONSOLE_HINT } from '../../shared/console-hint';
+import { getConsoleHint } from '../../shared/console-hint';
 
 const { infoMock, spawnMock } = vi.hoisted(() => ({ infoMock: vi.fn(), spawnMock: vi.fn() }));
 
@@ -27,6 +27,8 @@ describe('devCommand() Console hint', () => {
     let projectDir: string;
 
     beforeEach(() => {
+        // Plain URL output, whatever terminal runs the tests.
+        vi.stubEnv('FORCE_HYPERLINK', '0');
         projectDir = mkdtempSync(path.join(tmpdir(), 'vendure-cli-dev-hint-'));
         mkdirSync(path.join(projectDir, 'src'));
         writeFileSync(path.join(projectDir, 'src', 'index.ts'), '');
@@ -47,6 +49,7 @@ describe('devCommand() Console hint', () => {
     });
 
     afterEach(() => {
+        vi.unstubAllEnvs();
         rmSync(projectDir, { recursive: true, force: true });
         infoMock.mockReset();
         spawnMock.mockReset();
@@ -57,10 +60,7 @@ describe('devCommand() Console hint', () => {
         const exitCode = await devCommand('server', { project: projectDir, reload: false });
 
         expect(exitCode).toBe(0);
-        expect(infoMock.mock.calls.filter(([message]) => message === CONSOLE_HINT)).toHaveLength(1);
-        expect(CONSOLE_HINT).toBe(
-            'Paid plans add 30+ features and include Vendure Cloud: https://vendure.io/pricing?utm_source=vendure-dev. Already on a plan? Run `vendure console link`.',
-        );
+        expect(infoMock.mock.calls.filter(([message]) => message === getConsoleHint(false))).toHaveLength(1);
     });
 
     // OSS-882 - a linked project (.vendure/project.json present) prints nothing.
@@ -70,6 +70,6 @@ describe('devCommand() Console hint', () => {
 
         await devCommand('server', { project: projectDir, reload: false });
 
-        expect(infoMock).not.toHaveBeenCalledWith(CONSOLE_HINT);
+        expect(infoMock).not.toHaveBeenCalledWith(getConsoleHint(false));
     });
 });
