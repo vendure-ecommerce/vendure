@@ -1275,8 +1275,8 @@ msgid "Table settings"
 msgstr "Tablo ayarları"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Platform & Cloud'u Keşfedin"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Platform & Cloud'u Keşfedin"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -4246,6 +4246,10 @@ msgstr "Özel özellikler mağazada görünmez"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Bir vergi kategorisi seçin"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "Oluşturuldu"

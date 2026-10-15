@@ -93,7 +93,7 @@ async function createGraphQLOptions(
             configService.entityOptions.entityIdStrategy ?? configService.entityIdStrategy,
         )
     ) {
-        apolloServerPlugins.unshift(new IdCodecPlugin(idCodecService));
+        apolloServerPlugins.unshift(new IdCodecPlugin(idCodecService, options.apiType));
     }
 
     return {
