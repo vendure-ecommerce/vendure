@@ -462,7 +462,11 @@ async function link(
     dependencies.reporter.info(`Wrote ${manifestPath}`);
     reportProjectLinkGitignore(projectRoot, dependencies.reporter);
     if (installationId) {
-        writeTelemetryAttribution(projectRoot, { linkId: manifest.link.id, installationId });
+        if (!writeTelemetryAttribution(projectRoot, { linkId: manifest.link.id, installationId })) {
+            dependencies.reporter.warn(
+                'Could not record the telemetry attribution in .vendure, so vendure console status and unlink do not know about it.',
+            );
+        }
         dependencies.reporter.info(
             `Telemetry from this installation is attributed to Console Project ${manifest.project.name}. ` +
                 'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
@@ -473,7 +477,7 @@ async function link(
         );
     } else {
         dependencies.reporter.warn(
-            'Could not read or create the telemetry installation ID, so this link does not attribute telemetry to the Console Project.',
+            'Could not read or create a telemetry installation ID that Console accepts, so this link does not attribute telemetry to the Console Project.',
         );
     }
 

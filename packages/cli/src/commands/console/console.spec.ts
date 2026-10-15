@@ -324,6 +324,20 @@ describe('console command', () => {
         });
     });
 
+    it('keeps an installation ID that Console does not accept and sends none', async () => {
+        const root = vendureProject();
+        const idPath = path.join(root, '.vendure', '.installation-id');
+        fs.outputFileSync(idPath, UUID_V7_LINK_ID);
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+
+        expect(fetchMock.mock.calls[1][1]?.body).toBeUndefined();
+        expect(fs.readFileSync(idPath, 'utf8')).toBe(UUID_V7_LINK_ID);
+        expect(test.messages.join('\n')).toContain('telemetry installation ID that Console accepts');
+    });
+
     it('sends no installation ID and creates none when telemetry is turned off', async () => {
         const root = vendureProject();
         const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));

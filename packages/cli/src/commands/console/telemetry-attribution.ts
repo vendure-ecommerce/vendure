@@ -21,7 +21,11 @@ export interface TelemetryAttribution {
     installationId: string;
 }
 
-/** The same opt-out that Core's telemetry service reads. */
+/**
+ * The `VENDURE_DISABLE_TELEMETRY` opt-out that Core's telemetry service reads.
+ * Core also turns telemetry off in CI. The CLI does not, so a link in CI can
+ * attribute an installation that sends no telemetry.
+ */
 export function isTelemetryDisabled(env: NodeJS.ProcessEnv): boolean {
     const value = env.VENDURE_DISABLE_TELEMETRY?.toLowerCase();
     return value === 'true' || value === '1';
@@ -94,12 +98,13 @@ export function readTelemetryAttribution(
     return undefined;
 }
 
-/** Best effort: without the record, `status` reports the link as not attributed. */
-export function writeTelemetryAttribution(projectRoot: string, attribution: TelemetryAttribution): void {
+/** Returns `false` when the record cannot be written. */
+export function writeTelemetryAttribution(projectRoot: string, attribution: TelemetryAttribution): boolean {
     try {
         fs.writeJsonSync(path.join(projectRoot, ATTRIBUTION_RELATIVE_PATH), attribution);
+        return true;
     } catch {
-        // See above.
+        return false;
     }
 }
 
