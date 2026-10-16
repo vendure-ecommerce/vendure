@@ -130,10 +130,14 @@ describe('NodemailerEmailSender', () => {
     });
 
     it('rejects when the raw message cannot be written', async () => {
-        const outputPath = path.join(os.tmpdir(), 'vendure-email-raw-missing-dir', 'nested');
-
-        await expect(
-            new NodemailerEmailSender().send(email, { type: 'file', outputPath, raw: true }),
-        ).rejects.toThrow(/ENOENT/);
+        const root = await fs.mkdtemp(path.join(os.tmpdir(), 'vendure-email-raw-'));
+        const outputPath = path.join(root, 'missing');
+        try {
+            await expect(
+                new NodemailerEmailSender().send(email, { type: 'file', outputPath, raw: true }),
+            ).rejects.toThrow(/ENOENT/);
+        } finally {
+            await fs.remove(root);
+        }
     });
 });
