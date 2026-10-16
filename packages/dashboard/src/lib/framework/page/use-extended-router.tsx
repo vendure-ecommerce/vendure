@@ -77,7 +77,7 @@ export const useExtendedRouter = (
                     loader: config.loader,
                     validateSearch: config.validateSearch,
                     component: () => config.component(newRoute),
-                    errorComponent: ({ error }) => <ErrorPage message={error.message} />,
+                    errorComponent: ({ error }) => <ErrorPage error={error} />,
                 });
                 newAuthenticatedRoutes.push(newRoute);
             } else {
@@ -107,7 +107,7 @@ export const useExtendedRouter = (
                     loader: config.loader,
                     validateSearch: config.validateSearch,
                     component: () => config.component(newRoute),
-                    errorComponent: ({ error }) => <ErrorPage message={error.message} />,
+                    errorComponent: ({ error }) => <ErrorPage error={error} />,
                 });
                 newRootRoutes.push(newRoute);
             }
