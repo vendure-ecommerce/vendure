@@ -14,6 +14,7 @@ import { channelFragment, productVariantFragment } from './graphql/fragments-adm
 import { graphql } from './graphql/graphql-admin';
 import {
     addOptionGroupToProductDocument,
+    assignProductOptionGroupsToChannelDocument,
     assignProductToChannelDocument,
     assignProductVariantToChannelDocument,
     createAdministratorDocument,
@@ -1309,6 +1310,98 @@ describe('ChannelAware Products and ProductVariants', () => {
             },
         );
     });
+
+    // #5493 — assigning to a Channel must not fail on a soft-deleted ProductOption
+    describe('assigning to Channels when an option group has a soft-deleted option', () => {
+        let productId: string;
+        let optionGroupId: string;
+
+        beforeAll(async () => {
+            await adminClient.asSuperAdmin();
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+            const { createProduct } = await adminClient.query(createProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Soft Deleted Option Product',
+                            slug: 'soft-deleted-option-product',
+                            description: '',
+                        },
+                    ],
+                },
+            });
+            productId = createProduct.id;
+
+            const { createProductOptionGroup } = await adminClient.query(createProductOptionGroupDocument, {
+                input: {
+                    code: 'soft-deleted-option-size',
+                    translations: [{ languageCode: LanguageCode.en, name: 'Size' }],
+                    options: [
+                        { code: 'sdo-small', translations: [{ languageCode: LanguageCode.en, name: 'S' }] },
+                        { code: 'sdo-large', translations: [{ languageCode: LanguageCode.en, name: 'L' }] },
+                    ],
+                },
+            });
+            optionGroupId = createProductOptionGroup.id;
+            const [smallOptionId, keptOptionId] = ['sdo-small', 'sdo-large'].map(
+                code => createProductOptionGroup.options.find(o => o.code === code)?.id ?? fail(code),
+            );
+
+            await adminClient.query(addOptionGroupToProductDocument, { productId, optionGroupId });
+            const { createProductVariants } = await adminClient.query(createProductVariantsDocument, {
+                input: [
+                    {
+                        productId,
+                        sku: 'SDO-S',
+                        price: 1000,
+                        optionIds: [smallOptionId],
+                        translations: [{ languageCode: LanguageCode.en, name: 'Small' }],
+                    },
+                    {
+                        productId,
+                        sku: 'SDO-L',
+                        price: 1000,
+                        optionIds: [keptOptionId],
+                        translations: [{ languageCode: LanguageCode.en, name: 'Large' }],
+                    },
+                ],
+            });
+            const smallVariant = createProductVariants.find(v => v?.sku === 'SDO-S');
+            productVariantGuard.assertSuccess(smallVariant);
+
+            // The option is still referenced by the soft-deleted variant, so it is soft-deleted too.
+            await adminClient.query(deleteProductVariantDocument, { id: smallVariant.id });
+            const { deleteProductOption } = await adminClient.query(deleteProductOptionDocument, {
+                id: smallOptionId,
+            });
+            expect(deleteProductOption.result).toBe(DeletionResult.DELETED);
+        });
+
+        it('assignProductsToChannel succeeds', async () => {
+            const { assignProductsToChannel } = await adminClient.query(assignProductToChannelDocument, {
+                input: { channelId: 'T_3', productIds: [productId] },
+            });
+            expect(assignProductsToChannel[0].channels.map(c => c.id)).toContain('T_3');
+
+            adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+            const { product } = await adminClient.query(getProductWithVariantsDocument, { id: productId });
+            productGuard.assertSuccess(product);
+            expect(product.optionGroups.map(g => g.id)).toEqual([optionGroupId]);
+            expect(product.variants.map(v => v.sku)).toEqual(['SDO-L']);
+            expect(product.variants[0].options.map(o => o.code)).toEqual(['sdo-large']);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        });
+
+        it('assignProductOptionGroupsToChannel succeeds', async () => {
+            const { assignProductOptionGroupsToChannel } = await adminClient.query(
+                assignProductOptionGroupsToChannelDocument,
+                { input: { channelId: 'T_2', productOptionGroupIds: [optionGroupId] } },
+            );
+            expect(assignProductOptionGroupsToChannel.map(g => g.id)).toEqual([optionGroupId]);
+        });
+    });
 });
 
 const createProductOptionDocument = graphql(`
@@ -1353,6 +1446,15 @@ const assignStockLocationToChannelDocument = graphql(`
         assignStockLocationsToChannel(input: $input) {
             id
             name
+        }
+    }
+`);
+
+const deleteProductOptionDocument = graphql(`
+    mutation DeleteProductOption($id: ID!) {
+        deleteProductOption(id: $id) {
+            result
+            message
         }
     }
 `);
