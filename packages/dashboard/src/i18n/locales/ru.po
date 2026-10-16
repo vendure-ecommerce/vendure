@@ -361,6 +361,11 @@ msgstr "Роль успешно создана"
 msgid "Are you sure you want to delete this variant?"
 msgstr "Вы уверены, что хотите удалить этот вариант?"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into the selected collection} other {Moving # collections into the selected collection}}"
+msgstr "{0, plural, one {Перемещение # коллекции в выбранную коллекцию} few {Перемещение # коллекций в выбранную коллекцию} many {Перемещение # коллекций в выбранную коллекцию} other {Перемещение # коллекции в выбранную коллекцию}}"
+
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "All resources are up and running"
 #~ msgstr "Все ресурсы работают"
@@ -1547,6 +1552,10 @@ msgstr "Запас"
 msgid "No sales for this period"
 msgstr "Нет продаж за этот период"
 
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "Select Asset"
+msgstr "Выбрать ресурс"
+
 #: src/lib/components/shared/customer-selector.tsx
 msgid "No customers found"
 msgstr "Клиенты не найдены"
@@ -1857,8 +1866,8 @@ msgid "Filters"
 msgstr "Фильтры"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "selected collection"
-msgstr "выбранная коллекция"
+#~ msgid "selected collection"
+#~ msgstr "выбранная коллекция"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -1976,6 +1985,7 @@ msgstr "Вставить таблицу {row} на {col}"
 #: src/lib/components/data-table/views-sheet.tsx
 #: src/lib/components/layout/manage-languages-dialog.tsx
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 #: src/lib/components/shared/assign-to-channel-dialog.tsx
 #: src/lib/components/shared/confirmation-dialog.tsx
@@ -3330,6 +3340,11 @@ msgstr "Опции товара"
 msgid "Select country"
 msgstr "Выбрать страну"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection to the top level} other {Moving # collections to the top level}}"
+msgstr "{0, plural, one {Перемещение # коллекции на верхний уровень} few {Перемещение # коллекций на верхний уровень} many {Перемещение # коллекций на верхний уровень} other {Перемещение # коллекции на верхний уровень}}"
+
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Refund only partially completed"
 msgstr ""
@@ -4465,6 +4480,11 @@ msgstr "Новый канал"
 #: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx
 msgid "Option Group Name"
 msgstr "Название группы опций"
+
+#. placeholder {0}: selectedAssets.length
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "{0, plural, one {Select # Asset} other {Select # Assets}}"
+msgstr "{0, plural, one {Выбрать # ресурс} few {Выбрать # ресурса} many {Выбрать # ресурсов} other {Выбрать # ресурса}}"
 
 #: src/lib/components/data-input/combination-mode-input.tsx
 msgid "AND"
@@ -6349,8 +6369,8 @@ msgid "Successfully added option value"
 msgstr "Значение опции успешно добавлено"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "top level"
-msgstr "верхний уровень"
+#~ msgid "top level"
+#~ msgstr "верхний уровень"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"

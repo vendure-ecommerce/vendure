@@ -364,6 +364,11 @@ msgstr "Сигурни ли сте, че искате да изтриете то
 #~ msgid "Light"
 #~ msgstr "Светло"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into the selected collection} other {Moving # collections into the selected collection}}"
+msgstr "{0, plural, one {Преместване на # колекция в избраната колекция} other {Преместване на # колекции в избраната колекция}}"
+
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "All resources are up and running"
 #~ msgstr "Всички ресурси работят"
@@ -1553,6 +1558,10 @@ msgstr "Наличност"
 msgid "No sales for this period"
 msgstr "Няма продажби за този период"
 
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "Select Asset"
+msgstr "Избери ресурс"
+
 #: src/lib/components/shared/customer-selector.tsx
 msgid "No customers found"
 msgstr "Няма намерени клиенти"
@@ -1866,8 +1875,8 @@ msgstr "Филтри"
 #~ msgstr "Последните 7 дни"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "selected collection"
-msgstr "избраната колекция"
+#~ msgid "selected collection"
+#~ msgstr "избраната колекция"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -1988,6 +1997,7 @@ msgstr "Вмъкни таблица {row} на {col}"
 #: src/lib/components/data-table/views-sheet.tsx
 #: src/lib/components/layout/manage-languages-dialog.tsx
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 #: src/lib/components/shared/assign-to-channel-dialog.tsx
 #: src/lib/components/shared/confirmation-dialog.tsx
@@ -3347,6 +3357,11 @@ msgstr "Опции на продукта"
 msgid "Select country"
 msgstr "Изберете държава"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection to the top level} other {Moving # collections to the top level}}"
+msgstr "{0, plural, one {Преместване на # колекция на най-горното ниво} other {Преместване на # колекции на най-горното ниво}}"
+
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Refund only partially completed"
 msgstr ""
@@ -4485,6 +4500,11 @@ msgstr "Нов канал"
 #: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx
 msgid "Option Group Name"
 msgstr "Име на група опции"
+
+#. placeholder {0}: selectedAssets.length
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "{0, plural, one {Select # Asset} other {Select # Assets}}"
+msgstr "{0, plural, one {Избери # ресурс} other {Избери # ресурса}}"
 
 #: src/lib/components/data-input/combination-mode-input.tsx
 msgid "AND"
@@ -6378,8 +6398,8 @@ msgid "Successfully added option value"
 msgstr "Успешно добавена стойност на опцията"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "top level"
-msgstr "най-горното ниво"
+#~ msgid "top level"
+#~ msgstr "най-горното ниво"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"

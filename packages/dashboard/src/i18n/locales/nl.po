@@ -361,6 +361,11 @@ msgstr "Rol succesvol aangemaakt"
 msgid "Are you sure you want to delete this variant?"
 msgstr "Weet u zeker dat u deze variant wilt verwijderen?"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into the selected collection} other {Moving # collections into the selected collection}}"
+msgstr "{0, plural, one {# collectie verplaatsen naar de geselecteerde collectie} other {# collecties verplaatsen naar de geselecteerde collectie}}"
+
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "All resources are up and running"
 #~ msgstr "Alle resources zijn operationeel"
@@ -1551,6 +1556,10 @@ msgstr "Voorraad"
 msgid "No sales for this period"
 msgstr "Geen verkopen in deze periode"
 
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "Select Asset"
+msgstr "Bestand selecteren"
+
 #: src/lib/components/shared/customer-selector.tsx
 msgid "No customers found"
 msgstr "Geen klanten gevonden"
@@ -1861,8 +1870,8 @@ msgid "Filters"
 msgstr "Filters"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "selected collection"
-msgstr "geselecteerde collectie"
+#~ msgid "selected collection"
+#~ msgstr "geselecteerde collectie"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -1980,6 +1989,7 @@ msgstr "Tabel van {row} bij {col} invoegen"
 #: src/lib/components/data-table/views-sheet.tsx
 #: src/lib/components/layout/manage-languages-dialog.tsx
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 #: src/lib/components/shared/assign-to-channel-dialog.tsx
 #: src/lib/components/shared/confirmation-dialog.tsx
@@ -3324,6 +3334,11 @@ msgstr "Productopties"
 msgid "Select country"
 msgstr "Selecteer land"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection to the top level} other {Moving # collections to the top level}}"
+msgstr "{0, plural, one {# collectie verplaatsen naar het hoogste niveau} other {# collecties verplaatsen naar het hoogste niveau}}"
+
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Refund only partially completed"
 msgstr ""
@@ -4456,6 +4471,11 @@ msgstr "Nieuw kanaal"
 #: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx
 msgid "Option Group Name"
 msgstr "Naam optiegroep"
+
+#. placeholder {0}: selectedAssets.length
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "{0, plural, one {Select # Asset} other {Select # Assets}}"
+msgstr "{0, plural, one {# bestand selecteren} other {# bestanden selecteren}}"
 
 #: src/lib/components/data-input/combination-mode-input.tsx
 msgid "AND"
@@ -6344,8 +6364,8 @@ msgid "Successfully added option value"
 msgstr "Optiewaarde succesvol toegevoegd"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "top level"
-msgstr "hoogste niveau"
+#~ msgid "top level"
+#~ msgstr "hoogste niveau"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"

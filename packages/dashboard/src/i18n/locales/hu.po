@@ -361,6 +361,11 @@ msgstr "A szerepkör sikeresen létrehozva"
 msgid "Are you sure you want to delete this variant?"
 msgstr "Biztosan törli ezt a termékváltozatot?"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into the selected collection} other {Moving # collections into the selected collection}}"
+msgstr "{0, plural, one {# gyűjtemény áthelyezése a kiválasztott gyűjteménybe} other {# gyűjtemény áthelyezése a kiválasztott gyűjteménybe}}"
+
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "All resources are up and running"
 #~ msgstr "Minden erőforrás működik"
@@ -1547,6 +1552,10 @@ msgstr "Készlet"
 msgid "No sales for this period"
 msgstr "Nincs eladás ebben az időszakban"
 
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "Select Asset"
+msgstr "Eszköz kiválasztása"
+
 #: src/lib/components/shared/customer-selector.tsx
 msgid "No customers found"
 msgstr "Nem található vásárló"
@@ -1857,8 +1866,8 @@ msgid "Filters"
 msgstr "Szűrők"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "selected collection"
-msgstr "kiválasztott gyűjtemény"
+#~ msgid "selected collection"
+#~ msgstr "kiválasztott gyűjtemény"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -1976,6 +1985,7 @@ msgstr "{row} x {col} méretű táblázat beszúrása"
 #: src/lib/components/data-table/views-sheet.tsx
 #: src/lib/components/layout/manage-languages-dialog.tsx
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 #: src/lib/components/shared/assign-to-channel-dialog.tsx
 #: src/lib/components/shared/confirmation-dialog.tsx
@@ -3320,6 +3330,11 @@ msgstr "Termékopciók"
 msgid "Select country"
 msgstr "Válasszon országot"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection to the top level} other {Moving # collections to the top level}}"
+msgstr "{0, plural, one {# gyűjtemény áthelyezése a legfelső szintre} other {# gyűjtemény áthelyezése a legfelső szintre}}"
+
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Refund only partially completed"
 msgstr ""
@@ -4452,6 +4467,11 @@ msgstr "Új csatorna"
 #: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx
 msgid "Option Group Name"
 msgstr "Opciócsoport neve"
+
+#. placeholder {0}: selectedAssets.length
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "{0, plural, one {Select # Asset} other {Select # Assets}}"
+msgstr "{0, plural, one {# eszköz kiválasztása} other {# eszköz kiválasztása}}"
 
 #: src/lib/components/data-input/combination-mode-input.tsx
 msgid "AND"
@@ -6336,8 +6356,8 @@ msgid "Successfully added option value"
 msgstr "Az opcióérték sikeresen hozzáadva"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "top level"
-msgstr "legfelső szint"
+#~ msgid "top level"
+#~ msgstr "legfelső szint"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"

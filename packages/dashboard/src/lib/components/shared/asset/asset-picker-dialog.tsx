@@ -12,7 +12,7 @@ import { getDashboardActionBarItems } from '@/vdb/framework/layout-engine/layout
 import { PageContext } from '@/vdb/framework/layout-engine/page-provider.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { useLingui } from '@lingui/react/macro';
+import { Plural, Trans, useLingui } from '@lingui/react/macro';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -167,12 +167,18 @@ export function AssetPickerDialog({
                             </PermissionGuard>
                         ))}
                         <Button variant="outline" onClick={onClose}>
-                            Cancel
+                            <Trans>Cancel</Trans>
                         </Button>
                         <Button onClick={handleConfirm} disabled={selectedAssets.length === 0}>
-                            {selectedAssets.length > 0 && multiSelect
-                                ? `Select ${selectedAssets.length} Asset${selectedAssets.length > 1 ? 's' : ''}`
-                                : 'Select Asset'}
+                            {selectedAssets.length > 0 && multiSelect ? (
+                                <Plural
+                                    value={selectedAssets.length}
+                                    one="Select # Asset"
+                                    other="Select # Assets"
+                                />
+                            ) : (
+                                <Trans>Select Asset</Trans>
+                            )}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

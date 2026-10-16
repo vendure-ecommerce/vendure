@@ -357,6 +357,11 @@ msgstr "역할이 생성되었습니다"
 msgid "Are you sure you want to delete this variant?"
 msgstr "이 변형을 삭제하시겠습니까?"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into the selected collection} other {Moving # collections into the selected collection}}"
+msgstr "{0, plural, other {컬렉션 # 개를 선택한 컬렉션으로 이동 중}}"
+
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "All resources are up and running"
 #~ msgstr "모든 리소스가 정상 작동 중입니다"
@@ -1539,6 +1544,10 @@ msgstr "재고"
 msgid "No sales for this period"
 msgstr ""
 
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "Select Asset"
+msgstr "에셋 선택"
+
 #: src/lib/components/shared/customer-selector.tsx
 msgid "No customers found"
 msgstr "고객을 찾을 수 없습니다"
@@ -1849,8 +1858,8 @@ msgid "Filters"
 msgstr "필터"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "selected collection"
-msgstr "선택한 컬렉션"
+#~ msgid "selected collection"
+#~ msgstr "선택한 컬렉션"
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
@@ -1968,6 +1977,7 @@ msgstr ""
 #: src/lib/components/data-table/views-sheet.tsx
 #: src/lib/components/layout/manage-languages-dialog.tsx
 #: src/lib/components/shared/asset/asset-focal-point-editor.tsx
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 #: src/lib/components/shared/assign-to-channel-dialog.tsx
 #: src/lib/components/shared/confirmation-dialog.tsx
@@ -3312,6 +3322,11 @@ msgstr "상품 옵션"
 msgid "Select country"
 msgstr "국가 선택"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection to the top level} other {Moving # collections to the top level}}"
+msgstr "{0, plural, other {컬렉션 # 개를 최상위 레벨로 이동 중}}"
+
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Refund only partially completed"
 msgstr ""
@@ -4436,6 +4451,11 @@ msgstr "새 채널"
 #: src/app/routes/_authenticated/_products/components/option-groups-editor.tsx
 msgid "Option Group Name"
 msgstr "옵션 그룹 이름"
+
+#. placeholder {0}: selectedAssets.length
+#: src/lib/components/shared/asset/asset-picker-dialog.tsx
+msgid "{0, plural, one {Select # Asset} other {Select # Assets}}"
+msgstr "{0, plural, other {에셋 # 개 선택}}"
 
 #: src/lib/components/data-input/combination-mode-input.tsx
 msgid "AND"
@@ -6285,8 +6305,8 @@ msgid "Successfully added option value"
 msgstr "옵션 값이 추가되었습니다"
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "top level"
-msgstr "최상위 레벨"
+#~ msgid "top level"
+#~ msgstr "최상위 레벨"
 
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"
