@@ -1,5 +1,5 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
@@ -14,7 +14,9 @@ import { describe, expect, it } from 'vitest';
  * who then fill in the plural categories their language actually has.
  */
 
-const localesDir = join(dirname(fileURLToPath(import.meta.url)), 'locales');
+const i18nDir = dirname(fileURLToPath(import.meta.url));
+const localesDir = join(i18nDir, 'locales');
+const srcDir = join(i18nDir, '..');
 
 const locales = readdirSync(localesDir)
     .filter(file => file.endsWith('.po'))
@@ -62,6 +64,27 @@ function parsePlural(message: string): { variable: string; arms: Map<string, str
     return { variable: head[1], arms };
 }
 
+function tsxFiles(dir: string): string[] {
+    return readdirSync(dir).flatMap(name => {
+        const path = join(dir, name);
+        if (statSync(path).isDirectory()) {
+            return tsxFiles(path);
+        }
+        return path.endsWith('.tsx') ? [path] : [];
+    });
+}
+
+/** `file:line: code` for each line which picks a string with a ternary on a count of 1. */
+function countTernaryLines(file: string): string[] {
+    return readFileSync(file, 'utf-8')
+        .split('\n')
+        .flatMap((line, index) =>
+            /[!=]==?\s*1\s*\?\s*['"`]/.test(line) && !line.includes('className')
+                ? [`${relative(srcDir, file)}:${index + 1}: ${line.trim()}`]
+                : [],
+        );
+}
+
 function placeholders(text: string): Set<string> {
     return new Set([...text.matchAll(/\{(\w+)\}/g)].map(match => match[1]));
 }
@@ -82,6 +105,15 @@ describe('plural messages', () => {
         const handRolled = [...readCatalog('en').matchAll(/^#\. placeholder \{\d+\}: (.*)$/gm)]
             .map(match => match[1])
             .filter(expression => /(?:[!=]==?|[<>]=?)\s*1\s*\?/.test(expression));
+        expect(handRolled, 'use <Plural> or plural() instead of a ternary on the count').toEqual([]);
+    });
+
+    // #5482 — a ternary outside `<Trans>`, such as `{n} item{n !== 1 ? 's' : ''}`, is never
+    // extracted, so the check above cannot see it.
+    it('does not choose an English plural with a ternary on the count in components', () => {
+        const handRolled = [...tsxFiles(join(srcDir, 'app')), ...tsxFiles(join(srcDir, 'lib'))].flatMap(
+            countTernaryLines,
+        );
         expect(handRolled, 'use <Plural> or plural() instead of a ternary on the count').toEqual([]);
     });
 
