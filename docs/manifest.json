@@ -1134,7 +1134,7 @@
                   "title": "ExternalAuthenticationService",
                   "slug": "external-authentication-service",
                   "file": "docs/reference/typescript-api/auth/external-authentication-service.mdx",
-                  "lastModified": "2026-07-23T11:18:30+02:00"
+                  "lastModified": "2026-10-16T13:55:25Z"
                 },
                 {
                   "title": "InMemorySessionCacheStrategy",
