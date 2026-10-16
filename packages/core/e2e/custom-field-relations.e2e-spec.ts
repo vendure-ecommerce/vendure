@@ -5,6 +5,7 @@ import {
     Asset,
     Collection,
     Country,
+    CustomerService,
     CustomFields,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
@@ -19,6 +20,7 @@ import {
     ProductOptionGroup,
     ProductVariant,
     RequestContext,
+    RequestContextService,
     ShippingMethod,
     TransactionalConnection,
 } from '@vendure/core';
@@ -624,36 +626,6 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateCustomer.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendurehq/vendure/issues/5543
-            it('does not warn about relation custom field input keys', async () => {
-                const warnSpy = vi.spyOn(Logger, 'warn');
-                try {
-                    await adminClient.query(gql`
-                        mutation {
-                            createCustomer(
-                                input: {
-                                    emailAddress: "test-5543@test.com"
-                                    firstName: "Test"
-                                    lastName: "Person"
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                ... on Customer {
-                                    id
-                                }
-                            }
-                        }
-                    `);
-
-                    const customFieldWarnings = warnSpy.mock.calls.filter(([message]) =>
-                        String(message).startsWith('Custom field '),
-                    );
-                    expect(customFieldWarnings).toEqual([]);
-                } finally {
-                    warnSpy.mockRestore();
-                }
-            });
-
             it('shop updateCustomer', async () => {
                 const { updateCustomer } = await shopClient.query(gql`
                     mutation {
@@ -664,6 +636,82 @@ describe('Custom field relations', () => {
                     }
                 `);
                 assertCustomFieldIds(updateCustomer.customFields, 'T_4', ['T_2', 'T_4']);
+            });
+
+            // #5543 — relation custom field input keys `<name>Id` / `<name>Ids` must not log a warning
+            it('does not warn about relation input keys on admin createCustomer and updateCustomer', async () => {
+                const warnSpy = vi.spyOn(Logger, 'warn');
+                try {
+                    const { createCustomer } = await adminClient.query(gql`
+                        mutation {
+                            createCustomer(
+                                input: {
+                                    emailAddress: "issue-5543@test.com"
+                                    firstName: "Issue"
+                                    lastName: "5543"
+                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                                }
+                            ) {
+                                ... on Customer {
+                                    id
+                                    ${customFieldsSelection}
+                                }
+                            }
+                        }
+                    `);
+                    assertCustomFieldIds(createCustomer.customFields, 'T_1', ['T_1', 'T_2']);
+
+                    const { updateCustomer } = await adminClient.query(gql`
+                        mutation {
+                            updateCustomer(
+                                input: {
+                                    id: "${createCustomer.id as string}"
+                                    customFields: { singleId: "T_2", multiIds: ["T_3"] }
+                                }
+                            ) {
+                                ... on Customer {
+                                    id
+                                    ${customFieldsSelection}
+                                }
+                            }
+                        }
+                    `);
+                    assertCustomFieldIds(updateCustomer.customFields, 'T_2', ['T_3']);
+
+                    const customFieldWarnings = warnSpy.mock.calls
+                        .map(([message]) => String(message))
+                        .filter(message => message.startsWith('Custom field '));
+                    expect(customFieldWarnings).toEqual([]);
+                } finally {
+                    warnSpy.mockRestore();
+                }
+            });
+
+            // #5543 — keys which only resemble a relation input key are still reported
+            it('still warns about keys which are not a configured input key', async () => {
+                const customerService = server.app.get(CustomerService);
+                const ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
+                const warnSpy = vi.spyOn(Logger, 'warn');
+                try {
+                    await customerService.create(ctx, {
+                        emailAddress: 'issue-5543-unknown@test.com',
+                        firstName: 'Issue',
+                        lastName: '5543',
+                        customFields: { primitiveId: 'x', singleIds: [1], multiId: 1 },
+                    });
+
+                    expect(warnSpy).toHaveBeenCalledWith(
+                        'Custom field primitiveId not found for entity Customer',
+                    );
+                    expect(warnSpy).toHaveBeenCalledWith(
+                        'Custom field singleIds not found for entity Customer',
+                    );
+                    expect(warnSpy).toHaveBeenCalledWith(
+                        'Custom field multiId not found for entity Customer',
+                    );
+                } finally {
+                    warnSpy.mockRestore();
+                }
             });
         });
 
