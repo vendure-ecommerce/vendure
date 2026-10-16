@@ -734,3 +734,65 @@ describe('logout', () => {
         expect(readStoredAuth(options)?.refreshToken).toBe('refresh_1');
     });
 });
+
+describe('separate config directories', () => {
+    let otherDir: string;
+    let other: AuthOptions;
+    let otherStored: StoredAuth;
+
+    const authFile = (dir: string) => path.join(dir, 'auth.json');
+
+    beforeEach(() => {
+        otherDir = mkdtempSync(path.join(tmpdir(), 'vendure-auth-other-'));
+        other = { env: { VENDURE_CLI_CONFIG_DIR: otherDir }, now: () => NOW };
+        otherStored = storedAuth({ accessToken: accessToken(3600, { sid: 'b' }), refreshToken: 'refresh_b' });
+        writeStoredAuth(otherStored, other);
+    });
+
+    afterEach(() => {
+        fs.removeSync(otherDir);
+    });
+
+    async function expectOtherLoginIntact(before: string) {
+        await expect(getAccessToken(other)).resolves.toBe(otherStored.accessToken);
+        expect(fs.readFileSync(authFile(otherDir), 'utf-8')).toBe(before);
+    }
+
+    it('keeps the other login when one logs out', async () => {
+        writeStoredAuth(storedAuth(), options);
+        const before = fs.readFileSync(authFile(otherDir), 'utf-8');
+        const workos = fakeWorkos([{ status: 204, body: null }]);
+
+        await logout({ ...options, fetch: workos.fetch });
+
+        expect(fs.existsSync(authFile(configDir))).toBe(false);
+        await expectOtherLoginIntact(before);
+    });
+
+    it('keeps the other login when WorkOS refuses one refresh token', async () => {
+        const failed = accessToken(3600);
+        writeStoredAuth(storedAuth({ accessToken: failed }), options);
+        const before = fs.readFileSync(authFile(otherDir), 'utf-8');
+        const workos = fakeWorkos([{ status: 400, body: { error: 'invalid_grant' } }]);
+
+        await expect(refreshAccessToken(failed, { ...options, fetch: workos.fetch })).rejects.toBeInstanceOf(
+            SessionRejectedError,
+        );
+
+        expect(fs.existsSync(authFile(configDir))).toBe(false);
+        await expectOtherLoginIntact(before);
+    });
+
+    it('renews under VENDURE_CLI_CONFIG_DIR and writes only that directory', async () => {
+        writeStoredAuth(storedAuth({ accessToken: accessToken(10) }), options);
+        const before = fs.readFileSync(authFile(otherDir), 'utf-8');
+        const renewed = accessToken(300);
+        const workos = fakeWorkos([authentication(renewed, 'refresh_2', 'org_1')]);
+
+        await expect(getAccessToken({ ...options, fetch: workos.fetch })).resolves.toBe(renewed);
+
+        expect(readStoredAuth(options)).toMatchObject({ accessToken: renewed, refreshToken: 'refresh_2' });
+        expect(workos.requests[0].body.refresh_token).toBe('refresh_1');
+        await expectOtherLoginIntact(before);
+    });
+});
