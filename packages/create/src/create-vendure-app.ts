@@ -10,6 +10,7 @@ import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import pc from 'picocolors';
 
+import { showConsoleHint } from './console-hint';
 import {
     AUTO_RUN_DELAY_MS,
     CI_PAUSE_AFTER_CLOSE_MS,
@@ -831,6 +832,7 @@ function displayOutro(outroOptions: OutroOptions) {
     }
 
     note(nextSteps.join('\n'), pc.green('Setup complete!'));
+    showConsoleHint();
     outro(`Happy hacking!`);
 }
 
