@@ -43,7 +43,7 @@
           "title": "Products",
           "slug": "products",
           "file": "docs/guides/core-concepts/products/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-16T14:33:31Z"
         },
         {
           "title": "Promotions",
@@ -4340,7 +4340,7 @@
                   "title": "Mutations",
                   "slug": "mutations",
                   "file": "docs/reference/graphql-api/admin/mutations.mdx",
-                  "lastModified": "2026-10-16T07:46:21Z"
+                  "lastModified": "2026-10-16T14:33:31Z"
                 },
                 {
                   "title": "Queries",
