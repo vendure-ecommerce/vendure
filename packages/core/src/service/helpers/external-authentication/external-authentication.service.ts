@@ -314,15 +314,12 @@ export class ExternalAuthenticationService {
         if (channelId) {
             qb.andWhere('channel.id = :channelId', { channelId });
         }
-        // Compare case-insensitively, so that a Customer whose email address was saved with
-        // capital letters is also found. See #5559
-        if (isEmailAddressLike(emailAddress)) {
-            qb.andWhere('LOWER(customer.emailAddress) = :emailAddress', {
-                emailAddress: normalizeEmailAddress(emailAddress),
-            });
-        } else {
-            qb.andWhere('customer.emailAddress = :emailAddress', { emailAddress });
-        }
+        // The email address is already normalized. Compare case-insensitively, so that a Customer
+        // whose email address was saved with capital letters is also found. See #5559
+        const column = isEmailAddressLike(emailAddress)
+            ? 'LOWER(customer.emailAddress)'
+            : 'customer.emailAddress';
+        qb.andWhere(`${column} = :emailAddress`, { emailAddress });
         const customer = await qb.getOne();
 
         return customer?.user;

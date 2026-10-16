@@ -439,7 +439,8 @@ describe('AuthenticationStrategy', () => {
             return customers.items;
         }
 
-        // Simulates a Customer which an external login saved with capital letters before this fix
+        // Simulates a Customer whose email address and User identifier are stored with capital
+        // letters, as external logins used to save them
         async function setStoredEmailAddress(customer: CustomerFragmentType, emailAddress: string) {
             const { rawConnection } = server.app.get(TransactionalConnection);
             await rawConnection
@@ -584,8 +585,8 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('can save a Customer whose email address was stored with capital letters', async () => {
-            // Two Customers whose email addresses differ only in case, as created by external logins
-            // before this fix
+            // Two Customers whose email addresses differ only in case, as external logins used to
+            // create them
             const { createCustomer: lowercase } = await adminClient.query(createCustomerDocument, {
                 input: {
                     firstName: 'Lower',
@@ -610,15 +611,38 @@ describe('AuthenticationStrategy', () => {
             customerGuard.assertSuccess(updateCustomer);
 
             expect(updateCustomer.firstName).toBe('Changed');
+            // The lowercase form is used by the other Customer, so the stored email address is kept
+            expect(updateCustomer.emailAddress).toBe('Duplicate.Case@test-domain.com');
+            expect(updateCustomer.user?.identifier).toBe('Duplicate.Case@test-domain.com');
+            const customers = await getCustomersByEmail('duplicate.case@test-domain.com');
+            expect(customers.map(c => c.emailAddress).sort()).toEqual([
+                'Duplicate.Case@test-domain.com',
+                'duplicate.case@test-domain.com',
+            ]);
+        });
+
+        it('saves the email address in lowercase when only the case differs', async () => {
+            const { createCustomer } = await adminClient.query(createCustomerDocument, {
+                input: { firstName: 'Single', lastName: 'Case', emailAddress: 'single.case@test-domain.com' },
+                password: 'test',
+            });
+            customerGuard.assertSuccess(createCustomer);
+            await setStoredEmailAddress(createCustomer, 'Single.Case@test-domain.com');
+
+            const { updateCustomer } = await adminClient.query(updateCustomerDocument, {
+                input: { id: createCustomer.id, emailAddress: 'Single.Case@test-domain.com' },
+            });
+            customerGuard.assertSuccess(updateCustomer);
+
             // The email address, the User identifier and the history all use the lowercase form
-            expect(updateCustomer.emailAddress).toBe('duplicate.case@test-domain.com');
-            expect(updateCustomer.user?.identifier).toBe('duplicate.case@test-domain.com');
+            expect(updateCustomer.emailAddress).toBe('single.case@test-domain.com');
+            expect(updateCustomer.user?.identifier).toBe('single.case@test-domain.com');
             const { customer } = await adminClient.query(getCustomerHistoryDocument, {
-                id: capitalized.id,
+                id: createCustomer.id,
                 options: { filter: { type: { eq: HistoryEntryType.CUSTOMER_DETAIL_UPDATED } } },
             });
             expect(customer?.history.items.map(i => i.data.input.emailAddress)).toEqual([
-                'duplicate.case@test-domain.com',
+                'single.case@test-domain.com',
             ]);
         });
 
