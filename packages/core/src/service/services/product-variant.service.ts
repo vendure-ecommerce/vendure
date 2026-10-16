@@ -512,7 +512,7 @@ export class ProductVariantService {
         // so that the variant is visible in all channels the product belongs to.
         // We reuse assignProductVariantsToChannel which handles permissions, pricing
         // (pricesIncludeTax + defaultCurrencyCode), stock-level seeding, asset assignment,
-        // and ProductVariantChannelEvent — matching the flow in
+        // option and option group assignment, and ProductVariantChannelEvent — matching the flow in
         // ProductService.assignProductsToChannel().
         const product = await this.connection.getRepository(ctx, Product).findOne({
             where: { id: input.productId },
@@ -889,7 +889,8 @@ export class ProductVariantService {
     /**
      * @description
      * Assigns the specified ProductVariants to the specified Channel. In doing so, it will create a new
-     * {@link ProductVariantPrice} and also assign the associated Product and any Assets to the Channel too.
+     * {@link ProductVariantPrice} and also assign the associated Product, any Assets, and the variant's
+     * ProductOptions and their ProductOptionGroups to the Channel too.
      */
     async assignProductVariantsToChannel(
         ctx: RequestContext,
@@ -916,6 +917,8 @@ export class ProductVariantService {
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         const targetChannel = await this.connection.getEntityOrThrow(ctx, Channel, input.channelId);
         const assignedVariantIds: ID[] = [];
+        const optionIds: ID[] = [];
+        const optionGroupIds: ID[] = [];
         for (const variant of variants) {
             if (variant.deletedAt) {
                 continue;
@@ -933,20 +936,24 @@ export class ProductVariantService {
             );
             const assetIds = variant.assets?.map(a => a.assetId) || [];
             await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
-            // Also assign the variant's options and their groups, matching
-            // ProductService.assignProductsToChannel(). Otherwise `ProductOption.group`
-            // cannot be resolved in the target channel.
-            const options = variant.options ?? [];
-            await Promise.all([
-                ...unique(options.map(o => o.groupId)).map(id =>
-                    this.channelService.assignToChannels(ctx, ProductOptionGroup, id, [input.channelId]),
-                ),
-                ...options.map(o =>
-                    this.channelService.assignToChannels(ctx, ProductOption, o.id, [input.channelId]),
-                ),
-            ]);
+            for (const option of variant.options ?? []) {
+                optionIds.push(option.id);
+                optionGroupIds.push(option.groupId);
+            }
             assignedVariantIds.push(variant.id);
         }
+        // Also assign the variants' options and their groups, matching
+        // ProductService.assignProductsToChannel(). Otherwise `ProductOption.group`
+        // cannot be resolved in the target channel. Variants of one product share
+        // options, so the ids are de-duplicated and assigned once per call.
+        await Promise.all([
+            ...unique(optionGroupIds).map(id =>
+                this.channelService.assignToChannels(ctx, ProductOptionGroup, id, [input.channelId]),
+            ),
+            ...unique(optionIds).map(id =>
+                this.channelService.assignToChannels(ctx, ProductOption, id, [input.channelId]),
+            ),
+        ]);
         // Seed a StockLevel for each of the target channel's stock locations so that per-channel
         // inventory is usable immediately; otherwise the channel-filtered `stockLevels` field
         // resolves to `[]` in the newly-assigned channel until stock is first adjusted there.
