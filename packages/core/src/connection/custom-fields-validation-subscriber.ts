@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 import { EntitySubscriberInterface, InsertEvent, UpdateEvent } from 'typeorm';
 
 import { ConfigService } from '../config/config.service';
@@ -27,13 +28,7 @@ export class CustomFieldsValidationSubscriber implements EntitySubscriberInterfa
             return;
         }
         // Relation fields are set via their input keys `<name>Id` / `<name>Ids`
-        const validFieldNames = new Set(
-            config.flatMap(field =>
-                field.type === 'relation'
-                    ? [field.name, field.list ? `${field.name}Ids` : `${field.name}Id`]
-                    : [field.name],
-            ),
-        );
+        const validFieldNames = new Set(config.flatMap(field => [field.name, getGraphQlInputName(field)]));
         for (const key of Object.keys(cf)) {
             if (!validFieldNames.has(key)) {
                 Logger.warn(`Custom field ${key} not found for entity ${entityName}`);
