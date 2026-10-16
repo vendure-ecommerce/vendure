@@ -73,7 +73,11 @@ describe('SubscribableJob', () => {
             );
             // Wait for each value to be emitted before changing it, so a late poll cannot skip one.
             const emitted = async (progress: number) => {
+                const deadline = Date.now() + 5_000;
                 while (!seen.includes(progress)) {
+                    if (Date.now() > deadline) {
+                        throw new Error(`updates() did not emit progress ${progress}`);
+                    }
                     await sleep(10);
                 }
             };
