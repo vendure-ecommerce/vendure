@@ -58,7 +58,7 @@ export class AssetServer {
             if (typeof cacheHeader === 'string') {
                 this.cacheHeader = cacheHeader;
             } else {
-                this.cacheHeader = [cacheHeader.restriction, `max-age: ${cacheHeader.maxAge}`]
+                this.cacheHeader = [cacheHeader.restriction, `max-age=${cacheHeader.maxAge}`]
                     .filter(value => !!value)
                     .join(', ');
             }

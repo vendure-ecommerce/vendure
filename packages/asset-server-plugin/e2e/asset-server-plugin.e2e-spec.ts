@@ -16,6 +16,7 @@ import {
 } from '../src/config/image-transform-strategy';
 import { DEFAULT_CACHE_HEADER } from '../src/constants';
 import { AssetServerPlugin } from '../src/plugin';
+import { CacheConfig } from '../src/types';
 
 import { createAssetsDocument, deleteAssetDocument } from './graphql/admin-definitions';
 import { assetFragment } from './graphql/fragments-admin';
@@ -443,10 +444,19 @@ describe('AssetServerPlugin', () => {
     });
 });
 
-describe.each([
-    { dir: 'test-assets-cache-custom', cacheHeader: 'public, max-age=3600' },
-    { dir: 'test-assets-cache-nostore', cacheHeader: 'no-store' },
-])('AssetServerPlugin with cacheHeader $cacheHeader', ({ dir, cacheHeader }) => {
+describe.each<{ dir: string; cacheHeader: string | CacheConfig; expected: string }>([
+    {
+        dir: 'test-assets-cache-custom',
+        cacheHeader: 'public, max-age=3600',
+        expected: 'public, max-age=3600',
+    },
+    { dir: 'test-assets-cache-nostore', cacheHeader: 'no-store', expected: 'no-store' },
+    {
+        dir: 'test-assets-cache-object',
+        cacheHeader: { restriction: 'private', maxAge: 3600 },
+        expected: 'private, max-age=3600',
+    },
+])('AssetServerPlugin with cacheHeader $expected', ({ dir, cacheHeader, expected }) => {
     const options = { assetUploadDir: path.join(__dirname, dir), route: 'assets', cacheHeader };
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
@@ -481,10 +491,10 @@ describe.each([
 
         const generated = await fetch(url);
         expect(generated.status).toBe(200);
-        expect(generated.headers.get('cache-control')).toBe(cacheHeader);
+        expect(generated.headers.get('cache-control')).toBe(expected);
 
         const cached = await fetch(url);
         expect(cached.status).toBe(200);
-        expect(cached.headers.get('cache-control')).toBe(cacheHeader);
+        expect(cached.headers.get('cache-control')).toBe(expected);
     });
 });
