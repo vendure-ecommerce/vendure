@@ -218,7 +218,7 @@
           "title": "CLI",
           "slug": "cli",
           "file": "docs/guides/developer-guide/cli/index.mdx",
-          "lastModified": "2026-10-10T16:07:05+02:00"
+          "lastModified": "2026-10-15T14:50:01+02:00"
         },
         {
           "title": "AI-assisted Development",
@@ -236,7 +236,13 @@
           "title": "Custom Fields",
           "slug": "custom-fields",
           "file": "docs/guides/developer-guide/custom-fields/index.mdx",
-          "lastModified": "2026-08-25T13:46:09-04:00"
+          "lastModified": "2026-10-13T15:13:38+02:00"
+        },
+        {
+          "title": "Secret Fields",
+          "slug": "secret-fields",
+          "file": "docs/guides/developer-guide/secret-fields/index.mdx",
+          "lastModified": "2026-07-31T11:54:35+02:00"
         },
         {
           "title": "Error Handling",
@@ -278,7 +284,7 @@
           "title": "Strategies & Configurable Operations",
           "slug": "strategies-configurable-operations",
           "file": "docs/guides/developer-guide/strategies-configurable-operations/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-13T15:13:38+02:00"
         },
         {
           "title": "Testing",
@@ -416,7 +422,7 @@
           "title": "Telemetry",
           "slug": "telemetry",
           "file": "docs/guides/developer-guide/telemetry/index.mdx",
-          "lastModified": "2026-07-20T15:59:41+02:00"
+          "lastModified": "2026-10-15T14:50:01+02:00"
         }
       ]
     },
@@ -1336,7 +1342,7 @@
                   "title": "Permission",
                   "slug": "permission",
                   "file": "docs/reference/typescript-api/common/permission.mdx",
-                  "lastModified": "2026-09-25T17:20:15+02:00"
+                  "lastModified": "2026-10-16T07:46:21Z"
                 },
                 {
                   "title": "PriceCalculationResult",
@@ -1578,7 +1584,7 @@
                   "title": "CustomFieldConfig",
                   "slug": "custom-field-config",
                   "file": "docs/reference/typescript-api/custom-fields/custom-field-config.mdx",
-                  "lastModified": "2026-09-21T15:40:19+02:00"
+                  "lastModified": "2026-10-16T10:05:27Z"
                 },
                 {
                   "title": "CustomFieldType",
@@ -1596,13 +1602,13 @@
                   "title": "StructCustomFieldConfig",
                   "slug": "struct-custom-field-config",
                   "file": "docs/reference/typescript-api/custom-fields/struct-custom-field-config.mdx",
-                  "lastModified": "2026-09-21T15:40:19+02:00"
+                  "lastModified": "2026-10-16T10:05:27Z"
                 },
                 {
                   "title": "StructFieldConfig",
                   "slug": "struct-field-config",
                   "file": "docs/reference/typescript-api/custom-fields/struct-field-config.mdx",
-                  "lastModified": "2026-09-21T15:40:19+02:00"
+                  "lastModified": "2026-10-16T10:05:27Z"
                 },
                 {
                   "title": "TypedCustomSingleFieldConfig",
@@ -1617,7 +1623,7 @@
                   "lastModified": "2026-09-29T10:57:44+02:00"
                 }
               ],
-              "lastModified": "2026-09-21T15:40:19+02:00"
+              "lastModified": "2026-10-16T10:05:27Z"
             },
             {
               "title": "Data Access",
@@ -2370,7 +2376,7 @@
                   "title": "InspectableJobQueueStrategy",
                   "slug": "inspectable-job-queue-strategy",
                   "file": "docs/reference/typescript-api/job-queue/inspectable-job-queue-strategy.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-15T13:00:14Z"
                 },
                 {
                   "title": "Job",
@@ -3144,7 +3150,7 @@
                   "title": "ChannelService",
                   "slug": "channel-service",
                   "file": "docs/reference/typescript-api/services/channel-service.mdx",
-                  "lastModified": "2026-09-01T11:19:25Z"
+                  "lastModified": "2026-10-15T11:41:24Z"
                 },
                 {
                   "title": "CollectionService",
@@ -3174,7 +3180,7 @@
                   "title": "CustomerService",
                   "slug": "customer-service",
                   "file": "docs/reference/typescript-api/services/customer-service.mdx",
-                  "lastModified": "2026-09-10T13:34:01Z"
+                  "lastModified": "2026-10-16T07:46:21Z"
                 },
                 {
                   "title": "EntitySlugService",
@@ -3372,7 +3378,7 @@
                   "title": "UserService",
                   "slug": "user-service",
                   "file": "docs/reference/typescript-api/services/user-service.mdx",
-                  "lastModified": "2026-09-10T13:34:01Z"
+                  "lastModified": "2026-10-16T07:46:21Z"
                 },
                 {
                   "title": "ZoneService",
@@ -3947,7 +3953,7 @@
                   "title": "BullMQJobQueueStrategy",
                   "slug": "bull-mqjob-queue-strategy",
                   "file": "docs/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-strategy.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-15T13:00:14Z"
                 },
                 {
                   "title": "BullMQPluginOptions",
@@ -4334,7 +4340,7 @@
                   "title": "Mutations",
                   "slug": "mutations",
                   "file": "docs/reference/graphql-api/admin/mutations.mdx",
-                  "lastModified": "2026-09-10T13:34:01Z"
+                  "lastModified": "2026-10-16T07:46:21Z"
                 },
                 {
                   "title": "Queries",
@@ -4881,7 +4887,7 @@
                   "title": "VendureDashboardPlugin",
                   "slug": "vendure-dashboard-plugin",
                   "file": "docs/reference/dashboard/vite-plugin/vendure-dashboard-plugin.mdx",
-                  "lastModified": "2026-09-01T13:17:25+02:00"
+                  "lastModified": "2026-10-14T10:19:32Z"
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"
