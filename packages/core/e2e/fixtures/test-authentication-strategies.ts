@@ -291,7 +291,10 @@ export class TestSSOStrategyShop implements AuthenticationStrategy<{ email: stri
  * Like TestSSOStrategyShop, but looks up the User with findCustomerUser(), which only checks the
  * current Channel, as the documented example of an AuthenticationStrategy does.
  */
-export class TestSSOStrategyShopChannelScoped implements AuthenticationStrategy<{ email: string }> {
+export class TestSSOStrategyShopChannelScoped implements AuthenticationStrategy<{
+    email: string;
+    verified?: boolean;
+}> {
     readonly name = 'test_sso_strategy_shop_channel_scoped';
     private externalAuthenticationService: ExternalAuthenticationService;
 
@@ -303,12 +306,16 @@ export class TestSSOStrategyShopChannelScoped implements AuthenticationStrategy<
         return gql`
             input TestSSOInputShopChannelScoped {
                 email: String!
+                verified: Boolean
             }
         `;
     }
 
-    async authenticate(ctx: RequestContext, data: { email: string }): Promise<User | false | string> {
-        const { email } = data;
+    async authenticate(
+        ctx: RequestContext,
+        data: { email: string; verified?: boolean },
+    ): Promise<User | false | string> {
+        const { email, verified } = data;
         const user = await this.externalAuthenticationService.findCustomerUser(ctx, this.name, email);
         if (user) {
             return user;
@@ -319,7 +326,7 @@ export class TestSSOStrategyShopChannelScoped implements AuthenticationStrategy<
             emailAddress: email,
             firstName: 'SSO Customer First Name',
             lastName: 'SSO Customer Last Name',
-            verified: true,
+            verified: verified ?? true,
         });
     }
 }

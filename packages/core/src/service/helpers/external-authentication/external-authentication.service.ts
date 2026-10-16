@@ -116,14 +116,6 @@ export class ExternalAuthenticationService {
         const existingUser = await this.findExistingCustomerUserByEmailAddress(ctx, emailAddress);
 
         if (existingUser) {
-            // SECURITY: only link a newly-presented external identity to a pre-existing account when the
-            // external provider has verified ownership of the email address. Without this check, an attacker
-            // who presents a victim's (unverified) email via an external provider that does not validate email
-            // ownership could have their external identity bound to the victim's existing account, taking it over.
-            if (!config.verified) {
-                throw new UnverifiedExternalEmailError();
-            }
-            user = existingUser;
             const isAlreadyLinked = existingUser.authenticationMethods.some(
                 method =>
                     method instanceof ExternalAuthenticationMethod &&
@@ -132,9 +124,18 @@ export class ExternalAuthenticationService {
             );
             if (isAlreadyLinked) {
                 // The strategy did not find the User because its Customer is not in the current
-                // Channel yet. The account is linked already, so there is nothing to create.
+                // Channel yet. This external identity is linked to the User already, so there is
+                // nothing to create or verify.
                 return existingUser;
             }
+            // SECURITY: only link a newly-presented external identity to a pre-existing account when the
+            // external provider has verified ownership of the email address. Without this check, an attacker
+            // who presents a victim's (unverified) email via an external provider that does not validate email
+            // ownership could have their external identity bound to the victim's existing account, taking it over.
+            if (!config.verified) {
+                throw new UnverifiedExternalEmailError();
+            }
+            user = existingUser;
         } else {
             const customerRole = await this.roleService.getCustomerRole(ctx);
             user = new User({

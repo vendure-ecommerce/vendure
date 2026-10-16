@@ -746,8 +746,9 @@ describe('AuthenticationStrategy', () => {
                 emailAddress: string,
                 strategy = 'test_sso_strategy_shop',
             ) {
-                shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                // Log out first, so that the logout request does not assign the previous User to the Channel
                 await shopClient.asAnonymousUser();
+                shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { authenticate } = await shopClient.query(authenticateDocument, {
                     input: { [strategy]: { email: emailAddress } },
                 });
@@ -833,6 +834,29 @@ describe('AuthenticationStrategy', () => {
                     options: { filter: { type: { eq: HistoryEntryType.CUSTOMER_REGISTERED } } },
                 });
                 expect(withHistory?.history.items.filter(i => i.data.strategy === strategy)).toHaveLength(1);
+            });
+
+            it('lets an unverified external login sign in to another Channel', async () => {
+                const input = {
+                    test_sso_strategy_shop_channel_scoped: {
+                        email: 'unverified.channel@test-domain.com',
+                        verified: false,
+                    },
+                };
+                await shopClient.asAnonymousUser();
+                const { authenticate: first } = await shopClient.query(authenticateDocument, { input });
+                currentUserGuard.assertSuccess(first);
+
+                // The strategy does not find the User in the second Channel, so it calls
+                // createCustomerAndUser() again for the identity which is linked already
+                // Log out first, so that the logout request does not assign the previous User to the Channel
+                await shopClient.asAnonymousUser();
+                shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                const { authenticate: second } = await shopClient.query(authenticateDocument, { input });
+                shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                currentUserGuard.assertSuccess(second);
+
+                expect(second.id).toBe(first.id);
             });
 
             it('prefers a Customer of the current Channel', async () => {

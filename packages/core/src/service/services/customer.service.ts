@@ -364,7 +364,6 @@ export class CustomerService {
                 if (otherCustomerWithEmailAddress) {
                     input.emailAddress = customer.emailAddress;
                 } else if (customer.user) {
-                    // The User identifier is saved in lowercase too, like the email address.
                     await this.userService.changeUserAndNativeIdentifier(
                         ctx,
                         customer.user.id,
