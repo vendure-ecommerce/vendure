@@ -595,7 +595,7 @@ test.describe('Manage variants inline editing', () => {
 
             await page.getByRole('button', { name: 'Add variant' }).click();
             const dialog = page.getByRole('dialog');
-            await expect(dialog).toBeVisible();
+            await expect(dialog.getByRole('button', { name: 'Create variant' })).toBeVisible();
             // No option groups, so the dialog does not render the option selects at all.
             await expect(dialog.getByText('Product options')).toHaveCount(0);
 
@@ -697,6 +697,54 @@ test.describe('Manage variants inline editing', () => {
                     { id: group.id },
                 );
             }
+        }
+    });
+
+    // #5325 — an option picked before its group is removed on the same page visit must not
+    // be sent when the dialog is opened again.
+    test('Add variant dialog starts empty after an option group is removed on the same page visit', async ({
+        page,
+    }) => {
+        const client = new VendureAdminClient(page);
+        await client.login();
+        const unique = Date.now();
+        const { productId, optionGroupId, smallOptionId } = await createVariantEditorProduct(client, unique);
+        const smallSku = `e2e-removed-group-small-${unique}`;
+        const newSku = `e2e-removed-group-new-${unique}`;
+
+        try {
+            await createVariantEditorVariant(client, productId, `Small ${unique}`, smallSku, [smallOptionId]);
+
+            await page.goto(`/products/${productId}/variants`);
+            await expect(page.getByRole('cell', { name: smallSku })).toBeVisible({ timeout: 10_000 });
+
+            await page.getByRole('button', { name: 'Add variant' }).click();
+            const dialog = page.getByRole('dialog', { name: 'Add product variant' });
+            await expect(dialog.getByText('Product options')).toBeVisible({ timeout: 10_000 });
+            await dialog.getByRole('combobox').click();
+            await page.getByRole('option', { name: 'Large' }).click();
+            await dialog.getByRole('button', { name: 'Close' }).click();
+            await expect(dialog).toBeHidden();
+
+            // The first trash button on the page is the Size group's remove control.
+            await page.locator('button:has([class*="lucide-trash"])').first().click();
+            await page.locator('[role="alertdialog"]').getByRole('button', { name: 'Continue' }).click();
+            await page
+                .locator('[role="alertdialog"]')
+                .filter({ hasText: 'Force remove option group' })
+                .getByRole('button', { name: 'Force remove' })
+                .click();
+            await expect(page.getByText('No option groups defined yet')).toBeVisible({ timeout: 10_000 });
+
+            await page.getByRole('button', { name: 'Add variant' }).click();
+            await expect(dialog.getByLabel('Name', { exact: true })).toHaveValue('');
+            await dialog.getByLabel('Name', { exact: true }).fill(`New ${unique}`);
+            await dialog.getByLabel('SKU', { exact: true }).fill(newSku);
+            await dialog.getByRole('button', { name: 'Create variant' }).click();
+
+            await expect(page.getByRole('cell', { name: newSku })).toBeVisible({ timeout: 10_000 });
+        } finally {
+            await cleanupVariantEditorProduct(client, productId, optionGroupId);
         }
     });
 });

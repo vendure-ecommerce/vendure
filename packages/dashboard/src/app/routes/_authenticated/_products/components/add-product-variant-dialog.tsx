@@ -12,6 +12,7 @@ import {
 } from '@/vdb/components/ui/dialog.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
+import { Spinner } from '@/vdb/components/ui/spinner.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf, VariablesOf } from '@/vdb/graphql/graphql.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
@@ -73,14 +74,58 @@ export function AddProductVariantDialog({
     onSuccess?: () => void;
 }) {
     const [open, setOpen] = useState(false);
+
+    const { data: productData } = useQuery({
+        queryKey: ['productOptionGroups', productId],
+        queryFn: () => api.query(getProductOptionGroupsDocument, { productId }),
+    });
+
+    if (!productData?.product) return null;
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger render={<Button variant="outline" />}>
+                <Plus className="mr-2 h-4 w-4" />
+                <Trans>Add variant</Trans>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        <Trans>Add product variant</Trans>
+                    </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        <Trans>Create a new product variant with options, pricing, and stock</Trans>
+                    </DialogDescription>
+                </DialogHeader>
+                <AddProductVariantForm
+                    productId={productId}
+                    onCreated={() => {
+                        setOpen(false);
+                        onSuccess?.();
+                    }}
+                />
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+// The dialog content mounts on each open, so every open starts with a new form.
+function AddProductVariantForm({ productId, onCreated }: { productId: string; onCreated: () => void }) {
     const { activeChannel } = useChannel();
     const { t } = useLingui();
     const [duplicateVariantError, setDuplicateVariantError] = useState<string | null>(null);
     const [nameTouched, setNameTouched] = useState(false);
 
-    const { data: productData, refetch } = useQuery({
+    // Reload the product on every open and show the form only once the reload is back.
+    // Fields rendered from the cached copy can include an option group the page has removed.
+    const {
+        data: productData,
+        refetch,
+        isFetchedAfterMount,
+    } = useQuery({
         queryKey: ['productOptionGroups', productId],
         queryFn: () => api.query(getProductOptionGroupsDocument, { productId }),
+        refetchOnMount: 'always',
     });
 
     const form = useForm<FormValues>({
@@ -155,28 +200,11 @@ export function AddProductVariantDialog({
         generateNameFromOptions(form.getValues());
     }, [JSON.stringify(options), checkForDuplicateVariant, generateNameFromOptions, form]);
 
-    // Reload this dialog's own copy of the product on open. The page can add, delete or
-    // reassign variants and option groups, and the duplicate check must see the current set.
-    useEffect(() => {
-        if (open) refetch();
-    }, [open, refetch]);
-
-    // Also check when the dialog opens and product data is loaded
-    useEffect(() => {
-        if (open && productData?.product) {
-            checkForDuplicateVariant(form.getValues());
-        }
-    }, [open, productData?.product, checkForDuplicateVariant, form]);
-
     const createProductVariantMutation = useMutation({
         mutationFn: api.mutate(createProductVariantsDocument),
         onSuccess: () => {
             toast.success(t`Successfully created product variant`);
-            // Clear the form so the next variant does not inherit this one's values.
-            form.reset();
-            setNameTouched(false);
-            setOpen(false);
-            onSuccess?.();
+            onCreated();
         },
         onError: error => {
             toast.error(t`Failed to create product variant`, {
@@ -230,125 +258,115 @@ export function AddProductVariantDialog({
         [createProductVariantMutation, productData?.product, duplicateVariantError, productId],
     );
 
-    if (!productData?.product) return null;
+    if (!isFetchedAfterMount || !productData?.product) {
+        return (
+            <div className="flex items-center justify-center py-8 text-muted-foreground">
+                <Spinner />
+            </div>
+        );
+    }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger render={<Button variant="outline" />}>
-                <Plus className="mr-2 h-4 w-4" />
-                <Trans>Add variant</Trans>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>
-                        <Trans>Add product variant</Trans>
-                    </DialogTitle>
-                    <DialogDescription className="sr-only">
-                        <Trans>Create a new product variant with options, pricing, and stock</Trans>
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form
-                        onSubmit={e => {
-                            e.stopPropagation();
-                            form.handleSubmit(onSubmit)(e);
-                        }}
-                        className="space-y-4"
-                    >
-                        {(productData?.product?.optionGroups.length ?? 0) > 0 && (
-                            <div className="flex flex-col gap-2">
-                                <div className="flex justify-between items-center">
-                                    <label className="text-sm font-medium">
-                                        <Trans>Product options</Trans>
-                                    </label>
-                                </div>
-                            </div>
-                        )}
-                        <div className="grid grid-cols-2 gap-4">
-                            {productData?.product?.optionGroups.map(group => (
-                                <ProductOptionSelect
-                                    key={group.id}
-                                    group={group}
-                                    value={form.watch(`options.${group.id}`)}
-                                    onChange={value => {
-                                        form.setValue(`options.${group.id}`, value, {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                        });
-                                    }}
-                                    onCreateOption={name => {
-                                        createProductOptionMutation.mutate({
-                                            input: {
-                                                productOptionGroupId: group.id,
-                                                code: name.toLowerCase().replace(/\s+/g, '-'),
-                                                translations: [
-                                                    {
-                                                        languageCode:
-                                                            activeChannel?.defaultLanguageCode ?? 'en',
-                                                        name,
-                                                    },
-                                                ],
-                                            },
-                                        });
-                                    }}
-                                />
-                            ))}
+        <Form {...form}>
+            <form
+                onSubmit={e => {
+                    e.stopPropagation();
+                    form.handleSubmit(onSubmit)(e);
+                }}
+                className="space-y-4"
+            >
+                {(productData?.product?.optionGroups.length ?? 0) > 0 && (
+                    <div className="flex flex-col gap-2">
+                        <div className="flex justify-between items-center">
+                            <label className="text-sm font-medium">
+                                <Trans>Product options</Trans>
+                            </label>
                         </div>
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="name"
-                            label={<Trans>Name</Trans>}
-                            // Only typing stops the generated name. Focus alone does not, since the
-                            // dialog can autofocus this field before the option groups load.
-                            render={({ field }) => (
-                                <Input
-                                    {...field}
-                                    onChange={e => {
-                                        field.onChange(e);
-                                        setNameTouched(true);
-                                    }}
-                                />
-                            )}
+                    </div>
+                )}
+                <div className="grid grid-cols-2 gap-4">
+                    {productData?.product?.optionGroups.map(group => (
+                        <ProductOptionSelect
+                            key={group.id}
+                            group={group}
+                            value={form.watch(`options.${group.id}`)}
+                            onChange={value => {
+                                form.setValue(`options.${group.id}`, value, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                });
+                            }}
+                            onCreateOption={name => {
+                                createProductOptionMutation.mutate({
+                                    input: {
+                                        productOptionGroupId: group.id,
+                                        code: name.toLowerCase().replace(/\s+/g, '-'),
+                                        translations: [
+                                            {
+                                                languageCode: activeChannel?.defaultLanguageCode ?? 'en',
+                                                name,
+                                            },
+                                        ],
+                                    },
+                                });
+                            }}
                         />
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="sku"
-                            label={<Trans>SKU</Trans>}
-                            render={({ field }) => <Input {...field} />}
+                    ))}
+                </div>
+                <FormFieldWrapper
+                    control={form.control}
+                    name="name"
+                    label={<Trans>Name</Trans>}
+                    // Only typing stops the generated name. Focus alone does not, since this
+                    // field takes focus when the form appears.
+                    render={({ field }) => (
+                        <Input
+                            {...field}
+                            autoFocus
+                            onChange={e => {
+                                field.onChange(e);
+                                setNameTouched(true);
+                            }}
                         />
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="price"
-                            label={<Trans>Price</Trans>}
-                            render={({ field }) => (
-                                <MoneyInput
-                                    {...field}
-                                    value={Number(field.value) || 0}
-                                    onChange={value => field.onChange(value.toString())}
-                                    currency={activeChannel?.defaultCurrencyCode}
-                                />
-                            )}
+                    )}
+                />
+                <FormFieldWrapper
+                    control={form.control}
+                    name="sku"
+                    label={<Trans>SKU</Trans>}
+                    render={({ field }) => <Input {...field} />}
+                />
+                <FormFieldWrapper
+                    control={form.control}
+                    name="price"
+                    label={<Trans>Price</Trans>}
+                    render={({ field }) => (
+                        <MoneyInput
+                            {...field}
+                            value={Number(field.value) || 0}
+                            onChange={value => field.onChange(value.toString())}
+                            currency={activeChannel?.defaultCurrencyCode}
                         />
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="stockOnHand"
-                            label={<Trans>Stock level</Trans>}
-                            render={({ field }) => <Input type="number" {...field} />}
-                        />
-                        <DialogFooter className="flex flex-col items-end gap-2">
-                            {duplicateVariantError && (
-                                <p className="text-sm text-destructive">{duplicateVariantError}</p>
-                            )}
-                            <Button
-                                type="submit"
-                                disabled={createProductVariantMutation.isPending || !!duplicateVariantError}
-                            >
-                                <Trans>Create variant</Trans>
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
+                    )}
+                />
+                <FormFieldWrapper
+                    control={form.control}
+                    name="stockOnHand"
+                    label={<Trans>Stock level</Trans>}
+                    render={({ field }) => <Input type="number" {...field} />}
+                />
+                <DialogFooter className="flex flex-col items-end gap-2">
+                    {duplicateVariantError && (
+                        <p className="text-sm text-destructive">{duplicateVariantError}</p>
+                    )}
+                    <Button
+                        type="submit"
+                        disabled={createProductVariantMutation.isPending || !!duplicateVariantError}
+                    >
+                        <Trans>Create variant</Trans>
+                    </Button>
+                </DialogFooter>
+            </form>
+        </Form>
     );
 }

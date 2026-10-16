@@ -280,9 +280,9 @@ test.describe('manage product variants', () => {
         // Click "Add variant" button
         await page.getByRole('button', { name: 'Add variant' }).click();
 
-        // The dialog should open
+        // The dialog should open and show its form once the product has reloaded
         const dialog = page.getByRole('dialog');
-        await expect(dialog).toBeVisible();
+        await expect(dialog.getByRole('button', { name: 'Create variant' })).toBeVisible();
 
         // Select an option for each option group using the combobox selectors.
         // For the first group, select our unique option ("E2E Unique Test") created in beforeAll.
