@@ -1342,7 +1342,7 @@
                   "title": "Permission",
                   "slug": "permission",
                   "file": "docs/reference/typescript-api/common/permission.mdx",
-                  "lastModified": "2026-09-25T17:20:15+02:00"
+                  "lastModified": "2026-10-16T07:46:21Z"
                 },
                 {
                   "title": "PriceCalculationResult",
@@ -3180,7 +3180,7 @@
                   "title": "CustomerService",
                   "slug": "customer-service",
                   "file": "docs/reference/typescript-api/services/customer-service.mdx",
-                  "lastModified": "2026-09-10T13:34:01Z"
+                  "lastModified": "2026-10-16T07:46:21Z"
                 },
                 {
                   "title": "EntitySlugService",
@@ -3378,7 +3378,7 @@
                   "title": "UserService",
                   "slug": "user-service",
                   "file": "docs/reference/typescript-api/services/user-service.mdx",
-                  "lastModified": "2026-09-10T13:34:01Z"
+                  "lastModified": "2026-10-16T07:46:21Z"
                 },
                 {
                   "title": "ZoneService",
@@ -4340,7 +4340,7 @@
                   "title": "Mutations",
                   "slug": "mutations",
                   "file": "docs/reference/graphql-api/admin/mutations.mdx",
-                  "lastModified": "2026-09-10T13:34:01Z"
+                  "lastModified": "2026-10-16T07:46:21Z"
                 },
                 {
                   "title": "Queries",
