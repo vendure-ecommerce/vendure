@@ -37,6 +37,11 @@ describe('AssetServerPlugin', () => {
     let asset: FragmentOf<typeof assetFragment>;
     const sourceFilePath = path.join(__dirname, TEST_ASSET_DIR, `source/b6/${IMAGE_BASENAME}.jpg`);
     const previewFilePath = path.join(__dirname, TEST_ASSET_DIR, `preview/71/${IMAGE_BASENAME}__preview.jpg`);
+    const options = {
+        assetUploadDir: path.join(__dirname, TEST_ASSET_DIR),
+        route: 'assets',
+        imageTransformStrategy: new TestImageTransformStrategy(),
+    };
 
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
@@ -46,24 +51,14 @@ describe('AssetServerPlugin', () => {
             assetOptions: {
                 permittedFileTypes: ['image/*', '.pdf', 'text/html'],
             },
-            plugins: [
-                AssetServerPlugin.init({
-                    assetUploadDir: path.join(__dirname, TEST_ASSET_DIR),
-                    route: 'assets',
-                    imageTransformStrategy: new TestImageTransformStrategy(),
-                }),
-            ],
+            plugins: [AssetServerPlugin.init(options)],
         }),
     );
 
     beforeAll(async () => {
         // Multiple test servers in this file share AssetServerPlugin's static options
         // (read at bootstrap), so reassert this suite's config immediately before boot.
-        AssetServerPlugin.init({
-            assetUploadDir: path.join(__dirname, TEST_ASSET_DIR),
-            route: 'assets',
-            imageTransformStrategy: new TestImageTransformStrategy(),
-        });
+        AssetServerPlugin.init(options);
         await fs.emptyDir(path.join(__dirname, TEST_ASSET_DIR, 'source'));
         await fs.emptyDir(path.join(__dirname, TEST_ASSET_DIR, 'preview'));
         await fs.emptyDir(path.join(__dirname, TEST_ASSET_DIR, 'cache'));
@@ -350,13 +345,6 @@ describe('AssetServerPlugin', () => {
         });
     });
 
-    it('ImageTransformStrategy can throw to prevent transform', async () => {
-        const res = await fetch(`${asset.preview}?preset=test`);
-        expect(res.status).toBe(400);
-        const text = await res.text();
-        expect(text).toContain('Invalid parameters');
-    });
-
     describe('deletion', () => {
         it('deleting Asset deletes binary file', async () => {
             const { deleteAsset } = await adminClient.query(deleteAssetDocument, {
@@ -446,22 +434,31 @@ describe('AssetServerPlugin', () => {
         expect(createAssets.length).toBe(1);
         expect(createAssets[0].name).toBe('bad-image.jpg');
     });
+
+    it('ImageTransformStrategy can throw to prevent transform', async () => {
+        const res = await fetch(`${asset.preview}?preset=test`);
+        expect(res.status).toBe(400);
+        const text = await res.text();
+        expect(text).toContain('Invalid parameters');
+    });
 });
 
-describe('AssetServerPlugin custom Cache-Control header', () => {
-    const assetUploadDir = path.join(__dirname, 'test-assets-cache-custom');
-    const cacheHeader = 'public, max-age=3600';
+describe.each([
+    { dir: 'test-assets-cache-custom', cacheHeader: 'public, max-age=3600' },
+    { dir: 'test-assets-cache-nostore', cacheHeader: 'no-store' },
+])('AssetServerPlugin with cacheHeader $cacheHeader', ({ dir, cacheHeader }) => {
+    const options = { assetUploadDir: path.join(__dirname, dir), route: 'assets', cacheHeader };
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            plugins: [AssetServerPlugin.init({ assetUploadDir, route: 'assets', cacheHeader })],
+            plugins: [AssetServerPlugin.init(options)],
         }),
     );
 
     beforeAll(async () => {
         // Multiple test servers in this file share AssetServerPlugin's static options
         // (read at bootstrap), so reassert this suite's config immediately before boot.
-        AssetServerPlugin.init({ assetUploadDir, route: 'assets', cacheHeader });
-        await fs.emptyDir(assetUploadDir);
+        AssetServerPlugin.init(options);
+        await fs.emptyDir(options.assetUploadDir);
         await server.init({
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
@@ -480,53 +477,7 @@ describe('AssetServerPlugin custom Cache-Control header', () => {
             filePaths: [path.join(__dirname, 'fixtures/assets/test.jpg')],
             mapVariables: filePaths => ({ input: filePaths.map(() => ({ file: null })) }),
         });
-        const testAsset = createAssets[0];
-        const url = `${testAsset.preview}?w=55&h=55`;
-
-        const generated = await fetch(url);
-        expect(generated.status).toBe(200);
-        expect(generated.headers.get('cache-control')).toBe(cacheHeader);
-
-        const cached = await fetch(url);
-        expect(cached.status).toBe(200);
-        expect(cached.headers.get('cache-control')).toBe(cacheHeader);
-    });
-});
-
-describe('AssetServerPlugin no-store Cache-Control header', () => {
-    const assetUploadDir = path.join(__dirname, 'test-assets-cache-nostore');
-    const cacheHeader = 'no-store';
-    const { server, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig(), {
-            plugins: [AssetServerPlugin.init({ assetUploadDir, route: 'assets', cacheHeader })],
-        }),
-    );
-
-    beforeAll(async () => {
-        // Multiple test servers in this file share AssetServerPlugin's static options
-        // (read at bootstrap), so reassert this suite's config immediately before boot.
-        AssetServerPlugin.init({ assetUploadDir, route: 'assets', cacheHeader });
-        await fs.emptyDir(assetUploadDir);
-        await server.init({
-            initialData,
-            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
-            customerCount: 1,
-        });
-        await adminClient.asSuperAdmin();
-    }, TEST_SETUP_TIMEOUT_MS);
-
-    afterAll(async () => {
-        await server.destroy();
-    });
-
-    it('sets the configured header on generated and cached image responses', async () => {
-        const { createAssets } = await adminClient.fileUploadMutation({
-            mutation: createAssetsDocument,
-            filePaths: [path.join(__dirname, 'fixtures/assets/test.jpg')],
-            mapVariables: filePaths => ({ input: filePaths.map(() => ({ file: null })) }),
-        });
-        const testAsset = createAssets[0];
-        const url = `${testAsset.preview}?w=56&h=56`;
+        const url = `${createAssets[0].preview}?w=55&h=55`;
 
         const generated = await fetch(url);
         expect(generated.status).toBe(200);
