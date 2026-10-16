@@ -3,6 +3,8 @@ import { CurrencyCode, ErrorCode, HistoryEntryType, LanguageCode } from '@vendur
 import { pick } from '@vendure/common/lib/pick';
 import {
     Customer,
+    CustomerChannelAssignmentStrategy,
+    ExternalAuthenticationMethod,
     mergeConfig,
     NativeAuthenticationMethod,
     NativeAuthenticationStrategy,
@@ -27,6 +29,7 @@ import {
     TestSSOStrategyAdmin,
     TestSSOStrategyAdminAvatarSync,
     TestSSOStrategyShop,
+    TestSSOStrategyShopChannelScoped,
     TestUnverifiedEmailStrategy,
     VALID_AUTH_TOKEN,
 } from './fixtures/test-authentication-strategies';
@@ -48,6 +51,7 @@ import {
 } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
+    getActiveCustomerDocument,
     registerAccountDocument,
     requestUpdateEmailAddressDocument,
     setCustomerDocument,
@@ -64,7 +68,16 @@ const customerGuard: ErrorResultGuard<CustomerFragmentType> = createErrorResultG
     input => input.emailAddress != null,
 );
 
+class TestCustomerChannelAssignmentStrategy implements CustomerChannelAssignmentStrategy {
+    canAssign = true;
+
+    canAssignCustomerToChannel() {
+        return this.canAssign;
+    }
+}
+
 describe('AuthenticationStrategy', () => {
+    const customerChannelAssignmentStrategy = new TestCustomerChannelAssignmentStrategy();
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             authOptions: {
@@ -73,8 +86,10 @@ describe('AuthenticationStrategy', () => {
                     new TestAuthenticationStrategy(),
                     new TestAuthenticationStrategy2(),
                     new TestSSOStrategyShop(),
+                    new TestSSOStrategyShopChannelScoped(),
                     new TestUnverifiedEmailStrategy(),
                 ],
+                customerChannelAssignmentStrategy,
                 adminAuthenticationStrategy: [
                     new NativeAuthenticationStrategy(),
                     new TestSSOStrategyAdmin(),
@@ -727,15 +742,27 @@ describe('AuthenticationStrategy', () => {
                 return createCustomer;
             }
 
-            async function authenticateInSecondChannel(emailAddress: string) {
+            async function authenticateInSecondChannel(
+                emailAddress: string,
+                strategy = 'test_sso_strategy_shop',
+            ) {
                 shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 await shopClient.asAnonymousUser();
                 const { authenticate } = await shopClient.query(authenticateDocument, {
-                    input: { test_sso_strategy_shop: { email: emailAddress } },
+                    input: { [strategy]: { email: emailAddress } },
                 });
+                // The Customer is assigned to the Channel on the first request of the new session
+                await shopClient.query(getActiveCustomerDocument);
                 shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 currentUserGuard.assertSuccess(authenticate);
                 return authenticate;
+            }
+
+            async function getCustomerIdsInChannel(channelToken: string, emailAddress: string) {
+                adminClient.setChannelToken(channelToken);
+                const customers = await getCustomersByEmail(emailAddress);
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                return customers.map(c => c.id);
             }
 
             it('links a Customer of another Channel and assigns it to the current Channel', async () => {
@@ -747,10 +774,9 @@ describe('AuthenticationStrategy', () => {
                 const authenticate = await authenticateInSecondChannel('other.channel@test-domain.com');
 
                 expect(authenticate.id).toBe(customer.user?.id);
-                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const customers = await getCustomersByEmail('other.channel@test-domain.com');
-                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                expect(customers.map(c => c.id)).toEqual([customer.id]);
+                expect(
+                    await getCustomerIdsInChannel(SECOND_CHANNEL_TOKEN, 'other.channel@test-domain.com'),
+                ).toEqual([customer.id]);
             });
 
             it('keeps the other Channels of a linked Customer', async () => {
@@ -763,11 +789,50 @@ describe('AuthenticationStrategy', () => {
 
                 expect(authenticate.id).toBe(customer.user?.id);
                 for (const token of [THIRD_CHANNEL_TOKEN, SECOND_CHANNEL_TOKEN]) {
-                    adminClient.setChannelToken(token);
-                    const customers = await getCustomersByEmail('third.channel@test-domain.com');
-                    adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                    expect(customers.map(c => c.id)).toEqual([customer.id]);
+                    expect(await getCustomerIdsInChannel(token, 'third.channel@test-domain.com')).toEqual([
+                        customer.id,
+                    ]);
                 }
+            });
+
+            it('does not assign a linked Customer when the CustomerChannelAssignmentStrategy declines', async () => {
+                const strategy = 'test_sso_strategy_shop_channel_scoped';
+                const customer = await createCustomerInChannel(
+                    THIRD_CHANNEL_TOKEN,
+                    'Gated.Channel@test-domain.com',
+                );
+                customerChannelAssignmentStrategy.canAssign = false;
+                try {
+                    const first = await authenticateInSecondChannel(
+                        'gated.channel@test-domain.com',
+                        strategy,
+                    );
+                    // The strategy does not find the User in this Channel, so it links the account again
+                    const second = await authenticateInSecondChannel(
+                        'gated.channel@test-domain.com',
+                        strategy,
+                    );
+
+                    expect(first.id).toBe(customer.user?.id);
+                    expect(second.id).toBe(customer.user?.id);
+                } finally {
+                    customerChannelAssignmentStrategy.canAssign = true;
+                }
+                expect(
+                    await getCustomerIdsInChannel(SECOND_CHANNEL_TOKEN, 'gated.channel@test-domain.com'),
+                ).toEqual([]);
+
+                // The second login neither adds another authentication method nor another history entry
+                const authMethods = await server.app
+                    .get(TransactionalConnection)
+                    .rawConnection.getRepository(ExternalAuthenticationMethod)
+                    .find({ where: { user: { id: customer.user!.id.replace('T_', '') }, strategy } });
+                expect(authMethods).toHaveLength(1);
+                const { customer: withHistory } = await adminClient.query(getCustomerHistoryDocument, {
+                    id: customer.id,
+                    options: { filter: { type: { eq: HistoryEntryType.CUSTOMER_REGISTERED } } },
+                });
+                expect(withHistory?.history.items.filter(i => i.data.strategy === strategy)).toHaveLength(1);
             });
 
             it('prefers a Customer of the current Channel', async () => {

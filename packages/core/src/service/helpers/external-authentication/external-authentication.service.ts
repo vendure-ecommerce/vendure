@@ -124,6 +124,17 @@ export class ExternalAuthenticationService {
                 throw new UnverifiedExternalEmailError();
             }
             user = existingUser;
+            const isAlreadyLinked = existingUser.authenticationMethods.some(
+                method =>
+                    method instanceof ExternalAuthenticationMethod &&
+                    method.strategy === config.strategy &&
+                    method.externalIdentifier === config.externalIdentifier,
+            );
+            if (isAlreadyLinked) {
+                // The strategy did not find the User because its Customer is not in the current
+                // Channel yet. The account is linked already, so there is nothing to create.
+                return existingUser;
+            }
         } else {
             const customerRole = await this.roleService.getCustomerRole(ctx);
             user = new User({
@@ -144,12 +155,12 @@ export class ExternalAuthenticationService {
         const savedUser = await this.connection.getRepository(ctx, User).save(user);
 
         let customer: Customer;
-        // The existing Customer may be in another Channel
+        // The existing Customer may be in another Channel. It is not assigned to the current Channel
+        // here: CustomerChannelAssignmentService does that on the next request, if the
+        // CustomerChannelAssignmentStrategy allows it.
         const existingCustomer = await this.customerService.findOneByUserId(ctx, savedUser.id, false);
         if (existingCustomer) {
             customer = existingCustomer;
-            // Adds the current Channel and keeps the other Channels of the Customer
-            await this.channelService.assignToChannels(ctx, Customer, customer.id, [ctx.channelId]);
         } else {
             customer = new Customer({
                 emailAddress,
