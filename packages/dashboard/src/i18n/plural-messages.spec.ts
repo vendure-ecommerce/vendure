@@ -74,12 +74,15 @@ function tsxFiles(dir: string): string[] {
     });
 }
 
-/** `file:line: code` for each line which picks a string with a ternary on a count of 1, such as `n > 1 ? 's' : ''`. */
+/**
+ * `file:line: code` for each line which picks a string with a ternary on a count of 1,
+ * such as `n > 1 ? 's' : ''` or a choice between two `t` templates.
+ */
 function countTernaryLines(file: string): string[] {
     return readFileSync(file, 'utf-8')
         .split('\n')
         .flatMap((line, index) =>
-            /(?:[!=]==?|[<>]=?)\s*1\s*\?\s*['"`]/.test(line) && !line.includes('className')
+            /(?:[!=]==?|[<>]=?)\s*1\s*\?\s*t?['"`]/.test(line) && !line.includes('className')
                 ? [`${relative(srcDir, file)}:${index + 1}: ${line.trim()}`]
                 : [],
         );
