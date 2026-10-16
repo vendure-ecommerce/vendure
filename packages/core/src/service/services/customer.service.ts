@@ -309,7 +309,9 @@ export class CustomerService {
 
         if (hasEmailAddress(input)) {
             input.emailAddress = normalizeEmailAddress(input.emailAddress);
-            if (input.emailAddress !== customer.emailAddress) {
+            // A Customer may have been saved with capital letters, so the stored email address is
+            // normalized too. A difference only in case is not a new email address. See #5559
+            if (input.emailAddress !== normalizeEmailAddress(customer.emailAddress)) {
                 const existingCustomerInChannel = await this.connection
                     .getRepository(ctx, Customer)
                     .createQueryBuilder('customer')
@@ -340,6 +342,28 @@ export class CustomerService {
                         return new EmailAddressConflictAdminError();
                     }
 
+                    await this.userService.changeUserAndNativeIdentifier(
+                        ctx,
+                        customer.user.id,
+                        input.emailAddress,
+                    );
+                }
+            } else if (input.emailAddress !== customer.emailAddress) {
+                // Only the case differs. Another Customer may already use the lowercase form, as
+                // external logins before #5559 could create a second Customer for it. In that case
+                // the stored email address is kept, so that no two Customers have the same email
+                // address.
+                const otherCustomerWithEmailAddress = await this.connection
+                    .getRepository(ctx, Customer)
+                    .createQueryBuilder('customer')
+                    .where('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+                    .andWhere('customer.id != :customerId', { customerId: input.id })
+                    .andWhere('customer.deletedAt is null')
+                    .getOne();
+
+                if (otherCustomerWithEmailAddress) {
+                    input.emailAddress = customer.emailAddress;
+                } else if (customer.user) {
                     await this.userService.changeUserAndNativeIdentifier(
                         ctx,
                         customer.user.id,
