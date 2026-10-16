@@ -350,8 +350,9 @@ export class CustomerService {
                 }
             } else if (input.emailAddress !== customer.emailAddress) {
                 // Only the case differs. Another Customer may already use the lowercase form, as
-                // external logins used to create a second Customer for it. In that case the stored
-                // email address is kept, so that no two Customers have the same email address.
+                // external logins before #5559 could create a second Customer for it. In that case
+                // the stored email address is kept, so that no two Customers have the same email
+                // address.
                 const otherCustomerWithEmailAddress = await this.connection
                     .getRepository(ctx, Customer)
                     .createQueryBuilder('customer')

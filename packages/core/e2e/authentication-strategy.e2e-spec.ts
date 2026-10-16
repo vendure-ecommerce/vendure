@@ -440,7 +440,7 @@ describe('AuthenticationStrategy', () => {
         }
 
         // Simulates a Customer whose email address and User identifier are stored with capital
-        // letters, as external logins used to save them
+        // letters, as external logins before #5559 could save them
         async function setStoredEmailAddress(customer: CustomerFragmentType, emailAddress: string) {
             const { rawConnection } = server.app.get(TransactionalConnection);
             await rawConnection
@@ -578,8 +578,8 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('can save a Customer whose email address was stored with capital letters', async () => {
-            // Two Customers whose email addresses differ only in case, as external logins used to
-            // create them
+            // Two Customers whose email addresses differ only in case, as external logins before
+            // #5559 could create them
             const { createCustomer: lowercase } = await adminClient.query(createCustomerDocument, {
                 input: {
                     firstName: 'Lower',
@@ -655,18 +655,22 @@ describe('AuthenticationStrategy', () => {
                 newEmailAddress: 'pending.new@test-domain.com',
             });
             await setStoredEmailAddress(createCustomer, 'Pending.Case@test-domain.com');
+            const getNativeAuthMethod = () =>
+                server.app
+                    .get(TransactionalConnection)
+                    .rawConnection.getRepository(NativeAuthenticationMethod)
+                    .findOneOrFail({ where: { user: { id: createCustomer.user!.id.replace('T_', '') } } });
+            const before = await getNativeAuthMethod();
+            expect(before.identifierChangeToken).toEqual(expect.any(String));
 
             const { updateCustomer } = await adminClient.query(updateCustomerDocument, {
                 input: { id: createCustomer.id, emailAddress: 'Pending.Case@test-domain.com' },
             });
             customerGuard.assertSuccess(updateCustomer);
 
-            const nativeAuthMethod = await server.app
-                .get(TransactionalConnection)
-                .rawConnection.getRepository(NativeAuthenticationMethod)
-                .findOne({ where: { user: { id: createCustomer.user!.id.replace('T_', '') } } });
-            expect(nativeAuthMethod?.pendingIdentifier).toBe('pending.new@test-domain.com');
-            expect(nativeAuthMethod?.identifierChangeToken).not.toBeNull();
+            const after = await getNativeAuthMethod();
+            expect(after.pendingIdentifier).toBe('pending.new@test-domain.com');
+            expect(after.identifierChangeToken).toBe(before.identifierChangeToken);
         });
 
         it('still rejects changing the email address to one used by another Customer', async () => {
@@ -689,19 +693,22 @@ describe('AuthenticationStrategy', () => {
 
         describe('in several Channels', () => {
             const SECOND_CHANNEL_TOKEN = 'email-case-second-channel';
+            const THIRD_CHANNEL_TOKEN = 'email-case-third-channel';
 
             beforeAll(async () => {
-                await adminClient.query(createChannelDocument, {
-                    input: {
-                        code: 'email-case-second-channel',
-                        token: SECOND_CHANNEL_TOKEN,
-                        defaultLanguageCode: LanguageCode.en,
-                        currencyCode: CurrencyCode.USD,
-                        pricesIncludeTax: true,
-                        defaultShippingZoneId: 'T_1',
-                        defaultTaxZoneId: 'T_1',
-                    },
-                });
+                for (const token of [SECOND_CHANNEL_TOKEN, THIRD_CHANNEL_TOKEN]) {
+                    await adminClient.query(createChannelDocument, {
+                        input: {
+                            code: token,
+                            token,
+                            defaultLanguageCode: LanguageCode.en,
+                            currencyCode: CurrencyCode.USD,
+                            pricesIncludeTax: true,
+                            defaultShippingZoneId: 'T_1',
+                            defaultTaxZoneId: 'T_1',
+                        },
+                    });
+                }
             });
 
             afterAll(() => {
@@ -744,6 +751,23 @@ describe('AuthenticationStrategy', () => {
                 const customers = await getCustomersByEmail('other.channel@test-domain.com');
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 expect(customers.map(c => c.id)).toEqual([customer.id]);
+            });
+
+            it('keeps the other Channels of a linked Customer', async () => {
+                const customer = await createCustomerInChannel(
+                    THIRD_CHANNEL_TOKEN,
+                    'Third.Channel@test-domain.com',
+                );
+
+                const authenticate = await authenticateInSecondChannel('third.channel@test-domain.com');
+
+                expect(authenticate.id).toBe(customer.user?.id);
+                for (const token of [THIRD_CHANNEL_TOKEN, SECOND_CHANNEL_TOKEN]) {
+                    adminClient.setChannelToken(token);
+                    const customers = await getCustomersByEmail('third.channel@test-domain.com');
+                    adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                    expect(customers.map(c => c.id)).toEqual([customer.id]);
+                }
             });
 
             it('prefers a Customer of the current Channel', async () => {

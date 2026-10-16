@@ -144,10 +144,12 @@ export class ExternalAuthenticationService {
         const savedUser = await this.connection.getRepository(ctx, User).save(user);
 
         let customer: Customer;
-        // The existing Customer may be in another Channel. It is assigned to the current Channel below.
+        // The existing Customer may be in another Channel
         const existingCustomer = await this.customerService.findOneByUserId(ctx, savedUser.id, false);
         if (existingCustomer) {
             customer = existingCustomer;
+            // Adds the current Channel and keeps the other Channels of the Customer
+            await this.channelService.assignToChannels(ctx, Customer, customer.id, [ctx.channelId]);
         } else {
             customer = new Customer({
                 emailAddress,
@@ -155,9 +157,9 @@ export class ExternalAuthenticationService {
                 lastName: config.lastName,
                 user: savedUser,
             });
+            await this.channelService.assignToCurrentChannel(customer, ctx);
+            await this.connection.getRepository(ctx, Customer).save(customer);
         }
-        await this.channelService.assignToCurrentChannel(customer, ctx);
-        await this.connection.getRepository(ctx, Customer).save(customer);
 
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
