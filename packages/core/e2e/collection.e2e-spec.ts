@@ -5,6 +5,7 @@ import {
     DefaultJobQueuePlugin,
     facetValueCollectionFilter,
     productIdCollectionFilter,
+    TransactionalConnection,
     variantIdCollectionFilter,
     variantNameCollectionFilter,
 } from '@vendure/core';
@@ -27,6 +28,8 @@ import {
     assignCollectionsToChannelDocument,
     createChannelDocument,
     createCollectionDocument,
+    createProductDocument,
+    createProductVariantsDocument,
     deleteProductDocument,
     deleteProductVariantDocument,
     getAssetListDocument,
@@ -2161,6 +2164,148 @@ describe('Collection resolver', () => {
         });
     });
 
+    describe('combining an AND-ed and an OR-ed filter', () => {
+        // https://github.com/vendurehq/vendure/issues/5415
+        it('does not duplicate variants pulled in by the OR-ed filter when they have multiple translations', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+            const { createProduct: nameMatchProduct } = await adminClient.query(createProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'combineWithAnd regression name match',
+                            slug: 'combine-with-and-regression-name-match',
+                            description: '',
+                        },
+                    ],
+                },
+            });
+            const { createProductVariants: nameMatchVariants } = await adminClient.query(
+                createProductVariantsDocument,
+                {
+                    input: [
+                        {
+                            productId: nameMatchProduct.id,
+                            sku: 'COMBINE-REGRESSION-CAMERA',
+                            optionIds: [],
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'combineWithAndRegressionCamera' },
+                            ],
+                        },
+                    ],
+                },
+            );
+
+            // Two products, since a Product cannot have two variants with no options.
+            const { createProduct: orMatchProductA } = await adminClient.query(createProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'combineWithAnd regression id match A',
+                            slug: 'combine-with-and-regression-id-match-a',
+                            description: '',
+                        },
+                    ],
+                },
+            });
+            const { createProduct: orMatchProductB } = await adminClient.query(createProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'combineWithAnd regression id match B',
+                            slug: 'combine-with-and-regression-id-match-b',
+                            description: '',
+                        },
+                    ],
+                },
+            });
+            const { createProductVariants: orMatchVariants } = await adminClient.query(
+                createProductVariantsDocument,
+                {
+                    input: [
+                        {
+                            productId: orMatchProductA.id,
+                            sku: 'COMBINE-REGRESSION-OR-A',
+                            optionIds: [],
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'combineWithAndRegressionOrA' },
+                            ],
+                        },
+                        {
+                            productId: orMatchProductB.id,
+                            sku: 'COMBINE-REGRESSION-OR-B',
+                            optionIds: [],
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'combineWithAndRegressionOrB' },
+                            ],
+                        },
+                    ],
+                },
+            );
+
+            // These only match via the OR-ed productId filter; multiple translations triggered the bug.
+            await adminClient.query(updateProductVariantsDocument, {
+                input: orMatchVariants.map(v => ({
+                    id: v.id,
+                    translations: [
+                        { languageCode: LanguageCode.en, name: v.name },
+                        { languageCode: LanguageCode.de, name: `${v.name} (DE)` },
+                        { languageCode: LanguageCode.fr, name: `${v.name} (FR)` },
+                    ],
+                })),
+            });
+
+            const { createCollection } = await adminClient.query(createCollectionDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'combineWithAnd regression collection',
+                            description: '',
+                            slug: 'combine-with-and-regression-collection',
+                        },
+                    ],
+                    filters: [
+                        {
+                            code: variantNameCollectionFilter.code,
+                            arguments: [
+                                { name: 'operator', value: 'contains' },
+                                { name: 'term', value: 'combinewithandregressioncamera' },
+                                { name: 'combineWithAnd', value: 'true' },
+                            ],
+                        },
+                        {
+                            code: productIdCollectionFilter.code,
+                            arguments: [
+                                {
+                                    name: 'productIds',
+                                    value: `["${orMatchProductA.id}", "${orMatchProductB.id}"]`,
+                                },
+                                { name: 'combineWithAnd', value: 'false' },
+                            ],
+                        },
+                    ],
+                },
+            });
+            await awaitRunningJobs(adminClient, 5000);
+
+            const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                id: createCollection.id,
+            });
+            collectionResultGuard.assertSuccess(result.collection);
+
+            const expectedNames = [
+                ...nameMatchVariants.map(v => v.name),
+                ...orMatchVariants.map(v => v.name),
+            ].sort();
+            // De-duplicated union of both filter branches, each variant appearing exactly once.
+            expect(result.collection.productVariants.items.map(i => i.name).sort()).toEqual(expectedNames);
+        });
+    });
+
     describe('cross-channel update protection', () => {
         const CHANNEL_A_TOKEN = 'coll-cross-channel-a';
         const CHANNEL_B_TOKEN = 'coll-cross-channel-b';
@@ -2229,6 +2374,263 @@ describe('Collection resolver', () => {
             });
             expect(collection?.name).toBe('Channel-A Collection');
         });
+    });
+
+    describe('list query does not scale with Channel count', () => {
+        const scalingCollectionIds: string[] = [];
+
+        /**
+         * Runs the list query and reports how many rows the database returned for it. The
+         * statements are captured and re-run because the row count is what grows when an
+         * unwanted relation is joined, and it is not visible in the GraphQL response.
+         *
+         * Only the statements carrying the `lqb__channel` alias are counted. That alias is
+         * added by the Channel scoping join, so it selects the list query's own statements
+         * and leaves out session lookups and any job queue activity, whose number varies
+         * between runs. The test asserts a non-zero row count, so this narrowing fails
+         * loudly rather than silently measuring nothing if that alias is ever renamed.
+         */
+        async function countRowsForList(): Promise<{ items: number; rows: number }> {
+            const dataSource = server.app.get(TransactionalConnection).rawConnection;
+            const previousLogger = dataSource.logger;
+            const statements: Array<[string, any[]]> = [];
+            // Derive from the existing logger rather than spreading it. TypeORM's loggers keep
+            // `logQueryError` on the prototype, and a spread copies own properties only, so a
+            // failing query would call an undefined method and mask itself.
+            const capturingLogger = Object.create(previousLogger);
+            capturingLogger.logQuery = (query: string, parameters?: any[]) =>
+                statements.push([query, parameters ?? []]);
+            dataSource.logger = capturingLogger;
+            let items: number;
+            try {
+                const { collections } = await adminClient.query(collectionListForScalingDocument, {
+                    options: { take: 10, filter: { name: { contains: 'Scaling' } } },
+                });
+                items = collections.items.length;
+            } finally {
+                dataSource.logger = previousLogger;
+            }
+
+            let rows = 0;
+            for (const [sql, parameters] of statements) {
+                if (!/^SELECT/i.test(sql.trim()) || !sql.includes('lqb__channel')) {
+                    continue;
+                }
+                const result = await dataSource.query(sql, parameters);
+                if (Array.isArray(result)) {
+                    rows += result.length;
+                }
+            }
+            return { items, rows };
+        }
+
+        beforeAll(async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            for (let p = 0; p < 3; p++) {
+                const { createCollection: parent } = await adminClient.query(createCollectionDocument, {
+                    input: {
+                        filters: [],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: `Scaling parent ${p}`,
+                                slug: `scaling-parent-${p}`,
+                                description: 'Long enough to be worth not repeating once per Channel.',
+                            },
+                        ],
+                    },
+                });
+                scalingCollectionIds.push(parent.id);
+                for (let c = 0; c < 2; c++) {
+                    const { createCollection: child } = await adminClient.query(createCollectionDocument, {
+                        input: {
+                            parentId: parent.id,
+                            filters: [],
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: `Scaling child ${p}-${c}`,
+                                    slug: `scaling-child-${p}-${c}`,
+                                    description: 'Long enough to be worth not repeating once per Channel.',
+                                },
+                            ],
+                        },
+                    });
+                    scalingCollectionIds.push(child.id);
+                }
+            }
+        });
+
+        // A list query is scoped to a Channel by a dedicated join, so the Channels a Collection
+        // is assigned to decide which Collections a page contains, and nothing else. Joining the
+        // `channels` relation on top of that scoping join breaks this: Collection is a tree
+        // entity, so the relation becomes a `leftJoinAndSelect` and each row of the page is
+        // repeated once per Channel the Collection is assigned to.
+        it('returns the same rows when the Collections are assigned to a second Channel', async () => {
+            const inOneChannel = await countRowsForList();
+            expect(inOneChannel.items).toBe(scalingCollectionIds.length);
+            expect(inOneChannel.rows).toBeGreaterThan(0);
+
+            await adminClient.query(assignCollectionsToChannelDocument, {
+                input: { collectionIds: scalingCollectionIds, channelId: secondChannel.id },
+            });
+            await awaitRunningJobs(adminClient);
+
+            // The counts are deterministic, so compare exactly.
+            const inTwoChannels = await countRowsForList();
+            expect(inTwoChannels.items).toBe(inOneChannel.items);
+            expect(inTwoChannels.rows).toBe(inOneChannel.rows);
+        });
+    });
+
+    // https://github.com/vendurehq/vendure/issues/5415
+    it('AND-ed variantName filters can match different translations of a variant', async () => {
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        const hardDriveVariantIds = ['T_11', 'T_12', 'T_13', 'T_14', 'T_15'];
+        await adminClient.query(updateProductVariantsDocument, {
+            input: hardDriveVariantIds.map(id => ({
+                id,
+                translations: [{ languageCode: LanguageCode.de, name: `Festplatte ${id}` }],
+            })),
+        });
+
+        const { createCollection } = await adminClient.query(createCollectionDocument, {
+            input: {
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'drive and festplatte',
+                        description: '',
+                        slug: 'drive-and-festplatte',
+                    },
+                ],
+                filters: [
+                    {
+                        code: variantNameCollectionFilter.code,
+                        arguments: [
+                            { name: 'operator', value: 'contains' },
+                            { name: 'term', value: 'drive' },
+                        ],
+                    },
+                    {
+                        code: variantNameCollectionFilter.code,
+                        arguments: [
+                            { name: 'operator', value: 'contains' },
+                            { name: 'term', value: 'festplatte' },
+                        ],
+                    },
+                ],
+            },
+        });
+        await awaitRunningJobs(adminClient, 5000);
+
+        const result = await adminClient.query(getCollectionProductVariantsDocument, {
+            id: createCollection.id,
+        });
+        collectionResultGuard.assertSuccess(result.collection);
+        expect(result.collection.productVariants.items.map(i => i.id).sort()).toEqual(hardDriveVariantIds);
+    });
+
+    describe('productVariantCount of nested children in collection list', () => {
+        let parentId: string;
+        let childId: string;
+        // Expected counts come from `productVariants.totalItems`, which is resolved independently
+        // of `productVariantCount`. Earlier tests delete some of the fixture variants.
+        let expectedParentCount: number;
+        let expectedChildCount: number;
+
+        beforeAll(async () => {
+            const createFilteredCollection = async (slug: string, facetCode: string, parent?: string) => {
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
+                    input: {
+                        parentId: parent,
+                        translations: [{ languageCode: LanguageCode.en, name: slug, description: '', slug }],
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    { name: 'facetValueIds', value: `["${getFacetValueId(facetCode)}"]` },
+                                    { name: 'containsAny', value: 'false' },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                return createCollection.id;
+            };
+            parentId = await createFilteredCollection('variant-count-parent', 'electronics');
+            childId = await createFilteredCollection('variant-count-child', 'computers', parentId);
+            await awaitRunningJobs(adminClient, 5000);
+
+            const { collection: parent } = await adminClient.query(getCollectionVariantCountDocument, {
+                id: parentId,
+            });
+            const { collection: child } = await adminClient.query(getCollectionVariantCountDocument, {
+                id: childId,
+            });
+            expectedParentCount = parent!.productVariants.totalItems;
+            expectedChildCount = child!.productVariants.totalItems;
+        });
+
+        it('counts are correct when queried directly', async () => {
+            const { collection: parent } = await adminClient.query(getCollectionVariantCountDocument, {
+                id: parentId,
+            });
+            const { collection: child } = await adminClient.query(getCollectionVariantCountDocument, {
+                id: childId,
+            });
+            expect(expectedChildCount).toBeGreaterThan(0);
+            expect(expectedParentCount).toBeGreaterThan(expectedChildCount);
+            expect(parent?.productVariantCount).toBe(expectedParentCount);
+            expect(child?.productVariantCount).toBe(expectedChildCount);
+        });
+
+        for (const apiName of ['admin', 'shop'] as const) {
+            const client = () => (apiName === 'admin' ? adminClient : shopClient);
+
+            it(`${apiName} API: children not included in items (topLevelOnly)`, async () => {
+                const { collections } = await client().query(getCollectionListVariantCountsDocument, {
+                    options: { topLevelOnly: true, filter: { id: { eq: parentId } } },
+                });
+                expect(collections.items.map(i => i.id)).toEqual([parentId]);
+                expect(collections.items[0].children).toEqual([
+                    { id: childId, productVariantCount: expectedChildCount },
+                ]);
+            });
+
+            it(`${apiName} API: children also included in items`, async () => {
+                const { collections } = await client().query(getCollectionListVariantCountsDocument, {
+                    options: { filter: { id: { in: [parentId, childId] } } },
+                });
+                const parent = collections.items.find(i => i.id === parentId);
+                expect(parent?.children).toEqual([{ id: childId, productVariantCount: expectedChildCount }]);
+                expect(collections.items.find(i => i.id === childId)?.productVariantCount).toBe(
+                    expectedChildCount,
+                );
+            });
+
+            it(`${apiName} API: productVariantCount only requested on children`, async () => {
+                const { collections } = await client().query(getCollectionListChildVariantCountsDocument, {
+                    options: { topLevelOnly: true, filter: { id: { eq: parentId } } },
+                });
+                expect(collections.items[0].children).toEqual([
+                    { id: childId, productVariantCount: expectedChildCount },
+                ]);
+            });
+
+            it(`${apiName} API: parent not included in cached counts`, async () => {
+                const { collections } = await client().query(getCollectionListParentVariantCountsDocument, {
+                    options: { filter: { id: { eq: childId } } },
+                });
+                expect(collections.items).toEqual([
+                    {
+                        id: childId,
+                        productVariantCount: expectedChildCount,
+                        parent: { id: parentId, productVariantCount: expectedParentCount },
+                    },
+                ]);
+            });
+        }
     });
 
     function getFacetValueId(code: string): string {
@@ -2410,6 +2812,62 @@ const getCollectionNestedParentsDocument = graphql(`
     }
 `);
 
+const getCollectionVariantCountDocument = graphql(`
+    query GetCollectionVariantCount($id: ID!) {
+        collection(id: $id) {
+            id
+            productVariantCount
+            productVariants {
+                totalItems
+            }
+        }
+    }
+`);
+
+const getCollectionListVariantCountsDocument = graphql(`
+    query GetCollectionListVariantCounts($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                productVariantCount
+                children {
+                    id
+                    productVariantCount
+                }
+            }
+        }
+    }
+`);
+
+const getCollectionListChildVariantCountsDocument = graphql(`
+    query GetCollectionListChildVariantCounts($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                children {
+                    id
+                    productVariantCount
+                }
+            }
+        }
+    }
+`);
+
+const getCollectionListParentVariantCountsDocument = graphql(`
+    query GetCollectionListParentVariantCounts($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                productVariantCount
+                parent {
+                    id
+                    productVariantCount
+                }
+            }
+        }
+    }
+`);
+
 const previewCollectionVariantsDocument = graphql(`
     query PreviewCollectionVariants(
         $input: PreviewCollectionVariantsInput!
@@ -2441,6 +2899,27 @@ const deleteCollectionsBulkDocument = graphql(`
         deleteCollections(ids: $ids) {
             message
             result
+        }
+    }
+`);
+
+/** Mirrors the Dashboard collection list, which selects `children` but no `channels`. */
+const collectionListForScalingDocument = graphql(`
+    query CollectionListForScaling($options: CollectionListOptions) {
+        collections(options: $options) {
+            totalItems
+            items {
+                id
+                name
+                description
+                featuredAsset {
+                    id
+                }
+                children {
+                    id
+                    name
+                }
+            }
         }
     }
 `);

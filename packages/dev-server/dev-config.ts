@@ -26,7 +26,7 @@ import { DataSourceOptions } from 'typeorm';
 import { NavModifierPlugin } from './test-plugins/nav-modifier-plugin/nav-modifier-plugin';
 // import { FieldTestPlugin } from './test-plugins/field-test/field-test-plugin';
 import { InsightsTestPlugin } from './test-plugins/insights-test/insights-test-plugin';
-import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
+// import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
 
 const IS_INSTRUMENTED = process.env.IS_INSTRUMENTED === 'true';
 const SERVE_GRAPHIQL = process.env.VENDURE_SERVE_GRAPHIQL !== 'false';
@@ -75,19 +75,7 @@ export const devConfig: VendureConfig = {
         port: Number(process.env.PORT) || Number(process.env.API_PORT) || API_PORT,
         trustProxy: process.env.VENDURE_TRUST_PROXY === 'true',
         adminApiPath: ADMIN_API_PATH,
-        adminApiPlayground: {
-            settings: {
-                'request.credentials': 'include',
-            },
-        },
-        adminApiDebug: true,
         shopApiPath: SHOP_API_PATH,
-        shopApiPlayground: {
-            settings: {
-                'request.credentials': 'include',
-            },
-        },
-        shopApiDebug: true,
     },
     authOptions: {
         disableAuth: false,
@@ -129,7 +117,7 @@ export const devConfig: VendureConfig = {
         //     platformFeeSKU: 'FEE',
         // }),
         ReadonlySettingsTestPlugin,
-        ReviewsPlugin,
+        // ReviewsPlugin,
         InsightsTestPlugin,
         // FieldTestPlugin,
         NavModifierPlugin,

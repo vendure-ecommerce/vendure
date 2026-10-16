@@ -7,6 +7,7 @@ import {
     OrderService,
     Product,
     ProductService,
+    RequestContext,
     RequestContextService,
     TransactionalConnection,
 } from '@vendure/core';
@@ -26,6 +27,7 @@ import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 fixPostgresTimezone();
 
 const validateInjectorSpy = vi.fn();
+const validateListInjectorSpy = vi.fn();
 
 const customConfig = mergeConfig(testConfig(), {
     dbConnectionOptions: {
@@ -37,6 +39,7 @@ const customConfig = mergeConfig(testConfig(), {
             { name: 'notNullable', type: 'string', nullable: false, defaultValue: '' },
             { name: 'stringWithDefault', type: 'string', defaultValue: 'hello' },
             { name: 'localeStringWithDefault', type: 'localeString', defaultValue: 'hola' },
+            { name: 'localeTextField', type: 'localeText' },
             { name: 'intWithDefault', type: 'int', defaultValue: 5 },
             { name: 'floatWithDefault', type: 'float', defaultValue: 5.5678 },
             { name: 'booleanWithDefault', type: 'boolean', defaultValue: true },
@@ -178,7 +181,8 @@ const customConfig = mergeConfig(testConfig(), {
                 name: 'intListWithValidation',
                 type: 'int',
                 list: true,
-                validate: value => {
+                validate: (value, injector, ctx) => {
+                    validateListInjectorSpy(injector.get(TransactionalConnection), ctx);
                     if (!value.includes(42)) {
                         return 'Must include the number 42!';
                     }
@@ -295,6 +299,7 @@ describe('Custom fields', () => {
                 { name: 'notNullable', type: 'string', list: false },
                 { name: 'stringWithDefault', type: 'string', list: false },
                 { name: 'localeStringWithDefault', type: 'localeString', list: false },
+                { name: 'localeTextField', type: 'localeText', list: false },
                 { name: 'intWithDefault', type: 'int', list: false },
                 { name: 'floatWithDefault', type: 'float', list: false },
                 { name: 'booleanWithDefault', type: 'boolean', list: false },
@@ -363,6 +368,7 @@ describe('Custom fields', () => {
                 { name: 'notNullable', type: 'string', list: false },
                 { name: 'stringWithDefault', type: 'string', list: false },
                 { name: 'localeStringWithDefault', type: 'localeString', list: false },
+                { name: 'localeTextField', type: 'localeText', list: false },
                 { name: 'intWithDefault', type: 'int', list: false },
                 { name: 'floatWithDefault', type: 'float', list: false },
                 { name: 'booleanWithDefault', type: 'boolean', list: false },
@@ -743,6 +749,19 @@ describe('Custom fields', () => {
             expect(updateProduct.customFields.intListWithValidation).toEqual([1, 42, 3]);
         });
 
+        // #5575 — the validate function of a list field receives the injector and ctx
+        it('can inject providers into list field validation fn', async () => {
+            validateListInjectorSpy.mockClear();
+            await adminClient.query(updateProductIntListDocument, {
+                id: 'T_1',
+                values: [42],
+            });
+            expect(validateListInjectorSpy).toHaveBeenCalledTimes(1);
+            const [connection, ctx] = validateListInjectorSpy.mock.calls[0];
+            expect(connection instanceof TransactionalConnection).toBe(true);
+            expect(ctx instanceof RequestContext).toBe(true);
+        });
+
         it('can inject providers into validation fn', async () => {
             const { updateProduct } = await adminClient.query(updateProductValidateFn3Document, {
                 id: 'T_1',
@@ -974,6 +993,13 @@ describe('Custom fields', () => {
         // https://github.com/vendurehq/vendure/issues/1581
         it('can sort by localeString custom fields', async () => {
             const { products } = await adminClient.query(getProductsSortByLocaleStringDocument);
+
+            expect(products.totalItems).toBe(1);
+        });
+
+        // https://github.com/vendurehq/vendure/issues/5199
+        it('can sort by localeText custom fields', async () => {
+            const { products } = await adminClient.query(getProductsSortByLocaleTextDocument);
 
             expect(products.totalItems).toBe(1);
         });
@@ -1730,6 +1756,14 @@ const getProductsSortByNullableDocument = graphql(`
 const getProductsSortByLocaleStringDocument = graphql(`
     query GetProductsSortByLocaleString {
         products(options: { sort: { localeStringWithDefault: ASC } }) {
+            totalItems
+        }
+    }
+`);
+
+const getProductsSortByLocaleTextDocument = graphql(`
+    query GetProductsSortByLocaleText {
+        products(options: { sort: { localeTextField: ASC } }) {
             totalItems
         }
     }

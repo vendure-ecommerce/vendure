@@ -4,7 +4,7 @@ generated: true
 ---
 ## PaginatedListDataTable
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="438" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/shared/paginated-list-data-table.tsx" sourceLine="445" packageName="@vendure/dashboard" since="3.4.0" />
 
 A wrapper around the [DataTable](/reference/dashboard/list-views/data-table#datatable) component, which automatically configures functionality common to
 list queries that implement the `PaginatedList` interface, which is the common way of representing lists
@@ -163,6 +163,7 @@ interface PaginatedListDataTableProps<T extends TypedDocumentNode<U, V>, U exten
     disableDragAndDrop?: boolean;
     includeSelectionColumn?: boolean;
     emptyStateAction?: React.ReactNode;
+    emptyStateIllustration?: React.ReactNode;
     errorState?: (params: { error: Error; retry: () => void }) => React.ReactNode;
     title?: React.ReactNode;
     actions?: React.ReactNode;
@@ -251,7 +252,7 @@ e.g. "Search products...". Defaults to a generic "Search...".
 
 ### onPageChange
 
-<MemberInfo kind="property" type={`(table: Table<any>, page: number, perPage: number) => void`}   />
+<MemberInfo kind="property" type={`(table: Table<any>, <a href='/reference/mcp-sdk/page#page'>page</a>: number, perPage: number) => void`}   />
 
 
 ### onSortChange
@@ -349,6 +350,13 @@ An optional action rendered inside the first-run empty state (i.e. when the
 list has no items and no active filters/search). Typically a "create your
 first X" CTA. The page owns this because the table cannot know the create
 route or the permissions that gate it.
+### emptyStateIllustration
+
+<MemberInfo kind="property" type={`React.ReactNode`}   />
+
+An optional illustration rendered in the first-run empty state (no data and no
+active filters). Defaults to the generic empty-collection illustration. Pass a
+scenario illustration such as `NoProductsIllustration` when one matches.
 ### errorState
 
 <MemberInfo kind="property" type={`(params: { error: Error; retry: () => void }) => React.ReactNode`}   />

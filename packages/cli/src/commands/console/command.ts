@@ -6,6 +6,9 @@ import { ConsoleLinkHookRegistration } from './console-link-hook';
 export const consoleCommandDef: CliCommandDefinition = {
     name: 'console',
     description: 'Link this Vendure project to Vendure Console',
+    // The action resolves workspace members and --project itself. The host gate
+    // only walks up from the working directory, so it would refuse at a workspace root.
+    requiresProject: false,
     arguments: [
         {
             name: 'action',
@@ -15,9 +18,12 @@ export const consoleCommandDef: CliCommandDefinition = {
     ],
     options: [
         {
-            long: '--allow-custom-console',
-            description: 'Allow custom remote Console endpoints without an interactive prompt',
-            required: false,
+            long: '--json',
+            description: 'Write one structured Console result to stdout',
+        },
+        {
+            long: '--non-interactive',
+            description: 'Do not prompt, sign in or open a browser',
         },
         {
             long: '--project <path>',
@@ -27,6 +33,13 @@ export const consoleCommandDef: CliCommandDefinition = {
         {
             long: '--force',
             description: 'Create a different Project Link or remove the current link without confirmation',
+            required: false,
+        },
+        {
+            long: '--organization <account>',
+            description:
+                'Link a project of this organization: its Account identifier (Vendure Console → Settings) or its name. ' +
+                'Signs in again when the CLI login belongs to another organization.',
             required: false,
         },
         {

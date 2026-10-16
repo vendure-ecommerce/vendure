@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { LINK_ID, OTHER_LINK_ID, manifest } from './console.fixtures';
 import {
     ProjectLinkManifest,
+    consoleOriginsForManifest,
     getProjectLinkManifestPath,
     parseProjectLinkManifest,
     readProjectLinkManifest,
@@ -25,8 +26,39 @@ afterEach(() => {
 });
 
 describe('Project Link Manifest', () => {
-    it('parses and reconstructs the exact v1 contract', () => {
+    it('parses a manifest without Console origins and resolves it to production', () => {
         expect(parseProjectLinkManifest(structuredClone(manifest), LINK_ID)).toEqual(manifest);
+        expect(consoleOriginsForManifest(manifest)).toEqual({
+            appOrigin: 'https://console.vendure.io',
+            apiOrigin: 'https://api.vendure.io',
+        });
+
+        const root = vendureProject();
+        const manifestPath = getProjectLinkManifestPath(root);
+        fs.ensureDirSync(path.dirname(manifestPath));
+        fs.writeJsonSync(manifestPath, manifest);
+        const read = readProjectLinkManifest(root);
+        expect(read).toMatchObject({ kind: 'valid', manifest });
+        if (read.kind === 'valid') {
+            expect(consoleOriginsForManifest(read.manifest)).toEqual({
+                appOrigin: 'https://console.vendure.io',
+                apiOrigin: 'https://api.vendure.io',
+            });
+        }
+    });
+
+    it('parses and reconstructs the exact contract with Console origins', () => {
+        const current: ProjectLinkManifest = {
+            ...manifest,
+            schemaVersion: 1,
+            console: {
+                appOrigin: 'https://staging.console.vendure.io',
+                apiOrigin: 'https://staging.api.vendure.io',
+            },
+        };
+
+        expect(parseProjectLinkManifest(structuredClone(current), LINK_ID)).toEqual(current);
+        expect(consoleOriginsForManifest(current)).toEqual(current.console);
     });
 
     it('rejects unexpected fields and a mismatched link ID', () => {
@@ -35,6 +67,9 @@ describe('Project Link Manifest', () => {
         );
         expect(() => parseProjectLinkManifest(manifest, OTHER_LINK_ID)).toThrow(
             'does not match the created link request',
+        );
+        expect(() => parseProjectLinkManifest({ ...manifest, schemaVersion: 2 })).toThrow(
+            'schemaVersion must be 1',
         );
     });
 
@@ -45,6 +80,45 @@ describe('Project Link Manifest', () => {
         };
 
         expect(parseProjectLinkManifest(versionSevenManifest)).toEqual(versionSevenManifest);
+    });
+
+    it.each([
+        [
+            'a path',
+            {
+                appOrigin: 'https://console.vendure.io/link',
+                apiOrigin: 'https://api.vendure.io',
+            },
+        ],
+        [
+            'a query',
+            {
+                appOrigin: 'https://console.vendure.io',
+                apiOrigin: 'https://api.vendure.io?target=staging',
+            },
+        ],
+        [
+            'credentials',
+            {
+                appOrigin: 'https://user:secret@console.vendure.io',
+                apiOrigin: 'https://api.vendure.io',
+            },
+        ],
+        [
+            'an untrusted host',
+            {
+                appOrigin: 'https://console.example.com',
+                apiOrigin: 'https://api.example.com',
+            },
+        ],
+    ])('rejects Console origins with %s', (_label, console) => {
+        expect(() =>
+            parseProjectLinkManifest({
+                ...manifest,
+                schemaVersion: 1,
+                console,
+            }),
+        ).toThrow();
     });
 
     it('reports malformed JSON without including file contents', () => {
@@ -88,6 +162,45 @@ describe('Project Link Manifest', () => {
 
         vendureProject(path.join(workspace, 'packages', 'second-server'));
         expect(() => resolveProjectRoot(workspace)).toThrow('Multiple Vendure projects were found');
+    });
+
+    it('names the project directory when run from a workspace root', () => {
+        const workspace = temporaryDirectory();
+        fs.writeJsonSync(path.join(workspace, 'package.json'), { private: true });
+        vendureProject(path.join(workspace, 'server'));
+
+        expect(() => resolveProjectRoot(workspace)).toThrow(
+            'Found a Vendure project in `server`. Run the command there, or pass `--project server`.',
+        );
+    });
+
+    it('names the declared workspace member outside the conventional directories', () => {
+        const workspace = temporaryDirectory();
+        fs.writeJsonSync(path.join(workspace, 'package.json'), { private: true, workspaces: ['backend/*'] });
+        vendureProject(path.join(workspace, 'backend', 'server'));
+
+        expect(() => resolveProjectRoot(workspace)).toThrow('`--project backend/server`');
+    });
+
+    it('lists several project directories from a workspace root', () => {
+        const workspace = temporaryDirectory();
+        fs.writeJsonSync(path.join(workspace, 'package.json'), { private: true });
+        vendureProject(path.join(workspace, 'server'));
+        vendureProject(path.join(workspace, 'shop'));
+
+        expect(() => resolveProjectRoot(workspace)).toThrow(
+            'Found Vendure projects in:\n   server\n   shop\nRun the command in one of them',
+        );
+    });
+
+    it('adds no hint when the directory has no candidate', () => {
+        const workspace = temporaryDirectory();
+        fs.writeJsonSync(path.join(workspace, 'package.json'), { private: true });
+        fs.ensureDirSync(path.join(workspace, 'docs'));
+
+        expect(() => resolveProjectRoot(workspace)).toThrow(
+            /^Could not find a Vendure project\. Run this command from a project that depends on @vendure\/core, or pass --project <path>\.$/,
+        );
     });
 
     it('uses an explicit project and rejects an ancestor manifest for another root', () => {

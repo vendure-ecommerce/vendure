@@ -3,6 +3,7 @@ import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
+import { NoCustomersIllustration } from '@/vdb/components/ui/illustrations.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -22,24 +23,19 @@ function CustomerListPage() {
         <ListPage
             title={<Trans>Customers</Trans>}
             pageId="customer-list"
+            emptyStateIllustration={<NoCustomersIllustration />}
             listQuery={customerListDocument}
             searchPlaceholder={t`Search customers...`}
             onSearchTermChange={searchTerm => {
                 return searchTerm
                     ? {
-                          lastName: { contains: searchTerm },
-                          emailAddress: { contains: searchTerm },
-                          phoneNumber: { contains: searchTerm },
+                          _or: [
+                              { lastName: { contains: searchTerm } },
+                              { emailAddress: { contains: searchTerm } },
+                              { phoneNumber: { contains: searchTerm } },
+                          ],
                       }
                     : {};
-            }}
-            transformVariables={variables => {
-                return {
-                    options: {
-                        ...variables.options,
-                        filterOperator: 'OR',
-                    },
-                };
             }}
             route={Route}
             customizeColumns={{

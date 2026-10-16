@@ -14,7 +14,6 @@ import { AuthGuard } from './middleware/auth-guard';
 import { CustomFieldProcessingInterceptor } from './middleware/custom-field-processing-interceptor';
 import { ExceptionLoggerFilter } from './middleware/exception-logger.filter';
 import { IdInterceptor } from './middleware/id-interceptor';
-import { InputValidationInterceptor } from './middleware/input-validation-interceptor';
 import { TranslateErrorResultInterceptor } from './middleware/translate-error-result-interceptor';
 
 /**
@@ -35,7 +34,6 @@ import { TranslateErrorResultInterceptor } from './middleware/translate-error-re
             apiType: 'shop',
             apiPath: configService.apiOptions.shopApiPath,
             playground: configService.apiOptions.shopApiPlayground,
-            debug: configService.apiOptions.shopApiDebug,
             typePaths: VENDURE_SHOP_API_TYPE_PATHS,
             resolverModule: ShopApiModule,
             validationRules: configService.apiOptions.shopApiValidationRules,
@@ -44,7 +42,6 @@ import { TranslateErrorResultInterceptor } from './middleware/translate-error-re
             apiType: 'admin',
             apiPath: configService.apiOptions.adminApiPath,
             playground: configService.apiOptions.adminApiPlayground,
-            debug: configService.apiOptions.adminApiDebug,
             typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
             resolverModule: AdminApiModule,
             validationRules: configService.apiOptions.adminApiValidationRules,
@@ -58,10 +55,6 @@ import { TranslateErrorResultInterceptor } from './middleware/translate-error-re
         {
             provide: APP_INTERCEPTOR,
             useClass: IdInterceptor,
-        },
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: InputValidationInterceptor,
         },
         {
             provide: APP_INTERCEPTOR,

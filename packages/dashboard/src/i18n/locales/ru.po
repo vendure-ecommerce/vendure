@@ -821,6 +821,10 @@ msgstr "Группа опций успешно назначена"
 msgid "Marks the account as verified without the customer having to use a verification email."
 msgstr ""
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Allocated refund amounts must equal refund total"
+msgstr ""
+
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx
 msgid "Run Test"
 msgstr "Запустить тест"
@@ -888,6 +892,11 @@ msgstr ""
 msgid "Successfully updated channel"
 msgstr "Канал успешно обновлён"
 
+#. placeholder {0}: lines.length
+#: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx
+msgid "{0, plural, one {# item} other {# items}}"
+msgstr "{0, plural, one {# товар} few {# товара} many {# товаров} other {# товара}}"
+
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show less"
 msgstr "Показать меньше"
@@ -938,6 +947,10 @@ msgstr "Подтвердить переход"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Complete draft"
 msgstr "Завершить черновик"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "{refundedAmount} was refunded in {refundCount} refund(s), but \"{failedTargetLabel}\" failed: {failureReason}. Check the order's payments before trying again."
+msgstr ""
 
 #: src/app/routes/_authenticated/_administrators/administrators.tsx
 #: src/app/routes/_authenticated/_api-keys/api-keys_.$id.tsx
@@ -993,11 +1006,9 @@ msgstr "Вы уверены, что хотите удалить этот чер�
 msgid "Fulfillment created"
 msgstr "Выполнение создано"
 
-#. placeholder {0}: testResult.length
-#. placeholder {1}: testResult.length !== 1 ? 's' : ''
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx
-msgid "Found {0} eligible shipping method{1}"
-msgstr "Найдено {0} подходящих способ(ов) доставки"
+#~ msgid "Found {0} eligible shipping method{1}"
+#~ msgstr "Найдено {0} подходящих способ(ов) доставки"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 #: src/lib/components/shared/asset/asset-properties.tsx
@@ -1244,6 +1255,7 @@ msgstr "Не удалось отменить позиции заказа"
 msgid "Transaction ID"
 msgstr "ID транзакции"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Allocated"
 msgstr "Выделено"
@@ -1266,8 +1278,8 @@ msgid "Table settings"
 msgstr "Настройки таблицы"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Обзор Platform & Cloud"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Обзор Platform & Cloud"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -1370,6 +1382,11 @@ msgstr "API Keys"
 msgid "Search {name}..."
 msgstr "Поиск {name}..."
 
+#. placeholder {0}: selection.length
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
+msgid "{0, plural, one {Are you sure you want to remove # country from this zone?} other {Are you sure you want to remove # countries from this zone?}}"
+msgstr "{0, plural, one {Вы уверены, что хотите удалить # страну из этой зоны?} few {Вы уверены, что хотите удалить # страны из этой зоны?} many {Вы уверены, что хотите удалить # стран из этой зоны?} other {Вы уверены, что хотите удалить # страны из этой зоны?}}"
+
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 msgid "Edit asset"
 msgstr "Редактировать ресурс"
@@ -1471,6 +1488,8 @@ msgstr "Цены включают налог для зоны по умолчан
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
+#: src/lib/components/data-input/slug-input.tsx
+#: src/lib/components/data-input/slug-input.tsx
 msgid "This field is required"
 msgstr ""
 
@@ -1766,6 +1785,11 @@ msgstr "Назад"
 msgid "+ {leftOver} more"
 msgstr "+ ещё {leftOver}"
 
+#. placeholder {0}: selection.length
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
+msgid "{0, plural, one {Removed # country from zone} other {Removed # countries from zone}}"
+msgstr "{0, plural, one {# страна удалена из зоны} few {# страны удалены из зоны} many {# стран удалено из зоны} other {# страны удалено из зоны}}"
+
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Use as the default billing address"
 msgstr "Использовать как адрес выставления счёта по умолчанию"
@@ -1832,6 +1856,10 @@ msgstr "Обычный"
 msgid "Filters"
 msgstr "Фильтры"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "selected collection"
+msgstr "выбранная коллекция"
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Customer Groups"
@@ -1883,10 +1911,9 @@ msgstr "Создано"
 msgid "Loading addresses..."
 msgstr "Загрузка адресов..."
 
-#. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "Select a target collection to move {0} to."
-msgstr "Выберите целевую коллекцию для перемещения {0}."
+#~ msgid "Select a target collection to move {0} to."
+#~ msgstr "Выберите целевую коллекцию для перемещения {0}."
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
@@ -1993,8 +2020,8 @@ msgstr "Новая налоговая категория"
 #~ msgstr "Добавить опцию"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "Partial refund completed"
-msgstr "Частичный возврат завершён"
+#~ msgid "Partial refund completed"
+#~ msgstr "Частичный возврат завершён"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Set custom fields"
@@ -2139,6 +2166,11 @@ msgstr "Не удалось обновить налоговую категори
 msgid "Refund settled successfully"
 msgstr "Возврат успешно проведён"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, =1 {Select a target collection to move this collection to.} other {Select a target collection to move # collections to.}}"
+msgstr "{0, plural, =1 {Выберите целевую коллекцию для перемещения этой коллекции.} one {Выберите целевую коллекцию для перемещения # коллекции.} few {Выберите целевую коллекцию для перемещения # коллекций.} many {Выберите целевую коллекцию для перемещения # коллекций.} other {Выберите целевую коллекцию для перемещения # коллекции.}}"
+
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 #: src/app/routes/_authenticated/_api-keys/api-keys_.$id.tsx
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
@@ -2192,6 +2224,10 @@ msgstr "Профиль успешно обновлён"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Payment method"
 msgstr "Способ оплаты"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx
+msgid "Destination"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
@@ -2458,6 +2494,11 @@ msgstr "Клиент"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "Эл. почта клиента"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Группа клиентов"
 
@@ -2503,6 +2544,21 @@ msgstr "Описание"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Цена строки со скидкой"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Цена строки со скидкой и налогом"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Скидки"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Длительность"
 
@@ -2543,6 +2599,11 @@ msgstr "Код обработчика выполнения"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Строки выполнения"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2568,6 +2629,21 @@ msgstr "Фамилия"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Цена строки"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Цена строки с налогом"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Налог строки"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Название"
 
@@ -2575,6 +2651,11 @@ msgstr "Название"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Заказ размещён"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Количество при оформлении заказа"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2613,6 +2694,11 @@ msgstr "Цена с налогом"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Вариант товара"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Варианты товара"
 
@@ -2620,6 +2706,21 @@ msgstr "Варианты товара"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Прогресс"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Пропорциональная цена за единицу"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Пропорциональная цена за единицу с налогом"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Количество"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2700,6 +2801,16 @@ msgstr "Итого с налогом"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Тип"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Цена за единицу"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Цена за единицу с налогом"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -3067,6 +3178,10 @@ msgstr "Пересчитать доставку"
 #~ msgid "Select which options should apply to the existing variant \"{0}\""
 #~ msgstr "Выберите, какие опции должны применяться к существующему варианту «{0}»"
 
+#: src/lib/components/shared/asset/asset-gallery.tsx
+msgid "{totalItems, plural, one {# asset found} other {# assets found}}"
+msgstr "{totalItems, plural, one {Найден # ресурс} few {Найдено # ресурса} many {Найдено # ресурсов} other {Найдено # ресурса}}"
+
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 #: src/app/routes/_authenticated/_assets/assets.tsx
 #: src/app/routes/_authenticated/_assets/assets.tsx
@@ -3215,6 +3330,10 @@ msgstr "Опции товара"
 msgid "Select country"
 msgstr "Выбрать страну"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Refund only partially completed"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Creating..."
@@ -3248,6 +3367,11 @@ msgstr "Не удалось удалить клиента из группы"
 #: src/lib/components/shared/configurable-operation-arg-summary.tsx
 msgid "1 property"
 msgstr ""
+
+#. placeholder {0}: testResult.length
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx
+msgid "{0, plural, one {Found # eligible shipping method} other {Found # eligible shipping methods}}"
+msgstr "{0, plural, one {Найден # подходящий способ доставки} few {Найдено # подходящих способа доставки} many {Найдено # подходящих способов доставки} other {Найдено # подходящего способа доставки}}"
 
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 msgid "Upload failed (HTTP {detail})"
@@ -3379,11 +3503,9 @@ msgstr "Вчера"
 #~ msgid "Option name"
 #~ msgstr "Название опции"
 
-#. placeholder {0}: selection.length
-#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
 #: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
-msgid "Are you sure you want to remove {0} {1} from this zone?"
-msgstr "Вы уверены, что хотите удалить {0} {1} из этой зоны?"
+#~ msgid "Are you sure you want to remove {0} {1} from this zone?"
+#~ msgstr "Вы уверены, что хотите удалить {0} {1} из этой зоны?"
 
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
@@ -3661,6 +3783,7 @@ msgstr "Задать критерии фильтрации для столбца
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx
 #: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx
+#: src/lib/components/shared/address-country-select.tsx
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Country"
 msgstr "Страна"
@@ -3940,7 +4063,7 @@ msgstr "Роль успешно обновлена"
 msgid "The display name can omit the extension or keep {sourceExtensionLabel}. It cannot use a different file extension."
 msgstr ""
 
-#: src/lib/components/shared/customer-address-form.tsx
+#: src/lib/components/shared/address-country-select.tsx
 msgid "Select a country"
 msgstr "Выберите страну"
 
@@ -4073,8 +4196,8 @@ msgid "New Stock Location"
 msgstr "Новое место хранения"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
-msgstr "{successfulRefundCount} платеж(ей) возвращено до ошибки. Проверьте историю заказа для подробностей."
+#~ msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
+#~ msgstr "{successfulRefundCount} платеж(ей) возвращено до ошибки. Проверьте историю заказа для подробностей."
 
 #: src/lib/components/data-input/relation-selector.tsx
 msgid "Select item"
@@ -4131,6 +4254,10 @@ msgstr "Пароли не совпадают"
 msgid "Pick a date and time"
 msgstr "Выберите дату и время"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4147,6 +4274,10 @@ msgstr "Приватные фасеты не видны в магазине"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Выберите налоговую категорию"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #~ msgid "fulfillmentState.Created"
 #~ msgstr "Создан"
@@ -4347,6 +4478,10 @@ msgstr "Не удалось создать группу клиентов"
 msgid "Failed to create role"
 msgstr "Не удалось создать роль"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Payment methods"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Product name"
 msgstr "Название товара"
@@ -4392,7 +4527,7 @@ msgstr "Добавить группу опций"
 msgid "All"
 msgstr "Все"
 
-#. placeholder {0}: formatCurrency(refund.amountToRefundTotal, order.currencyCode)
+#. placeholder {0}: formatCurrency(refund.refundTotal, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "Refund {0}"
 msgstr "Вернуть {0}"
@@ -4490,12 +4625,9 @@ msgstr "Выбрать следующее состояние"
 msgid "No alerts"
 msgstr "Нет оповещений"
 
-#. placeholder {0}: collectionsToMove.length
-#. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
-#. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "Moving {0} collection{1} into {2}"
-msgstr "Перемещение {0} коллекций в {2}"
+#~ msgid "Moving {0} collection{1} into {2}"
+#~ msgstr "Перемещение {0} коллекций в {2}"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -4576,6 +4708,10 @@ msgstr "Удалить группу опций"
 msgid "Description"
 msgstr "Описание"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Every refund destination must draw from a payment"
+msgstr ""
+
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx
 #: src/app/routes/_authenticated/_countries/countries.tsx
 #: src/app/routes/_authenticated/_countries/countries.tsx
@@ -4641,6 +4777,10 @@ msgstr "Фильтр"
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 msgid "Failed to update administrator"
 msgstr "Не удалось обновить администратора"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "No payment or destination was selected"
+msgstr ""
 
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Manage your personal saved views for this table"
@@ -4857,6 +4997,10 @@ msgstr "Оплата проведена"
 msgid "orderState.Shipped"
 msgstr "Отправлен"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"
 #~ msgstr "Отслеживаемые ресурсы"
@@ -4947,11 +5091,9 @@ msgstr "Проверить способы доставки"
 msgid "Payment settled successfully"
 msgstr "Платёж успешно проведён"
 
-#. placeholder {0}: selection.length
-#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
 #: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
-msgid "Removed {0} {1} from zone"
-msgstr "{0} {1} удалено из зоны"
+#~ msgid "Removed {0} {1} from zone"
+#~ msgstr "{0} {1} удалено из зоны"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Enable"
@@ -5579,7 +5721,7 @@ msgstr "Не удалось установить адрес для заказа:
 #: src/app/routes/_authenticated/_orders/orders.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "State"
-msgstr "Регион"
+msgstr "Состояние"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
@@ -5603,6 +5745,10 @@ msgstr "Это роль по умолчанию, и её нельзя измен
 #: src/lib/components/data-table/my-views-button.tsx
 msgid "My saved views"
 msgstr "Мои сохранённые представления"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Other refund destinations"
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx
 msgid "State / Province"
@@ -5795,8 +5941,8 @@ msgid "Password reset requested"
 msgstr "Запрошен сброс пароля"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "Allocated payment amount must equal refund total"
-msgstr "Выделенная сумма платежа должна равняться сумме возврата"
+#~ msgid "Allocated payment amount must equal refund total"
+#~ msgstr "Выделенная сумма платежа должна равняться сумме возврата"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx
 #~ msgid "e.g. Small"
@@ -5896,6 +6042,10 @@ msgstr "Удалить"
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Failed to update customer"
 msgstr "Не удалось обновить клиента"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Draw from"
+msgstr ""
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Remove option groups?"
@@ -6198,6 +6348,10 @@ msgstr "без налога:"
 msgid "Successfully added option value"
 msgstr "Значение опции успешно добавлено"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "top level"
+msgstr "верхний уровень"
+
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"
 msgstr "Коллекция перемещена в новый родительский элемент"
@@ -6280,6 +6434,7 @@ msgstr "Выбрать {0}"
 msgid "New facet values to add:"
 msgstr "Новые значения фасета для добавления:"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Failed to process refund"
@@ -6819,6 +6974,7 @@ msgid "Edit as form"
 msgstr "Редактировать как форму"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx
 msgid "Edit Address"
 msgstr "Редактировать адрес"
 
@@ -6892,6 +7048,11 @@ msgstr "Посмотреть результат"
 #: src/lib/components/data-table/data-table.tsx
 msgid "Rows per page"
 msgstr "Строк на странице"
+
+#. placeholder {0}: formatCurrency(capacity, order.currencyCode)
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Amounts drawn from payment {label} exceed its refundable amount of {0}"
+msgstr ""
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Loading collections..."
@@ -7028,6 +7189,7 @@ msgstr "Активный"
 msgid "Tax base"
 msgstr "Налоговая база"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
 msgid "Load more"
@@ -7127,8 +7289,8 @@ msgid "Fulfillment ID"
 msgstr "ID выполнения"
 
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
-msgid "Select payments to refund"
-msgstr "Выберите платежи для возврата"
+#~ msgid "Select payments to refund"
+#~ msgstr "Выберите платежи для возврата"
 
 #: src/lib/components/shared/error-page.tsx
 msgid "The page you are looking for does not exist or may have been moved."
@@ -7170,13 +7332,18 @@ msgid "Failed to add customer to group"
 msgstr "Не удалось добавить клиента в группу"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
-msgid "{totalItems, plural, one {{totalItems} asset found} other {{totalItems} assets found}}"
-msgstr ""
+#~ msgid "{totalItems, plural, one {{totalItems} asset found} other {{totalItems} assets found}}"
+#~ msgstr ""
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Manage variants"
 msgstr "Управление вариантами"
+
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into {destination}} other {Moving # collections into {destination}}}"
+msgstr "{0, plural, one {Перемещение # коллекции в: {destination}} few {Перемещение # коллекций в: {destination}} many {Перемещение # коллекций в: {destination}} other {Перемещение # коллекции в: {destination}}}"
 
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Applied global view \"{viewName}\""
@@ -7185,6 +7352,10 @@ msgstr "Применен глобальный вид „{viewName}\""
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Customer registered"
 msgstr "Клиент зарегистрирован"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Remaining"
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts

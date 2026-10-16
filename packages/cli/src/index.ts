@@ -43,7 +43,33 @@
  * });
  * ```
  */
+export {
+    NotLoggedInError,
+    ReauthenticationRequiredError,
+    SessionLockUnavailableError,
+    SessionRefreshUnavailableError,
+    SessionRejectedError,
+    SessionUnstorableError,
+    getAccessToken,
+    listOrganizations,
+    loginWithDevice,
+    logout,
+    readAuthStatus,
+    refreshAccessToken,
+} from './auth';
+export type {
+    AuthOptions,
+    AuthOrganization,
+    AuthStatus,
+    AuthUser,
+    DeviceAuthorization,
+    DeviceLoginOptions,
+    LogoutResult,
+    StoredOrganization,
+} from './auth';
 export { builtinCommands } from './commands/builtins';
+export { ConsoleTokenGrantError, loginWithBrowser, refreshSession } from './commands/console/authentication';
+export type { ConsoleBrowserLoginOptions, ConsoleRefreshOptions } from './commands/console/authentication';
 export type { ConsoleSession } from './commands/console/cli-auth';
 export type {
     ConsoleLinkContext,
@@ -53,8 +79,14 @@ export type {
     ConsoleLinkHookWithSession,
     ConsoleLinkOutcome,
 } from './commands/console/console-link-hook';
-export type { ConsoleOriginEnvironment } from './commands/console/console-origins';
+export type { ConsoleOriginEnvironment, ConsoleOrigins } from './commands/console/console-origins';
 export type { ConsoleReporter } from './commands/console/console-reporter';
+export type {
+    ConsoleCommandResult,
+    ConsoleLinkResultContribution,
+    ConsoleMissingInput,
+    ConsoleResultData,
+} from './commands/console/console-result';
 export type { ProjectLinkManifest } from './commands/console/project-link-manifest';
 export { readCommandContext, readCommandOptions } from './shared/cli-command-definition';
 export type {

@@ -793,6 +793,10 @@ msgstr "Optsiya guruhi tayinlandi"
 msgid "Marks the account as verified without the customer having to use a verification email."
 msgstr ""
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Allocated refund amounts must equal refund total"
+msgstr ""
+
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx
 msgid "Run Test"
 msgstr "Sinovni ishga tushirish"
@@ -860,6 +864,11 @@ msgstr ""
 msgid "Successfully updated channel"
 msgstr "Kanal yangilandi"
 
+#. placeholder {0}: lines.length
+#: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx
+msgid "{0, plural, one {# item} other {# items}}"
+msgstr "{0, plural, one {# ta mahsulot} other {# ta mahsulot}}"
+
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show less"
 msgstr "Kamroq ko'rsatish"
@@ -910,6 +919,10 @@ msgstr "Navigatsiyani tasdiqlash"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Complete draft"
 msgstr "Qoralamani yakunlash"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "{refundedAmount} was refunded in {refundCount} refund(s), but \"{failedTargetLabel}\" failed: {failureReason}. Check the order's payments before trying again."
+msgstr ""
 
 #: src/app/routes/_authenticated/_administrators/administrators.tsx
 #: src/app/routes/_authenticated/_api-keys/api-keys_.$id.tsx
@@ -965,11 +978,9 @@ msgstr "Ushbu qoralama buyurtma o'chirilsinmi?"
 msgid "Fulfillment created"
 msgstr "Bajarish yaratildi"
 
-#. placeholder {0}: testResult.length
-#. placeholder {1}: testResult.length !== 1 ? 's' : ''
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx
-msgid "Found {0} eligible shipping method{1}"
-msgstr "{0} ta mos yetkazib berish usuli{1} topildi"
+#~ msgid "Found {0} eligible shipping method{1}"
+#~ msgstr "{0} ta mos yetkazib berish usuli{1} topildi"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 #: src/lib/components/shared/asset/asset-properties.tsx
@@ -1216,6 +1227,7 @@ msgstr "Buyurtma elementlarini bekor qilib bo'lmadi"
 msgid "Transaction ID"
 msgstr "Tranzaksiya ID"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Allocated"
 msgstr "Ajratilgan"
@@ -1234,8 +1246,8 @@ msgid "Table settings"
 msgstr "Jadval sozlamalari"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Platforma va Cloudni o'rganing"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Platforma va Cloudni o'rganing"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -1338,6 +1350,11 @@ msgstr "API kalitlari"
 msgid "Search {name}..."
 msgstr "{name} qidirish..."
 
+#. placeholder {0}: selection.length
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
+msgid "{0, plural, one {Are you sure you want to remove # country from this zone?} other {Are you sure you want to remove # countries from this zone?}}"
+msgstr "{0, plural, one {Ushbu hududdan # ta davlatni olib tashlaysizmi?} other {Ushbu hududdan # ta davlatni olib tashlaysizmi?}}"
+
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 msgid "Edit asset"
 msgstr "Assetni tahrirlash"
@@ -1435,6 +1452,8 @@ msgstr "Narxlar standart soliq hududi uchun soliqni o'z ichiga oladi"
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
+#: src/lib/components/data-input/slug-input.tsx
+#: src/lib/components/data-input/slug-input.tsx
 msgid "This field is required"
 msgstr ""
 
@@ -1718,6 +1737,11 @@ msgstr "Orqaga"
 msgid "+ {leftOver} more"
 msgstr "+ yana {leftOver} ta"
 
+#. placeholder {0}: selection.length
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
+msgid "{0, plural, one {Removed # country from zone} other {Removed # countries from zone}}"
+msgstr "{0, plural, one {Hududdan # ta davlat olib tashlandi} other {Hududdan # ta davlat olib tashlandi}}"
+
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Use as the default billing address"
 msgstr "Standart hisob-kitob manzili sifatida ishlatish"
@@ -1779,6 +1803,10 @@ msgstr "Oddiy"
 msgid "Filters"
 msgstr "Filtrlar"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "selected collection"
+msgstr "tanlangan to'plam"
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Customer Groups"
@@ -1830,10 +1858,9 @@ msgstr "Yaratilgan"
 msgid "Loading addresses..."
 msgstr "Manzillar yuklanmoqda..."
 
-#. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "Select a target collection to move {0} to."
-msgstr "{0}ni ko'chirish uchun maqsadli to'plamni tanlang."
+#~ msgid "Select a target collection to move {0} to."
+#~ msgstr "{0}ni ko'chirish uchun maqsadli to'plamni tanlang."
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
@@ -1932,8 +1959,8 @@ msgid "New tax category"
 msgstr "Yangi soliq toifasi"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "Partial refund completed"
-msgstr "Qisman pul qaytarish bajarildi"
+#~ msgid "Partial refund completed"
+#~ msgstr "Qisman pul qaytarish bajarildi"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Set custom fields"
@@ -2078,6 +2105,11 @@ msgstr "Soliq toifasini yangilab bo'lmadi"
 msgid "Refund settled successfully"
 msgstr "Pul qaytarish muvaffaqiyatli hisoblashildi"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, =1 {Select a target collection to move this collection to.} other {Select a target collection to move # collections to.}}"
+msgstr "{0, plural, =1 {Ushbu to'plamni ko'chirish uchun maqsadli to'plamni tanlang.} other {# ta to'plamni ko'chirish uchun maqsadli to'plamni tanlang.}}"
+
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 #: src/app/routes/_authenticated/_api-keys/api-keys_.$id.tsx
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
@@ -2125,6 +2157,10 @@ msgstr "Profil muvaffaqiyatli yangilandi"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Payment method"
 msgstr "To'lov usuli"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx
+msgid "Destination"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
@@ -2391,6 +2427,11 @@ msgstr "Mijoz"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "Mijozning elektron pochtasi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Mijozlar guruhi"
 
@@ -2436,6 +2477,21 @@ msgstr "Tavsif"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Chegirmali qator narxi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Soliqli chegirmali qator narxi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Chegirmalar"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Davomiyligi"
 
@@ -2476,6 +2532,11 @@ msgstr "Bajarish ishlovchisi kodi"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Bajarish qatorlari"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2501,6 +2562,21 @@ msgstr "Familiya"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Qator narxi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Soliqli qator narxi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Qator solig'i"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Nomi"
 
@@ -2508,6 +2584,11 @@ msgstr "Nomi"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Buyurtma berilgan vaqt"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Buyurtma berilgandagi miqdor"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2546,6 +2627,11 @@ msgstr "Soliqli narx"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Mahsulot varianti"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Mahsulot variantlari"
 
@@ -2553,6 +2639,21 @@ msgstr "Mahsulot variantlari"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Jarayon"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Mutanosib birlik narxi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Soliqli mutanosib birlik narxi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Miqdor"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2633,6 +2734,16 @@ msgstr "Soliqli jami"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Turi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Birlik narxi"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Soliqli birlik narxi"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2988,6 +3099,10 @@ msgstr "Tartiblash"
 msgid "Recalculate shipping"
 msgstr "Yetkazib berishni qayta hisoblash"
 
+#: src/lib/components/shared/asset/asset-gallery.tsx
+msgid "{totalItems, plural, one {# asset found} other {# assets found}}"
+msgstr "{totalItems, plural, one {# ta resurs topildi} other {# ta resurs topildi}}"
+
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 #: src/app/routes/_authenticated/_assets/assets.tsx
 #: src/app/routes/_authenticated/_assets/assets.tsx
@@ -3131,6 +3246,10 @@ msgstr "Mahsulot opsiyalari"
 msgid "Select country"
 msgstr "Mamlakatni tanlang"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Refund only partially completed"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Creating..."
@@ -3164,6 +3283,11 @@ msgstr "Mijozni guruhdan olib tashlab boʻlmadi"
 #: src/lib/components/shared/configurable-operation-arg-summary.tsx
 msgid "1 property"
 msgstr ""
+
+#. placeholder {0}: testResult.length
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx
+msgid "{0, plural, one {Found # eligible shipping method} other {Found # eligible shipping methods}}"
+msgstr "{0, plural, one {# ta mos yetkazib berish usuli topildi} other {# ta mos yetkazib berish usuli topildi}}"
 
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 msgid "Upload failed (HTTP {detail})"
@@ -3291,11 +3415,9 @@ msgctxt "date-range"
 msgid "Yesterday"
 msgstr "Kecha"
 
-#. placeholder {0}: selection.length
-#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
 #: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
-msgid "Are you sure you want to remove {0} {1} from this zone?"
-msgstr "Ushbu hududdan {0} {1} ni olib tashlaysizmi?"
+#~ msgid "Are you sure you want to remove {0} {1} from this zone?"
+#~ msgstr "Ushbu hududdan {0} {1} ni olib tashlaysizmi?"
 
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
@@ -3569,6 +3691,7 @@ msgstr "{columnId} ustuni uchun filtr mezonlarini belgilang"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx
 #: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx
+#: src/lib/components/shared/address-country-select.tsx
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Country"
 msgstr "Mamlakat"
@@ -3848,7 +3971,7 @@ msgstr "Rol yangilandi"
 msgid "The display name can omit the extension or keep {sourceExtensionLabel}. It cannot use a different file extension."
 msgstr ""
 
-#: src/lib/components/shared/customer-address-form.tsx
+#: src/lib/components/shared/address-country-select.tsx
 msgid "Select a country"
 msgstr "Mamlakatni tanlang"
 
@@ -3977,8 +4100,8 @@ msgid "New Stock Location"
 msgstr "Yangi zaxira joylashuvi"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
-msgstr "Nosozlikdan oldin {successfulRefundCount} ta to'lov qaytarildi. Tafsilotlar uchun buyurtma tarixini tekshiring."
+#~ msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
+#~ msgstr "Nosozlikdan oldin {successfulRefundCount} ta to'lov qaytarildi. Tafsilotlar uchun buyurtma tarixini tekshiring."
 
 #: src/lib/components/data-input/relation-selector.tsx
 msgid "Select item"
@@ -4031,6 +4154,10 @@ msgstr "Parollar mos kelmaydi"
 msgid "Pick a date and time"
 msgstr "Sana va vaqtni tanlang"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4047,6 +4174,10 @@ msgstr "Maxfiy fasetlar do'konda ko'rinmaydi"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Soliq toifasini tanlang"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Not Running"
@@ -4240,6 +4371,10 @@ msgstr "Mijozlar guruhini yaratib bo'lmadi"
 msgid "Failed to create role"
 msgstr "Rolni yaratib bo'lmadi"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Payment methods"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Product name"
 msgstr "Mahsulot nomi"
@@ -4281,7 +4416,7 @@ msgstr "Optsiya guruhi qo'shish"
 msgid "All"
 msgstr "Barchasi"
 
-#. placeholder {0}: formatCurrency(refund.amountToRefundTotal, order.currencyCode)
+#. placeholder {0}: formatCurrency(refund.refundTotal, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "Refund {0}"
 msgstr "{0} pul qaytarish"
@@ -4379,12 +4514,9 @@ msgstr "Keyingi holatni tanlang"
 msgid "No alerts"
 msgstr "Ogohlantirishlar yo'q"
 
-#. placeholder {0}: collectionsToMove.length
-#. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
-#. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "Moving {0} collection{1} into {2}"
-msgstr "{0} ta to'plam{1} {2} ichiga ko'chirilmoqda"
+#~ msgid "Moving {0} collection{1} into {2}"
+#~ msgstr "{0} ta to'plam{1} {2} ichiga ko'chirilmoqda"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -4465,6 +4597,10 @@ msgstr "Optsiya guruhini olib tashlash"
 msgid "Description"
 msgstr "Tavsif"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Every refund destination must draw from a payment"
+msgstr ""
+
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx
 #: src/app/routes/_authenticated/_countries/countries.tsx
 #: src/app/routes/_authenticated/_countries/countries.tsx
@@ -4526,6 +4662,10 @@ msgstr "Filtr"
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 msgid "Failed to update administrator"
 msgstr "Administratorni yangilab bo'lmadi"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "No payment or destination was selected"
+msgstr ""
 
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Manage your personal saved views for this table"
@@ -4733,6 +4873,10 @@ msgstr "To'lov yakunlangan"
 msgid "orderState.Shipped"
 msgstr "Jo'natilgan"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
+
 #: src/lib/framework/layout-engine/page-layout.tsx
 msgid "Entity Information"
 msgstr "Obyekt ma'lumotlari"
@@ -4815,11 +4959,9 @@ msgstr "Yetkazib berish usullarini sinash"
 msgid "Payment settled successfully"
 msgstr "To'lov yakunlandi"
 
-#. placeholder {0}: selection.length
-#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
 #: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
-msgid "Removed {0} {1} from zone"
-msgstr "Hududdan {0} {1} olib tashlandi"
+#~ msgid "Removed {0} {1} from zone"
+#~ msgstr "Hududdan {0} {1} olib tashlandi"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Enable"
@@ -5452,6 +5594,10 @@ msgstr "Bu standart Rol va uni o'zgartirib bo'lmaydi"
 msgid "My saved views"
 msgstr "Mening saqlangan ko'rinishlarim"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Other refund destinations"
+msgstr ""
+
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx
 msgid "State / Province"
 msgstr "Shtat / Viloyat"
@@ -5643,8 +5789,8 @@ msgid "Password reset requested"
 msgstr "Parolni tiklash so'raldi"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "Allocated payment amount must equal refund total"
-msgstr "Ajratilgan to'lov summasi pul qaytarish jamiga teng bo'lishi kerak"
+#~ msgid "Allocated payment amount must equal refund total"
+#~ msgstr "Ajratilgan to'lov summasi pul qaytarish jamiga teng bo'lishi kerak"
 
 #. placeholder {0}: selection.length
 #: src/lib/components/shared/remove-from-channel-bulk-action.tsx
@@ -5732,6 +5878,10 @@ msgstr "Olib tashlash"
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Failed to update customer"
 msgstr "Mijozni yangilab bo'lmadi"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Draw from"
+msgstr ""
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Remove option groups?"
@@ -6014,6 +6164,10 @@ msgstr "soliqsiz:"
 msgid "Successfully added option value"
 msgstr "Optsiya qiymati muvaffaqiyatli qo'shildi"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "top level"
+msgstr "eng yuqori daraja"
+
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"
 msgstr "To'plam yangi ota-elementga ko'chirildi"
@@ -6096,6 +6250,7 @@ msgstr "{0} larni tanlang"
 msgid "New facet values to add:"
 msgstr "Qo'shish uchun yangi faset qiymatlari:"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Failed to process refund"
@@ -6623,6 +6778,7 @@ msgid "Edit as form"
 msgstr "Shakl sifatida tahrirlash"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx
 msgid "Edit Address"
 msgstr "Manzilni tahrirlash"
 
@@ -6692,6 +6848,11 @@ msgstr "Natijani ko'rish"
 #: src/lib/components/data-table/data-table.tsx
 msgid "Rows per page"
 msgstr "Sahifadagi qatorlar"
+
+#. placeholder {0}: formatCurrency(capacity, order.currencyCode)
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Amounts drawn from payment {label} exceed its refundable amount of {0}"
+msgstr ""
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Loading collections..."
@@ -6824,6 +6985,7 @@ msgstr "Faol"
 msgid "Tax base"
 msgstr "Soliq asosi"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
 msgid "Load more"
@@ -6923,8 +7085,8 @@ msgid "Fulfillment ID"
 msgstr "Bajarish ID"
 
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
-msgid "Select payments to refund"
-msgstr "Pul qaytarish uchun to'lovlarni tanlang"
+#~ msgid "Select payments to refund"
+#~ msgstr "Pul qaytarish uchun to'lovlarni tanlang"
 
 #: src/lib/components/shared/error-page.tsx
 msgid "The page you are looking for does not exist or may have been moved."
@@ -6962,13 +7124,18 @@ msgid "Failed to add customer to group"
 msgstr "Mijozni guruhga qo'shish amalga oshmadi"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
-msgid "{totalItems, plural, one {{totalItems} asset found} other {{totalItems} assets found}}"
-msgstr ""
+#~ msgid "{totalItems, plural, one {{totalItems} asset found} other {{totalItems} assets found}}"
+#~ msgstr ""
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Manage variants"
 msgstr "Variantlarni boshqarish"
+
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into {destination}} other {Moving # collections into {destination}}}"
+msgstr "{0, plural, one {# ta to'plam ko'chirilmoqda: {destination}} other {# ta to'plam ko'chirilmoqda: {destination}}}"
 
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Applied global view \"{viewName}\""
@@ -6977,6 +7144,10 @@ msgstr "\"{viewName}\" global ko'rinishi qo'llanildi"
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Customer registered"
 msgstr "Mijoz ro'yxatdan o'tdi"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Remaining"
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts

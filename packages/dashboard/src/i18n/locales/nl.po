@@ -821,6 +821,10 @@ msgstr "Optiegroep succesvol toegewezen"
 msgid "Marks the account as verified without the customer having to use a verification email."
 msgstr ""
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Allocated refund amounts must equal refund total"
+msgstr ""
+
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx
 msgid "Run Test"
 msgstr "Test uitvoeren"
@@ -888,6 +892,11 @@ msgstr ""
 msgid "Successfully updated channel"
 msgstr "Kanaal succesvol bijgewerkt"
 
+#. placeholder {0}: lines.length
+#: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx
+msgid "{0, plural, one {# item} other {# items}}"
+msgstr "{0, plural, one {# artikel} other {# artikelen}}"
+
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show less"
 msgstr "Minder tonen"
@@ -938,6 +947,10 @@ msgstr "Navigatie bevestigen"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Complete draft"
 msgstr "Concept voltooien"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "{refundedAmount} was refunded in {refundCount} refund(s), but \"{failedTargetLabel}\" failed: {failureReason}. Check the order's payments before trying again."
+msgstr ""
 
 #: src/app/routes/_authenticated/_administrators/administrators.tsx
 #: src/app/routes/_authenticated/_api-keys/api-keys_.$id.tsx
@@ -993,11 +1006,9 @@ msgstr "Weet u zeker dat u deze conceptbestelling wilt verwijderen?"
 msgid "Fulfillment created"
 msgstr "Afhandeling aangemaakt"
 
-#. placeholder {0}: testResult.length
-#. placeholder {1}: testResult.length !== 1 ? 's' : ''
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx
-msgid "Found {0} eligible shipping method{1}"
-msgstr "{0} geschikte verzendmethode(n) gevonden"
+#~ msgid "Found {0} eligible shipping method{1}"
+#~ msgstr "{0} geschikte verzendmethode(n) gevonden"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 #: src/lib/components/shared/asset/asset-properties.tsx
@@ -1248,6 +1259,7 @@ msgstr "Annuleren van bestelartikelen mislukt"
 msgid "Transaction ID"
 msgstr "Transactie-ID"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Allocated"
 msgstr "Toegewezen"
@@ -1270,8 +1282,8 @@ msgid "Table settings"
 msgstr "Tabelinstellingen"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Platform en Cloud verkennen"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Platform en Cloud verkennen"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -1374,6 +1386,11 @@ msgstr "API Keys"
 msgid "Search {name}..."
 msgstr "Zoeken {name}..."
 
+#. placeholder {0}: selection.length
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
+msgid "{0, plural, one {Are you sure you want to remove # country from this zone?} other {Are you sure you want to remove # countries from this zone?}}"
+msgstr "{0, plural, one {Weet u zeker dat u # land uit deze zone wilt verwijderen?} other {Weet u zeker dat u # landen uit deze zone wilt verwijderen?}}"
+
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 msgid "Edit asset"
 msgstr "Bestand bewerken"
@@ -1475,6 +1492,8 @@ msgstr "Prijzen zijn inclusief belasting voor standaard belastingzone"
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
+#: src/lib/components/data-input/slug-input.tsx
+#: src/lib/components/data-input/slug-input.tsx
 msgid "This field is required"
 msgstr ""
 
@@ -1770,6 +1789,11 @@ msgstr "Ga terug"
 msgid "+ {leftOver} more"
 msgstr "+ {leftOver} meer"
 
+#. placeholder {0}: selection.length
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
+msgid "{0, plural, one {Removed # country from zone} other {Removed # countries from zone}}"
+msgstr "{0, plural, one {# land uit zone verwijderd} other {# landen uit zone verwijderd}}"
+
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Use as the default billing address"
 msgstr "Gebruiken als standaard factuuradres"
@@ -1836,6 +1860,10 @@ msgstr "Normaal"
 msgid "Filters"
 msgstr "Filters"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "selected collection"
+msgstr "geselecteerde collectie"
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Customer Groups"
@@ -1887,10 +1915,9 @@ msgstr "Aangemaakt"
 msgid "Loading addresses..."
 msgstr "Adressen laden..."
 
-#. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "Select a target collection to move {0} to."
-msgstr "Selecteer een doelcollectie om {0} naar te verplaatsen."
+#~ msgid "Select a target collection to move {0} to."
+#~ msgstr "Selecteer een doelcollectie om {0} naar te verplaatsen."
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
@@ -1997,8 +2024,8 @@ msgstr "Nieuwe belastingcategorie"
 #~ msgstr "Optie toevoegen"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "Partial refund completed"
-msgstr "Gedeeltelijke restitutie voltooid"
+#~ msgid "Partial refund completed"
+#~ msgstr "Gedeeltelijke restitutie voltooid"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Set custom fields"
@@ -2143,6 +2170,11 @@ msgstr "Belastingcategorie bijwerken mislukt"
 msgid "Refund settled successfully"
 msgstr "Terugbetaling succesvol afgehandeld"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, =1 {Select a target collection to move this collection to.} other {Select a target collection to move # collections to.}}"
+msgstr "{0, plural, =1 {Selecteer een doelcollectie om deze collectie naar te verplaatsen.} other {Selecteer een doelcollectie om # collecties naar te verplaatsen.}}"
+
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 #: src/app/routes/_authenticated/_api-keys/api-keys_.$id.tsx
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
@@ -2190,6 +2222,10 @@ msgstr "Profiel succesvol bijgewerkt"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Payment method"
 msgstr "Betaalmethode"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx
+msgid "Destination"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
@@ -2456,6 +2492,11 @@ msgstr "Klant"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "E-mailadres klant"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Klantengroep"
 
@@ -2501,6 +2542,21 @@ msgstr "Beschrijving"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Regelprijs na korting"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Regelprijs na korting incl. BTW"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Kortingen"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Duur"
 
@@ -2541,6 +2597,11 @@ msgstr "Afhandelingscode"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Afhandelingsregels"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2566,6 +2627,21 @@ msgstr "Achternaam"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Regelprijs"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Regelprijs incl. BTW"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Regel-BTW"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Naam"
 
@@ -2573,6 +2649,11 @@ msgstr "Naam"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Bestelling geplaatst op"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Aantal bij bestelling"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2611,6 +2692,11 @@ msgstr "Prijs incl. BTW"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Productvariant"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Productvarianten"
 
@@ -2618,6 +2704,21 @@ msgstr "Productvarianten"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Voortgang"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Naar rato verdeelde stukprijs"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Naar rato verdeelde stukprijs incl. BTW"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Aantal"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2698,6 +2799,16 @@ msgstr "Totaal incl. BTW"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Type"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Stukprijs"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Stukprijs incl. BTW"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -3061,6 +3172,10 @@ msgstr "Verzendkosten herberekenen"
 #~ msgid "Select which options should apply to the existing variant \"{0}\""
 #~ msgstr "Selecteer welke opties van toepassing moeten zijn op de bestaande variant \"{0}\""
 
+#: src/lib/components/shared/asset/asset-gallery.tsx
+msgid "{totalItems, plural, one {# asset found} other {# assets found}}"
+msgstr "{totalItems, plural, one {# bestand gevonden} other {# bestanden gevonden}}"
+
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 #: src/app/routes/_authenticated/_assets/assets.tsx
 #: src/app/routes/_authenticated/_assets/assets.tsx
@@ -3209,6 +3324,10 @@ msgstr "Productopties"
 msgid "Select country"
 msgstr "Selecteer land"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Refund only partially completed"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Creating..."
@@ -3242,6 +3361,11 @@ msgstr "Klant uit groep verwijderen mislukt"
 #: src/lib/components/shared/configurable-operation-arg-summary.tsx
 msgid "1 property"
 msgstr ""
+
+#. placeholder {0}: testResult.length
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx
+msgid "{0, plural, one {Found # eligible shipping method} other {Found # eligible shipping methods}}"
+msgstr "{0, plural, one {# geschikte verzendmethode gevonden} other {# geschikte verzendmethoden gevonden}}"
 
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 msgid "Upload failed (HTTP {detail})"
@@ -3373,11 +3497,9 @@ msgstr "Gisteren"
 #~ msgid "Option name"
 #~ msgstr "Optienaam"
 
-#. placeholder {0}: selection.length
-#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
 #: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
-msgid "Are you sure you want to remove {0} {1} from this zone?"
-msgstr "Weet u zeker dat u {0} {1} uit deze zone wilt verwijderen?"
+#~ msgid "Are you sure you want to remove {0} {1} from this zone?"
+#~ msgstr "Weet u zeker dat u {0} {1} uit deze zone wilt verwijderen?"
 
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
@@ -3655,6 +3777,7 @@ msgstr "Filtercriteria instellen voor de kolom {columnId}"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx
 #: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx
+#: src/lib/components/shared/address-country-select.tsx
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Country"
 msgstr "Land"
@@ -3934,7 +4057,7 @@ msgstr "Rol succesvol bijgewerkt"
 msgid "The display name can omit the extension or keep {sourceExtensionLabel}. It cannot use a different file extension."
 msgstr ""
 
-#: src/lib/components/shared/customer-address-form.tsx
+#: src/lib/components/shared/address-country-select.tsx
 msgid "Select a country"
 msgstr "Selecteer een land"
 
@@ -4067,8 +4190,8 @@ msgid "New Stock Location"
 msgstr "Nieuwe voorraadlocatie"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
-msgstr "{successfulRefundCount} betaling(en) gerestitueerd voor de fout. Controleer de bestelgeschiedenis voor details."
+#~ msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
+#~ msgstr "{successfulRefundCount} betaling(en) gerestitueerd voor de fout. Controleer de bestelgeschiedenis voor details."
 
 #: src/lib/components/data-input/relation-selector.tsx
 msgid "Select item"
@@ -4125,6 +4248,10 @@ msgstr "Wachtwoorden komen niet overeen"
 msgid "Pick a date and time"
 msgstr "Kies een datum en tijd"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4141,6 +4268,10 @@ msgstr "Privéfacetten zijn niet zichtbaar in de winkel"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Selecteer een belastingcategorie"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Not Running"
@@ -4338,6 +4469,10 @@ msgstr "Klantengroep aanmaken mislukt"
 msgid "Failed to create role"
 msgstr "Rol aanmaken mislukt"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Payment methods"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Product name"
 msgstr "Productnaam"
@@ -4383,7 +4518,7 @@ msgstr "Optiegroep toevoegen"
 msgid "All"
 msgstr "Alle"
 
-#. placeholder {0}: formatCurrency(refund.amountToRefundTotal, order.currencyCode)
+#. placeholder {0}: formatCurrency(refund.refundTotal, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "Refund {0}"
 msgstr "Restitutie {0}"
@@ -4481,12 +4616,9 @@ msgstr "Selecteer volgende status"
 msgid "No alerts"
 msgstr "Geen meldingen"
 
-#. placeholder {0}: collectionsToMove.length
-#. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
-#. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "Moving {0} collection{1} into {2}"
-msgstr "{0} collectie(s) verplaatsen naar {2}"
+#~ msgid "Moving {0} collection{1} into {2}"
+#~ msgstr "{0} collectie(s) verplaatsen naar {2}"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -4567,6 +4699,10 @@ msgstr "Optiegroep verwijderen"
 msgid "Description"
 msgstr "Beschrijving"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Every refund destination must draw from a payment"
+msgstr ""
+
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx
 #: src/app/routes/_authenticated/_countries/countries.tsx
 #: src/app/routes/_authenticated/_countries/countries.tsx
@@ -4632,6 +4768,10 @@ msgstr "Filter"
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 msgid "Failed to update administrator"
 msgstr "Bijwerken van beheerder mislukt"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "No payment or destination was selected"
+msgstr ""
 
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Manage your personal saved views for this table"
@@ -4848,6 +4988,10 @@ msgstr "Betaling afgehandeld"
 msgid "orderState.Shipped"
 msgstr "Verzonden"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"
 #~ msgstr "Gemonitorde bronnen"
@@ -4938,11 +5082,9 @@ msgstr "Verzendmethoden testen"
 msgid "Payment settled successfully"
 msgstr "Betaling succesvol afgehandeld"
 
-#. placeholder {0}: selection.length
-#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
 #: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
-msgid "Removed {0} {1} from zone"
-msgstr "{0} {1} uit zone verwijderd"
+#~ msgid "Removed {0} {1} from zone"
+#~ msgstr "{0} {1} uit zone verwijderd"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Enable"
@@ -5570,7 +5712,7 @@ msgstr "Instellen van adres voor bestelling mislukt: {0}"
 #: src/app/routes/_authenticated/_orders/orders.tsx
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "State"
-msgstr "Staat"
+msgstr "Status"
 
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
@@ -5594,6 +5736,10 @@ msgstr "Dit is een standaardrol en kan niet worden gewijzigd"
 #: src/lib/components/data-table/my-views-button.tsx
 msgid "My saved views"
 msgstr "Mijn opgeslagen weergaven"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Other refund destinations"
+msgstr ""
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx
 msgid "State / Province"
@@ -5790,8 +5936,8 @@ msgid "Password reset requested"
 msgstr "Wachtwoordherstel aangevraagd"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "Allocated payment amount must equal refund total"
-msgstr "Het toegewezen betalingsbedrag moet gelijk zijn aan het restitutietotaal"
+#~ msgid "Allocated payment amount must equal refund total"
+#~ msgstr "Het toegewezen betalingsbedrag moet gelijk zijn aan het restitutietotaal"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx
 #~ msgid "e.g. Small"
@@ -5891,6 +6037,10 @@ msgstr "Verwijderen"
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Failed to update customer"
 msgstr "Klant bijwerken mislukt"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Draw from"
+msgstr ""
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Remove option groups?"
@@ -6193,6 +6343,10 @@ msgstr "excl. BTW:"
 msgid "Successfully added option value"
 msgstr "Optiewaarde succesvol toegevoegd"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "top level"
+msgstr "hoogste niveau"
+
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"
 msgstr "Collectie naar nieuw bovenliggend niveau verplaatst"
@@ -6275,6 +6429,7 @@ msgstr "Selecteer {0}"
 msgid "New facet values to add:"
 msgstr "Nieuwe facetwaarden om toe te voegen:"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Failed to process refund"
@@ -6814,6 +6969,7 @@ msgid "Edit as form"
 msgstr "Bewerken als formulier"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx
 msgid "Edit Address"
 msgstr "Adres bewerken"
 
@@ -6887,6 +7043,11 @@ msgstr "Resultaat bekijken"
 #: src/lib/components/data-table/data-table.tsx
 msgid "Rows per page"
 msgstr "Rijen per pagina"
+
+#. placeholder {0}: formatCurrency(capacity, order.currencyCode)
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Amounts drawn from payment {label} exceed its refundable amount of {0}"
+msgstr ""
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Loading collections..."
@@ -7023,6 +7184,7 @@ msgstr "Actief"
 msgid "Tax base"
 msgstr "Belastinggrondslag"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
 msgid "Load more"
@@ -7122,8 +7284,8 @@ msgid "Fulfillment ID"
 msgstr "Afhandelings-ID"
 
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
-msgid "Select payments to refund"
-msgstr "Selecteer betalingen om te restitueren"
+#~ msgid "Select payments to refund"
+#~ msgstr "Selecteer betalingen om te restitueren"
 
 #: src/lib/components/shared/error-page.tsx
 msgid "The page you are looking for does not exist or may have been moved."
@@ -7165,13 +7327,18 @@ msgid "Failed to add customer to group"
 msgstr "Klant toevoegen aan groep mislukt"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
-msgid "{totalItems, plural, one {{totalItems} asset found} other {{totalItems} assets found}}"
-msgstr ""
+#~ msgid "{totalItems, plural, one {{totalItems} asset found} other {{totalItems} assets found}}"
+#~ msgstr ""
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Manage variants"
 msgstr "Varianten beheren"
+
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into {destination}} other {Moving # collections into {destination}}}"
+msgstr "{0, plural, one {# collectie verplaatsen naar: {destination}} other {# collecties verplaatsen naar: {destination}}}"
 
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Applied global view \"{viewName}\""
@@ -7180,6 +7347,10 @@ msgstr "Globale weergave „{viewName}\" toegepast"
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Customer registered"
 msgstr "Klant geregistreerd"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Remaining"
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts

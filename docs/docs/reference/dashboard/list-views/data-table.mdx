@@ -4,7 +4,7 @@ generated: true
 ---
 ## DataTable
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="258" packageName="@vendure/dashboard" since="3.4.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/components/data-table/data-table.tsx" sourceLine="265" packageName="@vendure/dashboard" since="3.4.0" />
 
 A data table which includes sorting, filtering, pagination, bulk actions, column controls etc.
 
@@ -54,6 +54,7 @@ interface DataTableProps<TData> {
     onReorder?: (oldIndex: number, newIndex: number, item: TData, allItems?: TData[]) => void | Promise<void>;
     disableDragAndDrop?: boolean;
     emptyStateAction?: React.ReactNode;
+    emptyStateIllustration?: React.ReactNode;
     title?: React.ReactNode;
     actions?: React.ReactNode;
     frame?: 'card' | 'plain';
@@ -110,7 +111,7 @@ interface DataTableProps<TData> {
 
 ### onPageChange
 
-<MemberInfo kind="property" type={`(table: TableType<TData>, page: number, itemsPerPage: number) => void`}   />
+<MemberInfo kind="property" type={`(table: TableType<TData>, <a href='/reference/mcp-sdk/page#page'>page</a>: number, itemsPerPage: number) => void`}   />
 
 
 ### onSortChange
@@ -204,6 +205,13 @@ When true, drag and drop will be disabled. This will only have an effect if the 
 An optional action rendered inside the first-run empty state (no data and no
 active filters). Typically a "create your first X" CTA. Not shown in the
 "no results match your filters" empty state, which offers "Clear filters" instead.
+### emptyStateIllustration
+
+<MemberInfo kind="property" type={`React.ReactNode`}   />
+
+An optional illustration rendered in the first-run empty state (no data and no
+active filters). Defaults to the generic empty-collection illustration. Pass a
+scenario illustration such as `NoProductsIllustration` when one matches.
 ### title
 
 <MemberInfo kind="property" type={`React.ReactNode`}  since="3.8.0"  />

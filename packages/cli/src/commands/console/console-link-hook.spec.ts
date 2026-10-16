@@ -13,7 +13,15 @@ import { builtinCommandDefs } from '../builtins';
 import { ConsoleCommandDependencies, consoleCommand } from './console';
 import { ConsoleLinkContext, ConsoleLinkHook, ConsoleLinkHookRegistration } from './console-link-hook';
 import { ConsoleReporter } from './console-reporter';
-import { LINK_ID, POLLING_SECRET, manifest } from './console.fixtures';
+import {
+    NOW,
+    PROJECT_ID,
+    createCliConfigDir,
+    manifest,
+    projectList,
+    singleAccountBody,
+    storeLogin,
+} from './console.fixtures';
 import { getProjectLinkManifestPath } from './project-link-manifest';
 
 // Two plugins, so the tests that care about order can name which is which.
@@ -48,15 +56,16 @@ describe('console link hooks', () => {
         const test = await runLink(root, registry);
 
         expect(test.exitCode).toBe(0);
-        // The OSS protocol ran exactly once: one create, one poll.
-        expect(test.requestPaths).toEqual(['/v1/project-links', `/v1/project-links/${LINK_ID}/poll`]);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(manifest);
+        // The OSS protocol ran exactly once: one project list, one link.
+        expect(test.requestPaths).toEqual(['/v1/me', '/v1/projects', `/v1/projects/${PROJECT_ID}/link`]);
+        const currentManifest = manifestForConsole('http://localhost:3000', test.apiUrl);
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(currentManifest);
 
         expect(contexts).toHaveLength(1);
         const context = contexts[0];
         expect(context.projectRoot).toBe(root);
         expect(context.manifestPath).toBe(getProjectLinkManifestPath(root));
-        expect(context.manifest).toEqual(manifest);
+        expect(context.manifest).toEqual(currentManifest);
         expect(context.force).toBe(false);
         expect(context.outcome).toBe('linked');
         expect(context.isNonInteractive).toBe(true);
@@ -71,8 +80,10 @@ describe('console link hooks', () => {
         const test = await runLink(root, registryWith());
 
         expect(test.exitCode).toBe(0);
-        expect(test.requestPaths).toEqual(['/v1/project-links', `/v1/project-links/${LINK_ID}/poll`]);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(manifest);
+        expect(test.requestPaths).toEqual(['/v1/me', '/v1/projects', `/v1/projects/${PROJECT_ID}/link`]);
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(
+            manifestForConsole('http://localhost:3000', test.apiUrl),
+        );
     });
 
     it('runs hooks in plugin order and stops at the first failure', async () => {
@@ -93,7 +104,9 @@ describe('console link hooks', () => {
         expect(test.exitCode).toBe(1);
         // The link is not rolled back, and the report says so rather than
         // leaving the reader to guess what survived.
-        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(manifest);
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(
+            manifestForConsole('http://localhost:3000', test.apiUrl),
+        );
         const output = test.messages.join('\n');
         expect(output).toContain(`The ${FIRST_PLUGIN} plugin failed after linking`);
         expect(output).toContain('Console rejected the credential request.');
@@ -159,12 +172,12 @@ describe('console link hooks', () => {
             {},
             {
                 ...offlineDependencies(root),
-                // A custom remote Console with no approval, so the command
-                // stops before it creates anything.
+                // An untrusted remote Console stops the command before it
+                // creates anything.
                 env: {
                     VENDURE_CLI_NON_INTERACTIVE: 'true',
-                    VENDURE_CONSOLE_LINK_URL: 'https://console.staging.example.com',
-                    VENDURE_CONSOLE_LINK_API_URL: 'https://api.staging.example.com',
+                    VENDURE_CONSOLE_APP_URL: 'https://console.staging.example.com',
+                    VENDURE_CONSOLE_API_URL: 'https://api.staging.example.com',
                 },
                 fetch: fetchMock,
                 hooks: consoleLinkHooks(registry),
@@ -233,6 +246,7 @@ describe('console link hooks', () => {
             'subcommands',
             'extendCommands',
             'afterConsoleLink',
+            'requiresProject',
         ]);
         expect(Object.isFrozen(CLI_PLUGIN_EXTENSION_POINTS)).toBe(true);
     });
@@ -259,10 +273,11 @@ describe('console link hooks', () => {
         // Repair is local. Nothing is asked of Console, so no second Project
         // Link is created and the first is not abandoned.
         expect(fetchMock).not.toHaveBeenCalled();
-        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(manifest);
+        const currentManifest = manifestForConsole('https://console.vendure.io', 'https://api.vendure.io');
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(currentManifest);
         expect(contexts).toHaveLength(1);
         expect(contexts[0].outcome).toBe('repaired');
-        expect(contexts[0].manifest).toEqual(manifest);
+        expect(contexts[0].manifest).toEqual(currentManifest);
         expect(contexts[0].manifestPath).toBe(getProjectLinkManifestPath(root));
     });
 
@@ -287,7 +302,9 @@ describe('console link hooks', () => {
         const output = messages.join('\n');
         expect(output).toContain('was not changed');
         expect(output).not.toContain('The link succeeded');
-        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(manifest);
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(
+            manifestForConsole('https://console.vendure.io', 'https://api.vendure.io'),
+        );
     });
 
     it('gives each hook its own context, so one cannot decide what the next reads', async () => {
@@ -368,7 +385,9 @@ describe('console link hooks', () => {
             message: `The ${FIRST_PLUGIN} plugin stopped the run after linking.`,
         });
         expect(output).toContain('The link succeeded');
-        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(manifest);
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(
+            expect.objectContaining({ schemaVersion: 1 }),
+        );
     });
 
     it('snapshots non-interactive mode once for a hook context and its confirm function', async () => {
@@ -412,6 +431,14 @@ function plugin(id: string, afterConsoleLink: ConsoleLinkHookRegistration) {
     return defineCliPlugin({ id, commands: [], afterConsoleLink });
 }
 
+function manifestForConsole(appOrigin: string, apiOrigin: string) {
+    return {
+        ...manifest,
+        schemaVersion: 1,
+        console: { appOrigin, apiOrigin },
+    };
+}
+
 /**
  * A registry holding the real built-in commands, so `console` is registered the
  * way the host registers it and a plugin meets the same collision rules.
@@ -443,16 +470,19 @@ async function runLink(
     const apiUrl = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 
     const messages: string[] = [];
+    const env = {
+        VENDURE_CLI_NON_INTERACTIVE: 'true',
+        VENDURE_CONSOLE_APP_URL: 'http://localhost:3000',
+        VENDURE_CONSOLE_API_URL: apiUrl,
+        VENDURE_CLI_CONFIG_DIR: createCliConfigDir(temporaryDirectories),
+    };
+    storeLogin(env, apiUrl);
     const exitCode = await consoleCommand(
         'link',
         {},
         {
             ...offlineDependencies(root, messages),
-            env: {
-                VENDURE_CLI_NON_INTERACTIVE: 'true',
-                VENDURE_CONSOLE_LINK_URL: 'http://localhost:3000',
-                VENDURE_CONSOLE_LINK_API_URL: apiUrl,
-            },
+            env,
             fetch: globalThis.fetch,
             hooks: consoleLinkHooks(registry),
             ...overrides,
@@ -494,40 +524,33 @@ function offlineDependencies(root: string, messages: string[] = []): Partial<Con
     const reporter = recordingReporter(messages);
     return {
         cwd: root,
-        env: { VENDURE_CLI_NON_INTERACTIVE: 'true' },
+        env: {
+            VENDURE_CLI_NON_INTERACTIVE: 'true',
+            VENDURE_CLI_CONFIG_DIR: createCliConfigDir(temporaryDirectories),
+        },
         fetch: vi.fn() as unknown as typeof fetch,
         hooks: [],
         isNonInteractive: () => true,
+        // The stored login's tokens expire relative to NOW, so none is renewed.
+        now: () => NOW,
         openUrl: () => Promise.resolve(),
         prompt: () => Promise.resolve(true),
         reporter,
-        sleep: () => Promise.resolve(),
     };
 }
 
 function respondAsConsole(request: IncomingMessage, response: ServerResponse): void {
     request.resume();
     response.setHeader('Content-Type', 'application/json');
-    if (request.url === '/v1/project-links') {
-        response.end(
-            JSON.stringify({
-                id: LINK_ID,
-                state: 'pending',
-                protocolVersion: 1,
-                expiresAt: new Date(Date.now() + 60_000).toISOString(),
-                pollingSecret: POLLING_SECRET,
-                verificationPath: `/?link=${LINK_ID}`,
-            }),
-        );
+    if (request.url === '/v1/me') {
+        response.end(JSON.stringify(singleAccountBody));
         return;
     }
-    response.end(
-        JSON.stringify({
-            state: 'approved',
-            expiresAt: new Date(Date.now() + 60_000).toISOString(),
-            manifest,
-        }),
-    );
+    if (request.url === '/v1/projects') {
+        response.end(JSON.stringify(projectList()));
+        return;
+    }
+    response.end(JSON.stringify(manifest));
 }
 
 function vendureProject(): string {

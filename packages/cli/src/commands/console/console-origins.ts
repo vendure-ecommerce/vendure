@@ -18,6 +18,11 @@ export type ConsoleOriginEnvironment = 'production' | 'staging';
 export const DEFAULT_CONSOLE_URL = 'https://console.vendure.io';
 export const DEFAULT_CONSOLE_API_URL = 'https://api.vendure.io';
 
+export interface ConsoleOrigins {
+    appOrigin: string;
+    apiOrigin: string;
+}
+
 const STAGING_CONSOLE_URL = 'https://staging.console.vendure.io';
 const STAGING_CONSOLE_API_URL = 'https://staging.api.vendure.io';
 
@@ -65,6 +70,90 @@ export function assertOfficialConsoleOriginPair(endpoints: { consoleUrl: string;
     if (includesOfficialOrigin) {
         throw new Error('Official Console app and API origins must be used as a matching pair.');
     }
+}
+
+/**
+ * Validate and normalize the Console origins accepted from environment variables
+ * and Project Link Manifests.
+ */
+export function trustedConsoleOrigins(
+    origins: ConsoleOrigins,
+    labels: { app: string; api: string } = {
+        app: 'Vendure Console app origin',
+        api: 'Vendure Console API origin',
+    },
+): ConsoleOrigins {
+    const appOrigin = trustedOrigin(
+        origins.appOrigin,
+        labels.app,
+        OFFICIAL_CONSOLE_ORIGINS.map(pair => new URL(pair.consoleUrl).hostname),
+    );
+    const apiOrigin = trustedOrigin(
+        origins.apiOrigin,
+        labels.api,
+        OFFICIAL_CONSOLE_ORIGINS.map(pair => new URL(pair.apiUrl).hostname),
+    );
+    const endpoints = { consoleUrl: appOrigin, apiUrl: apiOrigin };
+    assertOfficialConsoleOriginPair(endpoints);
+    if (
+        officialConsoleEnvironment(endpoints) === undefined &&
+        ![appOrigin, apiOrigin].every(value => isLoopbackHostname(new URL(value).hostname))
+    ) {
+        throw new Error('Vendure Console app and API origins must be a trusted pair.');
+    }
+    return { appOrigin, apiOrigin };
+}
+
+/**
+ * Which Console a Console API origin belongs to: an official environment, or
+ * `'loopback'` for local development. `undefined` for anything else, including a
+ * URL with a path, query, fragment or credentials.
+ */
+export function classifyConsoleApiOrigin(
+    value: string,
+): { environment: ConsoleOriginEnvironment | 'loopback'; apiOrigin: string } | undefined {
+    let apiOrigin: string;
+    try {
+        apiOrigin = trustedOrigin(
+            value,
+            'Vendure Console API origin',
+            OFFICIAL_CONSOLE_ORIGINS.map(official => new URL(official.apiUrl).hostname),
+        );
+    } catch {
+        return undefined;
+    }
+    if (isLoopbackHostname(new URL(apiOrigin).hostname)) {
+        return { environment: 'loopback', apiOrigin };
+    }
+    const pair = OFFICIAL_CONSOLE_ORIGINS.find(official => official.apiUrl === apiOrigin);
+    return pair ? { environment: pair.environment, apiOrigin } : undefined;
+}
+
+function trustedOrigin(value: string, label: string, trustedHosts: string[]): string {
+    let url: URL;
+    try {
+        url = new URL(value);
+    } catch {
+        throw new Error(`${label} must be an absolute HTTP or HTTPS URL.`);
+    }
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
+        throw new Error(`${label} must be an absolute HTTP or HTTPS URL without credentials.`);
+    }
+    if (url.search || url.hash || (url.pathname !== '/' && url.pathname !== '')) {
+        throw new Error(`${label} must contain only an origin without a path, query, or fragment.`);
+    }
+    const loopback = isLoopbackHostname(url.hostname);
+    if (url.protocol === 'http:' && !loopback) {
+        throw new Error(`${label} must use HTTPS unless it is a loopback URL.`);
+    }
+    if (!loopback && !trustedHosts.includes(url.hostname)) {
+        throw new Error(`${label} is not trusted.`);
+    }
+    return url.origin;
+}
+
+function isLoopbackHostname(hostname: string): boolean {
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]';
 }
 
 function isOfficialOrigin(value: string, official: string): boolean {

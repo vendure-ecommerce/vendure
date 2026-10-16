@@ -821,6 +821,10 @@ msgstr "Opciócsoport sikeresen hozzárendelve"
 msgid "Marks the account as verified without the customer having to use a verification email."
 msgstr ""
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Allocated refund amounts must equal refund total"
+msgstr ""
+
 #: src/app/routes/_authenticated/_shipping-methods/components/shipping-method-test-result-wrapper.tsx
 msgid "Run Test"
 msgstr "Teszt futtatása"
@@ -888,6 +892,11 @@ msgstr ""
 msgid "Successfully updated channel"
 msgstr "Csatorna sikeresen frissítve"
 
+#. placeholder {0}: lines.length
+#: src/app/routes/_authenticated/_shipping-methods/components/test-order-builder.tsx
+msgid "{0, plural, one {# item} other {# items}}"
+msgstr "{0, plural, one {# tétel} other {# tétel}}"
+
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show less"
 msgstr "Kevesebb megjelenítése"
@@ -938,6 +947,10 @@ msgstr "Navigáció megerősítése"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Complete draft"
 msgstr "Piszkozat véglegesítése"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "{refundedAmount} was refunded in {refundCount} refund(s), but \"{failedTargetLabel}\" failed: {failureReason}. Check the order's payments before trying again."
+msgstr ""
 
 #: src/app/routes/_authenticated/_administrators/administrators.tsx
 #: src/app/routes/_authenticated/_api-keys/api-keys_.$id.tsx
@@ -993,11 +1006,9 @@ msgstr "Biztosan törli ezt a piszkozat megrendelést?"
 msgid "Fulfillment created"
 msgstr "Teljesítés létrehozva"
 
-#. placeholder {0}: testResult.length
-#. placeholder {1}: testResult.length !== 1 ? 's' : ''
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx
-msgid "Found {0} eligible shipping method{1}"
-msgstr "{0} alkalmas szállítási mód{1} található"
+#~ msgid "Found {0} eligible shipping method{1}"
+#~ msgstr "{0} alkalmas szállítási mód{1} található"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 #: src/lib/components/shared/asset/asset-properties.tsx
@@ -1244,6 +1255,7 @@ msgstr "Megrendelési tételek törlése sikertelen"
 msgid "Transaction ID"
 msgstr "Tranzakció ID"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 #: src/app/routes/_authenticated/_product-variants/product-variants_.$id.tsx
 msgid "Allocated"
 msgstr "Lefoglalt"
@@ -1266,8 +1278,8 @@ msgid "Table settings"
 msgstr "Táblázatbeállítások"
 
 #: src/lib/components/layout/nav-user.tsx
-msgid "Explore Platform & Cloud"
-msgstr "Platform & Cloud felfedezése"
+#~ msgid "Explore Platform & Cloud"
+#~ msgstr "Platform & Cloud felfedezése"
 
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Every 5 seconds"
@@ -1370,6 +1382,11 @@ msgstr "API Keys"
 msgid "Search {name}..."
 msgstr "{name} keresése..."
 
+#. placeholder {0}: selection.length
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
+msgid "{0, plural, one {Are you sure you want to remove # country from this zone?} other {Are you sure you want to remove # countries from this zone?}}"
+msgstr "{0, plural, one {Biztosan eltávolít # országot ebből a zónából?} other {Biztosan eltávolít # országot ebből a zónából?}}"
+
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 msgid "Edit asset"
 msgstr "Média szerkesztése"
@@ -1471,6 +1488,8 @@ msgstr "Az árak tartalmazzák az alapértelmezett adózóna adóját"
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
+#: src/lib/components/data-input/slug-input.tsx
+#: src/lib/components/data-input/slug-input.tsx
 msgid "This field is required"
 msgstr ""
 
@@ -1766,6 +1785,11 @@ msgstr "Vissza"
 msgid "+ {leftOver} more"
 msgstr "+ {leftOver} további"
 
+#. placeholder {0}: selection.length
+#: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
+msgid "{0, plural, one {Removed # country from zone} other {Removed # countries from zone}}"
+msgstr "{0, plural, one {# ország eltávolítva a zónából} other {# ország eltávolítva a zónából}}"
+
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Use as the default billing address"
 msgstr "Használja alapértelmezett számlázási címként"
@@ -1832,6 +1856,10 @@ msgstr "Normál"
 msgid "Filters"
 msgstr "Szűrők"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "selected collection"
+msgstr "kiválasztott gyűjtemény"
+
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts
 msgid "Customer Groups"
@@ -1883,10 +1911,9 @@ msgstr "Létrehozva"
 msgid "Loading addresses..."
 msgstr "Címek betöltése..."
 
-#. placeholder {0}: collectionsToMove.length === 1 ? 'this collection' : `${collectionsToMove.length} collections`
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "Select a target collection to move {0} to."
-msgstr "Válasszon célgyűjteményt, ahová a következőt áthelyezi: {0}."
+#~ msgid "Select a target collection to move {0} to."
+#~ msgstr "Válasszon célgyűjteményt, ahová a következőt áthelyezi: {0}."
 
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
@@ -1993,8 +2020,8 @@ msgstr "Új adókategória"
 #~ msgstr "Opció hozzáadása"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "Partial refund completed"
-msgstr "Részleges visszatérítés elvégezve"
+#~ msgid "Partial refund completed"
+#~ msgstr "Részleges visszatérítés elvégezve"
 
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Set custom fields"
@@ -2139,6 +2166,11 @@ msgstr "Adókategória frissítése sikertelen"
 msgid "Refund settled successfully"
 msgstr "A visszatérítés sikeresen rendezve"
 
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, =1 {Select a target collection to move this collection to.} other {Select a target collection to move # collections to.}}"
+msgstr "{0, plural, =1 {Válasszon célgyűjteményt, ahová ezt a gyűjteményt áthelyezi.} other {Válasszon célgyűjteményt, ahová # gyűjteményt áthelyez.}}"
+
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 #: src/app/routes/_authenticated/_api-keys/api-keys_.$id.tsx
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
@@ -2186,6 +2218,10 @@ msgstr "Profil sikeresen frissítve"
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Payment method"
 msgstr "Fizetési mód"
+
+#: src/app/routes/_authenticated/_orders/components/payment-details.tsx
+msgid "Destination"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
@@ -2452,6 +2488,11 @@ msgstr "Vásárló"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.customerEmailAddress"
+msgstr "Vásárló e-mail címe"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.customerGroup"
 msgstr "Vásárlói csoport"
 
@@ -2497,6 +2538,21 @@ msgstr "Leírás"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePrice"
+msgstr "Kedvezményes tételár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discountedLinePriceWithTax"
+msgstr "Kedvezményes tételár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.discounts"
+msgstr "Kedvezmények"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.duration"
 msgstr "Időtartam"
 
@@ -2537,6 +2593,11 @@ msgstr "Teljesítési kezelőkód"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.fulfillmentLines"
+msgstr "Teljesítési sorok"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.id"
 msgstr "ID"
 
@@ -2562,6 +2623,21 @@ msgstr "Vezetéknév"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.linePrice"
+msgstr "Tételár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.linePriceWithTax"
+msgstr "Tételár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.lineTax"
+msgstr "Tétel adója"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.name"
 msgstr "Név"
 
@@ -2569,6 +2645,11 @@ msgstr "Név"
 #: src/i18n/common-strings.ts
 msgid "fieldName.orderPlacedAt"
 msgstr "Megrendelés dátuma"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.orderPlacedQuantity"
+msgstr "Megrendeléskori mennyiség"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2607,6 +2688,11 @@ msgstr "Ár adóval"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
+msgid "fieldName.productVariant"
+msgstr "Termékváltozat"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
 msgid "fieldName.productVariants"
 msgstr "Termékváltozatok"
 
@@ -2614,6 +2700,21 @@ msgstr "Termékváltozatok"
 #: src/i18n/common-strings.ts
 msgid "fieldName.progress"
 msgstr "Folyamat"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPrice"
+msgstr "Arányosított egységár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.proratedUnitPriceWithTax"
+msgstr "Arányosított egységár adóval"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.quantity"
+msgstr "Mennyiség"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -2694,6 +2795,16 @@ msgstr "Összesen adóval"
 #: src/i18n/common-strings.ts
 msgid "fieldName.type"
 msgstr "Típus"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPrice"
+msgstr "Egységár"
+
+#. js-lingui-explicit-id
+#: src/i18n/common-strings.ts
+msgid "fieldName.unitPriceWithTax"
+msgstr "Egységár adóval"
 
 #. js-lingui-explicit-id
 #: src/i18n/common-strings.ts
@@ -3057,6 +3168,10 @@ msgstr "Szállítási díj újraszámítása"
 #~ msgid "Select which options should apply to the existing variant \"{0}\""
 #~ msgstr "Válassza ki, mely beállítások vonatkozzanak a meglévő \"{0}\" termékváltozatra."
 
+#: src/lib/components/shared/asset/asset-gallery.tsx
+msgid "{totalItems, plural, one {# asset found} other {# assets found}}"
+msgstr "{totalItems, plural, one {# eszköz található} other {# eszköz található}}"
+
 #: src/app/routes/_authenticated/_assets/assets_.$id.tsx
 #: src/app/routes/_authenticated/_assets/assets.tsx
 #: src/app/routes/_authenticated/_assets/assets.tsx
@@ -3205,6 +3320,10 @@ msgstr "Termékopciók"
 msgid "Select country"
 msgstr "Válasszon országot"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Refund only partially completed"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/components/generate-missing-variants-dialog.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 msgid "Creating..."
@@ -3238,6 +3357,11 @@ msgstr "Vásárló eltávolítása a csoportból sikertelen"
 #: src/lib/components/shared/configurable-operation-arg-summary.tsx
 msgid "1 property"
 msgstr ""
+
+#. placeholder {0}: testResult.length
+#: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-result.tsx
+msgid "{0, plural, one {Found # eligible shipping method} other {Found # eligible shipping methods}}"
+msgstr "{0, plural, one {# alkalmas szállítási mód található} other {# alkalmas szállítási mód található}}"
 
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 msgid "Upload failed (HTTP {detail})"
@@ -3369,11 +3493,9 @@ msgstr "Tegnap"
 #~ msgid "Option name"
 #~ msgstr "Opció neve"
 
-#. placeholder {0}: selection.length
-#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
 #: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
-msgid "Are you sure you want to remove {0} {1} from this zone?"
-msgstr "Biztosan eltávolítja a következőt: {0} {1} ebből a zónából?"
+#~ msgid "Are you sure you want to remove {0} {1} from this zone?"
+#~ msgstr "Biztosan eltávolítja a következőt: {0} {1} ebből a zónából?"
 
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
@@ -3651,6 +3773,7 @@ msgstr "Szűrési feltételek beállítása a(z) {columnId} oszlophoz"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx
 #: src/app/routes/_authenticated/_zones/components/zone-countries-table.tsx
+#: src/lib/components/shared/address-country-select.tsx
 #: src/lib/components/shared/customer-address-form.tsx
 msgid "Country"
 msgstr "Ország"
@@ -3930,7 +4053,7 @@ msgstr "Szerepkör sikeresen frissítve"
 msgid "The display name can omit the extension or keep {sourceExtensionLabel}. It cannot use a different file extension."
 msgstr ""
 
-#: src/lib/components/shared/customer-address-form.tsx
+#: src/lib/components/shared/address-country-select.tsx
 msgid "Select a country"
 msgstr "Ország kiválasztása"
 
@@ -4063,8 +4186,8 @@ msgid "New Stock Location"
 msgstr "Új raktárhely"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
-msgstr "{successfulRefundCount} fizetés visszatérítve a hiba előtt. A részletekért tekintse meg a megrendelés előzményeit."
+#~ msgid "{successfulRefundCount} payment(s) refunded before failure. Check order history for details."
+#~ msgstr "{successfulRefundCount} fizetés visszatérítve a hiba előtt. A részletekért tekintse meg a megrendelés előzményeit."
 
 #: src/lib/components/data-input/relation-selector.tsx
 msgid "Select item"
@@ -4121,6 +4244,10 @@ msgstr "A jelszavak nem egyeznek"
 msgid "Pick a date and time"
 msgstr "Válasszon dátumot és időpontot"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This field is invalid"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 #: src/app/routes/_authenticated/_orders/components/fulfillment-details.tsx
 msgid "Failed to update fulfillment state"
@@ -4137,6 +4264,10 @@ msgstr "A privát tulajdonságok nem láthatók az áruházban"
 #: src/lib/components/shared/tax-category-selector.tsx
 msgid "Select a tax category"
 msgstr "Adókategória kiválasztása"
+
+#: src/lib/components/layout/nav-user.tsx
+msgid "Plans"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Not Running"
@@ -4334,6 +4465,10 @@ msgstr "Vásárlói csoport létrehozása sikertelen"
 msgid "Failed to create role"
 msgstr "Szerepkör létrehozása sikertelen"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Payment methods"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Product name"
 msgstr "Terméknév"
@@ -4379,7 +4514,7 @@ msgstr "Opciócsoport hozzáadása"
 msgid "All"
 msgstr "Összes"
 
-#. placeholder {0}: formatCurrency(refund.amountToRefundTotal, order.currencyCode)
+#. placeholder {0}: formatCurrency(refund.refundTotal, order.currencyCode)
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
 msgid "Refund {0}"
 msgstr "{0} visszatérítése"
@@ -4477,12 +4612,9 @@ msgstr "Válassza ki a következő állapotot"
 msgid "No alerts"
 msgstr "Nincsenek értesítések"
 
-#. placeholder {0}: collectionsToMove.length
-#. placeholder {1}: collectionsToMove.length === 1 ? '' : 's'
-#. placeholder {2}: selectedCollectionId === topLevelCollectionId ? 'top level' : collectionNameCache.current.get(selectedCollectionId) || 'selected collection'
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
-msgid "Moving {0} collection{1} into {2}"
-msgstr "{0} gyűjtemény{1} áthelyezése ide: {2}"
+#~ msgid "Moving {0} collection{1} into {2}"
+#~ msgstr "{0} gyűjtemény{1} áthelyezése ide: {2}"
 
 #: src/app/routes/_authenticated/_shipping-methods/components/test-shipping-methods-sheet.tsx
 #: src/app/routes/_authenticated/_shipping-methods/components/test-single-shipping-method-sheet.tsx
@@ -4563,6 +4695,10 @@ msgstr "Opciócsoport eltávolítása"
 msgid "Description"
 msgstr "Leírás"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Every refund destination must draw from a payment"
+msgstr ""
+
 #: src/app/routes/_authenticated/_countries/countries_.$id.tsx
 #: src/app/routes/_authenticated/_countries/countries.tsx
 #: src/app/routes/_authenticated/_countries/countries.tsx
@@ -4628,6 +4764,10 @@ msgstr "Szűrő"
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 msgid "Failed to update administrator"
 msgstr "Rendszergazda frissítése sikertelen"
+
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "No payment or destination was selected"
+msgstr ""
 
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Manage your personal saved views for this table"
@@ -4844,6 +4984,10 @@ msgstr "Fizetés teljesítve"
 msgid "orderState.Shipped"
 msgstr "Kiszállítva"
 
+#: src/lib/components/shared/form-error-summary.tsx
+msgid "This cannot be saved until the following are fixed:"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/healthchecks.tsx
 #~ msgid "Monitored Resources"
 #~ msgstr "Figyelt erőforrások"
@@ -4934,11 +5078,9 @@ msgstr "Szállítási módok tesztelése"
 msgid "Payment settled successfully"
 msgstr "Fizetés sikeresen teljesítve"
 
-#. placeholder {0}: selection.length
-#. placeholder {1}: selection.length === 1 ? 'country' : 'countries'
 #: src/app/routes/_authenticated/_zones/components/zone-bulk-actions.tsx
-msgid "Removed {0} {1} from zone"
-msgstr "{0} {1} eltávolítva a zónából"
+#~ msgid "Removed {0} {1} from zone"
+#~ msgstr "{0} {1} eltávolítva a zónából"
 
 #: src/app/routes/_authenticated/_system/scheduled-tasks.tsx
 msgid "Enable"
@@ -5591,6 +5733,10 @@ msgstr "Ez egy alapértelmezett szerepkör, és nem módosítható"
 msgid "My saved views"
 msgstr "Saját mentett nézetek"
 
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Other refund destinations"
+msgstr ""
+
 #: src/app/routes/_authenticated/_shipping-methods/components/test-address-form.tsx
 msgid "State / Province"
 msgstr "Állam / Tartomány"
@@ -5782,8 +5928,8 @@ msgid "Password reset requested"
 msgstr "Jelszó-visszaállítás kérve"
 
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
-msgid "Allocated payment amount must equal refund total"
-msgstr "A lefoglalt fizetési összegnek egyenlőnek kell lennie a visszatérítés végösszegével"
+#~ msgid "Allocated payment amount must equal refund total"
+#~ msgstr "A lefoglalt fizetési összegnek egyenlőnek kell lennie a visszatérítés végösszegével"
 
 #: src/app/routes/_authenticated/_products/components/create-product-options-dialog.tsx
 #~ msgid "e.g. Small"
@@ -5883,6 +6029,10 @@ msgstr "Eltávolítás"
 #: src/app/routes/_authenticated/_customers/customers_.$id.tsx
 msgid "Failed to update customer"
 msgstr "Vásárló frissítése sikertelen"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Draw from"
+msgstr ""
 
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Remove option groups?"
@@ -6185,6 +6335,10 @@ msgstr "adó nélkül:"
 msgid "Successfully added option value"
 msgstr "Az opcióérték sikeresen hozzáadva"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "top level"
+msgstr "legfelső szint"
+
 #: src/app/routes/_authenticated/_collections/collections.tsx
 msgid "Collection moved to new parent"
 msgstr "Gyűjtemény áthelyezve új szülőelembe"
@@ -6267,6 +6421,7 @@ msgstr "{0} kiválasztása"
 msgid "New facet values to add:"
 msgstr "Hozzáadandó új tulajdonságértékek:"
 
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 #: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
 msgid "Failed to process refund"
@@ -6806,6 +6961,7 @@ msgid "Edit as form"
 msgstr "Szerkesztés űrlapként"
 
 #: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx
+#: src/app/routes/_authenticated/_customers/components/customer-address-card.tsx
 msgid "Edit Address"
 msgstr "Cím szerkesztése"
 
@@ -6879,6 +7035,11 @@ msgstr "Eredmény megtekintése"
 #: src/lib/components/data-table/data-table.tsx
 msgid "Rows per page"
 msgstr "Sorok oldalanként"
+
+#. placeholder {0}: formatCurrency(capacity, order.currencyCode)
+#: src/app/routes/_authenticated/_orders/hooks/use-refund-order.ts
+msgid "Amounts drawn from payment {label} exceed its refundable amount of {0}"
+msgstr ""
 
 #: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 msgid "Loading collections..."
@@ -7011,6 +7172,7 @@ msgstr "Aktív"
 msgid "Tax base"
 msgstr "Adóalap"
 
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-container.tsx
 msgid "Load more"
@@ -7110,8 +7272,8 @@ msgid "Fulfillment ID"
 msgstr "Teljesítés ID"
 
 #: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
-msgid "Select payments to refund"
-msgstr "Válassza ki a visszatérítendő fizetéseket"
+#~ msgid "Select payments to refund"
+#~ msgstr "Válassza ki a visszatérítendő fizetéseket"
 
 #: src/lib/components/shared/error-page.tsx
 msgid "The page you are looking for does not exist or may have been moved."
@@ -7153,13 +7315,18 @@ msgid "Failed to add customer to group"
 msgstr "Vásárló csoporthoz adása sikertelen"
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
-msgid "{totalItems, plural, one {{totalItems} asset found} other {{totalItems} assets found}}"
-msgstr ""
+#~ msgid "{totalItems, plural, one {{totalItems} asset found} other {{totalItems} assets found}}"
+#~ msgstr ""
 
 #: src/app/routes/_authenticated/_products/products_.$id_.variants.tsx
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Manage variants"
 msgstr "Termékváltozatok kezelése"
+
+#. placeholder {0}: collectionsToMove.length
+#: src/app/routes/_authenticated/_collections/components/move-collections-dialog.tsx
+msgid "{0, plural, one {Moving # collection into {destination}} other {Moving # collections into {destination}}}"
+msgstr "{0, plural, one {# gyűjtemény áthelyezése ide: {destination}} other {# gyűjtemény áthelyezése ide: {destination}}}"
 
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Applied global view \"{viewName}\""
@@ -7168,6 +7335,10 @@ msgstr "\"{viewName}\"  globális nézet alkalmazva"
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Customer registered"
 msgstr "Vásárló regisztrálva"
+
+#: src/app/routes/_authenticated/_orders/components/refund-order-dialog.tsx
+msgid "Remaining"
+msgstr ""
 
 #. js-lingui-explicit-id
 #: src/lib/framework/defaults.ts

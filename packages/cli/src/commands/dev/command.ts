@@ -4,6 +4,8 @@ import { runCliCommand } from '../../shared/cli-command-exit';
 export const devCommandDef: CliCommandDefinition = {
     name: 'dev',
     description: 'Run Vendure in development mode',
+    // The action resolves workspace members and --project before it validates the project.
+    requiresProject: false,
     arguments: [
         {
             name: 'target',
@@ -12,6 +14,11 @@ export const devCommandDef: CliCommandDefinition = {
         },
     ],
     options: [
+        {
+            long: '--project <dir>',
+            description: 'Vendure project directory, resolved against the working directory',
+            required: true,
+        },
         {
             long: '--server-entry <path>',
             description:

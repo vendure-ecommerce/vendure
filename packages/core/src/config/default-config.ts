@@ -102,9 +102,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         middleware: [],
         introspection: true,
         apolloServerPlugins: [],
-        inputValidation: {
-            requiredFieldValidation: true,
-        },
     },
     entityIdStrategy: new AutoIncrementIdStrategy(),
     authOptions: {
@@ -207,6 +204,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         customPaymentProcess: [],
         process: [defaultPaymentProcess],
         refundProcess: [defaultRefundProcess],
+        refundDestinations: [],
     },
     taxOptions: {
         taxZoneStrategy: new DefaultTaxZoneStrategy(),

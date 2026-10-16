@@ -1,6 +1,5 @@
-import { DynamicModule, Module, Type as NestType, Provider } from '@nestjs/common';
+import { DynamicModule, Module, ModuleMetadata, Type as NestType, Provider } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
-import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
@@ -170,7 +169,7 @@ export type DashboardExtension =
  * @docsCategory plugin
  */
 export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecorator {
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     return (target: Function) => {
         for (const metadataProperty of Object.values(PLUGIN_METADATA)) {
             const property = metadataProperty as keyof VendurePluginMetadata;

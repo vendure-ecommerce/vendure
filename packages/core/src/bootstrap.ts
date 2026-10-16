@@ -1,6 +1,10 @@
-import { DynamicModule, INestApplication, INestApplicationContext } from '@nestjs/common';
+import {
+    DynamicModule,
+    INestApplication,
+    INestApplicationContext,
+    NestApplicationOptions,
+} from '@nestjs/common';
 import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-application-context-options.interface';
-import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { getConnectionToken } from '@nestjs/typeorm';
@@ -410,6 +414,11 @@ export async function runPluginConfigurations(config: RuntimeVendureConfig): Pro
     // `config.customFields` keys (OSS-653). Taking the list from `config` also covers callers
     // which reach `runPluginConfigurations` without going through `preBootstrapConfig`, such as
     // the CLI and dashboard schema generators.
+    //
+    // Those callers also pass the raw plugin list, so flatten it here as well. Otherwise the
+    // `configuration` functions and API extensions of composed plugins are skipped. The
+    // flattening is idempotent, so the list from `preBootstrapConfig` does not change.
+    config.plugins = flattenPlugins(config.plugins);
     const entities = getAllEntities(config);
     for (const entityName of getEntityNamesWithCustomFields(entities)) {
         if (!Object.prototype.hasOwnProperty.call(config.customFields, entityName)) {

@@ -5,6 +5,7 @@ import { RichTextDescriptionCell } from '@/vdb/components/shared/table-cell/orde
 import { Button } from '@/vdb/components/ui/button.js';
 import { DropdownMenuItem } from '@/vdb/components/ui/dropdown-menu.js';
 import { ActionBarItem } from '@/vdb/framework/layout-engine/action-bar-item-wrapper.js';
+import { NoProductsIllustration } from '@/vdb/components/ui/illustrations.js';
 import { ListPage } from '@/vdb/framework/page/list-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -52,6 +53,7 @@ function ProductListPage() {
     return (
         <ListPage
             pageId="product-list"
+            emptyStateIllustration={<NoProductsIllustration />}
             listQuery={productListDocument}
             title={<Trans>Products</Trans>}
             dropdownMenuItems={[
@@ -73,9 +75,11 @@ function ProductListPage() {
             onSearchTermChange={searchTerm => {
                 return searchTerm
                     ? {
-                          name: { contains: searchTerm },
-                          slug: { contains: searchTerm },
-                          sku: { contains: searchTerm },
+                          _or: [
+                              { name: { contains: searchTerm } },
+                              { slug: { contains: searchTerm } },
+                              { sku: { contains: searchTerm } },
+                          ],
                       }
                     : {};
             }}
@@ -93,14 +97,6 @@ function ProductListPage() {
                     title: t`Facet values`,
                     component: FacetValueFacetedFilter,
                 },
-            }}
-            transformVariables={variables => {
-                return {
-                    options: {
-                        ...variables.options,
-                        filterOperator: 'OR',
-                    },
-                };
             }}
             defaultSort={[{ id: 'updatedAt', desc: true }]}
             defaultVisibility={{

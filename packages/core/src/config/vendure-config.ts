@@ -1,5 +1,4 @@
 import { ApolloServerPlugin, CSRFPreventionOptions } from '@apollo/server';
-import { RenderPageOptions } from '@apollographql/graphql-playground-html';
 import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
@@ -57,6 +56,7 @@ import { StockAllocationStrategy } from './order/stock-allocation-strategy';
 import { PaymentMethodEligibilityChecker } from './payment/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from './payment/payment-method-handler';
 import { PaymentProcess } from './payment/payment-process';
+import { RefundDestinationStrategy } from './payment/refund-destination-strategy';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { RefundProcess } from './refund/refund-process';
@@ -113,35 +113,39 @@ export interface ApiOptions {
     shopApiPath?: string;
     /**
      * @description
-     * The playground config to the admin GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     * Enables the GraphQL landing page served at the admin API path. Since Apollo Server 5
+     * removed the GraphQL Playground, a truthy value now serves GraphiQL instead, and the
+     * object form is read as a boolean and otherwise ignored.
      *
      * @deprecated Use `\@vendure/graphiql-plugin` instead.
      * @default false
      */
-    adminApiPlayground?: boolean | RenderPageOptions;
+    adminApiPlayground?: boolean | Record<string, any>;
     /**
      * @description
-     * The playground config to the shop GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     * Enables the GraphQL landing page served at the shop API path. Since Apollo Server 5
+     * removed the GraphQL Playground, a truthy value now serves GraphiQL instead, and the
+     * object form is read as a boolean and otherwise ignored.
      *
      * @deprecated Use `\@vendure/graphiql-plugin` instead.
      * @default false
      */
-    shopApiPlayground?: boolean | RenderPageOptions;
+    shopApiPlayground?: boolean | Record<string, any>;
     /**
      * @description
-     * The debug config to the admin GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     * Has no effect. This option used to set the `debug` option of Apollo Server, which was
+     * removed in Apollo Server 4.
      *
+     * @deprecated Will be removed in a future major version.
      * @default false
      */
     adminApiDebug?: boolean;
     /**
      * @description
-     * The debug config to the shop GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     * Has no effect. This option used to set the `debug` option of Apollo Server, which was
+     * removed in Apollo Server 4.
      *
+     * @deprecated Will be removed in a future major version.
      * @default false
      */
     shopApiDebug?: boolean;
@@ -310,27 +314,6 @@ export interface ApiOptions {
      * @since 1.5.0
      */
     introspection?: boolean;
-    /**
-     * @description
-     * Controls input validation behaviour for mutation arguments.
-     *
-     * @since 3.8.0
-     */
-    inputValidation?: {
-        /**
-         * @description
-         * When enabled, blank (empty or whitespace-only) string values are rejected for
-         * business-required fields on top-level mutation inputs (e.g. product name, facet code,
-         * channel token). Returns a `UserInputError` with the `field-cannot-be-blank` i18n code.
-         *
-         * Disable this if your integration cannot change its clients overnight and
-         * still sends empty strings for required fields.
-         *
-         * @default true
-         * @since 3.8.0
-         */
-        requiredFieldValidation?: boolean;
-    };
 }
 
 /**
@@ -1097,6 +1080,18 @@ export interface PaymentOptions {
      * @default defaultRefundProcess
      */
     refundProcess?: Array<RefundProcess<any>>;
+    /**
+     * @description
+     * Defines additional refund destination strategies. These allow refunds to be
+     * directed to alternative destinations such as store credit, gift cards, etc.
+     *
+     * The default destination (refund to original payment method) is always
+     * available and does not need to be included here.
+     *
+     * @default []
+     * @since 3.8.0
+     */
+    refundDestinations?: RefundDestinationStrategy[];
 }
 
 /**
@@ -1228,6 +1223,22 @@ export interface SchedulerOptions {
      * @default true
      */
     runTasksInWorkerOnly?: boolean;
+
+    /**
+     * @description
+     * The IANA timezone identifier (e.g. `'Europe/Stockholm'`, `'America/New_York'`) in which
+     * the cron schedules of all scheduled tasks are evaluated. Individual tasks can override
+     * this via the `timezone` property of {@link ScheduledTaskConfig}.
+     *
+     * When not set, cron expressions are evaluated in the timezone of the Node.js process,
+     * as determined by the `TZ` environment variable. Setting this option allows the process
+     * to run in UTC while schedules still follow local wall-clock time, including daylight
+     * saving time transitions.
+     *
+     * @since 3.8.0
+     * @default undefined
+     */
+    timezone?: string;
 }
 
 /**
@@ -1340,12 +1351,13 @@ export interface EntityOptions {
 export interface SystemOptions {
     /**
      * @description
-     * Defines an array of {@link HealthCheckStrategy} instances which are used by the `/health` endpoint to verify
-     * that any critical systems which the Vendure server depends on are also healthy.
+     * Defines an array of {@link HealthCheckStrategy} instances. Before v3.6.0 the `/health` endpoint ran these
+     * strategies to verify that critical systems which the Vendure server depends on were healthy. Since v3.6.0
+     * the strategies are not executed and this option has no effect on the `/health` response.
      *
-     * @default [TypeORMHealthCheckStrategy]
+     * @default []
      * @since 1.6.0
-     * @deprecated Use infrastructure-level health checks (e.g. Kubernetes probes, Docker healthchecks,
+     * @deprecated Not executed since v3.6.0. Use infrastructure-level health checks (e.g. Kubernetes probes, Docker healthchecks,
      * load balancer checks) instead of application-level health checks. The application should not
      * be responsible for determining its own health. This config option will be removed in v4.0.0.
      */
@@ -1552,7 +1564,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
-    schedulerOptions: Required<SchedulerOptions>;
+    schedulerOptions: Required<Omit<SchedulerOptions, 'timezone'>> & SchedulerOptions;
     orderOptions: Required<OrderOptions>;
     promotionOptions: Required<PromotionOptions>;
     shippingOptions: Required<ShippingOptions>;

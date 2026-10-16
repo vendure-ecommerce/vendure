@@ -3,7 +3,7 @@ import { randomBytes } from 'crypto';
 import fs from 'fs-extra';
 import path from 'path';
 import pc from 'picocolors';
-import { DataSource, DataSourceOptions, EntityMetadata } from 'typeorm';
+import { DataSource, DataSourceOptions, EntityMetadata, MigrationExecutor } from 'typeorm';
 import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
 import { camelCase } from 'typeorm/util/StringUtils';
 
@@ -11,6 +11,12 @@ import { preBootstrapConfig } from './bootstrap';
 import { resetConfig } from './config/config-helpers';
 import { VendureConfig } from './config/vendure-config';
 import { getDatabaseType } from './connection/database-type';
+import { Product } from './entity/product/product.entity';
+import {
+    DEFAULT_TRANSLATION_TABLE_COLUMN_NAMES,
+    TranslationTableColumnNames,
+    TranslationTableToDeduplicate,
+} from './migration-utils/translation-deduplication';
 
 /**
  * @description
@@ -50,16 +56,72 @@ export interface MigrationOptions {
 
 /**
  * @description
+ * A condition detected while running migrations which cannot be inferred from the return value
+ * of {@link runMigrations}.
+ *
+ * @docsCategory migration
+ * @since 3.7.4
+ */
+export interface MigrationDiagnostic {
+    /**
+     * @description
+     * Identifies the condition:
+     *
+     * - `no-migrations-matched`: the configured `migrations` patterns matched no files, but the
+     *   database has migrations recorded as applied. The patterns must therefore have stopped
+     *   matching, for example because they point at compiled output which has not been built.
+     * - `schema-out-of-sync`: the database schema does not match the current entity
+     *   configuration, so a new migration needs to be generated.
+     */
+    code: 'no-migrations-matched' | 'schema-out-of-sync';
+    /**
+     * @description
+     * The condition rendered as lines of human-readable text.
+     */
+    lines: string[];
+}
+
+/**
+ * @description
+ * Options for {@link runMigrations}.
+ *
+ * @docsCategory migration
+ * @since 3.7.4
+ */
+export interface RunMigrationsOptions {
+    /**
+     * @description
+     * Invoked for each {@link MigrationDiagnostic} detected during the run. These conditions are
+     * also printed to the console, unless the `VENDURE_RUNNING_IN_CLI` environment variable is
+     * set, which the Vendure CLI does so that it can render them itself. Passing this callback
+     * does not suppress that output.
+     */
+    onDiagnostic?: (diagnostic: MigrationDiagnostic) => void;
+}
+
+/**
+ * @description
  * Runs any pending database migrations. See [TypeORM migration docs](https://typeorm.io/#/migrations)
  * for more information about the underlying migration mechanism.
  *
  * @docsCategory migration
  */
-export async function runMigrations(userConfig: Partial<VendureConfig>): Promise<string[]> {
+export async function runMigrations(
+    userConfig: Partial<VendureConfig>,
+    options?: RunMigrationsOptions,
+): Promise<string[]> {
     const config = await preBootstrapConfig(userConfig);
     const connection = await createDataSource(createDataSourceOptions(config));
     const migrationsRan: string[] = [];
+    const report = (diagnostic: MigrationDiagnostic) => {
+        options?.onDiagnostic?.(diagnostic);
+        log(pc.yellow(diagnostic.lines.join('\n')));
+    };
     try {
+        const unmatched = await detectUnmatchedPatterns(connection);
+        if (unmatched) {
+            report(unmatched);
+        }
         const migrations = await disableForeignKeysForSqLite(connection, () =>
             connection.runMigrations({ transaction: 'each' }),
         );
@@ -76,25 +138,103 @@ export async function runMigrations(userConfig: Partial<VendureConfig>): Promise
             process.exitCode = 1;
         }
     } finally {
-        await checkMigrationStatus(connection);
-        await connection.destroy();
-        resetConfig();
+        try {
+            await checkMigrationStatus(connection, report);
+        } finally {
+            await connection.destroy();
+            resetConfig();
+        }
     }
     return migrationsRan;
 }
 
-async function checkMigrationStatus(connection: DataSource) {
+async function checkMigrationStatus(connection: DataSource, report: (d: MigrationDiagnostic) => void) {
+    // Against a database with no tables at all the schema builder reports the entire schema as
+    // pending, which is what a project looks like before it has been set up. That is not drift,
+    // so there is nothing useful to say about it.
+    //
+    // The `migrations` table is the wrong discriminator here: a schema built with
+    // `synchronize: true` has every table and no migration history, because TypeORM only writes
+    // that table when it runs a migration. Reporting drift is exactly what that developer needs
+    // when they switch to `synchronize: false` and change an entity.
+    if (!(await hasBeenSetUp(connection))) {
+        return;
+    }
     const builderLog = await connection.driver.createSchemaBuilder().log();
     if (builderLog.upQueries.length) {
-        log(
-            pc.yellow(
+        report({
+            code: 'schema-out-of-sync',
+            lines: [
                 'Your database schema does not match your current configuration. Generate a new migration for the following changes:',
-            ),
-        );
-        for (const query of builderLog.upQueries) {
-            log(' - ' + pc.yellow(query.query));
-        }
+                ...builderLog.upQueries.map(q => ' - ' + q.query),
+            ],
+        });
     }
+}
+
+/**
+ * Asking about one known table keeps this to a single statement. Loading every entity table
+ * would answer the same question, but `createSchemaBuilder().log()` already does that on its
+ * own query runner, so the work would be done twice on every run.
+ */
+async function hasBeenSetUp(connection: DataSource): Promise<boolean> {
+    const queryRunner = connection.createQueryRunner();
+    try {
+        return await queryRunner.hasTable(connection.getMetadata(Product).tablePath);
+    } finally {
+        await queryRunner.release();
+    }
+}
+
+/**
+ * TypeORM resolves migration globs relative to `process.cwd()` and silently yields zero classes
+ * when nothing matches. That is indistinguishable from "every migration has already been
+ * applied" in the return value of `runMigrations()`, so the command reports success while
+ * leaving the database untouched.
+ *
+ * Zero loaded classes on its own is not evidence of a problem: it is also what a project looks
+ * like before its first migration is authored, which is how the `create` scaffold ships. The
+ * discriminator is the `migrations` table. If the database has migrations on record but nothing
+ * loaded, the patterns can only have stopped matching.
+ */
+async function detectUnmatchedPatterns(connection: DataSource): Promise<MigrationDiagnostic | undefined> {
+    // Giving up as soon as any class loaded means a config which mixes a working pattern with a
+    // broken one will not warn. That is no worse than the current behaviour.
+    if (connection.migrations.length) {
+        return;
+    }
+    const patterns = getConfiguredPatterns(connection.options.migrations);
+    if (!patterns.length) {
+        return;
+    }
+    // Creates the `migrations` table as a side effect, which `runMigrations()` does anyway on
+    // the next line. Returns an empty array rather than throwing against a fresh database.
+    const executed = await new MigrationExecutor(connection).getExecutedMigrations();
+    if (!executed.length) {
+        return;
+    }
+    // The cwd only explains the failure for a relative pattern. The scaffolded config uses
+    // `path.join(__dirname, ...)`, where pointing at the working directory sends the user looking
+    // for a problem that is not there.
+    const anyRelative = patterns.some(pattern => !path.isAbsolute(pattern));
+    return {
+        code: 'no-migrations-matched',
+        lines: [
+            'No migration files matched the configured `migrations` patterns, but this database has migrations recorded as applied.',
+            'Nothing on disk matches these patterns. If they point at compiled output, check that it has been built:',
+            ...patterns.map(pattern => ' - ' + pattern),
+            ...(anyRelative
+                ? [`Relative patterns are resolved against the current directory (${process.cwd()}).`]
+                : []),
+        ],
+    };
+}
+
+function getConfiguredPatterns(configuredMigrations: DataSourceOptions['migrations']): string[] {
+    const entries = Array.isArray(configuredMigrations)
+        ? configuredMigrations
+        : Object.values(configuredMigrations ?? {});
+    return entries.filter((entry): entry is string => typeof entry === 'string');
 }
 
 /**
@@ -132,7 +272,7 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
  * underlying migration mechanism.
  *
  * If the schema changes include adding the `(languageCode, baseId)` unique constraint to one or more
- * translation tables (introduced in v3.7 to prevent duplicate translations, see
+ * translation tables (introduced in v3.8 to prevent duplicate translations, see
  * [#4884](https://github.com/vendurehq/vendure/issues/4884)), the generated migration will begin
  * with a call to {@link deduplicateTranslations} for exactly those tables, so that any duplicate rows
  * already present in the database are removed before the constraint is created.
@@ -419,28 +559,50 @@ function formatMigrationQuery(query: string, parameters: any[] | undefined, isMy
     return `        await queryRunner.query(${quote}${escaped}${quote}, ${JSON.stringify(parameters)});`;
 }
 
-const TRANSLATION_UNIQUE_COLUMNS = ['languageCode', 'baseId'];
-
 /**
- * Returns the names of the translation tables (core or plugin-defined) to which the given
- * schema-builder `up` queries add the `(languageCode, baseId)` unique constraint — i.e. the tables
- * that need de-duplicating before this migration runs.
+ * Returns the translation tables (core or plugin-defined) to which the given schema-builder `up`
+ * queries add the `(languageCode, baseId)` unique constraint. These are the tables to de-duplicate
+ * before the migration runs.
+ *
+ * A translation entity is one whose metadata has a `languageCode` column and a `base` relation. The
+ * constraint is matched against the physical names of the `languageCode` column and the `base` join
+ * column. With a custom naming strategy such as snake_case, the physical names differ from the
+ * property names. For such a table, the result holds the table name and the non-default column
+ * names, so the generated `deduplicateTranslations` call uses those names.
+ *
+ * On SQLite, TypeORM adds or changes a column by recreating the table. The recreated table repeats
+ * every existing constraint. So when TypeORM recreates a translation table which already has the
+ * constraint, this function returns that table too. The table cannot hold duplicates, so the extra
+ * `deduplicateTranslations` call does nothing.
  *
  * Exported for testing.
  */
 export function getTranslationTablesGainingUniqueConstraint(
     entityMetadatas: EntityMetadata[],
     upQueries: string[],
-): string[] {
-    return entityMetadatas
-        .filter(isTranslationEntity)
-        .map(metadata => metadata.tableName)
-        .filter(tableName => upQueries.some(query => addsTranslationUniqueConstraint(query, tableName)));
-}
-
-function isTranslationEntity(metadata: EntityMetadata): boolean {
-    const columnNames = metadata.columns.map(column => column.databaseName);
-    return TRANSLATION_UNIQUE_COLUMNS.every(name => columnNames.includes(name));
+): TranslationTableToDeduplicate[] {
+    const tables: TranslationTableToDeduplicate[] = [];
+    for (const metadata of entityMetadatas) {
+        const languageCode = metadata.findColumnWithPropertyName('languageCode')?.databaseName;
+        const baseId = metadata.findRelationWithPropertyPath('base')?.joinColumns[0]?.databaseName;
+        if (
+            languageCode &&
+            baseId &&
+            upQueries.some(query =>
+                addsTranslationUniqueConstraint(query, metadata.tableName, languageCode, baseId),
+            )
+        ) {
+            tables.push(
+                toDeduplicationTarget(metadata.tableName, {
+                    id: metadata.findColumnWithPropertyName('id')?.databaseName,
+                    baseId,
+                    languageCode,
+                    updatedAt: metadata.findColumnWithPropertyName('updatedAt')?.databaseName,
+                }),
+            );
+        }
+    }
+    return tables;
 }
 
 /**
@@ -450,15 +612,49 @@ function isTranslationEntity(metadata: EntityMetadata): boolean {
  * `` ALTER TABLE `t` ADD UNIQUE INDEX `IDX_x` (`languageCode`, `baseId`) ``, and SQLite recreates the
  * whole table as `CREATE TABLE "temporary_t" (... CONSTRAINT "UQ_x" UNIQUE ("languageCode", "baseId"))`.
  */
-function addsTranslationUniqueConstraint(query: string, tableName: string): boolean {
+function addsTranslationUniqueConstraint(
+    query: string,
+    tableName: string,
+    languageCodeColumn: string,
+    baseIdColumn: string,
+): boolean {
     if (!/\bUNIQUE\b/i.test(query)) {
         return false;
     }
     const identifiers = new Set(Array.from(query.matchAll(/["`]([^"`]+)["`]/g), match => match[1]));
     return (
         (identifiers.has(tableName) || identifiers.has(`temporary_${tableName}`)) &&
-        TRANSLATION_UNIQUE_COLUMNS.every(name => identifiers.has(name))
+        identifiers.has(languageCodeColumn) &&
+        identifiers.has(baseIdColumn)
     );
+}
+
+/**
+ * Returns the table name alone when every column uses its default name, so the generated call reads
+ * `['product_translation']`. Otherwise returns the table name and the column names which differ
+ * from the defaults.
+ */
+function toDeduplicationTarget(
+    tableName: string,
+    columns: Partial<TranslationTableColumnNames>,
+): TranslationTableToDeduplicate {
+    const customColumns: Partial<TranslationTableColumnNames> = {};
+    for (const key of Object.keys(columns) as Array<keyof TranslationTableColumnNames>) {
+        if (columns[key] !== undefined && columns[key] !== DEFAULT_TRANSLATION_TABLE_COLUMN_NAMES[key]) {
+            customColumns[key] = columns[key];
+        }
+    }
+    return Object.keys(customColumns).length ? { tableName, columns: customColumns } : tableName;
+}
+
+function formatDeduplicationTarget(table: TranslationTableToDeduplicate): string {
+    if (typeof table === 'string') {
+        return JSON.stringify(table);
+    }
+    const columns = Object.entries(table.columns ?? {})
+        .map(([key, name]) => `${key}: ${JSON.stringify(name)}`)
+        .join(', ');
+    return `{ tableName: ${JSON.stringify(table.tableName)}, columns: { ${columns} } }`;
 }
 
 /**
@@ -471,7 +667,7 @@ export function getTemplate(
     timestamp: number,
     upSqls: string[],
     downSqls: string[],
-    translationTablesToDeduplicate: string[] = [],
+    translationTablesToDeduplicate: TranslationTableToDeduplicate[] = [],
 ): string {
     const deduplicateImport = translationTablesToDeduplicate.length
         ? `import { deduplicateTranslations } from "@vendure/core";
@@ -482,7 +678,7 @@ export function getTemplate(
         // unique constraint existed, keeping the most recently updated row of each pair. This must
         // run before the constraint is created below. See https://github.com/vendurehq/vendure/issues/4884
         await deduplicateTranslations(queryRunner, [${translationTablesToDeduplicate
-            .map(table => `'${table}'`)
+            .map(formatDeduplicationTarget)
             .join(', ')}]);
 `
         : '';

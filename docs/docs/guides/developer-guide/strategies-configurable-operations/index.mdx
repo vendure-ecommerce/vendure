@@ -324,6 +324,28 @@ a `component` property, and optional properties to configure that component.
 
 A full description of the available UI components can be found in the [Custom Fields guide](/developer-guide/custom-fields/#custom-field-ui).
 
+#### secret
+
+<span class="badge badge--secondary">Optional</span>
+
+`boolean`
+
+Since v3.8.0, setting `secret: true` on a `string` argument encrypts its value in the database and redacts it in API
+responses for users who lack the `ReadSecret` permission. Use it for values such as the API key of a payment
+method handler. List arguments cannot be secret. This requires an encryption key to be configured; see the
+[Secret Fields guide](/developer-guide/secret-fields/) for setup and details.
+
+```ts
+{
+    args: {
+        apiKey: {
+            type: 'string',
+            secret: true,
+        },
+    }
+}
+```
+
 ### Injecting dependencies
 
 Configurable operations are instantiated before being passed to your config, so the mechanism for injecting dependencies

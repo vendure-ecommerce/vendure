@@ -13,8 +13,8 @@ interface ApiOptions {
     port: number;
     adminApiPath?: string;
     shopApiPath?: string;
-    adminApiPlayground?: boolean | RenderPageOptions;
-    shopApiPlayground?: boolean | RenderPageOptions;
+    adminApiPlayground?: boolean | Record<string, any>;
+    shopApiPlayground?: boolean | Record<string, any>;
     adminApiDebug?: boolean;
     shopApiDebug?: boolean;
     shopListQueryLimit?: number;
@@ -28,21 +28,6 @@ interface ApiOptions {
     trustProxy?: TrustProxyOptions;
     apolloServerPlugins?: ApolloServerPlugin[];
     introspection?: boolean;
-    inputValidation?: {
-        /**
-         * @description
-         * When enabled, blank (empty or whitespace-only) string values are rejected for
-         * business-required fields on top-level mutation inputs (e.g. product name, facet code,
-         * channel token). Returns a `UserInputError` with the `field-cannot-be-blank` i18n code.
-         *
-         * Disable this if your integration cannot change its clients overnight and
-         * still sends empty strings for required fields.
-         *
-         * @default true
-         * @since 3.8.0
-         */
-        requiredFieldValidation?: boolean;
-    };
 }
 ```
 
@@ -70,28 +55,30 @@ The path to the admin GraphQL API.
 The path to the shop GraphQL API.
 ### adminApiPlayground
 
-<MemberInfo kind="property" type={`boolean | RenderPageOptions`} default={`false`}   />
+<MemberInfo kind="property" type={`boolean | Record<string, any>`} default={`false`}   />
 
-The playground config to the admin GraphQL API
-[ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+Enables the GraphQL landing page served at the admin API path. Since Apollo Server 5
+removed the GraphQL Playground, a truthy value now serves GraphiQL instead, and the
+object form is read as a boolean and otherwise ignored.
 ### shopApiPlayground
 
-<MemberInfo kind="property" type={`boolean | RenderPageOptions`} default={`false`}   />
+<MemberInfo kind="property" type={`boolean | Record<string, any>`} default={`false`}   />
 
-The playground config to the shop GraphQL API
-[ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+Enables the GraphQL landing page served at the shop API path. Since Apollo Server 5
+removed the GraphQL Playground, a truthy value now serves GraphiQL instead, and the
+object form is read as a boolean and otherwise ignored.
 ### adminApiDebug
 
 <MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
-The debug config to the admin GraphQL API
-[ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+Has no effect. This option used to set the `debug` option of Apollo Server, which was
+removed in Apollo Server 4.
 ### shopApiDebug
 
 <MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
-The debug config to the shop GraphQL API
-[ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+Has no effect. This option used to set the `debug` option of Apollo Server, which was
+removed in Apollo Server 4.
 ### shopListQueryLimit
 
 <MemberInfo kind="property" type={`number`} default={`100`}   />
@@ -235,11 +222,6 @@ will not work.
   introspection: process.env.NODE_ENV !== 'production'
 }
 ```
-### inputValidation
-
-<MemberInfo kind="property" type={`{         /**          * @description          * When enabled, blank (empty or whitespace-only) string values are rejected for          * business-required fields on top-level mutation inputs (e.g. product name, facet code,          * channel token). Returns a \`<a href='/reference/typescript-api/errors/error-types#userinputerror'>UserInputError</a>\` with the \`field-cannot-be-blank\` i18n code.          *          * Disable this if your integration cannot change its clients overnight and          * still sends empty strings for required fields.          *          * @default true          * @since 3.8.0          */         requiredFieldValidation?: boolean;     }`}  since="3.8.0"  />
-
-Controls input validation behaviour for mutation arguments.
 
 
 </div>

@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { createColors } from 'picocolors';
+
+import { sectionAfter } from './__tests__/help-sections';
 import { runCli } from './__tests__/run-cli';
 import {
     CliCommandDefinition,
@@ -9,6 +12,10 @@ import {
     readCommandOptions,
 } from './cli-command-definition';
 import { exitCliCommand } from './cli-command-exit';
+import { parseOptionFlags } from './cli-command-options';
+import { styleHelpTitle, styleProjectLegend, styleProjectMarker } from './command-registry';
+import { CommandTreeEntry, RootOptionEntry } from './command-registry-store';
+import { ANSI } from './strip-ansi';
 
 interface RecordedCall {
     commandPath: string[];
@@ -544,6 +551,231 @@ describe('registerCommands() help output', () => {
     });
 });
 
+/**
+ * A built-in alongside the plugin commands, so a test can tell the grouped
+ * section from the ungrouped one rather than just counting headings.
+ */
+function mixedCommands(): CliCommandNode[] {
+    return [recordingCommand('dev', 'Run Vendure in development mode'), ...cloudCommands()];
+}
+
+/** Tags the named commands with a source; the rest stay built-ins. */
+function withCommandSources(commands: CliCommandNode[], sources: Record<string, string>): CommandTreeEntry[] {
+    return commands.map(node => ({ node, source: sources[node.name] }));
+}
+
+/** Tags the named options with a source, keyed by Commander attribute name. */
+function withOptionSources(options: CliCommandOption[], sources: Record<string, string>): RootOptionEntry[] {
+    return options.map(option => ({ option, source: sources[parseOptionFlags(option).attributeName] }));
+}
+
+describe('registerCommands() help grouping', () => {
+    it('lists a plugin command under a heading naming its package', async () => {
+        const result = await runCli(
+            withCommandSources(mixedCommands(), { project: '@vendure/cloud', config: '@vendure/cloud' }),
+            rootOptions,
+            ['--help'],
+        );
+
+        expect(result.stdout).toContain('Commands from @vendure/cloud:');
+        expect(result.stdout).toMatch(/^\s+project\s+Manage projects$/m);
+        expect(result.stdout).toMatch(/^\s+config \[options\]\s+Manage configuration$/m);
+    });
+
+    it('leaves commands with no source under the default heading', async () => {
+        const result = await runCli(
+            withCommandSources(mixedCommands(), { project: '@vendure/cloud' }),
+            rootOptions,
+            ['--help'],
+        );
+
+        const defaultSection = sectionAfter(result.stdout, 'Commands:');
+        expect(defaultSection).toMatch(/^\s+dev\s+Run Vendure in development mode$/m);
+        expect(defaultSection).toMatch(/^\s+backup\s+Manage backups$/m);
+        expect(defaultSection).not.toContain('Manage projects');
+    });
+
+    it('puts every command from one package in a single section', async () => {
+        const result = await runCli(
+            withCommandSources(mixedCommands(), {
+                project: '@vendure/cloud',
+                config: '@vendure/cloud',
+                backup: '@vendure/cloud',
+            }),
+            rootOptions,
+            ['--help'],
+        );
+
+        const headings = result.stdout.match(/^Commands from @vendure\/cloud:$/gm) ?? [];
+        expect(headings).toHaveLength(1);
+
+        const pluginSection = sectionAfter(result.stdout, 'Commands from @vendure/cloud:');
+        expect(pluginSection).toMatch(/^\s+project\s+Manage projects$/m);
+        expect(pluginSection).toMatch(/^\s+backup\s+Manage backups$/m);
+    });
+
+    it('gives two packages a section each', async () => {
+        const result = await runCli(
+            withCommandSources(mixedCommands(), {
+                project: '@vendure/cloud',
+                backup: 'vendure-plugin-backups',
+            }),
+            rootOptions,
+            ['--help'],
+        );
+
+        expect(sectionAfter(result.stdout, 'Commands from @vendure/cloud:')).toMatch(
+            /^\s+project\s+Manage projects$/m,
+        );
+        expect(sectionAfter(result.stdout, 'Commands from vendure-plugin-backups:')).toMatch(
+            /^\s+backup\s+Manage backups$/m,
+        );
+    });
+
+    it('lists the built-ins first', async () => {
+        const result = await runCli(
+            withCommandSources(mixedCommands(), { project: '@vendure/cloud' }),
+            rootOptions,
+            ['--help'],
+        );
+
+        expect(result.stdout.indexOf('\nCommands:')).toBeLessThan(
+            result.stdout.indexOf('Commands from @vendure/cloud:'),
+        );
+    });
+
+    it('lists a shared option under a heading naming its package', async () => {
+        const result = await runCli(
+            mixedCommands(),
+            withOptionSources(rootOptions, { token: '@vendure/cloud', json: '@vendure/cloud' }),
+            ['--help'],
+        );
+
+        const pluginSection = sectionAfter(result.stdout, 'Options from @vendure/cloud:');
+        expect(pluginSection).toMatch(/^\s+--token /m);
+        expect(pluginSection).toMatch(/^\s+--json /m);
+    });
+
+    it("leaves the CLI's own options under the default heading", async () => {
+        const result = await runCli(
+            mixedCommands(),
+            withOptionSources(rootOptions, { token: '@vendure/cloud' }),
+            ['--help'],
+        );
+
+        const defaultSection = sectionAfter(result.stdout, 'Options:');
+        expect(defaultSection).toMatch(/^\s+-h, --help/m);
+        expect(defaultSection).not.toContain('--token');
+        // Not every shared option came from the plugin, so the rest stay put.
+        expect(defaultSection).toMatch(/^\s+--project /m);
+    });
+
+    it('groups a sub-option with its parent', async () => {
+        const withSubOption: CliCommandOption[] = [
+            {
+                long: '--token <token>',
+                description: 'API token',
+                subOptions: [{ long: '--token-file <path>', description: 'Read the token from a file' }],
+            },
+        ];
+
+        const result = await runCli(
+            mixedCommands(),
+            withOptionSources(withSubOption, { token: '@vendure/cloud' }),
+            ['--help'],
+        );
+
+        // The sub-option is listed indented under its parent, so splitting them
+        // into different sections would put the indented line under nothing.
+        const pluginSection = sectionAfter(result.stdout, 'Options from @vendure/cloud:');
+        expect(pluginSection).toMatch(/^\s+--token /m);
+        expect(pluginSection).toMatch(/^\s+--token-file /m);
+    });
+
+    it('groups no options when no option sources are given', async () => {
+        const result = await runCli(mixedCommands(), rootOptions, ['--help']);
+
+        expect(result.stdout).not.toContain('Options from');
+        expect(sectionAfter(result.stdout, 'Options:')).toMatch(/^\s+--token /m);
+    });
+
+    it('groups nothing when no sources are given', async () => {
+        const result = await runCli(mixedCommands(), rootOptions, ['--help']);
+
+        expect(result.stdout).not.toContain('Commands from');
+        expect(sectionAfter(result.stdout, 'Commands:')).toMatch(/^\s+project\s+Manage projects$/m);
+    });
+
+    it('does not group a subcommand of a plugin command', async () => {
+        const result = await runCli(
+            withCommandSources(mixedCommands(), { project: '@vendure/cloud', list: '@vendure/cloud' }),
+            rootOptions,
+            ['project', '--help'],
+        );
+
+        // `list` is a subcommand of `project`, so the source map's top-level
+        // `list` entry must not reach it: its parent's help already says which
+        // package it came from.
+        expect(result.stdout).not.toContain('Commands from');
+        expect(result.stdout).toMatch(/^\s+list\s+List projects$/m);
+    });
+});
+
+describe('styleHelpTitle()', () => {
+    const BOLD_ON = '\u001b[1m';
+    const BOLD_OFF = '\u001b[22m';
+    const CYAN_ON = '\u001b[36m';
+    // picocolors emits nothing when stdout is not a terminal, which it is not
+    // under vitest, so colour has to be forced on to see the escape codes.
+    const colors = createColors(true);
+    const style = (title: string) => styleHelpTitle(title, colors);
+
+    it("bolds the CLI's own headings", () => {
+        expect(style('Commands:')).toBe(`${BOLD_ON}Commands:${BOLD_OFF}`);
+        expect(style('Options:')).toBe(`${BOLD_ON}Options:${BOLD_OFF}`);
+    });
+
+    it('tints the package name inside a plugin heading', () => {
+        const styled = style('Commands from @vendure/cloud:');
+
+        expect(styled).toContain(`${CYAN_ON}@vendure/cloud`);
+        // The label and the colon are outside the cyan run, so only the
+        // package name is coloured.
+        expect(styled).not.toContain(`${CYAN_ON}Commands from`);
+    });
+
+    it('keeps one weight across the whole plugin heading', () => {
+        const styled = style('Options from @vendure/cloud:');
+
+        expect(styled.startsWith(BOLD_ON)).toBe(true);
+        expect(styled.endsWith(BOLD_OFF)).toBe(true);
+        // One bold span, not one per fragment: a `bold off` in the middle
+        // leaves the rest of the heading at normal weight.
+        expect(styled.split(BOLD_OFF)).toHaveLength(2);
+        expect(styled.split(BOLD_ON)).toHaveLength(2);
+    });
+
+    // styleHelpTitle parses a string the heading builders produced, so a
+    // change to either format has to keep the other working.
+    it('recognises the headings the registry actually builds', async () => {
+        const result = await runCli(
+            withCommandSources(mixedCommands(), { project: '@vendure/cloud' }),
+            withOptionSources(rootOptions, { token: '@vendure/cloud' }),
+            ['--help'],
+        );
+
+        for (const heading of ['Commands from @vendure/cloud:', 'Options from @vendure/cloud:']) {
+            expect(result.stdout).toContain(heading);
+            expect(style(heading)).toContain(CYAN_ON);
+        }
+    });
+
+    it('leaves a heading it does not recognise merely bold', () => {
+        expect(style('Global Options:')).toBe(`${BOLD_ON}Global Options:${BOLD_OFF}`);
+        expect(style('Arguments:')).toBe(`${BOLD_ON}Arguments:${BOLD_OFF}`);
+    });
+});
+
 describe('registerCommands() error handling', () => {
     it('fails on an unknown subcommand', async () => {
         const result = await runCli(cloudCommands(), rootOptions, ['project', 'destroy']);
@@ -602,5 +834,234 @@ describe('registerCommands() error handling', () => {
         const result = await runCli(commands, [], ['stop']);
 
         expect(result.exitCode).toBe(2);
+    });
+});
+
+/**
+ * Stands in for a project lookup that found one. The value is only ever
+ * checked for being present, so the path need not exist.
+ */
+const foundProject = () => '/projects/my-shop';
+const noProject = () => undefined;
+
+function countOccurrences(haystack: string, needle: string): number {
+    return haystack.split(needle).length - 1;
+}
+
+describe('registerCommands() project gate', () => {
+    it('refuses a command that requires a project when there is none', async () => {
+        const command = recordingCommand('doctor', 'Run diagnostics', { requiresProject: true });
+
+        const result = await runCli([command], [], ['doctor'], undefined, noProject);
+
+        expect(result.exitCode).toBe(1);
+        expect(result.processStderr).toContain(
+            'vendure doctor must be run from a Vendure project directory.',
+        );
+        expect(calls).toEqual([]);
+    });
+
+    it('names the directory it searched, so the wrong place is told from a broken project', async () => {
+        const command = recordingCommand('doctor', 'Run diagnostics', { requiresProject: true });
+
+        const result = await runCli([command], [], ['doctor'], undefined, noProject);
+
+        expect(result.processStderr).toContain(process.cwd());
+        expect(result.processStderr).toContain('or any parent directory');
+    });
+
+    it('runs the command when a project is found', async () => {
+        const command = recordingCommand('doctor', 'Run diagnostics', { requiresProject: true });
+
+        const result = await runCli([command], [], ['doctor'], undefined, foundProject);
+
+        expect(result.exitCode).toBe(0);
+        expect(calls).toHaveLength(1);
+    });
+
+    it('leaves a command that does not require a project alone', async () => {
+        const command = recordingCommand('plugins', 'Manage CLI plugins');
+
+        const result = await runCli([command], [], ['plugins'], undefined, noProject);
+
+        expect(result.exitCode).toBe(0);
+        expect(calls).toHaveLength(1);
+    });
+
+    it('applies a parent requirement to a subcommand that declares nothing', async () => {
+        const group: CliCommandNode = {
+            name: 'cloud',
+            description: 'Cloud commands',
+            requiresProject: true,
+            subcommands: [recordingCommand('deploy', 'Deploy the project')],
+        };
+
+        const result = await runCli([group], [], ['cloud', 'deploy'], undefined, noProject);
+
+        expect(result.exitCode).toBe(1);
+        expect(result.processStderr).toContain('vendure cloud deploy must be run from a Vendure project');
+        expect(calls).toEqual([]);
+    });
+
+    it('lets a subcommand opt back out of a parent requirement', async () => {
+        const group: CliCommandNode = {
+            name: 'cloud',
+            description: 'Cloud commands',
+            requiresProject: true,
+            subcommands: [recordingCommand('whoami', 'Show the current user', { requiresProject: false })],
+        };
+
+        const result = await runCli([group], [], ['cloud', 'whoami'], undefined, noProject);
+
+        expect(result.exitCode).toBe(0);
+        expect(calls).toHaveLength(1);
+    });
+
+    it('gates a runnable parent on its own account', async () => {
+        const parent = recordingCommand('deploy', 'Deploy', {
+            requiresProject: true,
+            subcommands: [recordingCommand('plan', 'Plan the deployment')],
+        });
+
+        const result = await runCli([parent], [], ['deploy'], undefined, noProject);
+
+        expect(result.exitCode).toBe(1);
+        expect(calls).toEqual([]);
+    });
+
+    it('reports a mistyped subcommand as a typo rather than as a missing project', async () => {
+        const parent = recordingCommand('deploy', 'Deploy', {
+            requiresProject: true,
+            subcommands: [recordingCommand('plan', 'Plan the deployment')],
+        });
+
+        const result = await runCli([parent], [], ['deploy', 'plann'], undefined, noProject);
+
+        expect(result.commanderStderr).toContain("unknown command 'plann'");
+        expect(result.processStderr).not.toContain('must be run from a Vendure project');
+    });
+
+    it('marks a project command in help when there is no project', async () => {
+        const commands = [
+            recordingCommand('doctor', 'Run diagnostics', { requiresProject: true }),
+            recordingCommand('plugins', 'Manage CLI plugins'),
+        ];
+
+        const result = await runCli(commands, [], ['--help'], undefined, noProject);
+
+        expect(result.stdout).toContain('Run diagnostics *');
+        expect(result.stdout).toContain('Manage CLI plugins\n');
+        expect(result.stdout).toContain('* Requires a Vendure project. You are not in one.');
+    });
+
+    it('says once that the user is not in a project, however many commands are marked', async () => {
+        const commands = [
+            recordingCommand('doctor', 'Run diagnostics', { requiresProject: true }),
+            recordingCommand('migrate', 'Run migrations', { requiresProject: true }),
+            recordingCommand('dev', 'Run in dev mode', { requiresProject: true }),
+        ];
+
+        const result = await runCli(commands, [], ['--help'], undefined, noProject);
+
+        expect(countOccurrences(result.stdout, 'Requires a Vendure project')).toBe(1);
+    });
+
+    it('explains the marker in the help of the marked command itself', async () => {
+        const commands = [recordingCommand('doctor', 'Run diagnostics', { requiresProject: true })];
+
+        const result = await runCli(commands, [], ['doctor', '--help'], undefined, noProject);
+
+        expect(result.stdout).toContain('Run diagnostics *');
+        expect(result.stdout).toContain('* Requires a Vendure project. You are not in one.');
+    });
+
+    it('explains the marker in the help of a group that lists a marked subcommand', async () => {
+        const group: CliCommandNode = {
+            name: 'cloud',
+            description: 'Cloud commands',
+            subcommands: [
+                recordingCommand('deploy', 'Deploy the project', { requiresProject: true }),
+                recordingCommand('whoami', 'Show the current user'),
+            ],
+        };
+
+        const result = await runCli([group], [], ['cloud', '--help'], undefined, noProject);
+
+        expect(result.stdout).toContain('Deploy the project *');
+        expect(result.stdout).toContain('* Requires a Vendure project. You are not in one.');
+    });
+
+    it('marks a subcommand that inherits the requirement from its group', async () => {
+        const group: CliCommandNode = {
+            name: 'cloud',
+            description: 'Cloud commands',
+            requiresProject: true,
+            subcommands: [
+                recordingCommand('deploy', 'Deploy the project'),
+                recordingCommand('whoami', 'Show the current user', { requiresProject: false }),
+            ],
+        };
+
+        const result = await runCli([group], [], ['cloud', '--help'], undefined, noProject);
+
+        expect(result.stdout).toContain('Deploy the project *');
+        expect(result.stdout).toContain('Show the current user\n');
+    });
+
+    it('leaves help alone when nothing in it is marked', async () => {
+        const group: CliCommandNode = {
+            name: 'cloud',
+            description: 'Cloud commands',
+            subcommands: [recordingCommand('whoami', 'Show the current user')],
+        };
+
+        const result = await runCli([group], [], ['cloud', '--help'], undefined, noProject);
+
+        expect(result.stdout).not.toContain('Requires a Vendure project');
+        expect(result.stdout).not.toContain('user *');
+    });
+
+    it('still lists the command, so help does not change shape with the directory', async () => {
+        const commands = [recordingCommand('doctor', 'Run diagnostics', { requiresProject: true })];
+
+        const outside = await runCli(commands, [], ['--help'], undefined, noProject);
+        const inside = await runCli(commands, [], ['--help'], undefined, foundProject);
+
+        expect(outside.stdout).toContain('doctor');
+        expect(inside.stdout).toContain('doctor');
+    });
+
+    it('leaves the description alone inside a project, where the mark would say nothing', async () => {
+        const commands = [recordingCommand('doctor', 'Run diagnostics', { requiresProject: true })];
+
+        const result = await runCli(commands, [], ['--help'], undefined, foundProject);
+
+        expect(result.stdout).toContain('Run diagnostics\n');
+        expect(result.stdout).not.toContain('Requires a Vendure project');
+    });
+});
+
+describe('project marker colours', () => {
+    // Forced on, so the assertion does not depend on the terminal the suite is
+    // run in. Vitest colours its own output through Lerna and not in the
+    // package directly, which would otherwise change these results.
+    const colors = createColors(true);
+
+    it('colours the marker so it can be found in a list of commands', () => {
+        expect(styleProjectMarker(colors)).toBe(`${ANSI.yellow}*${ANSI.colorReset}`);
+    });
+
+    it('keeps the marker coloured in the legend and dims the sentence', () => {
+        expect(styleProjectLegend(colors)).toBe(
+            `  ${ANSI.yellow}*${ANSI.colorReset} ${ANSI.dim}Requires a Vendure project. ` +
+                `You are not in one.${ANSI.dimReset}`,
+        );
+    });
+
+    it('emits no escape codes when there is no colour support', () => {
+        const plain = createColors(false);
+
+        expect(styleProjectMarker(plain)).toBe('*');
+        expect(styleProjectLegend(plain)).toBe('  * Requires a Vendure project. You are not in one.');
     });
 });

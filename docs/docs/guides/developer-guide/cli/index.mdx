@@ -32,6 +32,55 @@ The Vendure CLI supports both **interactive** and **non-interactive** modes:
 For guidance on using the CLI together with project instructions for AI coding agents, see the
 [AI-assisted development guide](/guides/developer-guide/ai-assisted-development/).
 
+## The Dev Command
+
+The `dev` command runs the server, worker and Dashboard in development mode. Use a target to run one process:
+
+```bash
+npx vendure dev
+npx vendure dev server
+npx vendure dev --project server
+npx vendure dev server --project ./apps/backend
+```
+
+`server` in `vendure dev server` selects the server process. `--project <dir>` selects the project directory.
+Relative project paths are resolved against the working directory. Entry files and the Vite config are resolved
+from the selected project.
+
+The command resolves the project in this order:
+
+1. Use `--project <dir>` if supplied. The directory must have a `package.json` with `@vendure/core` in
+   `dependencies` or `devDependencies`. An invalid path stops the command.
+2. Use the working directory if its `package.json` depends on `@vendure/core`.
+3. Search members declared in the working directory's `package.json` `workspaces` field. Both
+   `["server"]` and `{ "packages": ["server"] }` are supported, with `*` wildcards such as `apps/*`.
+4. Search immediate members of `packages`, `apps`, `libs`, `services` and `modules` in that order.
+
+If more than one declared workspace member depends on `@vendure/core`, the command lists the candidates and
+asks you to select one with `--project`. If no project is found, the error names the searched directory and
+`--project`.
+
+For a workspace with `"workspaces": ["server"]`, run `vendure dev` or `vendure dev server` from the root.
+Running from inside `server/` also works.
+
+The CLI reads `--project` before it loads plugins and parses the full `dev` command. It reads the plugin
+allowlist from the selected project's `package.json` and resolves plugin packages from that project.
+A plugin must still be a direct project dependency and declare `vendure.cliPlugin`.
+Workspace project discovery also selects the plugin allowlist for other CLI commands. Their own project
+validation and actions keep their existing behavior. From a project subdirectory, plugin lookup walks up
+to the project directory.
+
+
+| Option | Description |
+| --- | --- |
+| `--project <dir>` | Select the Vendure project directory before discovery. |
+| `--server-entry <path>` | Server entry file. Default: `./src/index.ts`. |
+| `--worker-entry <path>` | Worker entry file. Default: `./src/index-worker.ts`. |
+| `--vite-config <path>` | Dashboard Vite config file. Default: Vite config discovery. |
+| `--inspect [host:port]` | Enable the Node.js inspector for the server and worker. |
+| `--inspect-brk [host:port]` | Enable the inspector and pause before user code starts. |
+| `--no-reload` | Disable automatic server and worker restarts. |
+
 ## The Add Command
 
 The `add` command is used to add new entities, resolvers, services, plugins, and more to your Vendure project.
@@ -310,6 +359,57 @@ npx vendure doctor --strict --format json
 | `--format <type>`   | Output format: `text` (default) or `json`                                              | `vendure doctor --format json`                |
 | `--strict`          | Treat warnings as failures (useful for CI)                                             | `vendure doctor --strict`                     |
 
+## The Auth Command
+
+The `auth` command signs you in to your Vendure account. `vendure console link`, Vendure Cloud and other CLI features
+share this one login. It does not need a Vendure project, so you can run it from any directory:
+
+```bash
+npx vendure auth login
+```
+
+The CLI shows a one-time code and opens your browser. Confirm the code and sign in. If your account belongs to more
+than one organization, you choose one in the browser. Nothing on this machine needs a browser: you can open the URL on
+another device.
+
+To choose the organization on the command line instead, for example in a script or on a remote machine, pass its
+Account identifier (in Vendure Console under **Settings**) or its name. Names match ignoring case:
+
+```bash
+npx vendure auth login --organization 79e629da-...
+npx vendure auth login --organization "Bromley Art Supplies"
+```
+
+The CLI looks the organization up in Vendure Console after you sign in. It refuses a name that more than one of your
+organizations share, and lists their Account identifiers so you can pick one. To change organization later, run
+`vendure auth login --organization` again.
+
+Check who is signed in, or sign out:
+
+```bash
+npx vendure auth status
+npx vendure auth status --json
+npx vendure auth logout
+```
+
+`status --json` prints the user, organization, client and access token expiry. It never includes a token. It exits with
+code 1 when nobody is signed in.
+
+The login is stored in `auth.json` in the CLI configuration directory (`~/.config/vendure` by default, or
+`VENDURE_CLI_CONFIG_DIR`) and is readable only by your user. The CLI renews the access token automatically.
+`vendure auth logout` asks Vendure Console to end the session, then removes the login from this machine. This ends
+the login for `vendure console` too. Once Console has ended the session, a copy of the login stops working as well. When Console cannot be reached, the command still
+removes the login and warns that a copy keeps working until it expires.
+
+The CLI signs in to production Vendure Console by default. It reads the WorkOS client to sign in with from that
+Console, so a login is always one the Console accepts. To work against staging, set
+`VENDURE_CONSOLE_API_URL=https://staging.api.vendure.io`. `vendure console link` reads the same variable but also needs
+`VENDURE_CONSOLE_APP_URL=https://staging.console.vendure.io`, so set both when you use both commands. A login stored
+for one Console is not used with another.
+
+The CLI sends your access token only to the official Vendure Console API of the selected environment. During local
+development, `VENDURE_CONSOLE_API_URL` can point at a loopback Console API. Any other value is refused.
+
 ## The Console Command
 
 The `console` command links a local Vendure application to a Project in Vendure Console. Run the command from a
@@ -319,12 +419,131 @@ Vendure project directory:
 npx vendure console link
 ```
 
-The CLI creates a short-lived request and opens Vendure Console in your browser. Sign in, select an active Project,
-and approve the request. The CLI then writes `.vendure/project.json` in the resolved Vendure project.
+The command uses the login from [`vendure auth login`](#the-auth-command). When this machine has no login for the
+selected Console, the command signs you in first, the same way: it shows a one-time code and opens your browser. If
+the browser cannot open, the CLI prints the URL so that you can open it on any device.
 
-The browser owns authentication and authorization. The CLI does not store your Console access token. The one-time
-polling secret stays in memory and is not included in the browser URL, output, or manifest. If the browser cannot open,
-the CLI prints the verification URL so that you can open it manually.
+The CLI reads your Customer Accounts from Vendure Console. With one Customer Account, it uses that account. With
+more than one, you choose the account in the terminal, also when the sign-in already scoped the login to one of them.
+The account the login is scoped to is the first choice. Without a terminal and with more than one account, the command
+keeps the account the login is scoped to, prints its name, and shows how to pass another one with `--organization`. If
+the login has no account yet, the command stops and lists your accounts so that you can pass one. With no Customer
+Account, the command stops and prints the Console page where you create one. The CLI stores the login for the chosen
+account, so the next command with `--organization` or a single account does not ask again.
+
+The CLI then lists the active Projects of the organization you are signed in to. With one Project, it links that
+Project. With more than one, you choose the Project in the terminal. Console records the Project Link, and the CLI
+writes `.vendure/project.json` in the resolved Vendure project. Your role in the organization must allow you to
+develop the Project.
+
+To link a Project of a different organization, pass its Account identifier (in Vendure Console under **Settings**) or
+its name:
+
+```bash
+npx vendure console link --organization "Bromley Art Supplies"
+```
+
+When the stored login belongs to another organization, the CLI signs in again for the organization you named. This
+replaces the stored login, the same as `vendure auth login --organization`.
+
+The CLI sends the access token only to the selected Console API, and never prints it.
+
+If the organization has no active Project, the command stops and links nothing. Create a Project in Vendure Console
+at [console.vendure.io](https://console.vendure.io). You can create it without a plan or trial. Then run
+`vendure console link` again.
+
+### Telemetry attribution
+
+A link attributes the [telemetry](/guides/developer-guide/telemetry/) of this installation to the Console Project.
+The CLI sends the telemetry installation ID with the link request, and Vendure Console stores it with the Project.
+Vendure can then see whether a linked Project has started and taken orders. Linking is your consent to this. The CLI
+prints:
+
+```text
+Telemetry from this installation is attributed to Console Project <name>. Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.
+```
+
+The installation ID is the one the Vendure server uses: `.vendure/.installation-id` in the nearest directory above the
+project that has `node_modules`. If that file does not exist, the CLI creates it. The server reads the file at its next
+start. A server that already keeps a different ID in its database, for example a production deployment, continues to
+send telemetry with that ID. Only the installation that ran `vendure console link` is attributed.
+
+With `VENDURE_DISABLE_TELEMETRY=true` (or `1`), the link sends no installation ID and the CLI creates none. A
+project that was never linked sends anonymous telemetry, as before. After an unlink, telemetry is anonymous only if
+Console removed the attribution. See [Unlink a project](#unlink-a-project).
+
+A link with `--force` first tells Console to stop the attribution of the link it replaces. It does this also when
+`VENDURE_DISABLE_TELEMETRY` is set. For this request the CLI uses only a stored login for the account of the replaced
+link. It does not sign you in to that account. If the request fails, the CLI shows a warning that names the replaced
+Project, its ID and the installation ID, and continues with the new link. The attribution can then stay with the
+replaced Project until someone removes it in Console.
+
+Console moves an existing attribution to the new Project only within the same Console account. If an attribution that
+the CLI could not stop belongs to a different account, it stays with that account until that account unlinks the
+installation. The CLI cannot see this case, so it still reports the new Project as attributed.
+
+A repeated link without `--force` does not contact Console, so it does not attribute a project that was linked before
+this feature or on another machine. Run `vendure console link --force` to attribute it.
+
+### Use Vendure development workflows in your coding assistant
+
+A linked Project gives you Vendure development workflows and patterns through your coding assistant. After a
+successful link, the CLI prints these steps:
+
+1. Add `https://docs.vendure.io/mcp` as an MCP server in your coding assistant.
+2. The first time you use a development tool, the assistant asks you to sign in with Vendure Console. Sign in and
+   select the Account that owns the linked Project.
+
+The CLI also prints a link to the setup guide at [docs.vendure.io/how-to-use](https://docs.vendure.io/how-to-use).
+For every Console other than the production Console, the link goes to the staging docs.
+
+Linking does not configure or sign in to any coding assistant. You add the server to each assistant yourself. The
+same URL also gives public documentation without sign-in. Vendure Console decides access when the assistant asks for
+a development tool. Members of the Account who can develop the Project get access after one successful link. They do
+not have to link the Project themselves, and they do not need a plan or trial. If you are signed in but have no
+access, the assistant tells you to run `vendure console link` and names
+[console.vendure.io](https://console.vendure.io).
+
+The CLI prints these steps only in human output. With `--json` or `--non-interactive`, the output does not change.
+
+### Structured, non-interactive linking
+
+For automation, run:
+
+```bash
+npx vendure console link --json --non-interactive --project ./apps/server
+```
+
+`--non-interactive` prohibits prompts, sign-in, and automatic browser launch. An existing manifest is reused. If the
+project has no manifest, the command returns `incomplete` with exit code 1 and an interactive repair command. It
+sends no request to Console. `--force` still means a different Project Link, so it requires an interactive run even
+with `--yes`. Neither flag authorizes a plugin to replace credentials or registry tokens.
+
+`--json` writes one result to stdout and disables terminal prompts. Reporter progress, including the sign-in code,
+goes to stderr. Sign-in remains available unless `--non-interactive` is set. Without a terminal, the command links
+only an organization's single Project. When there are more, it fails and lists them. Human output remains the
+default.
+The result has this shape:
+
+```json
+{
+    "schemaVersion": 1,
+    "operation": "console.link",
+    "outcome": "repaired",
+    "data": {
+        "link": { "outcome": "repaired", "manifestPath": "/checkout/apps/server/.vendure/project.json" },
+        "plugins": {}
+    },
+    "missingInputs": [],
+    "nextSteps": []
+}
+```
+
+Link outcomes are `linked`, `repaired`, `incomplete`, or `failed`. Missing inputs name the required input and may
+include `flag`, `command`, `argument`, or `environment` names. They never contain secret values. Plugin setup data
+is stored under the plugin ID in `data.plugins`. Incomplete or failed setup returns exit code 1 and keeps the
+linked manifest. Interrupts retain exit code 130 or 143. JSON results contain no tokens, parsed option values, or raw
+errors. Plugins must supply only safe setup metadata.
 
 ### Link status
 
@@ -334,8 +553,10 @@ Use `status` to validate and display the local link:
 npx vendure console status
 ```
 
-The output includes the Account, Project, schema version, protocol version, and local authentication state. This
-command reads local state only. It does not contact Vendure Console.
+The output includes the Account, Project, Console origins, schema version, protocol version, and telemetry
+attribution. The telemetry line is `attributed` when the current link sent this installation's ID, `off` when
+`VENDURE_DISABLE_TELEMETRY` is set, and `not attributed` otherwise. This command reads local state only. It does not contact Vendure Console and does not sign you in. Use `vendure auth status` to see who is
+signed in.
 
 ### Unlink a project
 
@@ -345,8 +566,14 @@ Use `unlink` to remove the local manifest:
 npx vendure console unlink
 ```
 
-This command removes only `.vendure/project.json`. It does not delete the Console Project, revoke server-side
-credentials, or change the completed link request.
+This command removes `.vendure/project.json`. If the link attributed telemetry, the CLI first tells Vendure Console to
+stop the attribution. For this, it uses your CLI login, and signs you in when it runs in a terminal. If Console cannot
+be reached or refuses the request, the CLI shows a warning and still removes the local link and its attribution
+record. Console then continues to attribute telemetry from this installation to the Project until the attribution is
+removed. In that case, set `VENDURE_DISABLE_TELEMETRY=true` to stop telemetry from this installation.
+
+The command does not delete the Console Project or its Project Link, and it does not revoke server-side credentials.
+Your CLI login stays. Run `vendure auth logout` to sign out.
 
 ### Project selection and confirmation
 
@@ -365,6 +592,9 @@ npx vendure console link --force
 npx vendure console unlink --force
 ```
 
+Before it links, `vendure console link --force` tells Console to stop the telemetry attribution of the link it
+replaces. See [Telemetry attribution](#telemetry-attribution).
+
 `--force` also permits replacement of an invalid manifest. It does not bypass ambiguous project selection or a manifest
 that belongs to another project root.
 
@@ -372,8 +602,8 @@ Running `vendure console link` in a project that is already linked repairs it ra
 is reused and any plugin setup runs again. Where a plugin is registered, that is confirmed first, because the manifest
 may have arrived with a clone.
 
-Use `--yes` to answer every confirmation owned by the CLI. This includes manifest changes, custom Console endpoints,
-and plugin setup on a repair. It does not answer questions asked by a plugin hook:
+Use `--yes` to answer every confirmation owned by the CLI. This includes manifest changes and plugin setup on a
+repair. It does not answer questions asked by a plugin hook:
 
 ```bash
 npx vendure console link --yes
@@ -383,16 +613,24 @@ On an already-linked project, `--yes` keeps the repair behavior. Only `--force` 
 
 ### Manifest and source control
 
-The v1 manifest contains identity metadata only:
+The manifest contains Project Link identity metadata and Console endpoint metadata:
 
 ```json
 {
     "schemaVersion": 1,
     "project": { "id": "<uuid>", "name": "<display name>" },
     "account": { "id": "<uuid>", "name": "<display name>" },
-    "link": { "id": "<uuid>", "protocolVersion": 1 }
+    "link": { "id": "<uuid>", "protocolVersion": 1 },
+    "console": {
+        "appOrigin": "https://console.vendure.io",
+        "apiOrigin": "https://api.vendure.io"
+    }
 }
 ```
+
+The Console values are origins. They contain no path, query, fragment, or credentials. The CLI also accepts a
+manifest without `console` and treats it as a production Console link. Running `vendure console link` again adds
+the `console` block.
 
 Commit `.vendure/project.json` so that the repository keeps its Project identity. Ignore all other `.vendure` files.
 They are reserved for machine-local state and may contain secrets.
@@ -419,30 +657,29 @@ The original ancestor rule stays unchanged, and other projects remain ignored. T
 
 ### Console environments
 
-The command uses `https://console.vendure.io` and `https://api.vendure.io` by default. To use a local Console
-environment, set both link-specific variables:
+The command uses the Console recorded in `.vendure/project.json`. A manifest without `console` and an unlinked project use
+`https://console.vendure.io` and `https://api.vendure.io`. To use a local Console environment, set both variables:
 
 ```bash
-VENDURE_CONSOLE_LINK_URL=http://localhost:3000 \
-VENDURE_CONSOLE_LINK_API_URL=http://localhost:3001 \
+VENDURE_CONSOLE_APP_URL=http://localhost:3000 \
+VENDURE_CONSOLE_API_URL=http://localhost:3001 \
 npx vendure console link
 ```
 
-The variables apply only to the unauthenticated Project Link exchange. They do not configure Console authentication,
-Environment Credentials, Registry access, package downloads, or Vendure Cloud operations.
+An explicit pair takes precedence when no manifest exists or when it matches the manifest. If it names a different
+Console, the command refuses to continue and prints both pairs. Unset the variables to use the linked Console.
+
+The prerelease variables `VENDURE_CONSOLE_LINK_URL` and `VENDURE_CONSOLE_LINK_API_URL` are not supported. Use
+`VENDURE_CONSOLE_APP_URL` and `VENDURE_CONSOLE_API_URL` instead. The CLI stops with a migration message when either
+old variable is set, including when its value is empty.
+
+The prerelease `--allow-custom-console` option is also not supported and has no replacement. Console linking accepts
+only the production pair, the staging pair, or loopback origins on `localhost`, `127.0.0.1`, or `::1`. A custom
+Console host is not supported.
 
 The CLI rejects partial endpoint configuration and URLs that contain credentials, paths, queries, or fragments. It
-requires HTTPS except for `localhost`, `127.0.0.1`, and `::1`. An official Console app or API origin is accepted only
-with the matching official origin from the same environment.
-
-Before it contacts a custom remote environment, the CLI displays both origins and asks for confirmation. In a
-non-interactive environment, pass `--allow-custom-console` to confirm them explicitly:
-
-```bash
-VENDURE_CONSOLE_LINK_URL=https://console.staging.example.com \
-VENDURE_CONSOLE_LINK_API_URL=https://api.staging.example.com \
-npx vendure console link --allow-custom-console
-```
+requires HTTPS except for `localhost`, `127.0.0.1`, and `::1`. It accepts the matching production pair, the matching
+staging pair, or a loopback pair. It rejects other hosts.
 
 ## Working in Monorepos
 
@@ -558,8 +795,41 @@ Declare the entry point in that package's `package.json`:
 }
 ```
 
-The optional `cliCommands` list lets the CLI give actionable errors for unknown
-commands without loading the plugin.
+The CLI can read the optional `cliCommands` list without loading the plugin.
+It uses the list to give an actionable error for an unknown command, and to say
+what an installed but not yet enabled package would add when you run `vendure
+plugins`. Once a plugin is enabled the CLI reads its commands from the
+plugin itself, so this list only has to be right for a package that is not
+enabled yet.
+
+### How plugin commands appear in the help
+
+`vendure --help` lists the commands and shared options a plugin registers under
+a heading naming the package, so it is clear where each one came from:
+
+```
+Options:
+  -V, --version             output the version number
+  -h, --help                display help for command
+
+Options from @example/vendure-cli-plugin:
+  --token <token>           API token
+
+Commands:
+  add [options]             Add a feature to your Vendure project
+  ...
+
+Commands from @example/vendure-cli-plugin:
+  hello [options]           Say hello
+```
+
+The heading uses the package name exactly as it is installed, so it names the
+thing to enable or remove. Nothing changes about how a command is run: `vendure
+hello` is still `vendure hello`.
+
+A command extended through `extendCommands` rather than registered outright
+stays under the heading it already had, because the command is still the one
+that declared it.
 
 ### Nested commands
 
@@ -786,7 +1056,8 @@ been extended. A group and all its subcommands must come from one plugin.
 ### Running after a project link
 
 Register an `afterConsoleLink` hook when a plugin must run setup after
-`vendure console link` writes or reuses the Project Link Manifest:
+`vendure console link` writes or reuses the Project Link Manifest. A repair also adds the Console origins to a
+manifest that does not contain them:
 
 ```ts
 import { defineCliPlugin } from '@vendure/cli';
@@ -805,35 +1076,47 @@ export default defineCliPlugin({
 
 The context contains `projectRoot`, `manifest`, `manifestPath`, `endpoints`,
 `outcome`, the optional `session`, `signal`, `reporter`, `confirm`,
-`isNonInteractive`, and `force`. Each hook gets its own manifest and endpoint
-objects. A session is also copied when the hook requested one and the login
-succeeded.
+`isNonInteractive`, `force`, `outputMode`, immutable parsed `options`, and `contributeResult`. Each hook gets its own manifest and endpoint
+objects. A session is also copied when the hook requested one and a CLI login
+exists.
 
-A hook does not receive a Console session unless it requests one. Wrap a hook
-with `requiresSession: true` when it needs the session from the same browser
-approval:
+Wrap a hook with `requiresSession: true` when it calls Vendure Console as the
+user. `vendure console link` then makes sure a [CLI login](#using-the-cli-login)
+exists before the hook runs. Read the access token with `getAccessToken()`,
+pointed at the Console of the link:
 
 ```ts
+import { defineCliPlugin, getAccessToken } from '@vendure/cli';
+
 export default defineCliPlugin({
     id: '@example/credential-cli-plugin',
     commands: [],
     afterConsoleLink: {
         requiresSession: true,
         hook: async context => {
-            if (!context.session) {
-                context.reporter.warn('No Console session was obtained.');
+            const token = await getAccessToken({
+                env: { ...process.env, VENDURE_CONSOLE_API_URL: context.endpoints.apiUrl },
+                signal: context.signal,
+            });
+            if (!token) {
+                context.contributeResult({
+                    outcome: 'incomplete',
+                    data: { session: 'missing' },
+                    missingInputs: [{ input: 'consoleSession', command: 'vendure console link' }],
+                    nextSteps: ['Run vendure console link interactively on this machine and sign in.'],
+                });
                 return;
             }
-            await storeCredential(context.session);
+            await setUpCredential(token);
         },
     },
 });
 ```
 
-The session is user-scoped and can authorize access across the user's Console
-projects. The CLI does not store it. If a plugin stores the session, use an OS
-credential store or a user-specific configuration directory outside the
-Vendure project. Never write it to the project directory or commit it.
+`context.session` holds the same access token, without a refresh token. The
+access token is user-scoped and can authorize access across the
+user's Console projects. Do not store it. Call `getAccessToken()` each time a
+token is needed, so the CLI renews it.
 
 Do not replace the `console` command for post-link setup. Register the hook.
 
@@ -844,8 +1127,17 @@ Do not replace the `console` command for post-link setup. Register the hook.
 - A hook failure does not remove the manifest.
 - Hooks must be repeatable because a repair runs them again.
 
-Throw when setup fails. If the hook cannot run in the current environment,
-report what the user must do and return.
+Throw when setup fails, or call `context.contributeResult` with `outcome: 'incomplete'` or `'failed'`, safe `data`,
+and repair steps. Both stop later hooks and return non-zero. Use `outcome: 'configured'` for completed setup.
+Core combines contributions into one result. Do not print a second JSON object or include credentials, tokens,
+raw errors, or parsed option values in a contribution. Use `context.reporter` for progress.
+
+`context.outputMode` is `'human'` or `'json'`. `context.options` is a frozen copy of parsed command options,
+including flags declared by `extendCommands`. Define explicit plugin replacement flags and read them here.
+Core's `--yes` and `--force` apply only to Core decisions. On a repair, a session-requesting hook gets the CLI login
+for the manifest's account, or for the organization that `--organization` names. An interactive repair signs in
+first when no such login is stored. A non-interactive repair does not sign in. If the login is missing, report
+incomplete setup through `contributeResult`. Core does not read plugin credential stores.
 
 Check `context.isNonInteractive` before calling `context.confirm`. The confirm
 function rejects in a non-interactive run. Put multi-choice setup in a plugin
@@ -854,25 +1146,58 @@ command.
 #### Repeating a link repairs it
 
 In an already-linked project, `vendure console link` reuses the manifest and
-runs hooks with `context.outcome` set to `'repaired'`. The repair makes no
-Console request and does not open a browser.
+runs hooks with `context.outcome` set to `'repaired'`. The repair creates no
+Project Link. It signs in only when a hook requested a session and no login is
+stored, as described above.
 
 An interactive repair names the project and account before it runs hooks. Pass
 `--yes` to answer this CLI confirmation in advance. The CLI asks nothing when
 no hooks are registered or when the run is non-interactive.
 
 `--force` links a checkout to a **different** Console Project. It
-skips the reuse, creates a new Project Link, and the hooks run with an `outcome`
+skips the reuse, links the Project you choose, and the hooks run with an `outcome`
 of `'linked'`.
 
 If a hook must run only against production, require
 `context.endpoints.official === 'production'`. The value is `'staging'` for the
-official staging pair and `undefined` for custom or loopback origins. A custom
-endpoint confirmation does not authorize a hook to send credentials there.
+official staging pair and `undefined` for loopback origins.
 
-The value describes the origins for the current run. The manifest does not
-record its source origin, so a repair cannot verify where its identifiers came
-from.
+The value describes the origins for the current run. A repair gets them from the
+manifest unless the matching environment variables are set.
+
+### Using the CLI login
+
+A plugin that calls a Vendure service on the user's behalf reads the login made with `vendure auth login`. It never
+reads `auth.json` directly. `vendure console link` uses the same login. `getAccessToken()` returns a valid access token, renewing it first when it is about to
+expire, or `undefined` when nobody is signed in:
+
+```ts
+import { getAccessToken, refreshAccessToken, NotLoggedInError } from '@vendure/cli';
+
+const token = await getAccessToken();
+if (!token) {
+    throw new NotLoggedInError();
+}
+let response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+if (response.status === 401) {
+    // Pass the token that failed. If another command already renewed it, the
+    // newer token is returned without spending the refresh token again.
+    const renewed = await refreshAccessToken(token);
+    response = await fetch(url, { headers: { Authorization: `Bearer ${renewed}` } });
+}
+```
+
+Refresh tokens are single-use. The CLI serializes renewals across concurrent `vendure` processes with a lock file, so
+renew through these functions only. A `SessionRejectedError` means the login has ended and the user must run
+`vendure auth login` again. So does a `ReauthenticationRequiredError`, which WorkOS raises when, for example, the
+organization starts to enforce SSO or MFA. Its `code` names the reason. A `SessionRefreshUnavailableError` leaves the
+login in place and is usually transient, such as a network failure. Its message says when a retry will not help. A
+`SessionLockUnavailableError` means another `vendure` command held the login for too long, or the config directory is
+not writable. Nothing was spent, so the command can be retried.
+
+`readAuthStatus()` describes the login, including the organization it is scoped to, without its tokens.
+`listOrganizations()` returns the Vendure Console organizations the user is an active member of. To change the
+organization, ask the user to run `vendure auth login --organization`.
 
 ### Checking what the installed CLI supports
 
@@ -968,6 +1293,86 @@ argument is mandatory.
   visible both in the command's own options and in `inheritedOptions`. They must
   agree on whether a value follows the flag, otherwise the plugin is rejected.
 
+### Commands that need a project
+
+A command that reads or writes a Vendure project sets `requiresProject: true`.
+The CLI then refuses to run it outside a project, rather than letting it fail
+part way through — after a stack of prompts, or on a `require` of a package that
+only a project installs:
+
+```ts
+import { defineCliPlugin } from '@vendure/cli';
+
+export default defineCliPlugin({
+    id: '@example/vendure-cli-plugin',
+    commands: [
+        {
+            name: 'deploy',
+            description: 'Deploy this project',
+            requiresProject: true,
+            action: async () => {
+                /* ... */
+            },
+        },
+    ],
+});
+```
+
+Running it from a directory that is not in a project writes to stderr and exits
+with code 1, without the action running:
+
+```text
+vendure deploy must be run from a Vendure project directory.
+No package.json with a Vendure dependency was found in /home/user or any parent directory.
+```
+
+Declared on a command that has subcommands, or on a group, it applies to every
+command below it. A subcommand sets `requiresProject: false` to opt back out,
+which is how a group mixes commands that need a project with ones that do not:
+
+```ts
+{
+    name: 'cloud',
+    description: 'Vendure Cloud commands',
+    requiresProject: true,
+    subcommands: [
+        // Needs a project, inherited from the group.
+        { name: 'deploy', description: 'Deploy this project', action: deploy },
+        // Runs anywhere: it asks who is logged in, which no project affects.
+        { name: 'whoami', description: 'Show the current user', requiresProject: false, action: whoami },
+    ],
+}
+```
+
+This matters most for a globally installed CLI (`npm install -g @vendure/cli`),
+which can be run from any directory on the machine.
+
+The CLI looks for a `package.json` with a dependency in the `@vendure/` scope, in
+the current directory or any parent, so the check passes from a subdirectory of a
+project. It answers one question — is there a Vendure project here — and a
+command whose needs are narrower still checks for itself and reports its own
+error: `migrate` wants a config file it can resolve, `add` wants a tsconfig.
+
+Outside a project, `vendure --help` marks these commands rather than hiding
+them, so the command list is the same wherever the CLI is run. The legend is
+added to the help of every command where a marker appears, and says where the
+user is, which a marker on its own cannot:
+
+```text
+Commands:
+  deploy      Deploy this project *
+  whoami      Show the current user
+
+  * Requires a Vendure project. You are not in one.
+```
+
+Inside a project nothing is marked and no legend is added.
+
+Set it only where running outside a project cannot produce a useful result.
+The built-in `doctor` command, for instance, does **not** set it: reporting
+that a directory is not a Vendure project is one of the things it checks, so
+refusing to run would remove the answer in the case that most needs it.
+
 ### Collisions
 
 A plugin that would take over or discard something it does not own is not
@@ -1018,12 +1423,18 @@ npx vendure plugins add @example/vendure-cli-plugin
 npx vendure plugins remove @example/vendure-cli-plugin
 ```
 
-The CLI finds the project root by walking up from the current directory to the
-nearest `package.json` that configures `vendure.cli` or depends on
-`@vendure/cli`, then scans the `dependencies`, `devDependencies` and
-`optionalDependencies` of every `package.json` between the two. In a monorepo
-that means a plugin installed in a workspace package is found even when
-`@vendure/cli` is hoisted to the workspace root.
+The CLI uses the discovered Core project for the plugin allowlist and package resolution. For `dev`,
+`--project <dir>` selects that project before plugins are loaded. Workspace discovery applies to plugin
+loading for every command, and `vendure plugins add` and `remove` use the discovered member's allowlist.
+From a project subdirectory, lookup walks up to the project. If no Core project is found, lookup keeps
+its existing preference for a parent `package.json` that configures `vendure.cli` or depends on
+`@vendure/cli`. Dependencies between the working directory and that parent remain eligible.
+
+An ambiguous workspace produces a plugin scope error and loads no member's plugins. Help and diagnostic
+commands remain available. Run `dev --project <dir>` to select a member. For project plugin changes,
+run `vendure plugins add` or `remove` from inside the member directory. Explicit `--global` changes
+still use the global allowlist.
+
 
 A package that declares a plugin but is not listed is reported by a one-line
 hint on stderr rather than being loaded:
@@ -1048,6 +1459,85 @@ A listed plugin that cannot be resolved, loaded or registered is skipped with an
 error on stderr — the rest of the CLI (including `vendure plugins remove`) stays
 usable. That covers a decorator which throws while it is being applied: the
 plugin contributes nothing and every other plugin is unaffected.
+
+### Globally installed plugins
+
+The CLI can also be installed globally, so that its commands are available from
+any directory:
+
+```bash
+npm install -g @vendure/cli @vendure/cloud
+```
+
+A globally installed plugin is enabled in the machine-wide list rather than in a
+project, because there is no project to write to:
+
+```bash
+vendure plugins add --global @vendure/cloud
+vendure plugins remove --global @vendure/cloud
+```
+
+That list lives in `cli.json`, in the CLI's config directory —
+`$XDG_CONFIG_HOME/vendure` or `~/.config/vendure` on Linux and macOS, `%APPDATA%\vendure`
+on Windows, or wherever `VENDURE_CLI_CONFIG_DIR` points:
+
+```json
+{
+    "plugins": ["@vendure/cloud"],
+    "pluginRoots": []
+}
+```
+
+`pluginRoots` lists extra directories to resolve those packages from. It is
+normally empty: the CLI looks in its own installation directory, where a
+globally installed plugin sits beside it. Use it when a package manager
+arranges global packages somewhere the CLI does not find them.
+
+Both lists apply at once. Global plugins are registered first and project
+plugins second, so a project overrides the machine — the same rule that makes
+the last entry of a single list win. A package enabled in both is loaded once,
+from the project, so the copy pinned alongside the project's code is the one
+that runs.
+
+`vendure plugins` shows which list each package came from:
+
+```bash
+$ vendure plugins --json
+{
+    "plugins": [
+        { "packageName": "@vendure/cloud", "scope": "global", "status": "enabled" }
+    ]
+}
+```
+
+With no `--global` flag, `add` and `remove` write to the project when there is
+one and to the machine-wide list when there is not, so the command does the
+expected thing in both places.
+
+#### Enabling a plugin without writing a file
+
+`VENDURE_CLI_PLUGINS` is a comma-separated list of packages to enable, added to
+whatever `cli.json` lists:
+
+```bash
+VENDURE_CLI_PLUGINS=@vendure/cloud vendure deploy
+```
+
+The variable is read afresh at every invocation and is additive to `cli.json`,
+so it enables a plugin without writing anything to disk, and
+`vendure plugins remove --global` cannot countermand it — unset the variable
+instead.
+
+#### Version skew
+
+Installed globally, `@vendure/cli` and a plugin are independent installs and
+nothing pins them to each other, so a plugin can meet an older CLI than it was
+written against. Check for the capabilities you rely on — see
+[Checking what the installed CLI supports](#checking-what-the-installed-cli-supports).
+
+Built-in commands that read a project — `migrate`, `schema`, `doctor` — load
+`@vendure/core` from the project rather than from the CLI's own installation, so
+a global CLI runs each project against that project's own version of Vendure.
 
 ## Getting Help
 

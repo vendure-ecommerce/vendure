@@ -9,7 +9,7 @@ import { VendureEvent } from '../vendure-event';
  * Describes a single order line whose requested quantity could not be fully allocated
  * from available stock.
  *
- * @since 3.8.0
+ * @since 3.7.4
  * @docsCategory events
  * @docsPage Event Types
  */
@@ -28,7 +28,10 @@ export interface StockShortfall {
  * payment may already have been captured, allocation is capped to the available quantity rather than
  * failing, and this event is published so that plugins can react (refund, backorder, notify).
  *
- * @since 3.8.0
+ * The `order` carries only its own columns: no relations (lines, customer, payments) are loaded.
+ * Fetch them via the {@link OrderService} if needed.
+ *
+ * @since 3.7.4
  * @docsCategory events
  * @docsPage Event Types
  */

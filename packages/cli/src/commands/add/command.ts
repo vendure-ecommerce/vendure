@@ -12,6 +12,7 @@ import { addService } from './service/add-service';
 export const addCommandDef: CliCommandDefinition = {
     name: 'add',
     description: 'Add a feature to your Vendure project',
+    requiresProject: true,
     options: [
         {
             long: '--config <path>',
@@ -38,7 +39,8 @@ export const addCommandDef: CliCommandDefinition = {
             subOptions: [
                 {
                     long: '--selected-plugin <name>',
-                    description: 'Name of the plugin to add the entity to (required with -e)',
+                    description:
+                        'Name of the plugin to add the entity or service to (required with -e or -s)',
                     required: false,
                 },
                 {
@@ -62,11 +64,6 @@ export const addCommandDef: CliCommandDefinition = {
             interactiveCategory: 'Plugin: Service',
             interactiveFn: addService,
             subOptions: [
-                {
-                    long: '--selected-plugin <name>',
-                    description: 'Name of the plugin to add the service to (required with -s)',
-                    required: false,
-                },
                 {
                     long: '--type <type>',
                     description: 'Type of service: basic or entity (default: basic)',
@@ -95,7 +92,8 @@ export const addCommandDef: CliCommandDefinition = {
                 },
                 {
                     long: '--selected-service <name>',
-                    description: 'Name of the service to add the job queue to (required with -j)',
+                    description:
+                        'Name of the service to add the job queue or API extension to (required with -j or -a)',
                     required: false,
                 },
             ],
@@ -126,11 +124,6 @@ export const addCommandDef: CliCommandDefinition = {
                 {
                     long: '--mutation-name <name>',
                     description: 'Name for the mutation (used with -a)',
-                    required: false,
-                },
-                {
-                    long: '--selected-service <name>',
-                    description: 'Name of the service to add the API extension to (required with -a)',
                     required: false,
                 },
             ],
