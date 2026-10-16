@@ -236,7 +236,7 @@
           "title": "Custom Fields",
           "slug": "custom-fields",
           "file": "docs/guides/developer-guide/custom-fields/index.mdx",
-          "lastModified": "2026-10-13T15:13:38+02:00"
+          "lastModified": "2026-10-16T15:12:48Z"
         },
         {
           "title": "Secret Fields",
@@ -320,7 +320,7 @@
           "title": "Custom Permissions",
           "slug": "custom-permissions",
           "file": "docs/guides/developer-guide/custom-permissions/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-16T15:12:48Z"
         },
         {
           "title": "Database Entity",
