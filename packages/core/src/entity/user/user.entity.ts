@@ -46,7 +46,7 @@ export class User extends VendureEntity implements HasCustomFields, SoftDeletabl
      * If set, these Channels replace the Channels of the user's Roles: the user can
      * access only these Channels, with the permissions of all their Roles.
      */
-    @ManyToMany(type => Channel, { onDelete: 'CASCADE' })
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 
