@@ -863,6 +863,8 @@ export type CreateAddressInput = {
 };
 
 export type CreateAdministratorInput = {
+  /** If set, the Administrator can access only these Channels instead of the Channels of their Roles */
+  channelIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   emailAddress: Scalars['String']['input'];
   firstName: Scalars['String']['input'];
@@ -7193,6 +7195,8 @@ export type UpdateAddressInput = {
 };
 
 export type UpdateAdministratorInput = {
+  /** Replaces the user-level Channels. An empty list removes them, so the Channels of the Roles apply again */
+  channelIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   emailAddress?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
@@ -7517,6 +7521,8 @@ export type UpdateZoneInput = {
 export type User = Node & {
   __typename?: 'User';
   authenticationMethods: Array<AuthenticationMethod>;
+  /** User-level Channels. If there are any, they replace the Channels of the user's Roles */
+  channels: Array<Channel>;
   createdAt: Scalars['DateTime']['output'];
   customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];

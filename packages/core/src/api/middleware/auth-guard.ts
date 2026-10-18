@@ -214,6 +214,7 @@ export class AuthGuard implements CanActivate {
             'user',
             'user.roles',
             'user.roles.channels',
+            'user.channels',
         ]);
         if (!apiKey) {
             return;

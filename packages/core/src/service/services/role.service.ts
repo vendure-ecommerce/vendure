@@ -135,7 +135,11 @@ export class RoleService {
      *
      * @since 3.7.3
      */
-    async activeUserHasPermissionsOfRoles(ctx: RequestContext, roleIds: ID[]): Promise<boolean> {
+    async activeUserHasPermissionsOfRoles(
+        ctx: RequestContext,
+        roleIds: ID[],
+        userChannelIds?: ID[],
+    ): Promise<boolean> {
         if (roleIds.length === 0) {
             return true;
         }
@@ -143,7 +147,10 @@ export class RoleService {
             where: { id: In(roleIds) },
             relations: { channels: true },
         });
-        return this.activeUserHasPermissionsOnChannelsOf(ctx, roles);
+        const userChannels = userChannelIds?.length
+            ? await this.connection.getRepository(ctx, Channel).find({ where: { id: In(userChannelIds) } })
+            : undefined;
+        return this.activeUserHasPermissionsOnChannelsOf(ctx, roles, userChannels);
     }
 
     /**
@@ -256,8 +263,12 @@ export class RoleService {
      * The rule behind {@link RoleService.activeUserHasPermissionsOfRoles}, for Roles which the caller
      * has already loaded (with their Channels) or built.
      */
-    private async activeUserHasPermissionsOnChannelsOf(ctx: RequestContext, roles: Role[]): Promise<boolean> {
-        const permissionsRequired = getChannelPermissions(roles);
+    private async activeUserHasPermissionsOnChannelsOf(
+        ctx: RequestContext,
+        roles: Role[],
+        userChannels?: Channel[],
+    ): Promise<boolean> {
+        const permissionsRequired = getChannelPermissions(roles, userChannels);
         for (const channelPermissions of permissionsRequired) {
             const activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnChannel(
                 ctx,
@@ -316,7 +327,7 @@ export class RoleService {
             `RoleService.getActiveUserPermissionsOnChannel.user(${activeUserId})`,
             async () => {
                 const user = await this.connection.getEntityOrThrow(ctx, User, activeUserId, {
-                    relations: ['roles', 'roles.channels'],
+                    relations: ['roles', 'roles.channels', 'channels'],
                 });
                 return getUserChannelsPermissions(user);
             },
@@ -401,7 +412,14 @@ export class RoleService {
         await this.channelService.assignToChannels(ctx, Role, roleId, [channelId]);
     }
 
-    private async getPermittedChannels(ctx: RequestContext, channelIds: ID[]): Promise<Channel[]> {
+    /**
+     * @description
+     * Returns the Channels with the given ids, throwing a ForbiddenError unless the active user
+     * has the CreateAdministrator permission on every one of them.
+     *
+     * @internal
+     */
+    async getPermittedChannels(ctx: RequestContext, channelIds: ID[]): Promise<Channel[]> {
         let permittedChannels: Channel[] = [];
         for (const channelId of channelIds) {
             const channel = await this.connection.getEntityOrThrow(ctx, Channel, channelId);

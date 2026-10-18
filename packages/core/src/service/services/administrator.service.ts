@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import {
     CreateAdministratorInput,
     DeletionResult,
@@ -64,6 +65,7 @@ export class AdministratorService {
         private assetService: AssetService,
         private eventBus: EventBus,
         private requestContextService: RequestContextService,
+        private moduleRef: ModuleRef,
     ) {}
 
     /**
@@ -199,6 +201,7 @@ export class AdministratorService {
                 ...(relations ?? ['avatar']),
                 'user',
                 'user.roles',
+                'user.channels',
             ]),
             where: {
                 id: administratorId,
@@ -210,10 +213,12 @@ export class AdministratorService {
         }
         // An Administrator is visible only to an active user who could be granted every one of the
         // Administrator's Roles. This is the same rule that create() and update() apply, so the read
-        // and the write policy cannot drift apart.
+        // and the write policy cannot drift apart. If the Administrator has user-level Channels, those
+        // are the Channels the Roles apply on.
         const visible = await this.roleService.activeUserHasPermissionsOfRoles(
             ctx,
             administrator.user.roles.map(role => role.id),
+            administrator.user.channels.map(channel => channel.id),
         );
         return visible ? administrator : undefined;
     }
@@ -236,21 +241,46 @@ export class AdministratorService {
         // An Administrator is excluded as soon as they hold a single Role which the active user
         // cannot read. A sub-query is used rather than a join on the main query, so that the
         // Administrator rows are not duplicated by the Role and Channel relations.
+        // The Roles of an Administrator with user-level Channels are judged by those Channels instead
+        // (see below), so only Administrators without any are excluded by their Roles.
         qb.andWhere(outerQb => {
             const hiddenAdministratorsQuery = outerQb
                 .subQuery()
                 .select('visibility_administrator.id')
                 .from(Administrator, 'visibility_administrator')
                 .innerJoin('visibility_administrator.user', 'visibility_user')
-                .innerJoin('visibility_user.roles', 'visibility_role');
+                .innerJoin('visibility_user.roles', 'visibility_role')
+                .leftJoin('visibility_user.channels', 'visibility_user_channel');
             // With no visible Roles, every Role is hidden, so no condition is needed on the Role.
             if (visibleRoleIds.length) {
-                hiddenAdministratorsQuery.where('visibility_role.id NOT IN (:...visibleRoleIds)', {
-                    visibleRoleIds,
-                });
+                hiddenAdministratorsQuery.where(
+                    'visibility_role.id NOT IN (:...visibleRoleIds) AND visibility_user_channel.id IS NULL',
+                    { visibleRoleIds },
+                );
+            } else {
+                hiddenAdministratorsQuery.where('visibility_user_channel.id IS NULL');
             }
             const administratorId = `${outerQb.escape(outerQb.alias)}.${outerQb.escape('id')}`;
             return `${administratorId} NOT IN ${hiddenAdministratorsQuery.getQuery()}`;
+        });
+        // An Administrator with a user-level Channel which the active user cannot access is hidden.
+        // (Whether the active user holds the Administrator's Permissions on those Channels is checked
+        // by findOne(), which every write goes through.)
+        const activeUserChannelIds = (ctx.session?.user?.channelPermissions ?? []).map(c => c.id);
+        qb.andWhere(outerQb => {
+            const hiddenByChannelQuery = outerQb
+                .subQuery()
+                .select('channel_visibility_administrator.id')
+                .from(Administrator, 'channel_visibility_administrator')
+                .innerJoin('channel_visibility_administrator.user', 'channel_visibility_user')
+                .innerJoin('channel_visibility_user.channels', 'channel_visibility_channel');
+            if (activeUserChannelIds.length) {
+                hiddenByChannelQuery.where('channel_visibility_channel.id NOT IN (:...activeUserChannelIds)', {
+                    activeUserChannelIds,
+                });
+            }
+            const administratorId = `${outerQb.escape(outerQb.alias)}.${outerQb.escape('id')}`;
+            return `${administratorId} NOT IN ${hiddenByChannelQuery.getQuery()}`;
         });
     }
 
@@ -339,12 +369,19 @@ export class AdministratorService {
      * Create a new Administrator.
      */
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
-        await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+        await this.checkActiveUserCanGrantRoles(ctx, input.roleIds, input.channelIds);
+        const userChannels = input.channelIds?.length
+            ? await this.roleService.getPermittedChannels(ctx, input.channelIds)
+            : [];
         const normalizedEmail = normalizeEmailAddress(input.emailAddress);
         await this.checkForDuplicateEmailAddress(ctx, normalizedEmail);
         const administrator = new Administrator(input);
         administrator.emailAddress = normalizedEmail;
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
+        if (userChannels.length) {
+            administrator.user.channels = userChannels;
+            await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
+        }
         let createdAdministrator = await this.connection
             .getRepository(ctx, Administrator)
             .save(administrator);
@@ -370,9 +407,17 @@ export class AdministratorService {
         if (!administrator) {
             throw new EntityNotFoundError('Administrator', input.id);
         }
-        if (input.roleIds) {
-            await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+        const channelIds = input.channelIds ?? administrator.user.channels.map(channel => channel.id);
+        if (input.roleIds || input.channelIds) {
+            await this.checkActiveUserCanGrantRoles(
+                ctx,
+                input.roleIds ?? administrator.user.roles.map(role => role.id),
+                channelIds,
+            );
         }
+        const userChannels = input.channelIds?.length
+            ? await this.roleService.getPermittedChannels(ctx, input.channelIds)
+            : [];
         if (input.emailAddress) {
             const normalizedEmail = normalizeEmailAddress(input.emailAddress);
             await this.checkForDuplicateEmailAddress(ctx, normalizedEmail, input.id);
@@ -392,6 +437,14 @@ export class AdministratorService {
                 nativeAuthMethod.passwordHash = await this.passwordCipher.hash(input.password);
                 await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
             }
+        }
+        if (input.channelIds) {
+            administrator.user.channels = userChannels;
+            await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
+            // Dynamic import to avoid the circular dependency of SessionService
+            await this.moduleRef
+                .get((await import('./session.service.js')).SessionService)
+                .clearSessionCacheByUser(ctx, administrator.user.id);
         }
         if (input.roleIds) {
             const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, input.id);
@@ -502,8 +555,8 @@ export class AdministratorService {
      * Checks that the active user is allowed to grant the specified Roles when creating or
      * updating an Administrator.
      */
-    private async checkActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]) {
-        if (!(await this.roleService.activeUserHasPermissionsOfRoles(ctx, roleIds))) {
+    private async checkActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[], userChannelIds?: ID[] | null) {
+        if (!(await this.roleService.activeUserHasPermissionsOfRoles(ctx, roleIds, userChannelIds ?? undefined))) {
             throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
         }
     }

@@ -48,6 +48,7 @@ export class SessionService implements EntitySubscriberInterface, OnModuleInit {
         'user',
         'user.roles',
         'user.roles.channels',
+        'user.channels',
     ]);
 
     constructor(
@@ -270,6 +271,7 @@ export class SessionService implements EntitySubscriberInterface, OnModuleInit {
             .leftJoinAndSelect('session.user', 'user')
             .leftJoinAndSelect('user.roles', 'roles')
             .leftJoinAndSelect('roles.channels', 'channels')
+            .leftJoinAndSelect('user.channels', 'userChannels')
             .where('session.token = :token', { token })
             .andWhere('session.invalidated = false')
             .getOne();
@@ -350,6 +352,20 @@ export class SessionService implements EntitySubscriberInterface, OnModuleInit {
             return updatedSerializedSession;
         }
         return serializedSession;
+    }
+
+    /**
+     * @description
+     * Evicts the cached copies of all the given user's sessions, so that the next request
+     * re-reads their Roles and Channels from the database. The sessions themselves stay valid.
+     */
+    async clearSessionCacheByUser(ctx: RequestContext, userId: ID): Promise<void> {
+        const userSessions = await this.connection
+            .getRepository(ctx, AuthenticatedSession)
+            .find({ where: { user: { id: userId } } });
+        for (const session of userSessions) {
+            await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
+        }
     }
 
     /**

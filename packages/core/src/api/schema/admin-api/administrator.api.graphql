@@ -30,6 +30,8 @@ input CreateAdministratorInput {
     emailAddress: String!
     password: String!
     roleIds: [ID!]!
+    "If set, the Administrator can access only these Channels instead of the Channels of their Roles"
+    channelIds: [ID!]
 }
 
 input UpdateAdministratorInput {
@@ -39,6 +41,8 @@ input UpdateAdministratorInput {
     emailAddress: String
     password: String
     roleIds: [ID!]
+    "Replaces the user-level Channels. An empty list removes them, so the Channels of the Roles apply again"
+    channelIds: [ID!]
 }
 
 input UpdateActiveAdministratorInput {

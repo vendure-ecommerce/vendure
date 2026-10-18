@@ -92,15 +92,17 @@ export class AuthService {
         authenticationStrategyName: string,
         apiType?: ApiType,
     ): Promise<AuthenticatedSession | NotVerifiedError> {
-        if (!user.roles || !user.roles[0]?.channels) {
+        if (!user.roles || !user.roles[0]?.channels || !user.channels) {
             const userWithRoles = await this.connection
                 .getRepository(ctx, User)
                 .createQueryBuilder('user')
                 .leftJoinAndSelect('user.roles', 'role')
                 .leftJoinAndSelect('role.channels', 'channel')
+                .leftJoinAndSelect('user.channels', 'userChannel')
                 .where('user.id = :userId', { userId: user.id })
                 .getOne();
             user.roles = userWithRoles?.roles || [];
+            user.channels = userWithRoles?.channels || [];
         }
         if (!user.authenticationMethods) {
             // The verification backstop below depends on the auth methods being loaded. If a caller

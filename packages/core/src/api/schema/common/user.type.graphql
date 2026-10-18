@@ -5,6 +5,8 @@ type User implements Node {
     identifier: String!
     verified: Boolean!
     roles: [Role!]!
+    "User-level Channels. If there are any, they replace the Channels of the user's Roles"
+    channels: [Channel!]!
     lastLogin: DateTime
     authenticationMethods: [AuthenticationMethod!]!
 }

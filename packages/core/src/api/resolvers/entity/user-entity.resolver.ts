@@ -4,6 +4,7 @@ import { AuthenticationMethod as AuthenticationMethodType } from '@vendure/commo
 import { idsAreEqual } from '../../../common/utils';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { AuthenticationMethod } from '../../../entity/authentication-method/authentication-method.entity';
+import { Channel } from '../../../entity/channel/channel.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
 import { Role } from '../../../entity/role/role.entity';
 import { User } from '../../../entity/user/user.entity';
@@ -37,6 +38,15 @@ export class UserEntityResolver {
             id: m.id.toString(),
             strategy: m instanceof ExternalAuthenticationMethod ? m.strategy : NATIVE_AUTH_STRATEGY_NAME,
         }));
+    }
+
+    @ResolveField()
+    async channels(@Ctx() ctx: RequestContext, @Parent() user: User): Promise<Channel[]> {
+        const channels =
+            user.channels ?? (await this.userService.getUserById(ctx, user.id).then(u => u?.channels ?? []));
+        // Only the Channels which the active user can access themselves are disclosed.
+        const activeUserChannelIds = (ctx.session?.user?.channelPermissions ?? []).map(c => c.id);
+        return channels.filter(channel => activeUserChannelIds.some(id => idsAreEqual(id, channel.id)));
     }
 
     @ResolveField()

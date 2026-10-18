@@ -57,6 +57,7 @@ export class UserService {
                     roles: {
                         channels: true,
                     },
+                    channels: true,
                     authenticationMethods: true,
                 },
             })
@@ -77,6 +78,7 @@ export class UserService {
             .innerJoin(table, table, `${table}.userId = user.id`)
             .leftJoinAndSelect('user.roles', 'roles')
             .leftJoinAndSelect('roles.channels', 'channels')
+            .leftJoinAndSelect('user.channels', 'userChannels')
             .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethods')
             .where('user.deletedAt IS NULL');
 
