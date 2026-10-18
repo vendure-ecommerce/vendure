@@ -7,6 +7,7 @@ import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { AuthenticationMethod } from '../authentication-method/authentication-method.entity';
 import { NativeAuthenticationMethod } from '../authentication-method/native-authentication-method.entity';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { CustomUserFields } from '../custom-entity-fields';
 import { Role } from '../role/role.entity';
 import { AuthenticatedSession } from '../session/authenticated-session.entity';
@@ -39,6 +40,15 @@ export class User extends VendureEntity implements HasCustomFields, SoftDeletabl
     @ManyToMany(type => Role)
     @JoinTable()
     roles: Role[];
+
+    /**
+     * @description
+     * If set, these Channels replace the Channels of the user's Roles: the user can
+     * access only these Channels, with the permissions of all their Roles.
+     */
+    @ManyToMany(type => Channel, { onDelete: 'CASCADE' })
+    @JoinTable()
+    channels: Channel[];
 
     @Column({ type: Date, nullable: true })
     lastLogin: Date | null;
