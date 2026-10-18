@@ -58,6 +58,29 @@ have no visibility into other channels or the default channel.
 A single administrator can have a mix of channel-scoped and global roles, providing flexible access
 control that scales with the complexity of your business.
 
+## Channels assigned directly to a user
+
+A role can be reused across tenants if the channels are attached to the **user** rather than the role.
+A user (administrator) can have their own list of channels, set with the `channelIds` field of the
+`createAdministrator` and `updateAdministrator` mutations:
+
+- If the user has **one or more channels**, those channels **replace** the channels of their roles. The
+  user gets the combined permissions of all their roles, but only on their own channels.
+- If the user has **no channels**, the channels of their roles apply, exactly as described above.
+- Passing `channelIds: []` removes the user's channels, so the role channels apply again. Omitting
+  `channelIds` on update leaves them unchanged.
+
+For example, a single "Business" role with no channels can be given to many sellers, each with their
+own channel, without any seller seeing the others' channels.
+
+An administrator can only assign channels that they can access themselves. Changing a user's channels
+ends any cached session state for that user, so the change applies on their next request.
+
+:::note
+This adds a `user_channels_channel` join table. If you manage your database schema with migrations,
+generate a new migration after upgrading.
+:::
+
 ## Role assignment
 
 Roles are assigned to administrators through the Admin API or the admin interface. Changes take effect

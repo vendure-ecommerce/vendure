@@ -1,3 +1,4 @@
+import { ChannelSelector } from '@/vdb/components/shared/channel-selector.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { RoleSelector } from '@/vdb/components/shared/role-selector.js';
@@ -63,6 +64,7 @@ function AdministratorDetailPage() {
                 password: '',
                 customFields: entity.customFields,
                 roleIds: entity.user.roles.map(role => role.id),
+                channelIds: entity.user.channels.map(channel => channel.id),
             };
         },
         transformUpdateInput: input => {
@@ -150,6 +152,29 @@ function AdministratorDetailPage() {
                         )}
                     />
                     <RolePermissionsDisplay value={roleIds ?? []} />
+                </PageBlock>
+                <PageBlock column="main" blockId="channels">
+                    <div className="md:grid md:grid-cols-2 gap-4">
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="channelIds"
+                            label={<Trans>Channels</Trans>}
+                            description={
+                                <Trans>
+                                    If set, the administrator can access only these channels, with the
+                                    permissions of their roles. If empty, they can access the channels of
+                                    their roles.
+                                </Trans>
+                            }
+                            render={({ field }) => (
+                                <ChannelSelector
+                                    multiple={true}
+                                    value={field.value ?? []}
+                                    onChange={value => field.onChange(value)}
+                                />
+                            )}
+                        />
+                    </div>
                 </PageBlock>
             </PageLayout>
         </Page>

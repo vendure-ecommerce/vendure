@@ -54,9 +54,9 @@ test.describe('Administrators', () => {
         await dp.fillInput('Email Address or identifier', 'test-admin@example.com');
         await dp.fillPassword('Password', 'test123456');
 
-        // Open the roles multi-select (combobox in the "Roles" PageBlock)
-        // and select the "SuperAdmin" role
-        const rolesCombobox = page.getByRole('combobox');
+        // Open the roles multi-select (the first combobox, in the "Roles" PageBlock which
+        // precedes the "Channels" field) and select the "SuperAdmin" role
+        const rolesCombobox = page.getByRole('combobox').first();
         await dp.selectPopoverOption(rolesCombobox, 'SuperAdmin');
 
         await dp.clickCreate();
@@ -97,6 +97,45 @@ test.describe('Administrators', () => {
         await lp.goto();
         await lp.expectLoaded();
         await expect(lp.getRows().filter({ hasText: 'Updated Admin' }).first()).toBeVisible();
+    });
+
+    // User-level channels — an administrator's own channels replace the channels of their roles
+    test('should assign channels directly to an administrator', async ({ page }) => {
+        const dp = detailPage(page);
+        await dp.gotoNew();
+        await dp.expectNewPageLoaded();
+
+        await dp.fillInput('First name', 'Scoped');
+        await dp.fillInput('Last name', 'Admin');
+        await dp.fillInput('Email Address or identifier', 'scoped-admin@example.com');
+        await dp.fillPassword('Password', 'test123456');
+
+        await dp.selectPopoverOption(page.getByRole('combobox').first(), 'SuperAdmin');
+        await dp.selectPopoverOption(dp.formItem('Channels').getByRole('combobox'), 'Default channel');
+
+        await dp.clickCreate();
+        await dp.expectSuccessToast(/Successfully created administrator/);
+        await dp.expectNavigatedToExisting();
+
+        // The channel is persisted, not just held in form state
+        await page.reload();
+        await expect(dp.formItem('Channels')).toContainText('Default channel');
+    });
+
+    test('should clear the channels of an administrator', async ({ page }) => {
+        const lp = listPage(page);
+        await lp.goto();
+        await lp.expectLoaded();
+        await lp.clickEntity('Scoped Admin');
+
+        const dp = detailPage(page);
+        await expect(dp.formItem('Channels')).toContainText('Default channel');
+        await dp.formItem('Channels').locator('[data-slot="combobox-chip-remove"]').click();
+        await dp.clickUpdate();
+        await dp.expectSuccessToast(/Successfully updated administrator/);
+
+        await page.reload();
+        await expect(dp.formItem('Channels')).not.toContainText('Default channel');
     });
 
     test('should bulk-delete administrators', async ({ page }) => {
