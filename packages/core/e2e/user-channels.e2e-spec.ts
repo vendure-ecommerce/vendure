@@ -300,6 +300,60 @@ describe('User-level channels', () => {
             expect(ok.user.channels.map(c => c.token)).toEqual([channelA.token]);
         });
 
+        it('the administrator list hides a channel-scoped admin whose permissions the active user lacks', async () => {
+            await adminClient.asSuperAdmin();
+            const createRoleWith = async (code: string, permissions: Permission[]) => {
+                const { createRole } = await adminClient.query(createRoleDocument, {
+                    input: { code, description: code, permissions },
+                });
+                return createRole.id;
+            };
+            const lowRoleId = await createRoleWith('list-low', [
+                Permission.ReadCatalog,
+                Permission.ReadAdministrator,
+            ]);
+            const highRoleId = await createRoleWith('list-high', [
+                Permission.ReadCatalog,
+                Permission.DeleteCatalog,
+            ]);
+            const createWithRole = async (emailAddress: string, roleId: string, channelIds: string[]) => {
+                await adminClient.query(createAdministratorDocument, {
+                    input: {
+                        emailAddress,
+                        firstName: 'List',
+                        lastName: emailAddress,
+                        password,
+                        roleIds: [roleId],
+                        channelIds,
+                    },
+                });
+            };
+            await createWithRole('list-actor@test.com', lowRoleId, [channelA.id]);
+            await createWithRole('list-peer@test.com', lowRoleId, [channelA.id]);
+            await createWithRole('list-powerful@test.com', highRoleId, [channelA.id]);
+
+            await adminClient.asUserWithCredentials('list-actor@test.com', password);
+            adminClient.setChannelToken(channelA.token);
+            const { administrators } = await adminClient.query(
+                graphql(`
+                    query ListAdministrators {
+                        administrators {
+                            items {
+                                emailAddress
+                            }
+                        }
+                    }
+                `),
+            );
+            const emails = administrators.items.map(a => a.emailAddress);
+
+            // An admin with the same permissions on the shared channel is visible...
+            expect(emails).toContain('list-peer@test.com');
+            // ...but one with permissions the active user lacks is hidden, as findOne() hides it.
+            expect(emails).not.toContain('list-powerful@test.com');
+            expect(administrators.items.length).toBe(emails.length);
+        });
+
         it('a change of user-level channels is visible to an already-cached session', async () => {
             await adminClient.asSuperAdmin();
             const admin = await create('api-session@test.com');

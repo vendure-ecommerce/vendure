@@ -263,25 +263,39 @@ export class AdministratorService {
             const administratorId = `${outerQb.escape(outerQb.alias)}.${outerQb.escape('id')}`;
             return `${administratorId} NOT IN ${hiddenAdministratorsQuery.getQuery()}`;
         });
-        // An Administrator with a user-level Channel which the active user cannot access is hidden.
-        // (Whether the active user holds the Administrator's Permissions on those Channels is checked
-        // by findOne(), which every write goes through.)
-        const activeUserChannelIds = (ctx.session?.user?.channelPermissions ?? []).map(c => c.id);
-        qb.andWhere(outerQb => {
-            const hiddenByChannelQuery = outerQb
-                .subQuery()
-                .select('channel_visibility_administrator.id')
-                .from(Administrator, 'channel_visibility_administrator')
-                .innerJoin('channel_visibility_administrator.user', 'channel_visibility_user')
-                .innerJoin('channel_visibility_user.channels', 'channel_visibility_channel');
-            if (activeUserChannelIds.length) {
-                hiddenByChannelQuery.where('channel_visibility_channel.id NOT IN (:...activeUserChannelIds)', {
-                    activeUserChannelIds,
-                });
+        // An Administrator with user-level Channels is visible only if the active user holds all their
+        // Permissions on those Channels, which is the rule findOne() applies. The rule cannot be
+        // expressed in SQL, so the hidden Administrators are resolved first and excluded by id. Only
+        // Administrators with user-level Channels are loaded, and they are grouped by their Roles and
+        // Channels so that the rule runs once per distinct combination.
+        const channelScopedAdministrators = await this.connection
+            .getRepository(ctx, Administrator)
+            .createQueryBuilder('administrator')
+            .select('administrator.id')
+            .innerJoin('administrator.user', 'user')
+            .innerJoin('user.channels', 'channel')
+            .leftJoin('user.roles', 'role')
+            .addSelect(['user.id', 'channel.id', 'role.id'])
+            .where('administrator.deletedAt IS NULL')
+            .getMany();
+        const hiddenAdministratorIds: ID[] = [];
+        const visibilityByCombination = new Map<string, Promise<boolean>>();
+        for (const administrator of channelScopedAdministrators) {
+            const roleIds = administrator.user.roles.map(role => role.id);
+            const channelIds = administrator.user.channels.map(channel => channel.id);
+            const key = JSON.stringify([roleIds.map(String).sort(), channelIds.map(String).sort()]);
+            let visible = visibilityByCombination.get(key);
+            if (!visible) {
+                visible = this.roleService.activeUserHasPermissionsOfRoles(ctx, roleIds, channelIds);
+                visibilityByCombination.set(key, visible);
             }
-            const administratorId = `${outerQb.escape(outerQb.alias)}.${outerQb.escape('id')}`;
-            return `${administratorId} NOT IN ${hiddenByChannelQuery.getQuery()}`;
-        });
+            if (!(await visible)) {
+                hiddenAdministratorIds.push(administrator.id);
+            }
+        }
+        if (hiddenAdministratorIds.length) {
+            qb.andWhere(`${qb.alias}.id NOT IN (:...hiddenAdministratorIds)`, { hiddenAdministratorIds });
+        }
     }
 
     /**
