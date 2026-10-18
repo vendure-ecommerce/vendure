@@ -457,7 +457,7 @@ export class AdministratorService {
             await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
             // Dynamic import to avoid the circular dependency of SessionService
             await this.moduleRef
-                .get((await import('./session.service.js')).SessionService)
+                .get((await import('./session.service.js')).SessionService, { strict: false })
                 .clearSessionCacheByUser(ctx, administrator.user.id);
         }
         if (input.roleIds) {
