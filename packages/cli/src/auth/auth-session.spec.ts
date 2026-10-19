@@ -800,4 +800,58 @@ describe('separate config directories', () => {
         expect(workos.requests[0].body.refresh_token).toBe('refresh_1');
         await expectOtherLoginIntact();
     });
+
+    it('renews both at once, each with its own refresh token', async () => {
+        writeStoredAuth(storedAuth({ accessToken: accessToken(10), refreshToken: 'refresh_a' }), options);
+        writeStoredAuth(storedAuth({ accessToken: accessToken(10), refreshToken: 'refresh_b' }), other);
+        const renewedA = accessToken(300, { sid: 'a' });
+        const renewedB = accessToken(300, { sid: 'b' });
+        const workosA = fakeWorkos([authentication(renewedA, 'refresh_a2', 'org_1')]);
+        const workosB = fakeWorkos([authentication(renewedB, 'refresh_b2', 'org_1')]);
+
+        const [tokenA, tokenB] = await Promise.all([
+            getAccessToken({ ...options, fetch: workosA.fetch }),
+            getAccessToken({ ...other, fetch: workosB.fetch }),
+        ]);
+
+        expect(tokenA).toBe(renewedA);
+        expect(tokenB).toBe(renewedB);
+        expect(workosA.requests.map(r => r.body.refresh_token)).toEqual(['refresh_a']);
+        expect(workosB.requests.map(r => r.body.refresh_token)).toEqual(['refresh_b']);
+        expect(readStoredAuth(options)?.refreshToken).toBe('refresh_a2');
+        expect(readStoredAuth(other)?.refreshToken).toBe('refresh_b2');
+    });
+
+    it('renews one while a renewal in the other is still waiting on WorkOS', async () => {
+        writeStoredAuth(storedAuth({ accessToken: accessToken(10), refreshToken: 'refresh_a' }), options);
+        writeStoredAuth(storedAuth({ accessToken: accessToken(10), refreshToken: 'refresh_b' }), other);
+        const renewedA = accessToken(300, { sid: 'a' });
+        const renewedB = accessToken(300, { sid: 'b' });
+        const workosA = fakeWorkos([authentication(renewedA, 'refresh_a2', 'org_1')]);
+        const workosB = fakeWorkos([authentication(renewedB, 'refresh_b2', 'org_1')]);
+        let release!: () => void;
+        const released = new Promise<void>(resolve => (release = resolve));
+        let started!: () => void;
+        const aStarted = new Promise<void>(resolve => (started = resolve));
+        const heldFetch = (async (url: string, init: RequestInit) => {
+            started();
+            await released;
+            return workosA.fetch(url, init);
+        }) as typeof globalThis.fetch;
+
+        const pendingA = getAccessToken({ ...options, fetch: heldFetch });
+        await aStarted;
+        const { waitMs } = SESSION_LOCK_OPTIONS;
+        SESSION_LOCK_OPTIONS.waitMs = 20;
+        try {
+            await expect(getAccessToken({ ...other, fetch: workosB.fetch })).resolves.toBe(renewedB);
+        } finally {
+            SESSION_LOCK_OPTIONS.waitMs = waitMs;
+            release();
+        }
+
+        await expect(pendingA).resolves.toBe(renewedA);
+        expect(readStoredAuth(options)?.refreshToken).toBe('refresh_a2');
+        expect(readStoredAuth(other)?.refreshToken).toBe('refresh_b2');
+    });
 });
