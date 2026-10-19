@@ -39,9 +39,6 @@ export function executeDashboardExtensionCallbacks() {
         callback();
     }
 
-    // Locked Platform nav items and pages fill the places that no installed plugin took.
-    registerLockedNavigation(getPlatformPromotion().promotion);
-
     // Phase 2: Apply nav menu modifier functions (function-form navSections)
     const modifiers = globalRegistry.get('navMenuModifiers');
     if (modifiers?.length) {
@@ -60,6 +57,9 @@ export function executeDashboardExtensionCallbacks() {
         }
         setNavMenuConfig(config);
     }
+
+    // Locked Platform nav items and pages fill the places that no installed plugin took.
+    registerLockedNavigation(getPlatformPromotion().promotion);
 
     const shortcutValidation = validateNavigationShortcuts(getNavMenuConfig());
     setNavMenuConfig(shortcutValidation.config);

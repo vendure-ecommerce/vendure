@@ -32,11 +32,14 @@ const SECTION_ICONS: Record<string, LucideIcon> = {
     Wrench,
 };
 
-/** Maps the id of each locked nav item which this module added to its capability key. */
-const lockedNavItemCapabilities = new Map<string, string>();
+/**
+ * Maps each locked nav item which this module added to its capability key. The key is the
+ * item object, so an item that a plugin adds with the same id is not taken as locked.
+ */
+const lockedNavItemCapabilities = new WeakMap<NavMenuItem, string>();
 
-export function getLockedNavItemCapability(itemId: string): string | undefined {
-    return lockedNavItemCapabilities.get(itemId);
+export function getLockedNavItemCapability(item: NavMenuItem): string | undefined {
+    return lockedNavItemCapabilities.get(item);
 }
 
 function navItems(config: NavMenuConfig): NavMenuItem[] {
@@ -45,8 +48,9 @@ function navItems(config: NavMenuConfig): NavMenuItem[] {
 
 /**
  * Adds the promoted Platform nav items, and a locked page at the route of each one.
- * Call it after the extensions are registered: when a Platform plugin is installed, its own
- * nav item and route are already there, and the locked entry is not added.
+ * Call it after the extensions and their nav menu modifiers are applied: when a Platform
+ * plugin is installed, its own nav item and route are already there, and the locked entry
+ * is not added.
  *
  * All promoted items are added, because the License Guard can report the granted set later.
  * The nav menu and the locked page hide an item while its capability is not locked.
@@ -54,7 +58,13 @@ function navItems(config: NavMenuConfig): NavMenuItem[] {
 export function registerLockedNavigation(promotion: DashboardPromotionV1) {
     for (const item of promotion.navItems.filter(i => i.promoted)) {
         const config = getNavMenuConfig();
-        if (navItems(config).some(existing => existing.id === item.id || existing.url === item.url)) {
+        if (
+            navItems(config).some(
+                existing =>
+                    !lockedNavItemCapabilities.has(existing) &&
+                    (existing.id === item.id || existing.url === item.url),
+            )
+        ) {
             continue;
         }
         if (!config.sections.some(section => section.id === item.sectionId)) {
@@ -71,8 +81,9 @@ export function registerLockedNavigation(promotion: DashboardPromotionV1) {
                 items: [],
             });
         }
-        addNavMenuItem({ id: item.id, title: item.label, url: item.url, order: item.order }, item.sectionId);
-        lockedNavItemCapabilities.set(item.id, item.capability);
+        const lockedItem: NavMenuItem = { id: item.id, title: item.label, url: item.url, order: item.order };
+        lockedNavItemCapabilities.set(lockedItem, item.capability);
+        addNavMenuItem(lockedItem, item.sectionId);
         if (!extensionRoutes.has(item.url)) {
             registerRoute({ path: item.url, component: () => <LockedCapabilityPage navItem={item} /> });
         }

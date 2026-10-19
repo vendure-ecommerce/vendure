@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { getNavMenuConfig, NavMenuSection, setNavMenuConfig } from '../nav-menu/nav-menu-extensions.js';
+import {
+    addNavMenuItem,
+    getNavMenuConfig,
+    NavMenuItem,
+    NavMenuSection,
+    setNavMenuConfig,
+} from '../nav-menu/nav-menu-extensions.js';
 import { extensionRoutes } from '../page/page-api.js';
 
 import { platformPromotionFixture as promotion } from './platform-promotion.fixture.js';
@@ -8,6 +14,14 @@ import { getLockedNavItemCapability, registerLockedNavigation } from './register
 
 function section(id: string): NavMenuSection | undefined {
     return getNavMenuConfig().sections.find(s => s.id === id) as NavMenuSection | undefined;
+}
+
+function item(sectionId: string, id: string): NavMenuItem | undefined {
+    return section(sectionId)?.items?.find(i => i.id === id);
+}
+
+function allItems(): NavMenuItem[] {
+    return getNavMenuConfig().sections.flatMap(s => ('items' in s ? (s.items ?? []) : []));
 }
 
 describe('registerLockedNavigation', () => {
@@ -33,7 +47,7 @@ describe('registerLockedNavigation', () => {
             ['companies', 400],
             ['shoppingLists', undefined],
         ]);
-        expect(getLockedNavItemCapability('companies')).toBe('org.accounts');
+        expect(getLockedNavItemCapability(item('customers', 'companies')!)).toBe('org.accounts');
     });
 
     it('creates the Platform sections with their placement, order and icon', () => {
@@ -72,6 +86,14 @@ describe('registerLockedNavigation', () => {
         expect(extensionRoutes.get('/quotes')).toBe(realRoute);
     });
 
+    it('does not take a plugin item with the id of a locked item as locked', () => {
+        registerLockedNavigation(promotion);
+        const pluginItem = { id: 'companies', title: 'Companies', url: '/companies', order: 400 };
+        addNavMenuItem(pluginItem, 'customers');
+        expect(item('customers', 'companies')).toBe(pluginItem);
+        expect(getLockedNavItemCapability(pluginItem)).toBeUndefined();
+    });
+
     it('is idempotent', () => {
         registerLockedNavigation(promotion);
         registerLockedNavigation(promotion);
@@ -81,11 +103,9 @@ describe('registerLockedNavigation', () => {
 
     it('adds only the promoted items, one per capability', () => {
         registerLockedNavigation(promotion);
-        const ids = getNavMenuConfig()
-            .sections.flatMap(s => ('items' in s ? (s.items ?? []) : []))
-            .map(i => i.id);
+        const ids = allItems().map(i => i.id);
         expect(ids).not.toContain('company-roles');
         expect(ids).not.toContain('approval-policies');
-        expect(ids.filter(id => getLockedNavItemCapability(id))).toHaveLength(8);
+        expect(allItems().filter(i => getLockedNavItemCapability(i))).toHaveLength(8);
     });
 });
