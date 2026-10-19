@@ -212,7 +212,7 @@
           "title": "The Service Layer",
           "slug": "the-service-layer",
           "file": "docs/guides/developer-guide/the-service-layer/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "CLI",
@@ -266,7 +266,7 @@
           "title": "Plugins",
           "slug": "plugins",
           "file": "docs/guides/developer-guide/plugins/index.mdx",
-          "lastModified": "2026-07-20T16:45:15+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Security",
@@ -284,7 +284,7 @@
           "title": "Strategies & Configurable Operations",
           "slug": "strategies-configurable-operations",
           "file": "docs/guides/developer-guide/strategies-configurable-operations/index.mdx",
-          "lastModified": "2026-10-13T15:13:38+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Testing",
@@ -296,7 +296,7 @@
           "title": "Updating",
           "slug": "updating",
           "file": "docs/guides/developer-guide/updating/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Worker & Job Queue",
@@ -314,7 +314,7 @@
           "title": "REST Endpoint",
           "slug": "rest-endpoint",
           "file": "docs/guides/developer-guide/rest-endpoint/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Custom Permissions",
@@ -362,7 +362,7 @@
           "title": "Cache",
           "slug": "cache",
           "file": "docs/guides/developer-guide/cache/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Dataloaders",
@@ -380,7 +380,7 @@
           "title": "Importing Data",
           "slug": "importing-data",
           "file": "docs/guides/developer-guide/importing-data/index.mdx",
-          "lastModified": "2026-07-24T08:34:54+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Logging",
@@ -392,13 +392,13 @@
           "title": "Scheduled Tasks",
           "slug": "scheduled-tasks",
           "file": "docs/guides/developer-guide/scheduled-tasks/index.mdx",
-          "lastModified": "2026-09-11T13:49:04+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Stand-alone Scripts",
           "slug": "stand-alone-scripts",
           "file": "docs/guides/developer-guide/stand-alone-scripts/index.mdx",
-          "lastModified": "2026-07-20T16:45:15+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Translations",
@@ -482,7 +482,7 @@
           "title": "Publish Plugin",
           "slug": "publish-plugin",
           "file": "docs/guides/how-to/publish-plugin/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "S3 Asset Storage",
@@ -494,7 +494,7 @@
           "title": "Telemetry",
           "slug": "telemetry",
           "file": "docs/guides/how-to/telemetry/index.mdx",
-          "lastModified": "2026-10-12T11:08:48+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         }
       ]
     },
@@ -977,7 +977,7 @@
           "title": "Registering Custom Tools",
           "slug": "custom-tools",
           "file": "docs/guides/mcp-server/custom-tools/index.mdx",
-          "lastModified": "2026-10-08T19:48:44+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Production Hardening",
@@ -1001,7 +1001,7 @@
           "title": "Built-in Tool Reference",
           "slug": "built-in-tools",
           "file": "docs/guides/mcp-server/built-in-tools/index.mdx",
-          "lastModified": "2026-10-01T19:26:07+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "OAuth Protocol Reference",
@@ -1360,7 +1360,7 @@
                   "title": "VENDURE_VERSION",
                   "slug": "vendure_version",
                   "file": "docs/reference/typescript-api/common/vendure_version.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-19T08:14:21+02:00"
                 },
                 {
                   "title": "Admin Ui",
@@ -2868,7 +2868,7 @@
                   "title": "VendurePluginMetadata",
                   "slug": "vendure-plugin-metadata",
                   "file": "docs/reference/typescript-api/plugin/vendure-plugin-metadata.mdx",
-                  "lastModified": "2026-09-15T12:28:00Z"
+                  "lastModified": "2026-10-19T08:14:21+02:00"
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"
@@ -4098,7 +4098,7 @@
                   "lastModified": "2026-01-28T14:49:21+01:00"
                 }
               ],
-              "lastModified": "2026-09-11T14:17:58+02:00"
+              "lastModified": "2026-10-19T08:14:21+02:00"
             }
           ],
           "lastModified": "2026-09-29T10:57:44+02:00"
