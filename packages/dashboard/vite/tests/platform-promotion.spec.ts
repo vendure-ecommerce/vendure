@@ -1,7 +1,5 @@
 import 'reflect-metadata';
 
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
 import type { Plugin } from 'vite';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -14,10 +12,7 @@ import {
     SKIP_PLATFORM_CATALOG_FETCH_ENV,
 } from '../vite-plugin-platform-promotion.js';
 
-const fixture = JSON.parse(
-    readFileSync(path.join(__dirname, 'fixtures-platform-promotion/catalog.json'), 'utf-8'),
-);
-const fetchedPromotion = { ...fixture.dashboardPromotion, navSections: [] };
+const fetchedPromotion = { ...platformPromotionSnapshot, navSections: [] };
 
 function stubFetch(impl: (url: string, init: RequestInit) => Promise<Response>) {
     const fetchMock = vi.fn(impl);
@@ -100,6 +95,11 @@ describe('loadDashboardPromotion', () => {
 describe('isDashboardPromotionV1', () => {
     it('accepts the bundled snapshot', () => {
         expect(isDashboardPromotionV1(platformPromotionSnapshot)).toBe(true);
+    });
+
+    it('rejects a page block with no column', () => {
+        const [{ column, ...first }, ...rest] = fetchedPromotion.pageBlocks;
+        expect(isDashboardPromotionV1({ ...fetchedPromotion, pageBlocks: [first, ...rest] })).toBe(false);
     });
 
     it('rejects a capability with 2 benefits', () => {
