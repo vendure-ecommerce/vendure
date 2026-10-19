@@ -56,6 +56,7 @@ export async function addPlatform(dependencies: Partial<PlatformTrialDependencie
         `Your project is unchanged. ${RETRY_HINT}`,
     );
 
+    // The hand-over reads the linked Project from this manifest, so it must be valid first.
     const projectRoot = resolveProjectRoot(deps.cwd);
     const manifest = readProjectLinkManifest(projectRoot);
     if (manifest.kind !== 'valid') {
@@ -89,12 +90,9 @@ export async function addPlatform(dependencies: Partial<PlatformTrialDependencie
               VENDURE_CONSOLE_API_URL: origins.apiOrigin,
           }
         : process.env;
-    // When @vendure-platform/create accepts it, add `'--console-project', project.id` here, so it
-    // does not ask for the Project again.
-    const args = [...PLATFORM_ADD_ARGS];
     stopUnlessSucceeded(
-        await deps.run('npx', args, { cwd: projectRoot, env }),
-        `To finish, run "npx ${args.join(' ')}" in ${projectRoot}.`,
+        await deps.run('npx', PLATFORM_ADD_ARGS, { cwd: projectRoot, env }),
+        `To finish, run "npx ${PLATFORM_ADD_ARGS.join(' ')}" in ${projectRoot}.`,
     );
     log.success(`Vendure Platform is set up for ${project.name}.`);
     return { project: undefined, modifiedSourceFiles: [] };

@@ -118,6 +118,19 @@ describe('addPlatform', () => {
         expect(log.error).toHaveBeenCalledWith(expect.stringContaining('Your project is unchanged.'));
     });
 
+    it('does not hand over without a valid Project Link Manifest', async () => {
+        const deps = dependencies([0, 0]);
+        deps.run.mockImplementationOnce(async () => {
+            fs.outputFileSync(getProjectLinkManifestPath(projectRoot), '{');
+            return 0;
+        });
+
+        await expect(exitCodeOf(addPlatform(deps))).resolves.toBe(1);
+
+        expect(deps.run).toHaveBeenCalledTimes(1);
+        expect(deps.openUrl).not.toHaveBeenCalled();
+    });
+
     it.each([
         ['cancelled', Symbol('clack:cancel')],
         ['declined', false],
