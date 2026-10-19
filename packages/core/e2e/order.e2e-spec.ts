@@ -2563,6 +2563,46 @@ describe('Orders resolver', () => {
         });
 
         // https://github.com/vendurehq/vendure/issues/5332
+        // Cancelling OrderLines recalculates the totals from the Surcharges loaded with the Order lock.
+        it('keeps Surcharges in the totals when cancelling an OrderLine', async () => {
+            await shopClient.asAnonymousUser();
+            const { addItemToOrder: add } = await shopClient.query(addItemToOrderDocument, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+            shopOrderGuard.assertSuccess(add);
+            await shopClient.query(setCustomerDocument, {
+                input: {
+                    emailAddress: 'surcharge-cancel@test.com',
+                    firstName: 'Surcharge',
+                    lastName: 'Cancel',
+                },
+            });
+            await proceedToArrangingPayment(shopClient);
+            const placed = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
+            shopOrderGuard.assertSuccess(placed);
+            const internalOrderId = +placed.id.replace('T_', '');
+
+            const ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
+            const orderService = server.app.get(OrderService);
+            await orderService.addSurchargeToOrder(ctx, internalOrderId, {
+                description: 'Gift wrap',
+                listPrice: 300,
+            });
+
+            const { cancelOrder } = await adminClient.query(cancelOrderDocument, {
+                input: { orderId: placed.id, lines: [{ orderLineId: placed.lines[0].id, quantity: 1 }] },
+            });
+            canceledOrderGuard.assertSuccess(cancelOrder);
+
+            const persisted = await orderService.findOne(ctx, internalOrderId);
+            expect(persisted!.lines[0].quantity).toBe(1);
+            expect(persisted!.surcharges.map(s => s.listPrice)).toEqual([300]);
+            const expectedSubTotal = persisted!.lines.reduce((sum, l) => sum + l.proratedLinePrice, 0) + 300;
+            expect(persisted!.subTotal).toBe(expectedSubTotal);
+        });
+
+        // https://github.com/vendurehq/vendure/issues/5332
         // `adjustOrderLine` loads the Order, publishes an `OrderLineEvent`, then reprices the Order.
         // A Surcharge saved by a blocking handler of that event must be included in the totals.
         it('includes a Surcharge added by a blocking OrderLineEvent handler in the totals', async () => {

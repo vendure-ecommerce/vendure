@@ -369,10 +369,10 @@ export class OrderModifier {
         }
 
         const orderWithLines = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
-            relations: ['lines', 'surcharges', 'shippingLines'],
+            relations: ['lines', 'shippingLines'],
         });
-        // A concurrent request can add or remove a Surcharge after this Order was loaded. Lock the
-        // Order and reload them so the totals include every row.
+        // Lock the Order and load its Surcharges, so that a concurrent repricing cannot commit
+        // totals which differ from the ones calculated here.
         await lockOrderAndReloadSurcharges(this.connection, ctx, orderWithLines);
         if (input.cancelShipping === true) {
             for (const shippingLine of orderWithLines.shippingLines) {

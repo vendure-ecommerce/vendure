@@ -1072,7 +1072,6 @@ export class OrderService implements OnApplicationBootstrap {
                     ...surchargeInput,
                 }),
             );
-            order.surcharges.push(surcharge);
             return this.applyPriceAdjustments(txCtx, order);
         });
     }
@@ -1096,7 +1095,6 @@ export class OrderService implements OnApplicationBootstrap {
             // Delete the row before repricing: the repricing reloads the Surcharges from the
             // database, and would otherwise count this one again.
             await this.connection.getRepository(txCtx, Surcharge).remove(surcharge);
-            order.surcharges = order.surcharges.filter(s => !idsAreEqual(s.id, surchargeId));
             return this.applyPriceAdjustments(txCtx, order);
         });
     }
@@ -2469,9 +2467,10 @@ export class OrderService implements OnApplicationBootstrap {
      * before calling this method: one which only exists in the `order.surcharges` array is not included.
      *
      * Before reloading the Surcharges, the Order row is locked until the current transaction ends, so
-     * concurrent calls for the same Order run one after the other, and the last one to commit includes
-     * the Surcharges committed by the others. Call this method within a transaction (resolvers using
-     * the {@link Transaction} decorator already are): outside one, the lock is released immediately.
+     * concurrent calls for the same Order calculate and save the totals one after the other, and the
+     * last one to commit includes the Surcharges committed by the others. Only the Surcharges are
+     * reloaded: the passed-in Order is otherwise used as loaded. Call this method within a transaction
+     * (resolvers using the {@link Transaction} decorator already are): outside one, no lock is taken.
      * Code which saves or deletes a Surcharge directly, rather than through
      * {@link OrderService.addSurchargeToOrder} or {@link OrderService.removeSurchargeFromOrder}, should
      * call this method in the same transaction afterwards.
@@ -2500,6 +2499,10 @@ export class OrderService implements OnApplicationBootstrap {
         relations?: RelationPaths<Order>,
         options?: ApplyPriceAdjustmentsOptions,
     ): Promise<Order> {
+        // A blocking event handler or a concurrent request can add or remove a Surcharge after
+        // this Order was loaded. Lock the Order and reload them so the totals include every row.
+        await lockOrderAndReloadSurcharges(this.connection, ctx, order);
+
         const allPromotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
 
@@ -2555,10 +2558,6 @@ export class OrderService implements OnApplicationBootstrap {
                 updatedOrderLine.listPriceIncludesTax = priceResult.priceIncludesTax;
             }
         }
-
-        // A blocking event handler or a concurrent request can add or remove a Surcharge after
-        // this Order was loaded. Lock the Order and reload them so the totals include every row.
-        await lockOrderAndReloadSurcharges(this.connection, ctx, order);
 
         // Get the shipping line IDs before doing the order calculation
         // step, which can in some cases change the applied shipping lines.
