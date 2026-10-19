@@ -35,8 +35,9 @@ function escapeRegexChars(str: string): string {
 
 /** The lock icon and tier label of a locked Platform nav item, or nothing for other items. */
 function LockedNavLabel({ itemId }: Readonly<{ itemId: string }>) {
+    const state = usePlatformPromotion();
     const capability = getLockedNavItemCapability(itemId);
-    const promotion = capability ? getLockedCapability(usePlatformPromotion(), capability) : undefined;
+    const promotion = capability ? getLockedCapability(state, capability) : undefined;
     return promotion ? <LockedTierLabel promotion={promotion} className="ms-auto" /> : null;
 }
 
