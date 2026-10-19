@@ -5,8 +5,11 @@ import pc from 'picocolors';
 import { exitCliCommand } from '../../../shared/cli-command-exit';
 import { abortIfNonInteractive } from '../../../utilities/utils';
 import { openConsoleBrowser } from '../../console/authentication';
-import { DEFAULT_CONSOLE_URL } from '../../console/console-origins';
-import { readProjectLinkManifest, resolveProjectRoot } from '../../console/project-link-manifest';
+import {
+    consoleOriginsForManifest,
+    readProjectLinkManifest,
+    resolveProjectRoot,
+} from '../../console/project-link-manifest';
 
 /**
  * The Platform package that installs the plan packages for a linked Project. It is public, so it
@@ -60,16 +63,20 @@ export async function addPlatform(dependencies: Partial<PlatformTrialDependencie
     const projectRoot = resolveProjectRoot(deps.cwd);
     const manifest = readProjectLinkManifest(projectRoot);
     if (manifest.kind !== 'valid') {
-        log.error(`Could not read the Project Link Manifest at ${manifest.path}.`);
-        exitCliCommand(1);
+        // `vendure console link` exits with 0 when the user keeps an invalid manifest.
+        const reason = manifest.kind === 'invalid' ? ` ${manifest.reason}` : '';
+        cancel(
+            `Platform setup stopped. The Project Link Manifest at ${manifest.path} is not valid.${reason} ` +
+                `Run "vendure console link --force" to replace it, then run "vendure add" again.`,
+        );
+        exitCliCommand(0);
     }
-    const { project, console: origins } = manifest.manifest;
+    const { project } = manifest.manifest;
+    const origins = consoleOriginsForManifest(manifest.manifest);
 
     // 2. Trial. Console starts the card-less trial on the subscription page of the Project.
     log.step('Step 2 of 3: Start the free 30-day trial in Vendure Console');
-    const trialUrl = `${origins?.appOrigin ?? DEFAULT_CONSOLE_URL}/projects/${encodeURIComponent(
-        project.id,
-    )}/subscription`;
+    const trialUrl = `${origins.appOrigin}/projects/${encodeURIComponent(project.id)}/subscription`;
     log.info(`Opening ${pc.cyan(trialUrl)}`);
     await deps.openUrl(trialUrl).catch(() => log.warn('Could not open a browser. Open the URL above.'));
     const started = await deps.confirmTrialStarted(`Did you start the trial for ${project.name}?`);
@@ -83,13 +90,11 @@ export async function addPlatform(dependencies: Partial<PlatformTrialDependencie
     // 3. Hand over to Platform. The Console origins of the link go with it, so a project linked
     // to staging installs from staging.
     log.step('Step 3 of 3: Install the Vendure Platform packages');
-    const env = origins
-        ? {
-              ...process.env,
-              VENDURE_CONSOLE_APP_URL: origins.appOrigin,
-              VENDURE_CONSOLE_API_URL: origins.apiOrigin,
-          }
-        : process.env;
+    const env = {
+        ...process.env,
+        VENDURE_CONSOLE_APP_URL: origins.appOrigin,
+        VENDURE_CONSOLE_API_URL: origins.apiOrigin,
+    };
     stopUnlessSucceeded(
         await deps.run('npx', PLATFORM_ADD_ARGS, { cwd: projectRoot, env }),
         `To finish, run "npx ${PLATFORM_ADD_ARGS.join(' ')}" in ${projectRoot}.`,

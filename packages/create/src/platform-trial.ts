@@ -64,7 +64,12 @@ function runPlatformFlow(projectRoot: string): Promise<number> {
         const packageJsonPath = require.resolve('@vendure/cli/package.json', { paths: [projectRoot] });
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         cliPath = path.join(path.dirname(packageJsonPath), require(packageJsonPath).bin.vendure);
-    } catch {
+    } catch (e) {
+        log(
+            pc.yellow(
+                `Could not find the @vendure/cli of the project: ${e instanceof Error ? e.message : String(e)}`,
+            ),
+        );
         return Promise.resolve(1);
     }
     const ignore = () => undefined;

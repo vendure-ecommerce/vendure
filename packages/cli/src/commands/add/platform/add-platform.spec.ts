@@ -125,10 +125,12 @@ describe('addPlatform', () => {
             return 0;
         });
 
-        await expect(exitCodeOf(addPlatform(deps))).resolves.toBe(1);
+        await expect(exitCodeOf(addPlatform(deps))).resolves.toBe(0);
 
         expect(deps.run).toHaveBeenCalledTimes(1);
         expect(deps.openUrl).not.toHaveBeenCalled();
+        expect(cancel).toHaveBeenCalledWith(expect.stringContaining('The file is not valid JSON.'));
+        expect(cancel).toHaveBeenCalledWith(expect.stringContaining('vendure console link --force'));
     });
 
     it.each([
