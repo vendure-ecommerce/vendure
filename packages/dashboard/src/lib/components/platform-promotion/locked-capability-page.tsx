@@ -64,7 +64,12 @@ function PlaceholderDetail({ fields }: Readonly<{ fields: string[] }>) {
 export function LockedCapabilityPage({
     navItem,
 }: Readonly<{ navItem: DashboardPromotionV1['navItems'][number] }>) {
-    const promotion = getLockedCapability(usePlatformPromotion(), navItem.capability);
+    const state = usePlatformPromotion();
+    // License Guard can report the granted set after the page opens. Until then, show nothing.
+    if (state.hideAll) {
+        return null;
+    }
+    const promotion = getLockedCapability(state, navItem.capability);
     if (!promotion) {
         return <Navigate to="/" />;
     }

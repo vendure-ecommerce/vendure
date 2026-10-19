@@ -10,6 +10,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { LockedCapabilityPage } from './locked-capability-page.js';
 import { LockedTierLabel, PlatformPromoPanel } from './platform-promo.js';
 import { PlatformPromotionPageCard } from './platform-promotion-page-card.js';
 
@@ -18,6 +19,11 @@ const promotionState = vi.hoisted(() => ({ current: undefined as unknown as Plat
 vi.mock('@/vdb/hooks/use-platform-promotion.js', () => ({
     usePlatformPromotion: () => promotionState.current,
     getPlatformPromotion: () => promotionState.current,
+}));
+
+vi.mock('@tanstack/react-router', async importOriginal => ({
+    ...(await importOriginal<object>()),
+    Navigate: ({ to }: { to: string }) => <a data-navigate={to} />,
 }));
 
 const i18n = setupI18n({ locale: 'en', messages: { en: {} } });
@@ -82,6 +88,14 @@ describe('platform promotion UI', () => {
         const markup = render(<LockedTierLabel promotion={capability('approval.orders')} />);
         expect(markup).toContain('Scale');
         expect(markup).not.toContain('Upgrade');
+    });
+
+    it('waits on the locked page while License Guard has not reported the granted set', () => {
+        const navItem = platformPromotionFixture.navItems.find(i => i.id === 'companies')!;
+        promotionState.current = createPlatformPromotionState([], true);
+        expect(render(<LockedCapabilityPage navItem={navItem} />)).toBe('');
+        promotionState.current = createPlatformPromotionState(['org.accounts']);
+        expect(render(<LockedCapabilityPage navItem={navItem} />)).toBe('<a data-navigate="/"></a>');
     });
 
     it('summarises all locked capabilities of a page in one collapsed card', () => {
