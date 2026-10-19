@@ -1256,6 +1256,9 @@ export class CollectionService implements OnModuleInit {
             .leftJoinAndSelect('collection.translations', 'translation')
             .where('collection.isRoot = :isRoot', { isRoot: true })
             .andWhere('channel.id = :channelId', { channelId: defaultChannel.id })
+            // Stray roots created before #5584 may also be assigned to the default Channel.
+            // The original root is the oldest, and without an order the database may return either.
+            .orderBy('collection.id', 'ASC')
             .getOne();
 
         if (existingRoot) {

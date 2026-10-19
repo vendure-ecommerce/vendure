@@ -4,6 +4,7 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import {
     Collection,
     CollectionService,
+    CollectionTranslation,
     DefaultJobQueuePlugin,
     facetValueCollectionFilter,
     productIdCollectionFilter,
@@ -2689,6 +2690,71 @@ describe('Collection resolver', () => {
                 name: ROOT_COLLECTION_NAME,
                 slug: ROOT_COLLECTION_NAME,
             });
+        });
+
+        it('resolves the original root when a stray root is also assigned to the default Channel', async () => {
+            const rawConnection = server.app.get(TransactionalConnection).rawConnection;
+            const collectionRepo = rawConnection.getRepository(Collection);
+            const [realRoot] = await collectionRepo.find({ where: { isRoot: true } });
+            const defaultChannelId = 1;
+            const secondChannelId = Number(secondChannel.id.replace('T_', ''));
+
+            // A stray root left behind by the bug, later also assigned to the default Channel
+            const strayTranslation = await rawConnection.getRepository(CollectionTranslation).save(
+                new CollectionTranslation({
+                    languageCode: LanguageCode.en,
+                    name: ROOT_COLLECTION_NAME,
+                    description: '',
+                    slug: ROOT_COLLECTION_NAME,
+                }),
+            );
+            const strayRoot = await collectionRepo.save(
+                new Collection({
+                    isRoot: true,
+                    position: 0,
+                    filters: [],
+                    translations: [strayTranslation],
+                    channels: [{ id: secondChannelId }, { id: defaultChannelId }] as any,
+                }),
+            );
+            try {
+                // Without an ORDER BY, postgres returns the root lookup's rows in physical order, and
+                // re-writing the real root's rows places them after the stray root's. sqlite, mysql and
+                // mariadb return them in id order, so there this test passes with or without the fix.
+                const channelsRelation = collectionRepo
+                    .createQueryBuilder()
+                    .relation(Collection, 'channels')
+                    .of(realRoot.id);
+                await channelsRelation.remove(defaultChannelId);
+                await channelsRelation.add(defaultChannelId);
+                await collectionRepo.update({ id: realRoot.id }, { position: 0 });
+                // eslint-disable-next-line @typescript-eslint/dot-notation
+                server.app.get(CollectionService)['rootCollection'] = undefined;
+
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
+                    input: {
+                        filters: [],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'root-5584-stray-root-on-default',
+                                description: '',
+                                slug: 'root-5584-stray-root-on-default',
+                            },
+                        ],
+                    },
+                });
+                expect(createCollection.parent?.id).toBe('T_1');
+                const { collection } = await adminClient.query(getCollectionBreadcrumbsDocument, {
+                    id: createCollection.id,
+                });
+                expect(collection?.breadcrumbs[0].id).toBe('T_1');
+            } finally {
+                await collectionRepo.update({ parentId: strayRoot.id }, { parentId: realRoot.id });
+                await collectionRepo.delete({ id: strayRoot.id });
+                // eslint-disable-next-line @typescript-eslint/dot-notation
+                server.app.get(CollectionService)['rootCollection'] = undefined;
+            }
         });
     });
 
