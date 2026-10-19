@@ -13,6 +13,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { serverSupportsSkipLocked } from '../src/plugin/default-job-queue-plugin/sql-job-queue-strategy';
 
 import { pollUntil } from './utils/poll-until';
 
@@ -59,7 +60,10 @@ describe('SqlJobQueueStrategy next()', () => {
         queueName: string;
         state: JobState;
         tag?: string;
-        /** How long ago the job was last updated, which is when a RETRYING job last failed */
+        /**
+         * How long ago the job was last updated, which is when a RETRYING job last failed.
+         * A negative value puts `updatedAt` in the future.
+         */
         updatedAgoMs?: number;
     }
 
@@ -103,8 +107,7 @@ describe('SqlJobQueueStrategy next()', () => {
             return true;
         }
         const [{ version }] = await connection.query('SELECT VERSION() AS version');
-        const [major, minor] = String(version).split('.').map(Number);
-        return /mariadb/i.test(version) ? major > 10 || (major === 10 && minor >= 6) : major >= 8;
+        return serverSupportsSkipLocked(String(version));
     }
 
     it('picks the oldest job across PENDING and RETRYING, skipping RETRYING jobs within their backoff', async () => {
@@ -113,7 +116,7 @@ describe('SqlJobQueueStrategy next()', () => {
             { queueName, state: JobState.COMPLETED, tag: 'completed' },
             { queueName, state: JobState.RETRYING, tag: 'retrying-1' },
             { queueName, state: JobState.PENDING, tag: 'pending-1' },
-            // Failed a moment ago, so it stays within the default 1000ms backoff for this test
+            // updatedAt is 10 minutes in the future, so this job stays within the 1000ms backoff for the whole test
             { queueName, state: JobState.RETRYING, tag: 'retrying-in-backoff', updatedAgoMs: -600_000 },
             { queueName, state: JobState.FAILED, tag: 'failed' },
             { queueName: 'other-queue', state: JobState.PENDING, tag: 'other-queue' },
@@ -179,11 +182,8 @@ describe('SqlJobQueueStrategy next()', () => {
             expect(tags).toEqual(['backlog-0', 'backlog-1', 'backlog-2', 'backlog-3', 'backlog-4']);
         });
 
-        it('reads a bounded number of rows per pick', async () => {
-            if (!isMysqlFamily) {
-                // The rows read are counted with MySQL / MariaDB session status counters
-                return;
-            }
+        // The rows read are counted with MySQL / MariaDB session status counters
+        it.runIf(isMysqlFamily)('reads a bounded number of rows per pick', async () => {
             // A pool with a single connection, so that the session counters see the queries
             // made by next(), and nothing else.
             const singleConnection = new DataSource({
@@ -245,9 +245,9 @@ describe('SqlJobQueueStrategy next()', () => {
 
     describe('with concurrent workers', () => {
         // SQLite does not lock rows and does not support concurrent transactions
-        it('does not wait for a job which is locked by another transaction', async () => {
-            if (isSQLite || !(await getServerSupportsSkipLocked())) {
-                return;
+        it.skipIf(isSQLite)('does not wait for a job which is locked by another transaction', async ctx => {
+            if (!(await getServerSupportsSkipLocked())) {
+                ctx.skip();
             }
             const queueName = 'test-next-skip-locked';
             await insertJobs([
@@ -277,10 +277,7 @@ describe('SqlJobQueueStrategy next()', () => {
             }
         });
 
-        it('never gives the same job to two workers', async () => {
-            if (isSQLite) {
-                return;
-            }
+        it.skipIf(isSQLite)('never gives the same job to two workers', async () => {
             const queueName = 'test-next-concurrent';
             const jobCount = 60;
             const workerCount = 5;
