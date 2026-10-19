@@ -107,6 +107,8 @@ If the request fails or takes more than 2 seconds, the build uses a copy of the 
 
 For a build with no internet access, set `VENDURE_DASHBOARD_SKIP_PLATFORM_CATALOG_FETCH=true`. The build then uses the bundled copy and sends no request.
 
+To build the Dashboard without the Vendure Platform items, set the `platformPromotion: false` option of `vendureDashboardPlugin`, or set `VENDURE_DASHBOARD_PLATFORM_PROMOTION=false`. The build then sends no request to `api.vendure.io`.
+
 ## Accessing the Dashboard
 
 Once configured and built, your dashboard will be accessible at:

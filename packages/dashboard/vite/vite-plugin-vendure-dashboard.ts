@@ -228,6 +228,17 @@ export type VitePluginVendureDashboardOptions = {
      * ```
      */
     theme?: DashboardThemeOptions;
+    /**
+     * @description
+     * Set to `false` to turn off the Vendure Platform items in the Dashboard: locked navigation
+     * items, locked pages, page cards and the related page actions. The build then sends no
+     * request to `api.vendure.io`. The environment variable
+     * `VENDURE_DASHBOARD_PLATFORM_PROMOTION=false` has the same effect.
+     *
+     * @default true
+     * @since 3.8.1
+     */
+    platformPromotion?: boolean;
 } & UiConfigPluginOptions;
 
 /**
@@ -355,7 +366,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         },
         {
             key: 'platformPromotion',
-            plugin: () => platformPromotionPlugin(),
+            plugin: () => platformPromotionPlugin({ enabled: options.platformPromotion }),
         },
         {
             key: 'uiConfig',

@@ -7,7 +7,11 @@ import {
     DashboardPromotionV1,
 } from '@/vdb/framework/platform-promotion/platform-promotion-types.js';
 import { useSyncExternalStore } from 'react';
-import { dashboardPromotion, licenseGuardConfigured } from 'virtual:vendure-platform-promotion';
+import {
+    dashboardPromotion,
+    licenseGuardConfigured,
+    platformPromotionEnabled,
+} from 'virtual:vendure-platform-promotion';
 
 /**
  * @description
@@ -42,8 +46,8 @@ export interface PlatformPromotionState {
     grantedCapabilities: ReadonlySet<string>;
     /**
      * @description
-     * `true` when the Dashboard must show no locked items: License Guard is configured
-     * but it did not report a granted set.
+     * `true` when the Dashboard must show no locked items: Platform promotion is turned off
+     * in the build, or License Guard is configured but it did not report a granted set.
      */
     hideAll: boolean;
     /**
@@ -62,7 +66,7 @@ let cachedState: PlatformPromotionState | undefined;
 let cachedReported: ReadonlySet<string> | undefined;
 
 function createState(reported: ReadonlySet<string> | undefined): PlatformPromotionState {
-    const hideAll = licenseGuardConfigured && !reported;
+    const hideAll = !platformPromotionEnabled || (licenseGuardConfigured && !reported);
     // Without License Guard nothing can grant a capability, so a reported set is not used.
     const grantedCapabilities = (licenseGuardConfigured && reported) || EMPTY_SET;
     return {
