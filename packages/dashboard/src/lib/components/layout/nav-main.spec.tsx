@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+    getNavMenuConfig,
     type NavMenuItem,
     type NavMenuSection,
     setNavMenuConfig,
@@ -29,7 +30,7 @@ vi.mock('@/vdb/hooks/use-platform-promotion.js', () => ({
 }));
 
 vi.mock('@/vdb/components/platform-promotion/platform-promo.js', () => ({
-    LockedTierLabel: ({ promotion }: { promotion: { tier: string } }) => (
+    LockedNavIcon: ({ promotion }: { promotion: { tier: string } }) => (
         <span data-locked-tier={promotion.tier} />
     ),
 }));
@@ -283,42 +284,34 @@ describe('NavMain', () => {
     });
 
     describe('locked Platform items', () => {
+        // The registered config, so the locked items are the objects which were registered.
         function lockedConfig(): Array<NavMenuSection | NavMenuItem> {
-            return [
-                ...vanillaConfig(),
-                {
-                    id: 'customers',
-                    title: 'Customers',
-                    placement: 'top',
-                    order: 400,
-                    items: [
-                        { id: 'customers', title: 'Customers', url: '/customers', order: 100 },
-                        { id: 'companies', title: 'Companies', url: '/companies', order: 400 },
-                    ],
-                },
-                {
-                    id: 'quotes',
-                    title: 'Quotes',
-                    placement: 'top',
-                    order: 270,
-                    items: [{ id: 'quote-list', title: 'All Quotes', url: '/quotes', order: 100 }],
-                },
-            ];
+            return [...vanillaConfig(), ...getNavMenuConfig().sections];
         }
+
+        const LOCKED_IDS = platformPromotionFixture.navItems.filter(i => i.promoted).map(i => i.id);
 
         beforeEach(() => {
             // The built-in sections exist before the locked items are registered.
             setNavMenuConfig({
-                sections: [{ id: 'customers', title: 'Customers', placement: 'top', items: [] }],
+                sections: [
+                    {
+                        id: 'customers',
+                        title: 'Customers',
+                        placement: 'top',
+                        order: 400,
+                        items: [{ id: 'customers', title: 'Customers', url: '/customers', order: 100 }],
+                    },
+                ],
             });
             registerLockedNavigation(platformPromotionFixture);
         });
 
-        it('renders locked items in their sections with the tier label', () => {
+        it('renders locked items in their sections with the lock icon', () => {
             const markup = render(lockedConfig());
-            expect(getRenderedNavIds(markup)).toEqual(expect.arrayContaining(['companies', 'quote-list']));
+            expect(getRenderedNavIds(markup)).toEqual(expect.arrayContaining(LOCKED_IDS));
             expect(markup).toContain('data-locked-tier="starter"');
-            expect(markup.match(/data-locked-tier=/g)).toHaveLength(2);
+            expect(markup.match(/data-locked-tier=/g)).toHaveLength(LOCKED_IDS.length);
         });
 
         it('hides the item of a granted capability', () => {
@@ -332,15 +325,10 @@ describe('NavMain', () => {
         it('hides all locked items and their empty Platform sections on "hide all"', () => {
             platformPromotionMock.hideAll = true;
             const renderedIds = getRenderedNavIds(render(lockedConfig()));
-            expect(renderedIds).not.toContain('companies');
-            expect(renderedIds).not.toContain('quotes');
-            expect(renderedIds).toEqual([
-                ...VANILLA_IDS.slice(0, 6),
-                'customers',
-                'customers',
-                'settings',
-                'channels',
-            ]);
+            expect(renderedIds).toEqual(expect.arrayContaining([...VANILLA_IDS, 'customers']));
+            for (const id of [...LOCKED_IDS, 'quotes', 'approvals', 'configurators']) {
+                expect(renderedIds).not.toContain(id);
+            }
         });
     });
 });

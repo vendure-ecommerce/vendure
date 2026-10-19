@@ -292,6 +292,11 @@ msgstr "Vendedores"
 msgid "Options"
 msgstr "Opções"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Growth"
+msgstr ""
+
 #: src/lib/framework/dashboard-widget/top-products-widget/index.tsx
 msgid "Loading top products…"
 msgstr "Carregando produtos mais vendidos…"
@@ -1532,8 +1537,8 @@ msgid ", {0} selected"
 msgstr ", {0} selecionado(s)"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Scale"
-msgstr ""
+#~ msgid "Scale"
+#~ msgstr ""
 
 #: src/lib/components/shared/country-selector.tsx
 msgid "No countries found"
@@ -3147,8 +3152,8 @@ msgstr "Nova categoria fiscal"
 #~ msgstr "Nenhum local de estoque disponível no canal atual"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Enterprise"
-msgstr ""
+#~ msgid "Enterprise"
+#~ msgstr ""
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 msgid "Successfully created channel"
@@ -3359,6 +3364,7 @@ msgstr "Imagem"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
 #: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "Upgrade to {tierLabel}"
 msgstr ""
 
@@ -3553,8 +3559,8 @@ msgstr "Ontem"
 #~ msgstr "Tem certeza de que deseja remover {0} {1} desta zona?"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Growth"
-msgstr ""
+#~ msgid "Growth"
+#~ msgstr ""
 
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
@@ -4034,6 +4040,11 @@ msgstr "Idiomas disponíveis"
 
 #: src/lib/components/shared/channel-color-picker.tsx
 msgid "Color 3"
+msgstr ""
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Scale"
 msgstr ""
 
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
@@ -5737,8 +5748,8 @@ msgid "Apply filters to the table and click \"Save View\" to get started."
 msgstr "Aplique filtros à tabela e clique em \"Salvar visão\" para começar."
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Starter"
-msgstr ""
+#~ msgid "Starter"
+#~ msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/link-bubble-menu.tsx
 msgid "Link URL"
@@ -6272,6 +6283,7 @@ msgid "Successfully updated seller"
 msgstr "Vendedor atualizado com sucesso"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "{tierLabel} plan"
 msgstr ""
 
@@ -6283,6 +6295,11 @@ msgstr "Falha ao fazer transição do pedido para estado"
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show all ({0})"
 msgstr "Mostrar tudo ({0})"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Starter"
+msgstr ""
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx
 msgid "Failed to create tax rate"
@@ -6719,6 +6736,11 @@ msgstr "Reembolsar e cancelar pedido"
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Email update verified"
 msgstr "Atualização de e-mail verificada"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Enterprise"
+msgstr ""
 
 #: src/lib/components/data-table/human-readable-operator.tsx
 msgid "is between"

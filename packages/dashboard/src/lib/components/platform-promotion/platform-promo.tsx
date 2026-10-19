@@ -2,6 +2,7 @@ import { CopyableText } from '@/vdb/components/shared/copyable-text.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { Dialog, DialogContent, DialogTitle } from '@/vdb/components/ui/dialog.js';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
 import {
     getPromotionUrl,
     isLocalhost,
@@ -22,10 +23,10 @@ export const VENDURE_ADD_COMMAND = 'npx vendure add';
 export function useTierLabel() {
     const { t } = useLingui();
     const labels: Record<PlatformTier, string> = {
-        starter: t`Starter`,
-        growth: t`Growth`,
-        scale: t`Scale`,
-        enterprise: t`Enterprise`,
+        starter: t({ message: 'Starter', context: 'Vendure Platform plan name' }),
+        growth: t({ message: 'Growth', context: 'Vendure Platform plan name' }),
+        scale: t({ message: 'Scale', context: 'Vendure Platform plan name' }),
+        enterprise: t({ message: 'Enterprise', context: 'Vendure Platform plan name' }),
     };
     return (tier: PlatformTier) => labels[tier] ?? tier;
 }
@@ -48,6 +49,32 @@ export function LockedTierLabel({
             <Lock className="size-3 shrink-0" aria-hidden="true" />
             {isUpgrade(state) ? <Trans>Upgrade to {tierLabel}</Trans> : tierLabel}
         </span>
+    );
+}
+
+/**
+ * The lock icon of a locked nav item, in a fixed-width slot at the end of the row. The tier,
+ * or "Upgrade to <tier>" with a partial grant, shows in a tooltip.
+ */
+export function LockedNavIcon({ promotion }: Readonly<{ promotion: DashboardPromotionCapabilityV1 }>) {
+    const state = usePlatformPromotion();
+    const tierLabel = useTierLabel()(promotion.tier);
+    const text = isUpgrade(state) ? <Trans>Upgrade to {tierLabel}</Trans> : <Trans>{tierLabel} plan</Trans>;
+    return (
+        <Tooltip>
+            <TooltipTrigger
+                render={
+                    <span
+                        className="ms-auto flex size-4 shrink-0 items-center justify-center text-muted-foreground"
+                        data-testid="locked-nav-icon"
+                    />
+                }
+            >
+                <Lock className="size-3" aria-hidden="true" />
+                <span className="sr-only">{text}</span>
+            </TooltipTrigger>
+            <TooltipContent side="right">{text}</TooltipContent>
+        </Tooltip>
     );
 }
 
@@ -127,14 +154,14 @@ export function PlatformPromoDialog({
 }>) {
     const [selected, setSelected] = useState<PlatformPromoEntry>();
     const current = entries.length === 1 ? entries[0] : selected;
-    const handleOpenChange = (value: boolean) => {
-        if (!value) {
-            setSelected(undefined);
-        }
-        onOpenChange(value);
-    };
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog
+            open={open}
+            onOpenChange={onOpenChange}
+            // Go back to the list only after the close animation, so the content does not change
+            // while the dialog fades out.
+            onOpenChangeComplete={value => !value && setSelected(undefined)}
+        >
             <DialogContent className="sm:max-w-md">
                 {current ? (
                     <>

@@ -292,6 +292,11 @@ msgstr "Verkopers"
 msgid "Options"
 msgstr "Opties"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Growth"
+msgstr ""
+
 #: src/lib/framework/dashboard-widget/top-products-widget/index.tsx
 msgid "Loading top products…"
 msgstr "Topproducten laden…"
@@ -1536,8 +1541,8 @@ msgid ", {0} selected"
 msgstr ", {0} geselecteerd"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Scale"
-msgstr ""
+#~ msgid "Scale"
+#~ msgstr ""
 
 #: src/lib/components/shared/country-selector.tsx
 msgid "No countries found"
@@ -3141,8 +3146,8 @@ msgstr "Nieuwe belastingcategorie"
 #~ msgstr "Geen voorraadlocaties beschikbaar op huidig kanaal"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Enterprise"
-msgstr ""
+#~ msgid "Enterprise"
+#~ msgstr ""
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 msgid "Successfully created channel"
@@ -3353,6 +3358,7 @@ msgstr "Afbeelding"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
 #: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "Upgrade to {tierLabel}"
 msgstr ""
 
@@ -3547,8 +3553,8 @@ msgstr "Gisteren"
 #~ msgstr "Weet u zeker dat u {0} {1} uit deze zone wilt verwijderen?"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Growth"
-msgstr ""
+#~ msgid "Growth"
+#~ msgstr ""
 
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
@@ -4028,6 +4034,11 @@ msgstr "Beschikbare talen"
 
 #: src/lib/components/shared/channel-color-picker.tsx
 msgid "Color 3"
+msgstr ""
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Scale"
 msgstr ""
 
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
@@ -5728,8 +5739,8 @@ msgid "Apply filters to the table and click \"Save View\" to get started."
 msgstr "Pas filters toe op de tabel en klik op \"Weergave opslaan\" om te beginnen."
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Starter"
-msgstr ""
+#~ msgid "Starter"
+#~ msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/link-bubble-menu.tsx
 msgid "Link URL"
@@ -6267,6 +6278,7 @@ msgid "Successfully updated seller"
 msgstr "Verkoper succesvol bijgewerkt"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "{tierLabel} plan"
 msgstr ""
 
@@ -6278,6 +6290,11 @@ msgstr "Bestelling overgaan naar status mislukt"
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show all ({0})"
 msgstr "Alles tonen ({0})"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Starter"
+msgstr ""
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx
 msgid "Failed to create tax rate"
@@ -6714,6 +6731,11 @@ msgstr "Bestelling restitueren en annuleren"
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Email update verified"
 msgstr "E-mailupdate geverifieerd"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Enterprise"
+msgstr ""
 
 #: src/lib/components/data-table/human-readable-operator.tsx
 msgid "is between"

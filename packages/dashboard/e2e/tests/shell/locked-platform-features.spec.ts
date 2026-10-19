@@ -1,9 +1,17 @@
 import { type Page, expect, test } from '@playwright/test';
 
+import { platformPromotionSnapshot as snapshot } from '../../../vite/platform-promotion-snapshot.js';
 import { VendureAdminClient } from '../../utils/vendure-admin-client.js';
 
 // OSS-891: locked Vendure Platform items in an OSS-only project (no License Guard in the
 // e2e Vendure config). The build uses the catalog snapshot that ships with the Dashboard.
+
+// The expected values come from the snapshot, so a catalog refresh does not break the tests.
+const lockedItem = snapshot.navItems.find(item => item.promoted && item.sectionId === 'customers')!;
+const lockedCapability = snapshot.capabilities.find(c => c.key === lockedItem.capability)!;
+const customerCardCount = new Set(
+    snapshot.pageBlocks.filter(b => b.pageId === 'customer-detail').map(b => b.capability),
+).size;
 
 const BLOCKED_HOSTS =
     /api\.vendure\.io|posthog|google-analytics|googletagmanager|segment\.(io|com)|mixpanel|amplitude|plausible|hotjar/;
@@ -62,26 +70,37 @@ test.describe('Locked Platform features', () => {
     test('paints the locked nav items in the same frame as the built-in items', async ({ page }) => {
         await recordFirstFrames(page, {
             builtIn: '[data-slot="sidebar"] a[href$="/customers"]',
-            locked: '[data-slot="sidebar"] [data-testid="locked-tier-label"]',
+            locked: '[data-slot="sidebar"] [data-testid="locked-nav-icon"]',
         });
         await page.goto('/customers');
         const sidebar = page.locator('[data-slot="sidebar"]');
-        const companies = sidebar.getByRole('link', { name: /Companies/ });
-        await expect(companies).toBeVisible();
-        await expect(companies.getByTestId('locked-tier-label')).toBeVisible();
+        const link = sidebar.getByRole('link', { name: new RegExp(lockedItem.label) });
+        await expect(link).toBeVisible();
+        const icon = link.getByTestId('locked-nav-icon');
+        await expect(icon).toBeVisible();
 
         const frames = await getFirstFrames(page);
         expect(frames.builtIn).toBeDefined();
         expect(frames.locked).toBe(frames.builtIn);
+
+        // A locked row has the height of a built-in row, and the tier shows in a tooltip only.
+        const builtInBox = await sidebar.getByRole('link', { name: 'Customer Groups' }).boundingBox();
+        const lockedBox = await link.boundingBox();
+        expect(lockedBox?.height).toBe(builtInBox?.height);
+        await expect(link).not.toContainText(/starter|growth|scale|enterprise/i);
+        await icon.hover();
+        await expect(page.locator('[data-slot="tooltip-content"]')).toContainText(
+            new RegExp(`${lockedCapability.tier} plan`, 'i'),
+        );
     });
 
     test('opens a blurred locked page with the promo at the Platform route', async ({ page }) => {
         await page.goto('/customers');
         await page
             .locator('[data-slot="sidebar"]')
-            .getByRole('link', { name: /Companies/ })
+            .getByRole('link', { name: new RegExp(lockedItem.label) })
             .click();
-        await expect(page).toHaveURL(/\/companies$/);
+        await expect(page).toHaveURL(new RegExp(`${lockedItem.url}$`));
 
         const placeholder = page.getByTestId('locked-capability-placeholder');
         await expect(placeholder).toHaveAttribute('aria-hidden', 'true');
@@ -96,8 +115,8 @@ test.describe('Locked Platform features', () => {
         expect(Object.fromEntries(url.searchParams)).toEqual({
             utm_source: 'vendure-dashboard',
             utm_medium: 'locked-feature',
-            utm_campaign: 'starter',
-            utm_content: 'org.accounts',
+            utm_campaign: lockedCapability.tier,
+            utm_content: lockedCapability.key,
         });
         // The Dashboard runs on localhost here, so the developer command shows.
         await expect(panel.getByText('npx vendure add')).toBeVisible();
@@ -117,7 +136,7 @@ test.describe('Locked Platform features', () => {
 
         const card = page.getByTestId('platform-promotion-page-card');
         await expect(card).toHaveCount(1);
-        await expect(card).toContainText(/more for customers with Vendure Platform/);
+        await expect(card).toContainText(`${customerCardCount} more for customers with Vendure Platform`);
         const frames = await getFirstFrames(page);
         expect(frames.card).toBe(frames.heading);
 

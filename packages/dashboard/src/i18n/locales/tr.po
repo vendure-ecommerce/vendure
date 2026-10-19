@@ -292,6 +292,11 @@ msgstr "Satıcılar"
 msgid "Options"
 msgstr "Seçenekler"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Growth"
+msgstr ""
+
 #: src/lib/framework/dashboard-widget/top-products-widget/index.tsx
 msgid "Loading top products…"
 msgstr "En çok satan ürünler yükleniyor…"
@@ -1532,8 +1537,8 @@ msgid ", {0} selected"
 msgstr ", {0} seçildi"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Scale"
-msgstr ""
+#~ msgid "Scale"
+#~ msgstr ""
 
 #: src/lib/components/shared/country-selector.tsx
 msgid "No countries found"
@@ -3147,8 +3152,8 @@ msgstr "Yeni Vergi Kategorisi"
 #~ msgstr "Mevcut kanalda kullanılabilir stok konumu yok"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Enterprise"
-msgstr ""
+#~ msgid "Enterprise"
+#~ msgstr ""
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 msgid "Successfully created channel"
@@ -3359,6 +3364,7 @@ msgstr "Görsel"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
 #: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "Upgrade to {tierLabel}"
 msgstr ""
 
@@ -3553,8 +3559,8 @@ msgstr "Dün"
 #~ msgstr "{0} {1} öğesini bu bölgeden kaldırmak istediğinizden emin misiniz?"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Growth"
-msgstr ""
+#~ msgid "Growth"
+#~ msgstr ""
 
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
@@ -4034,6 +4040,11 @@ msgstr "Mevcut diller"
 
 #: src/lib/components/shared/channel-color-picker.tsx
 msgid "Color 3"
+msgstr ""
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Scale"
 msgstr ""
 
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
@@ -5737,8 +5748,8 @@ msgid "Apply filters to the table and click \"Save View\" to get started."
 msgstr "Tabloya filtre uygulayın ve başlamak için \"Görünümü Kaydet\"e tıklayın."
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Starter"
-msgstr ""
+#~ msgid "Starter"
+#~ msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/link-bubble-menu.tsx
 msgid "Link URL"
@@ -6272,6 +6283,7 @@ msgid "Successfully updated seller"
 msgstr "Satıcı başarıyla güncellendi"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "{tierLabel} plan"
 msgstr ""
 
@@ -6283,6 +6295,11 @@ msgstr "Sipariş duruma geçirilemedi"
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show all ({0})"
 msgstr "Tümünü göster ({0})"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Starter"
+msgstr ""
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx
 msgid "Failed to create tax rate"
@@ -6719,6 +6736,11 @@ msgstr "İade et ve siparişi iptal et"
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Email update verified"
 msgstr "E-posta güncelleme doğrulandı"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Enterprise"
+msgstr ""
 
 #: src/lib/components/data-table/human-readable-operator.tsx
 msgid "is between"

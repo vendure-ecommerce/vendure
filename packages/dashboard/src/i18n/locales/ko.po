@@ -288,6 +288,11 @@ msgstr "판매자"
 msgid "Options"
 msgstr "옵션"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Growth"
+msgstr ""
+
 #: src/lib/framework/dashboard-widget/top-products-widget/index.tsx
 msgid "Loading top products…"
 msgstr ""
@@ -1524,8 +1529,8 @@ msgid ", {0} selected"
 msgstr ", {0}개 선택됨"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Scale"
-msgstr ""
+#~ msgid "Scale"
+#~ msgstr ""
 
 #: src/lib/components/shared/country-selector.tsx
 msgid "No countries found"
@@ -3129,8 +3134,8 @@ msgstr "새 세금 카테고리"
 #~ msgstr "현재 채널에 사용 가능한 재고 위치가 없습니다"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Enterprise"
-msgstr ""
+#~ msgid "Enterprise"
+#~ msgstr ""
 
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 msgid "Successfully created channel"
@@ -3341,6 +3346,7 @@ msgstr "이미지"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
 #: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "Upgrade to {tierLabel}"
 msgstr ""
 
@@ -3535,8 +3541,8 @@ msgstr "어제"
 #~ msgstr "이 지역에서 {0}개 {1}을(를) 제거하시겠습니까?"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Growth"
-msgstr ""
+#~ msgid "Growth"
+#~ msgstr ""
 
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
@@ -4012,6 +4018,11 @@ msgstr "사용 가능한 언어"
 
 #: src/lib/components/shared/channel-color-picker.tsx
 msgid "Color 3"
+msgstr ""
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Scale"
 msgstr ""
 
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
@@ -5692,8 +5703,8 @@ msgid "Apply filters to the table and click \"Save View\" to get started."
 msgstr "테이블에 필터를 적용하고 \"뷰 저장\"을 클릭하여 시작하세요."
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
-msgid "Starter"
-msgstr ""
+#~ msgid "Starter"
+#~ msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/link-bubble-menu.tsx
 msgid "Link URL"
@@ -6207,6 +6218,7 @@ msgid "Successfully updated seller"
 msgstr "판매자가 업데이트되었습니다"
 
 #: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "{tierLabel} plan"
 msgstr ""
 
@@ -6218,6 +6230,11 @@ msgstr "주문 상태 전환 실패"
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show all ({0})"
 msgstr "모두 표시 ({0})"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Starter"
+msgstr ""
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx
 msgid "Failed to create tax rate"
@@ -6647,6 +6664,11 @@ msgstr "환불 및 주문 취소"
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Email update verified"
 msgstr "이메일 업데이트가 확인되었습니다"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Enterprise"
+msgstr ""
 
 #: src/lib/components/data-table/human-readable-operator.tsx
 msgid "is between"

@@ -85,6 +85,8 @@ export function PlatformPromotionPageCard({
     blockId: string;
 }>) {
     const [selected, setSelected] = useState<PlatformPromoEntry>();
+    // Separate from `selected`, so the dialog keeps its content while it fades out.
+    const [dialogOpen, setDialogOpen] = useState(false);
     const entries = card.capabilities.map(promotion => ({ label: promotion.title, promotion }));
     return (
         <Card className="w-full animate-in fade-in duration-300">
@@ -102,14 +104,20 @@ export function PlatformPromotionPageCard({
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                         <div className="pt-3">
-                            <PlatformPromoList entries={entries} onSelect={setSelected} />
+                            <PlatformPromoList
+                                entries={entries}
+                                onSelect={entry => {
+                                    setSelected(entry);
+                                    setDialogOpen(true);
+                                }}
+                            />
                         </div>
                     </CollapsibleContent>
                 </Collapsible>
                 <PlatformPromoDialog
                     entries={selected ? [selected] : []}
-                    open={!!selected}
-                    onOpenChange={open => !open && setSelected(undefined)}
+                    open={dialogOpen}
+                    onOpenChange={setDialogOpen}
                 />
             </CardContent>
         </Card>

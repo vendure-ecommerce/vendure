@@ -1,4 +1,4 @@
-import { LockedTierLabel } from '@/vdb/components/platform-promotion/platform-promo.js';
+import { LockedNavIcon } from '@/vdb/components/platform-promotion/platform-promo.js';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/components/ui/collapsible.js';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/vdb/components/ui/hover-card.js';
 import {
@@ -33,12 +33,12 @@ function escapeRegexChars(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/** The lock icon and tier label of a locked Platform nav item, or nothing for other items. */
-function LockedNavLabel({ itemId }: Readonly<{ itemId: string }>) {
+/** The lock icon of a locked Platform nav item, or nothing for other items. */
+function LockedNavLabel({ item }: Readonly<{ item: NavMenuItem }>) {
     const state = usePlatformPromotion();
-    const capability = getLockedNavItemCapability(itemId);
+    const capability = getLockedNavItemCapability(item);
     const promotion = capability ? getLockedCapability(state, capability) : undefined;
-    return promotion ? <LockedTierLabel promotion={promotion} className="ms-auto" /> : null;
+    return promotion ? <LockedNavIcon promotion={promotion} /> : null;
 }
 
 const HOVER_OPEN_DELAY = 150;
@@ -90,8 +90,8 @@ function CollapsedSectionMenu({
                                 isPathActive(subItem.url) && 'bg-accent text-accent-foreground font-medium',
                             )}
                         >
-                            {i18n.t(subItem.title)}
-                            <LockedNavLabel itemId={subItem.id} />
+                            <span className="min-w-0 flex-1 truncate">{i18n.t(subItem.title)}</span>
+                            <LockedNavLabel item={subItem} />
                         </Link>
                     </NavItemWrapper>
                 ))}
@@ -114,7 +114,7 @@ export function NavMain({ items: allItems }: Readonly<{ items: Array<NavMenuSect
                 return {
                     ...section,
                     items: section.items?.filter(item => {
-                        const capability = getLockedNavItemCapability(item.id);
+                        const capability = getLockedNavItemCapability(item);
                         return !capability || !!getLockedCapability(platformPromotion, capability);
                     }),
                 };
@@ -420,8 +420,10 @@ export function NavMain({ items: allItems }: Readonly<{ items: Array<NavMenuSect
                                                 render={<Link to={subItem.url} />}
                                                 isActive={isPathActive(subItem.url)}
                                             >
-                                                <span>{i18n.t(subItem.title)}</span>
-                                                <LockedNavLabel itemId={subItem.id} />
+                                                <span className="min-w-0 flex-1 truncate">
+                                                    {i18n.t(subItem.title)}
+                                                </span>
+                                                <LockedNavLabel item={subItem} />
                                                 {navigationChordActive ? (
                                                     <ShortcutBadge shortcut={subItem.shortcut} />
                                                 ) : null}
