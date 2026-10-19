@@ -55,7 +55,9 @@ export interface PlatformPromotionState {
 }
 
 const EMPTY_SET: ReadonlySet<string> = new Set();
-const capabilities = new Map(dashboardPromotion.capabilities.map(c => [c.key, c]));
+const capabilities = new Map<string, DashboardPromotionCapabilityV1>(
+    dashboardPromotion.capabilities.map(c => [c.key, c]),
+);
 let cachedState: PlatformPromotionState | undefined;
 let cachedReported: ReadonlySet<string> | undefined;
 
@@ -107,5 +109,9 @@ export function getPlatformPromotion(): PlatformPromotionState {
  * @since 3.8.1
  */
 export function usePlatformPromotion(): PlatformPromotionState {
-    return useSyncExternalStore(subscribeToPlatformGrantedCapabilities, getPlatformPromotion);
+    return useSyncExternalStore(
+        subscribeToPlatformGrantedCapabilities,
+        getPlatformPromotion,
+        getPlatformPromotion,
+    );
 }
