@@ -1,4 +1,10 @@
-import { CurrencyCode, DeletionResult, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
+import {
+    CurrencyCode,
+    DeletionResult,
+    LanguageCode,
+    Permission,
+    SortOrder,
+} from '@vendure/common/lib/generated-types';
 import type { ErrorResultGuard } from '@vendure/testing';
 import { createErrorResultGuard, createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import { fail } from 'assert';
@@ -1421,6 +1427,7 @@ describe('ChannelAware Products and ProductVariants', () => {
     describe('assigning ProductVariant to Channel with options', () => {
         let productId: string;
         let variantId: string;
+        let blueVariantId: string;
         let optionId: string;
         let blueOptionId: string;
         let optionGroupId: string;
@@ -1466,14 +1473,22 @@ describe('ChannelAware Products and ProductVariants', () => {
                         optionIds: [optionId],
                         translations: [{ languageCode: LanguageCode.en, name: 'Red' }],
                     },
+                    {
+                        productId,
+                        sku: 'VOC-BLUE',
+                        price: 1000,
+                        optionIds: [blueOptionId],
+                        translations: [{ languageCode: LanguageCode.en, name: 'Blue' }],
+                    },
                 ],
             });
-            const variant = createProductVariants[0];
-            productVariantGuard.assertSuccess(variant);
-            variantId = variant.id;
+            [variantId, blueVariantId] = ['VOC-RED', 'VOC-BLUE'].map(
+                sku => createProductVariants.find(v => v?.sku === sku)?.id ?? fail(sku),
+            );
 
+            // Both variants share the option group, which is assigned once.
             await adminClient.query(assignProductVariantToChannelDocument, {
-                input: { channelId: 'T_2', productVariantIds: [variantId] },
+                input: { channelId: 'T_2', productVariantIds: [variantId, blueVariantId] },
             });
         });
 
@@ -1484,30 +1499,18 @@ describe('ChannelAware Products and ProductVariants', () => {
         it('resolves the option group in the variant list of the target Channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { productVariants } = await adminClient.query(getVariantListOptionGroupsDocument, {
-                options: { filter: { sku: { eq: 'VOC-RED' } } },
+                options: { filter: { sku: { in: ['VOC-RED', 'VOC-BLUE'] } }, sort: { sku: SortOrder.DESC } },
             });
             expect(productVariants.items).toEqual([
                 { id: variantId, options: [{ id: optionId, group: { id: optionGroupId } }] },
+                { id: blueVariantId, options: [{ id: blueOptionId, group: { id: optionGroupId } }] },
             ]);
         });
 
         it('skips a soft-deleted option and group referenced by an active variant', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             // Soft-delete the blue option: it stays referenced by the soft-deleted blue variant.
-            const { createProductVariants } = await adminClient.query(createProductVariantsDocument, {
-                input: [
-                    {
-                        productId,
-                        sku: 'VOC-BLUE',
-                        price: 1000,
-                        optionIds: [blueOptionId],
-                        translations: [{ languageCode: LanguageCode.en, name: 'Blue' }],
-                    },
-                ],
-            });
-            const blueVariant = createProductVariants[0];
-            productVariantGuard.assertSuccess(blueVariant);
-            await adminClient.query(deleteProductVariantDocument, { id: blueVariant.id });
+            await adminClient.query(deleteProductVariantDocument, { id: blueVariantId });
             const { deleteProductOption } = await adminClient.query(deleteProductOptionDocument, {
                 id: blueOptionId,
             });
