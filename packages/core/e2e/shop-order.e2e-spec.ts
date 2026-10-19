@@ -112,6 +112,7 @@ describe('Shop orders', () => {
                     { name: 'lineImage', type: 'relation', entity: Asset },
                     { name: 'lineImages', type: 'relation', list: true, entity: Asset },
                     { name: 'dropShip', type: 'boolean', defaultValue: false },
+                    { name: 'readonlyField', type: 'string', readonly: true },
                 ],
             },
             orderOptions: {
@@ -267,6 +268,21 @@ describe('Shop orders', () => {
                         quantity: 1,
                         customFields: {
                             privateField: 'oh no!', // Testing that private fields are rejected
+                        },
+                    });
+                    fail('Should have thrown');
+                } catch (e: any) {
+                    expect(e.response.errors[0].extensions.code).toBe('BAD_USER_INPUT');
+                }
+            });
+
+            it('addItemToOrder with readonly customFields errors', async () => {
+                try {
+                    await shopClient.query(addItemToOrderWithCustomFieldsDocument, {
+                        productVariantId: 'T_2',
+                        quantity: 1,
+                        customFields: {
+                            readonlyField: 'should not be allowed',
                         },
                     });
                     fail('Should have thrown');
