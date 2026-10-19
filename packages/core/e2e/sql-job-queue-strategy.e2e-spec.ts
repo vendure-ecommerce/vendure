@@ -8,7 +8,7 @@ import {
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
-import { DataSource } from 'typeorm';
+import { DataSource, EntitySubscriberInterface } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -221,6 +221,25 @@ describe('SqlJobQueueStrategy next()', () => {
             } finally {
                 await singleConnection.destroy();
             }
+        });
+
+        it('loads a bounded number of job records per pick', async () => {
+            let loadedCount = 0;
+            const subscriber: EntitySubscriberInterface = {
+                afterLoad(_entity, event) {
+                    if (event?.metadata.name === 'JobRecord') {
+                        loadedCount++;
+                    }
+                },
+            };
+            connection.subscribers.push(subscriber);
+            try {
+                expect(await strategy.next(queueName)).toBeDefined();
+            } finally {
+                connection.subscribers.splice(connection.subscribers.indexOf(subscriber), 1);
+            }
+            // Loading every pending job of the queue would be at least 2000 records
+            expect(loadedCount).toBeLessThanOrEqual(5);
         });
     });
 
