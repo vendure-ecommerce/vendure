@@ -65,7 +65,8 @@ describe('BullMQJobQueueStrategy destroy', () => {
     it('closes the Redis connections it opened', async () => {
         const strategy = await createStrategy();
         await strategy.start('destroy-test', () => Promise.resolve());
-        expect(await openConnections()).toBeGreaterThan(0);
+        // The main connection and the cancellation subscriber
+        expect(await openConnections()).toBe(2);
 
         await strategy.destroy();
 
