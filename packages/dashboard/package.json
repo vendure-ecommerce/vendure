@@ -27,7 +27,6 @@
         "lint": "eslint .",
         "preview": "vite preview",
         "generate-index": "node scripts/generate-index.js",
-        "generate-platform-promotion-snapshot": "node scripts/generate-platform-promotion-snapshot.js",
         "i18n:extract": "lingui extract && node ./scripts/translate/i18n-tool.js extract",
         "i18n:apply": "node ./scripts/translate/i18n-tool.js apply",
         "i18n:check": "node ./scripts/translate/check-translations.js",

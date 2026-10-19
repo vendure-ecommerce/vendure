@@ -22,7 +22,7 @@ export interface PlatformPromotionState {
     /**
      * @description
      * The Platform catalog data, read at build time. If the build could not fetch it,
-     * this is the snapshot that ships with `@vendure/dashboard`.
+     * this is the snapshot that ships with `@vendure/common`.
      */
     promotion: DashboardPromotionV1;
     /**
