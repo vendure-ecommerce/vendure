@@ -2637,6 +2637,10 @@ describe('Collection resolver', () => {
 
     // https://github.com/vendurehq/vendure/issues/5584
     describe('single root Collection across Channels', () => {
+        afterAll(() => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        });
+
         it('does not create a second root when a non-default Channel resolves the root first', async () => {
             const collectionRepo = server.app
                 .get(TransactionalConnection)
@@ -2644,8 +2648,10 @@ describe('Collection resolver', () => {
             const rootsBefore = await collectionRepo.find({ where: { isRoot: true } });
             expect(rootsBefore.length).toBe(1);
 
-            // Simulate a process restart: the root Collection is cached in memory per process
-            server.app.get(CollectionService).rootCollection = undefined;
+            // Simulate a process restart: the root Collection is cached in memory per process.
+            // Bracket access because the field is private; dot access fails type-checking.
+            // eslint-disable-next-line @typescript-eslint/dot-notation
+            server.app.get(CollectionService)['rootCollection'] = undefined;
 
             const createParentless = async (name: string) => {
                 const { createCollection } = await adminClient.query(createCollectionDocument, {
@@ -2674,6 +2680,15 @@ describe('Collection resolver', () => {
             });
             expect(created.length).toBe(2);
             expect(created.map(c => c.parentId)).toEqual([rootsBefore[0].id, rootsBefore[0].id]);
+
+            const { collection } = await adminClient.query(getCollectionBreadcrumbsDocument, {
+                id: defaultChannelCollection.id,
+            });
+            expect(collection?.breadcrumbs[0]).toEqual({
+                id: 'T_1',
+                name: ROOT_COLLECTION_NAME,
+                slug: ROOT_COLLECTION_NAME,
+            });
         });
     });
 
