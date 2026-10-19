@@ -55,6 +55,7 @@ import {
     startPostgresDatabase,
 } from './helpers';
 import { log, setLogLevel } from './logger';
+import { offerPlatformTrial } from './platform-trial';
 import {
     configureStorefrontPackageJson,
     getStorefrontStarter,
@@ -685,6 +686,7 @@ export async function createVendureApp(
             }
         } else {
             clearTimeout(timer);
+            await offerPlatformTrial(serverRoot, isCi);
             displayOutro({
                 root,
                 name,
