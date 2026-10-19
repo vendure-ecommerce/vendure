@@ -2176,6 +2176,20 @@
               "lastModified": "2026-01-28T14:49:21+01:00"
             },
             {
+              "title": "Extensions Api",
+              "slug": "extensions-api",
+              "file": "docs/reference/typescript-api/extensions-api/index.mdx",
+              "children": [
+                {
+                  "title": "PlatformPromotion",
+                  "slug": "platform-promotion",
+                  "file": "docs/reference/typescript-api/extensions-api/platform-promotion.mdx",
+                  "lastModified": "2026-10-19T19:05:00Z"
+                }
+              ],
+              "lastModified": "2026-10-19T19:05:00Z"
+            },
+            {
               "title": "Fulfillment",
               "slug": "fulfillment",
               "file": "docs/reference/typescript-api/fulfillment/index.mdx",
@@ -3728,7 +3742,7 @@
               "lastModified": "2026-01-28T14:49:21+01:00"
             }
           ],
-          "lastModified": "2026-01-28T14:49:21+01:00"
+          "lastModified": "2026-10-19T19:05:00Z"
         },
         {
           "title": "Core Plugins",
@@ -4580,6 +4594,12 @@
                   "lastModified": "2026-07-29T16:21:34+02:00"
                 },
                 {
+                  "title": "PlatformPromotion",
+                  "slug": "platform-promotion",
+                  "file": "docs/reference/dashboard/extensions-api/platform-promotion.mdx",
+                  "lastModified": "2026-10-19T19:05:00Z"
+                },
+                {
                   "title": "RefundDestinations",
                   "slug": "refund-destinations",
                   "file": "docs/reference/dashboard/extensions-api/refund-destinations.mdx",
@@ -4887,7 +4907,7 @@
                   "title": "VendureDashboardPlugin",
                   "slug": "vendure-dashboard-plugin",
                   "file": "docs/reference/dashboard/vite-plugin/vendure-dashboard-plugin.mdx",
-                  "lastModified": "2026-10-14T10:19:13Z"
+                  "lastModified": "2026-10-19T19:05:00Z"
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"
