@@ -12,18 +12,24 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import {
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
+    EventBus,
     freeShipping,
     mergeConfig,
     minimumOrderAmount,
     Order,
     OrderItemPriceCalculationStrategy,
+    OrderLineEvent,
     orderPercentageDiscount,
+    OrderService,
     PriceCalculationResult,
     productsPercentageDiscount,
     ProductVariant,
     RequestContext,
+    RequestContextService,
     ShippingCalculator,
     StockLevelService,
+    Surcharge,
+    TransactionalConnection,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
@@ -2585,6 +2591,55 @@ describe('Order modification', () => {
 
     // #5097 — a line added by a modification keeps an orderPlacedQuantity of 0, so cancelling
     // the order left both quantities at 0 and the prorated discount amount became NaN.
+    // https://github.com/vendurehq/vendure/issues/5332
+    // `modifyOrder` loads the Order, publishes an `OrderLineEvent` for each adjusted line, then
+    // reprices the Order. A Surcharge saved by a blocking handler of that event must be included in
+    // the totals.
+    it('includes a Surcharge added by a blocking OrderLineEvent handler in the modified totals', async () => {
+        const order = await createOrderAndTransitionToModifyingState([
+            { productVariantId: 'T_1', quantity: 1 } as AddItemInput,
+        ]);
+        const connection = server.app.get(TransactionalConnection);
+        let surchargeAdded = false;
+        server.app.get(EventBus).registerBlockingEventHandler({
+            id: 'e2e-5332-add-surcharge-during-modification',
+            event: OrderLineEvent,
+            handler: async event => {
+                if (event.type !== 'updated' || event.order.code !== order.code || surchargeAdded) {
+                    return;
+                }
+                surchargeAdded = true;
+                await connection.getRepository(event.ctx, Surcharge).save(
+                    new Surcharge({
+                        description: 'Loyalty discount',
+                        listPrice: -500,
+                        listPriceIncludesTax: event.ctx.channel.pricesIncludeTax,
+                        taxLines: [],
+                        sku: '',
+                        order: event.order,
+                    }),
+                );
+            },
+        });
+
+        const { modifyOrder } = await adminClient.query(modifyOrderDocument, {
+            input: {
+                dryRun: false,
+                orderId: order.id,
+                adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 2 }],
+            },
+        });
+        orderWithModificationsGuard.assertSuccess(modifyOrder);
+        expect(surchargeAdded).toBe(true);
+
+        const ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
+        const persisted = await server.app.get(OrderService).findOne(ctx, +order.id.replace('T_', ''));
+        expect(persisted!.surcharges.map(s => s.listPrice)).toEqual([-500]);
+        const expectedSubTotal = persisted!.lines.reduce((sum, l) => sum + l.proratedLinePrice, 0) - 500;
+        expect(persisted!.subTotal).toBe(expectedSubTotal);
+        expect(modifyOrder.subTotal).toBe(expectedSubTotal);
+    });
+
     describe('cancelling an order with a line added by a modification', () => {
         const CODE_HALF_PRICE = 'HALF_PRICE';
 
