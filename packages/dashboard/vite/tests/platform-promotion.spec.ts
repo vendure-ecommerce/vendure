@@ -1,11 +1,10 @@
 import 'reflect-metadata';
 
+import { platformPromotionSnapshot } from '@vendure/common/lib/platform-promotion-snapshot';
 import type { Plugin } from 'vite';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { platformPromotionSnapshot } from '../platform-promotion-snapshot.js';
 import {
-    isDashboardPromotionV1,
     loadDashboardPromotion,
     PLATFORM_CATALOG_URL,
     platformPromotionPlugin,
@@ -89,23 +88,6 @@ describe('loadDashboardPromotion', () => {
 
         await expect(loadDashboardPromotion()).resolves.toBe(platformPromotionSnapshot);
         expect(fetchMock).not.toHaveBeenCalled();
-    });
-});
-
-describe('isDashboardPromotionV1', () => {
-    it('accepts the bundled snapshot', () => {
-        expect(isDashboardPromotionV1(platformPromotionSnapshot)).toBe(true);
-    });
-
-    it('rejects a page block with no column', () => {
-        const [{ column, ...first }, ...rest] = fetchedPromotion.pageBlocks;
-        expect(isDashboardPromotionV1({ ...fetchedPromotion, pageBlocks: [first, ...rest] })).toBe(false);
-    });
-
-    it('rejects a capability with 2 benefits', () => {
-        const [first, ...rest] = fetchedPromotion.capabilities;
-        const capabilities = [{ ...first, benefits: first.benefits.slice(0, 2) }, ...rest];
-        expect(isDashboardPromotionV1({ ...fetchedPromotion, capabilities })).toBe(false);
     });
 });
 
