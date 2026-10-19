@@ -490,7 +490,7 @@ export function addOrderLineCustomFieldsInput(
     publicOnly: boolean,
 ): GraphQLSchema {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
-    orderLineCustomFields = orderLineCustomFields.filter(f => f.internal !== true);
+    orderLineCustomFields = orderLineCustomFields.filter(f => f.internal !== true && !f.readonly);
     const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
     const customFields = publicOnly ? publicCustomFields : orderLineCustomFields;
     if (!customFields || customFields.length === 0) {
