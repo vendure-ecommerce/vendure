@@ -169,10 +169,19 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             this.jobListIndexService?.close(),
             ...workerClosePromises,
         ]);
-        await Promise.allSettled([
+        const results = await Promise.allSettled([
             this.cancellationSub?.quit(),
             this.ownsRedisConnection ? this.redisConnection.quit() : undefined,
         ]);
+        for (const result of results) {
+            if (result.status === 'rejected') {
+                Logger.error(
+                    `Error closing Redis connection: ${JSON.stringify(result.reason?.message)}`,
+                    loggerCtx,
+                    result.reason?.stack,
+                );
+            }
+        }
     }
 
     async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
