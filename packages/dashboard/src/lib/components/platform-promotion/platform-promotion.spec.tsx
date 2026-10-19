@@ -1,5 +1,6 @@
 import { getLockedPageCard } from '@/vdb/framework/platform-promotion/locked-capabilities.js';
 import {
+    getFixtureCapability as capability,
     createPlatformPromotionState,
     platformPromotionFixture,
 } from '@/vdb/framework/platform-promotion/platform-promotion.fixture.js';
@@ -32,10 +33,6 @@ function render(node: React.ReactNode) {
     return renderToStaticMarkup(<I18nProvider i18n={i18n}>{node}</I18nProvider>);
 }
 
-function capability(key: string) {
-    return platformPromotionFixture.capabilities.find(c => c.key === key)!;
-}
-
 function hrefs(markup: string) {
     return [...markup.matchAll(/href="([^"]+)"/g)].map(m => m[1].replace(/&amp;/g, '&'));
 }
@@ -46,10 +43,11 @@ describe('platform promotion UI', () => {
     });
 
     it('shows title, tier, summary, three benefits and the trial link', () => {
-        const markup = render(<PlatformPromoPanel promotion={capability('quote.requests')} />);
-        expect(markup).toContain('Quotes');
+        const quotes = capability('quote.requests');
+        const markup = render(<PlatformPromoPanel promotion={quotes} />);
+        expect(markup).toContain(quotes.title);
         expect(markup).toContain('Starter plan');
-        expect(markup).toContain('Quotes summary.');
+        expect(markup).toContain(quotes.summary);
         expect(markup.match(/<li /g)).toHaveLength(3);
         expect(markup).toContain('Start free trial');
         expect(hrefs(markup)).toEqual([
@@ -108,8 +106,9 @@ describe('platform promotion UI', () => {
                 blockId="platform-promotion"
             />,
         );
+        expect(card.capabilities).toHaveLength(5);
         expect(markup).toContain(
-            '5 more for orders with Vendure Platform: Approvals, Org, Configurator, Store credit, Quotes',
+            `5 more for orders with Vendure Platform: ${card.capabilities.map(c => c.title).join(', ')}`,
         );
         expect(markup.match(/data-testid="platform-promotion-page-card"/g)).toHaveLength(1);
     });
