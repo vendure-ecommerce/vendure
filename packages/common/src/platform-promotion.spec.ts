@@ -19,6 +19,23 @@ describe('isDashboardPromotionV1()', () => {
         );
     });
 
+    it('rejects malformed optional fields', () => {
+        const [item, ...items] = platformPromotionSnapshot.navItems;
+        const [block, ...blocks] = platformPromotionSnapshot.pageBlocks;
+        expect(
+            isDashboardPromotionV1({
+                ...platformPromotionSnapshot,
+                navItems: [{ ...item, page: { ...item.page, columns: 'Name' } }, ...items],
+            }),
+        ).toBe(false);
+        expect(
+            isDashboardPromotionV1({
+                ...platformPromotionSnapshot,
+                pageBlocks: [{ ...block, position: { blockId: 'orders', order: 'below' } }, ...blocks],
+            }),
+        ).toBe(false);
+    });
+
     it('rejects a capability with 2 benefits', () => {
         const [first, ...rest] = platformPromotionSnapshot.capabilities;
         const capabilities = [{ ...first, benefits: first.benefits.slice(0, 2) }, ...rest];

@@ -101,6 +101,8 @@ export interface DashboardPromotionV1 {
 
 const TIERS: readonly unknown[] = ['starter', 'growth', 'scale', 'enterprise'];
 const isString = (value: unknown): value is string => typeof value === 'string';
+const isOptionalStringArray = (value: unknown) =>
+    value === undefined || (Array.isArray(value) && value.every(isString));
 const isArrayOf = (value: unknown, check: (item: any) => boolean): value is unknown[] =>
     Array.isArray(value) && value.every(item => item != null && typeof item === 'object' && check(item));
 
@@ -138,7 +140,9 @@ export function isDashboardPromotionV1(value: unknown): value is DashboardPromot
                 (i.order === undefined || typeof i.order === 'number') &&
                 typeof i.promoted === 'boolean' &&
                 (i.page?.kind === 'list' || i.page?.kind === 'detail') &&
-                isString(i.page.title),
+                isString(i.page.title) &&
+                isOptionalStringArray(i.page.columns) &&
+                isOptionalStringArray(i.page.fields),
         ) &&
         isArrayOf(
             v.pageBlocks,
@@ -147,6 +151,9 @@ export function isDashboardPromotionV1(value: unknown): value is DashboardPromot
                 isString(b.pageId) &&
                 isString(b.blockId) &&
                 (b.column === 'main' || b.column === 'side') &&
+                (b.position === undefined ||
+                    (isString(b.position?.blockId) &&
+                        ['before', 'after', 'replace'].includes(b.position.order))) &&
                 isString(b.title),
         ) &&
         isArrayOf(v.actions, a => isString(a.capability) && isString(a.pageId) && isString(a.label)) &&
