@@ -68,6 +68,7 @@ import { OrderCalculator } from '../order-calculator/order-calculator';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../translator/translator.service';
 import { couponCodesMatch } from '../utils/coupon-codes-match';
+import { lockOrderAndReloadSurcharges } from '../utils/lock-order-and-reload-surcharges';
 import { getOrdersFromLines, orderLinesAreAllCancelled } from '../utils/order-utils';
 import { patchEntity } from '../utils/patch-entity';
 
@@ -368,8 +369,11 @@ export class OrderModifier {
         }
 
         const orderWithLines = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
-            relations: ['lines', 'surcharges', 'shippingLines'],
+            relations: ['lines', 'shippingLines'],
         });
+        // Lock the Order and load its Surcharges, so that a concurrent repricing cannot commit
+        // totals which differ from the ones calculated here.
+        await lockOrderAndReloadSurcharges(this.connection, ctx, orderWithLines);
         if (input.cancelShipping === true) {
             for (const shippingLine of orderWithLines.shippingLines) {
                 shippingLine.adjustments.push({
@@ -679,6 +683,9 @@ export class OrderModifier {
             orderLine.listPriceIncludesTax = priceResult.priceIncludesTax;
         }
 
+        // A blocking event handler or a concurrent request can add or remove a Surcharge after
+        // this Order was loaded. Lock the Order and reload them so the totals include every row.
+        await lockOrderAndReloadSurcharges(this.connection, ctx, order);
         await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });

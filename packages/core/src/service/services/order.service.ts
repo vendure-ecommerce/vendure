@@ -128,6 +128,10 @@ import { TranslatorService } from '../helpers/translator/translator.service';
 import { couponCodesMatch } from '../helpers/utils/coupon-codes-match';
 import { isForeignKeyViolationError } from '../helpers/utils/db-errors';
 import {
+    lockOrderAndReloadSurcharges,
+    lockOrderRow,
+} from '../helpers/utils/lock-order-and-reload-surcharges';
+import {
     assertOrderIsInChannel,
     getOrdersFromLines,
     totalCoveredByPayments,
@@ -1047,42 +1051,52 @@ export class OrderService implements OnApplicationBootstrap {
     /**
      * @description
      * Adds a {@link Surcharge} to the Order.
+     *
+     * The Surcharge is saved and the Order repriced in one transaction, which locks the Order row
+     * first, so a concurrent repricing of the same Order cannot persist totals without it.
      */
     async addSurchargeToOrder(
         ctx: RequestContext,
         orderId: ID,
         surchargeInput: Partial<Omit<Surcharge, 'id' | 'createdAt' | 'updatedAt' | 'order'>>,
     ): Promise<Order> {
-        const order = await this.getOrderOrThrow(ctx, orderId);
-        const surcharge = await this.connection.getRepository(ctx, Surcharge).save(
-            new Surcharge({
-                taxLines: [],
-                sku: '',
-                listPriceIncludesTax: ctx.channel.pricesIncludeTax,
-                order,
-                ...surchargeInput,
-            }),
-        );
-        order.surcharges.push(surcharge);
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order);
-        return updatedOrder;
+        return this.connection.withTransaction(ctx, async txCtx => {
+            await lockOrderRow(this.connection, txCtx, orderId);
+            const order = await this.getOrderOrThrow(txCtx, orderId);
+            const surcharge = await this.connection.getRepository(txCtx, Surcharge).save(
+                new Surcharge({
+                    taxLines: [],
+                    sku: '',
+                    listPriceIncludesTax: txCtx.channel.pricesIncludeTax,
+                    order,
+                    ...surchargeInput,
+                }),
+            );
+            return this.applyPriceAdjustments(txCtx, order);
+        });
     }
 
     /**
      * @description
      * Removes a {@link Surcharge} from the Order.
+     *
+     * The Surcharge is deleted and the Order repriced in one transaction, which locks the Order
+     * row first, so a concurrent repricing of the same Order cannot persist totals which still
+     * include it.
      */
     async removeSurchargeFromOrder(ctx: RequestContext, orderId: ID, surchargeId: ID): Promise<Order> {
-        const order = await this.getOrderOrThrow(ctx, orderId);
-        const surcharge = await this.connection.getEntityOrThrow(ctx, Surcharge, surchargeId);
-        if (order.surcharges.find(s => idsAreEqual(s.id, surcharge.id))) {
-            order.surcharges = order.surcharges.filter(s => !idsAreEqual(s.id, surchargeId));
-            const updatedOrder = await this.applyPriceAdjustments(ctx, order);
-            await this.connection.getRepository(ctx, Surcharge).remove(surcharge);
-            return updatedOrder;
-        } else {
-            return order;
-        }
+        return this.connection.withTransaction(ctx, async txCtx => {
+            await lockOrderRow(this.connection, txCtx, orderId);
+            const order = await this.getOrderOrThrow(txCtx, orderId);
+            const surcharge = await this.connection.getEntityOrThrow(txCtx, Surcharge, surchargeId);
+            if (!order.surcharges.find(s => idsAreEqual(s.id, surcharge.id))) {
+                return order;
+            }
+            // Delete the row before repricing: the repricing reloads the Surcharges from the
+            // database, and would otherwise count this one again.
+            await this.connection.getRepository(txCtx, Surcharge).remove(surcharge);
+            return this.applyPriceAdjustments(txCtx, order);
+        });
     }
 
     /**
@@ -2447,6 +2461,20 @@ export class OrderService implements OnApplicationBootstrap {
      * Applies promotions, taxes and shipping to the Order. If the `updatedOrderLines` argument is passed in,
      * then all of those OrderLines will have their prices re-calculated using the configured {@link OrderItemPriceCalculationStrategy}.
      *
+     * The Order's Surcharges are reloaded from the database before the totals are calculated, so the
+     * totals always include every Surcharge row attached to the Order, including any added by an event
+     * handler or a concurrent request after the Order was loaded. A Surcharge must therefore be saved
+     * before calling this method: one which only exists in the `order.surcharges` array is not included.
+     *
+     * Before reloading the Surcharges, the Order row is locked until the current transaction ends, so
+     * concurrent calls for the same Order calculate and save the totals one after the other, and the
+     * last one to commit includes the Surcharges committed by the others. Only the Surcharges are
+     * reloaded: the passed-in Order is otherwise used as loaded. Call this method within a transaction
+     * (resolvers using the {@link Transaction} decorator already are): outside one, no lock is taken.
+     * Code which saves or deletes a Surcharge directly, rather than through
+     * {@link OrderService.addSurchargeToOrder} or {@link OrderService.removeSurchargeFromOrder}, should
+     * call this method in the same transaction afterwards.
+     *
      * Pass `options.recalculateShipping: false` to leave the Order's existing ShippingLine prices
      * untouched. This is needed when the Order's ShippingMethods cannot be resolved in the current
      * Channel, e.g. for a seller Order whose ShippingLines were already calculated on the aggregate
@@ -2471,6 +2499,10 @@ export class OrderService implements OnApplicationBootstrap {
         relations?: RelationPaths<Order>,
         options?: ApplyPriceAdjustmentsOptions,
     ): Promise<Order> {
+        // A blocking event handler or a concurrent request can add or remove a Surcharge after
+        // this Order was loaded. Lock the Order and reload them so the totals include every row.
+        await lockOrderAndReloadSurcharges(this.connection, ctx, order);
+
         const allPromotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
 
