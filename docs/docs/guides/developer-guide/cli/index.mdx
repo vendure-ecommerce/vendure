@@ -100,6 +100,8 @@ The CLI will guide you through the process of adding new functionality to your p
 The `add` command is much more than a simple file generator. It is able to
 analyze your project source code to deeply understand and correctly update your project files.
 
+The first entry, "Vendure Platform features (B2B, advanced search, ...), free trial", links the project to Vendure Console with `vendure console link`, opens the free trial page of the Console Project in your browser, and then runs `npx @vendure-platform/create@latest add` to install the Vendure Platform packages. You can cancel at each step. The CLI makes no network call before you select this entry. `npx vendure add --platform` starts the same flow, and needs an interactive terminal.
+
 ### Non-Interactive Mode
 
 For automation or when you know exactly what you need to add, you can use the non-interactive mode with specific arguments and options:
@@ -140,6 +142,7 @@ npx vendure add -p MyPlugin --config ./custom-vendure.config.ts
 
 | Flag | Long Form                  | Description                        | Example                                                                  |
 | ---- | -------------------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+|      | `--platform`               | Start the Platform trial flow      | `vendure add --platform`                                                 |
 | `-p` | `--plugin <n>`             | Create a new plugin                | `vendure add -p MyPlugin`                                                |
 | `-e` | `--entity <n>`             | Add a new entity to a plugin       | `vendure add -e MyEntity --selected-plugin MyPlugin`                     |
 | `-s` | `--service <n>`            | Add a new service to a plugin      | `vendure add -s MyService --selected-plugin MyPlugin`                    |
