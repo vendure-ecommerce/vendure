@@ -1,19 +1,69 @@
+import { platformPromotionSnapshot } from '@vendure/common/lib/platform-promotion-snapshot';
 import fs from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DefaultLogger } from './config/logger/default-logger';
 import { Logger, LogLevel, VendureLogger } from './config/logger/vendure-logger';
-import { buildStartupBanner, logStartupBanner, StartupBannerInput } from './startup-banner';
+import {
+    buildStartupBanner,
+    FeaturedCapability,
+    getFeaturedCapabilities,
+    logStartupBanner,
+    StartupBannerInput,
+} from './startup-banner';
 
 const identity = (text: string) => text;
+// Expected values come from the snapshot, so a snapshot refresh does not break the tests.
+const featured = getFeaturedCapabilities();
+const day = (offset: number) => new Date(Date.UTC(2026, 9, 19 + offset, 12));
+const pickOn = (now: Date) => featured[Math.floor(now.getTime() / 86_400_000) % featured.length];
 const baseInput: StartupBannerInput = {
     surface: 'server',
     linked: false,
     box: true,
     hyperlinks: false,
     paint: identity,
-    now: new Date('2026-10-19T12:00:00Z'),
+    capabilities: featured,
+    now: day(0),
 };
+
+describe('getFeaturedCapabilities()', () => {
+    it('lists the capability of each promoted nav item once, in nav order', () => {
+        const expectedKeys = [
+            ...new Set(
+                platformPromotionSnapshot.navItems.filter(item => item.promoted).map(item => item.capability),
+            ),
+        ];
+
+        expect(featured).toEqual(
+            expectedKeys.map(key => {
+                const found = platformPromotionSnapshot.capabilities.find(c => c.key === key);
+                return { title: found?.title, summary: found?.summary };
+            }),
+        );
+        expect(featured.length).toBeGreaterThan(0);
+    });
+
+    it('skips capabilities that no promoted nav item names, and unknown keys', () => {
+        const makeCapability = (key: string) => ({
+            key,
+            tier: 'growth' as const,
+            title: `Title ${key}`,
+            summary: `Summary ${key}`,
+            benefits: ['a', 'b', 'c'] as [string, string, string],
+            cta: 'trial' as const,
+        });
+        const navItem = (key: string, promoted: boolean) =>
+            ({ capability: key, promoted }) as (typeof platformPromotionSnapshot.navItems)[number];
+
+        const result = getFeaturedCapabilities({
+            navItems: [navItem('a', true), navItem('b', false), navItem('a', true), navItem('missing', true)],
+            capabilities: [makeCapability('b'), makeCapability('a')],
+        });
+
+        expect(result).toEqual([{ title: 'Title a', summary: 'Summary a' }]);
+    });
+});
 
 describe('buildStartupBanner()', () => {
     it('draws a box of equal-width lines for an unlinked project', () => {
@@ -21,27 +71,57 @@ describe('buildStartupBanner()', () => {
 
         expect(banner.kind).toBe('box');
         const lines = banner.text.split('\n');
-        expect(lines).toHaveLength(10);
+        expect(lines.length).toBeGreaterThanOrEqual(8);
+        expect(lines.length).toBeLessThanOrEqual(11);
         expect(new Set(lines.map(l => l.length)).size).toBe(1);
+        expect(banner.text).toContain(`Today's pick: ${pickOn(day(0)).title}.`);
         expect(banner.text).toContain('Vendure Platform: start your free 30-day trial');
         expect(banner.text).toContain('No card needed. Run:  vendure console link');
         expect(banner.text).toContain('vendure.io/pricing');
     });
 
     it('fits every row in the box on every day of the rotation', () => {
-        for (let day = 0; day < 8; day++) {
-            const now = new Date(Date.UTC(2026, 9, 19 + day, 12));
-            const lines = buildStartupBanner({ ...baseInput, now }).text.split('\n');
+        for (let offset = 0; offset < featured.length; offset++) {
+            const lines = buildStartupBanner({ ...baseInput, now: day(offset) }).text.split('\n');
 
             expect(new Set(lines.map(l => l.length))).toEqual(new Set([58]));
+            // Every row keeps 2 spaces of padding before the right border.
+            expect(lines.slice(1, -1).every(l => l.endsWith('  │'))).toBe(true);
+            // The snapshot copy fits in two lines, so nothing is cut.
+            expect(lines.some(l => l.includes('…'))).toBe(false);
         }
     });
 
-    it('rotates the featured capability by day', () => {
-        const day1 = buildStartupBanner(baseInput).text;
-        const day2 = buildStartupBanner({ ...baseInput, now: new Date('2026-10-20T12:00:00Z') }).text;
+    it('rotates the featured capability by day and shows its summary', () => {
+        const titles = new Set<string>();
+        for (let offset = 0; offset < featured.length; offset++) {
+            const pick = pickOn(day(offset));
+            const { text } = buildStartupBanner({ ...baseInput, now: day(offset) });
 
-        expect(day1.match(/Today's pick: [^.]+\./)?.[0]).not.toBe(day2.match(/Today's pick: [^.]+\./)?.[0]);
+            expect(text).toContain(`Today's pick: ${pick.title}.`);
+            expect(text.replace(/[│\s]+/g, ' ')).toContain(pick.summary.slice(0, 20));
+            titles.add(pick.title);
+        }
+        expect(titles.size).toBe(featured.length);
+    });
+
+    it('wraps a long summary onto two lines and ends it with an ellipsis when it is longer', () => {
+        const capabilities: FeaturedCapability[] = [{ title: 'Long', summary: 'word '.repeat(40).trim() }];
+        const lines = buildStartupBanner({ ...baseInput, capabilities, now: day(0) }).text.split('\n');
+
+        expect(new Set(lines.map(l => l.length))).toEqual(new Set([58]));
+        expect(lines.filter(l => l.includes('word')).length).toBe(2);
+        expect(lines.some(l => l.includes('…'))).toBe(true);
+    });
+
+    it('shows a box without capability lines when the list is empty', () => {
+        const { text } = buildStartupBanner({ ...baseInput, capabilities: [] });
+
+        expect(text).not.toContain("Today's pick");
+        expect(text).not.toContain('Also:');
+        expect(text).toContain('Vendure Platform: start your free 30-day trial');
+        expect(text).toContain('vendure console link');
+        expect(new Set(text.split('\n').map(l => l.length))).toEqual(new Set([58]));
     });
 
     it('links to the pricing page with the server utm_source', () => {

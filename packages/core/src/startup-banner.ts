@@ -1,3 +1,5 @@
+import { DashboardPromotionV1 } from '@vendure/common/lib/platform-promotion';
+import { platformPromotionSnapshot } from '@vendure/common/lib/platform-promotion-snapshot';
 import { supportsHyperlinks } from '@vendure/common/lib/supports-hyperlinks';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,23 +18,55 @@ const BOX_INNER_WIDTH = 56;
 // The Vendure brand color (#17C1FF). Terminals without 24-bit color get cyan.
 const BRAND_RGB = '38;2;23;193;255';
 
-/**
- * Static copy. Core makes no network call at startup, so the text ships with the package.
- * Keep it short and generic. The list names Platform capabilities and does not promise details.
- * A description must fit on one box line (52 characters).
- */
-const FEATURED_CAPABILITIES: ReadonlyArray<{ name: string; description: string }> = [
-    { name: 'Quotes', description: 'Let B2B buyers request and negotiate prices.' },
-    { name: 'B2B accounts', description: 'Company accounts with several buyers and roles.' },
-    { name: 'Shopping lists', description: 'Shared, reusable lists for repeat buyers.' },
-    { name: 'Advanced search', description: 'Faceted product search for large catalogs.' },
-    { name: 'Contract pricing', description: 'Negotiated prices per customer or company.' },
-    { name: 'Approvals', description: 'Route orders to an approver before they go through.' },
-    { name: 'Admin access policies', description: 'Rules for who can do what in the Dashboard.' },
-    { name: 'Configurator', description: 'Let buyers configure made-to-order products.' },
-];
-
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+export interface FeaturedCapability {
+    title: string;
+    summary: string;
+}
+
+// The summary may take this many box lines. A longer one ends with an ellipsis.
+const MAX_SUMMARY_LINES = 2;
+
+/**
+ * The capabilities of the promoted navigation items in the Platform catalog snapshot, in
+ * navigation order, without duplicates. The snapshot ships in `@vendure/common`, so startup
+ * makes no network call.
+ */
+export function getFeaturedCapabilities(
+    promotion: Pick<DashboardPromotionV1, 'navItems' | 'capabilities'> = platformPromotionSnapshot,
+): FeaturedCapability[] {
+    const keys = new Set(promotion.navItems.filter(item => item.promoted).map(item => item.capability));
+    const featured: FeaturedCapability[] = [];
+    for (const key of keys) {
+        const capability = promotion.capabilities.find(c => c.key === key);
+        if (capability) {
+            featured.push({ title: capability.title, summary: capability.summary });
+        }
+    }
+    return featured;
+}
+
+function wrap(text: string, width: number, maxLines: number): string[] {
+    const lines: string[] = [];
+    let current = '';
+    for (const word of text.split(' ')) {
+        if (current && `${current} ${word}`.length > width) {
+            lines.push(current);
+            current = word;
+        } else {
+            current = current ? `${current} ${word}` : word;
+        }
+    }
+    lines.push(current);
+    if (lines.length <= maxLines) {
+        return lines;
+    }
+    const kept = lines.slice(0, maxLines);
+    const last = kept[maxLines - 1];
+    kept[maxLines - 1] = `${last.length >= width ? last.slice(0, width - 1) : last}…`;
+    return kept;
+}
 
 export interface StartupBannerInput {
     surface: StartupBannerSurface;
@@ -43,13 +77,15 @@ export interface StartupBannerInput {
     hyperlinks: boolean;
     /** Colors the box frame. Pass an identity function for no color. */
     paint: (text: string) => string;
+    /** One of these is the pick of the day. With none, the box has no capability lines. */
+    capabilities: FeaturedCapability[];
     now: Date;
 }
 
 export type StartupBanner = { kind: 'box'; text: string } | { kind: 'line'; text: string };
 
 export function buildStartupBanner(input: StartupBannerInput): StartupBanner {
-    const { surface, linked, box, hyperlinks, paint, now } = input;
+    const { surface, linked, box, hyperlinks, paint, capabilities, now } = input;
     if (linked) {
         return { kind: 'line', text: `Manage your Vendure Platform plan: ${CONSOLE_URL}` };
     }
@@ -61,18 +97,30 @@ export function buildStartupBanner(input: StartupBannerInput): StartupBanner {
         };
     }
 
-    const index = Math.floor(now.getTime() / MS_PER_DAY) % FEATURED_CAPABILITIES.length;
-    const pick = FEATURED_CAPABILITIES[index];
-    // Name as many other capabilities as fit on one line.
     const contentWidth = BOX_INNER_WIDTH - 2;
-    let also = 'Also:';
-    for (let offset = 1; offset < FEATURED_CAPABILITIES.length; offset++) {
-        const name = FEATURED_CAPABILITIES[(index + offset) % FEATURED_CAPABILITIES.length].name;
-        const next = `${also}${offset === 1 ? ' ' : ', '}${name}`;
-        if (next.length > contentWidth) {
-            break;
+    // Wrapped text leaves the same 2 spaces of padding on the right as on the left.
+    const textWidth = contentWidth - 2;
+    const capabilityRows: string[] = [];
+    if (capabilities.length > 0) {
+        const index = Math.floor(now.getTime() / MS_PER_DAY) % capabilities.length;
+        const pick = capabilities[index];
+        capabilityRows.push(
+            '',
+            `Today's pick: ${pick.title}.`,
+            ...wrap(pick.summary, textWidth, MAX_SUMMARY_LINES),
+        );
+        // Name as many other capabilities as fit on one line.
+        let also = 'Also:';
+        for (let offset = 1; offset < capabilities.length; offset++) {
+            const next = `${also}${offset === 1 ? ' ' : ', '}${capabilities[(index + offset) % capabilities.length].title}`;
+            if (next.length > textWidth) {
+                break;
+            }
+            also = next;
         }
-        also = next;
+        if (also !== 'Also:') {
+            capabilityRows.push(also);
+        }
     }
     const linkLabel = 'vendure.io/pricing';
     const link = hyperlinks ? `\u001b]8;;${pricingUrl}\u0007${linkLabel}\u001b]8;;\u0007` : linkLabel;
@@ -81,10 +129,7 @@ export function buildStartupBanner(input: StartupBannerInput): StartupBanner {
     const rows: Array<[visible: string, rendered: string]> = [
         ...[
             '★ Vendure Platform: start your free 30-day trial',
-            '',
-            `Today's pick: ${pick.name}.`,
-            pick.description,
-            also,
+            ...capabilityRows,
             '',
             `No card needed. Run:  ${LINK_COMMAND}`,
         ].map((text): [string, string] => [text, text]),
@@ -136,6 +181,7 @@ export function logStartupBanner(surface: StartupBannerSurface): void {
         box: interactive,
         hyperlinks: supportsHyperlinks(),
         paint: brandPainter(),
+        capabilities: getFeaturedCapabilities(),
         now: new Date(),
     });
     if (banner.kind === 'box') {
