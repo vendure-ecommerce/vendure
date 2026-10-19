@@ -52,7 +52,7 @@ const isArrayOf = (value: unknown, check: (item: any) => boolean): value is unkn
     Array.isArray(value) && value.every(item => item != null && typeof item === 'object' && check(item));
 
 /**
- * Checks the fields that the Dashboard reads. A payload that fails this check is not used.
+ * Checks the required fields of `DashboardPromotionV1`. A payload that fails this check is not used.
  * The type is `DashboardPromotionV1` in `src/lib/framework/platform-promotion/platform-promotion-types.ts`.
  * The Vite plugin code cannot import from `src`, so it checks the shape at runtime.
  */
@@ -65,7 +65,8 @@ export function isDashboardPromotionV1(value: any): value is object {
                 isString(s.id) &&
                 isString(s.label) &&
                 isString(s.icon) &&
-                (s.placement === 'top' || s.placement === 'bottom'),
+                (s.placement === 'top' || s.placement === 'bottom') &&
+                typeof s.order === 'number',
         ) &&
         isArrayOf(
             value.navItems,
@@ -75,10 +76,20 @@ export function isDashboardPromotionV1(value: any): value is object {
                 isString(i.id) &&
                 isString(i.label) &&
                 isString(i.url) &&
+                (i.order === undefined || typeof i.order === 'number') &&
                 typeof i.promoted === 'boolean' &&
-                isString(i.page?.title),
+                (i.page?.kind === 'list' || i.page?.kind === 'detail') &&
+                isString(i.page.title),
         ) &&
-        isArrayOf(value.pageBlocks, b => isString(b.capability) && isString(b.pageId) && isString(b.title)) &&
+        isArrayOf(
+            value.pageBlocks,
+            b =>
+                isString(b.capability) &&
+                isString(b.pageId) &&
+                isString(b.blockId) &&
+                (b.column === 'main' || b.column === 'side') &&
+                isString(b.title),
+        ) &&
         isArrayOf(value.actions, a => isString(a.capability) && isString(a.pageId) && isString(a.label)) &&
         isArrayOf(
             value.capabilities,

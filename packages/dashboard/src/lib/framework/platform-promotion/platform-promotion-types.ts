@@ -74,7 +74,7 @@ export interface DashboardPromotionV1 {
         page: { kind: 'list' | 'detail'; title: string; columns?: string[]; fields?: string[] };
         /**
          * @description
-         * `true` on exactly 8 navigation items, one per promoted capability. Only these
+         * `true` on one navigation item per promoted capability. Only these
          * show in the Dashboard navigation as locked items.
          */
         promoted: boolean;
