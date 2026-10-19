@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { registerDashboardPageBlock } from '../layout-engine/layout-extensions.js';
+
 import {
     getLockedPageActions,
     getLockedPageCard,
@@ -43,6 +45,20 @@ describe('getLockedPageCard', () => {
         expect(getLockedPageCard(state(), 'facet-detail')).toBeUndefined();
         expect(getLockedPageCard(state(), undefined)).toBeUndefined();
         expect(getLockedPageCard(state([], true), 'order-detail')).toBeUndefined();
+    });
+    it('leaves out blocks which an installed Platform plugin registered on the page', () => {
+        registerDashboardPageBlock({
+            id: 'customer-company-users',
+            location: {
+                pageId: 'customer-detail',
+                column: 'side',
+                position: { blockId: 'groups', order: 'after' },
+            },
+            component: () => null,
+        });
+        expect(getLockedPageCard(state(), 'customer-detail')?.capabilities.map(c => c.key)).not.toContain(
+            'org.accounts',
+        );
     });
 });
 

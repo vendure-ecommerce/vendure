@@ -1,5 +1,7 @@
 import type { PlatformPromotionState } from '@/vdb/hooks/use-platform-promotion.js';
 
+import { getDashboardPageBlocks } from '../layout-engine/layout-extensions.js';
+
 import type { DashboardPromotionCapabilityV1 } from './platform-promotion-types.js';
 
 export const PLATFORM_PRICING_URL = 'https://vendure.io/pricing';
@@ -36,14 +38,22 @@ export function isUpgrade(state: PlatformPromotionState): boolean {
 
 /**
  * One card per page for the locked capabilities which put page blocks on it. The card goes
- * in the column that holds most of those blocks.
+ * in the column that holds most of those blocks. A block which an installed Platform plugin
+ * already registered on the page is not promoted.
  */
 export function getLockedPageCard(
     state: PlatformPromotionState,
     pageId: string | undefined,
 ): LockedPageCard | undefined {
+    if (!pageId) {
+        return undefined;
+    }
+    const installed = new Set(getDashboardPageBlocks(pageId).map(block => block.id));
     const blocks = state.promotion.pageBlocks.filter(
-        block => block.pageId === pageId && getLockedCapability(state, block.capability),
+        block =>
+            block.pageId === pageId &&
+            !installed.has(block.blockId) &&
+            getLockedCapability(state, block.capability),
     );
     if (!blocks.length) {
         return undefined;
