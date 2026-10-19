@@ -56,6 +56,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
      */
     readonly useEntityIdStrategyForJobIds = false;
     private redisConnection: Redis | Cluster;
+    private ownsRedisConnection = false;
     private connectionOptions: ConnectionOptions;
     private queue: Queue;
     /**
@@ -92,6 +93,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             options.connection ??
             ({ host: 'localhost', port: 6379, maxRetriesPerRequest: null } as RedisOptions);
 
+        this.ownsRedisConnection = !(this.connectionOptions instanceof EventEmitter);
         this.redisConnection =
             this.connectionOptions instanceof EventEmitter
                 ? this.connectionOptions
@@ -171,6 +173,19 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             this.jobListIndexService?.close(),
             ...workerClosePromises,
         ]);
+        const results = await Promise.allSettled([
+            this.cancellationSub?.quit(),
+            this.ownsRedisConnection ? this.redisConnection.quit() : undefined,
+        ]);
+        for (const result of results) {
+            if (result.status === 'rejected') {
+                Logger.error(
+                    `Error closing Redis connection: ${JSON.stringify(result.reason?.message)}`,
+                    loggerCtx,
+                    result.reason?.stack,
+                );
+            }
+        }
     }
 
     async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
