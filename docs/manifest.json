@@ -218,7 +218,7 @@
           "title": "CLI",
           "slug": "cli",
           "file": "docs/guides/developer-guide/cli/index.mdx",
-          "lastModified": "2026-10-15T14:50:01+02:00"
+          "lastModified": "2026-10-19T20:40:40+02:00"
         },
         {
           "title": "AI-assisted Development",
@@ -662,7 +662,7 @@
           "title": "Deployment",
           "slug": "deployment",
           "file": "docs/guides/extending-the-dashboard/deployment/index.mdx",
-          "lastModified": "2026-05-26T10:57:06+02:00"
+          "lastModified": "2026-10-19T21:03:28+02:00"
         },
         {
           "title": "Tech Stack",
@@ -3228,7 +3228,7 @@
                   "title": "OrderService",
                   "slug": "order-service",
                   "file": "docs/reference/typescript-api/services/order-service.mdx",
-                  "lastModified": "2026-09-25T17:20:15+02:00"
+                  "lastModified": "2026-10-19T19:00:30Z"
                 },
                 {
                   "title": "OrderTestingService",
