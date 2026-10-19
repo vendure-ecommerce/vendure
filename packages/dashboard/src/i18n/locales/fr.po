@@ -636,6 +636,10 @@ msgstr "Administrateurs"
 #~ msgid "Gross price: <0/>"
 #~ msgstr "Prix brut : <0/>"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Start free trial"
+msgstr ""
+
 #: src/lib/components/data-table/data-table-pagination.tsx
 #: src/lib/components/data-table/data-table.tsx
 msgid "Go to next page"
@@ -715,6 +719,10 @@ msgstr "Créer {enabledCount} variantes"
 msgid "Payment #{0} transitioned to {1}"
 msgstr "Paiement #{0} transféré vers {1}"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for collections with Vendure Platform: {names}} other {# more for collections with Vendure Platform: {names}}}"
+msgstr ""
+
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx
 msgid "Error loading customer history: {0}"
@@ -768,6 +776,10 @@ msgstr "Déplacer les collections"
 #: src/app/routes/_authenticated/_roles/roles.tsx
 msgid "Roles"
 msgstr "Rôles"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "More with Vendure Platform"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid "Grid view"
@@ -1442,6 +1454,10 @@ msgstr "Aucun résultat trouvé"
 msgid "Set a shipping address and select a shipping method"
 msgstr "Définissez une adresse de livraison et sélectionnez un mode d'expédition"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for products with Vendure Platform: {names}} other {# more for products with Vendure Platform: {names}}}"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Off"
 msgstr "Désactivé"
@@ -1514,6 +1530,10 @@ msgstr "Aucun élément sélectionné"
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid ", {0} selected"
 msgstr ", {0} sélectionné(s)"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Scale"
+msgstr ""
 
 #: src/lib/components/shared/country-selector.tsx
 msgid "No countries found"
@@ -1754,6 +1774,10 @@ msgstr "avant"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Failed to set customer for order: {0}"
 msgstr "Échec de la définition du client pour la commande : {0}"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for roles with Vendure Platform: {names}} other {# more for roles with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid "Size"
@@ -2154,6 +2178,10 @@ msgstr "Aucune valeur de facette"
 msgid "A reason for the refund is required"
 msgstr "Une raison pour le remboursement est requise"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "More with Platform"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Could not remove option group"
 msgstr "Impossible de supprimer le groupe d'options"
@@ -2227,6 +2255,10 @@ msgstr "Méthode de paiement"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Destination"
+msgstr ""
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Or add it to this project:"
 msgstr ""
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
@@ -2317,6 +2349,10 @@ msgstr "Supprimer de la zone"
 #: src/lib/components/layout/manage-languages-dialog.tsx
 msgid "Select from globally available languages for this channel"
 msgstr "Sélectionnez parmi les langues globalement disponibles pour ce canal"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for customers with Vendure Platform: {names}} other {# more for customers with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 msgid "Upload timed out"
@@ -3110,6 +3146,10 @@ msgstr "Nouvelle catégorie fiscale"
 #~ msgid "No stock locations available on current channel"
 #~ msgstr "Aucun emplacement de stock disponible sur le canal actuel"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Enterprise"
+msgstr ""
+
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 msgid "Successfully created channel"
 msgstr "Canal créé avec succès"
@@ -3317,6 +3357,11 @@ msgstr "Nouveau client"
 msgid "Image"
 msgstr "Image"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Upgrade to {tierLabel}"
+msgstr ""
+
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 msgid "Successfully created administrator"
 msgstr "Administrateur créé avec succès"
@@ -3507,6 +3552,10 @@ msgstr "Hier"
 #~ msgid "Are you sure you want to remove {0} {1} from this zone?"
 #~ msgstr "Êtes-vous sûr de vouloir supprimer {0} {1} de cette zone ?"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Growth"
+msgstr ""
+
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
 msgid "Adding {0} surcharge(s)"
@@ -3548,6 +3597,7 @@ msgstr "Aucune étiquette sélectionnée"
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 #: src/lib/components/data-table/data-table-facet-value-faceted-filter.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "Back"
 msgstr "Retour"
 
@@ -4441,6 +4491,10 @@ msgstr "{0, plural, one {Échec de la suppression de {1} emplacement de stock} o
 msgid "Unsaved view"
 msgstr "Vue non enregistrée"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Talk to sales"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/components/cancel-jobs-bulk-action.tsx
 #~ msgid "{rejected, plural, one {{0}} other {{1}}}"
 #~ msgstr ""
@@ -5049,6 +5103,10 @@ msgstr "Super Administrateur"
 #~ msgid "Some resources are down"
 #~ msgstr "Certaines ressources sont indisponibles"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more with Vendure Platform: {names}} other {# more with Vendure Platform: {names}}}"
+msgstr ""
+
 #: src/lib/components/shared/rich-text-editor/resizable-image.tsx
 msgid "Resize image from left"
 msgstr "Redimensionner l'image depuis la gauche"
@@ -5221,6 +5279,10 @@ msgstr "Modèle de planification"
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx
 msgid "Payment failed"
 msgstr "Paiement échoué"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for orders with Vendure Platform: {names}} other {# more for orders with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/layout/channel-switcher.tsx
 msgid "Add channel"
@@ -5673,6 +5735,10 @@ msgstr "Annuler la modification"
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Apply filters to the table and click \"Save View\" to get started."
 msgstr "Appliquez des filtres au tableau et cliquez sur « Enregistrer la vue » pour commencer."
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Starter"
+msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/link-bubble-menu.tsx
 msgid "Link URL"
@@ -6204,6 +6270,10 @@ msgstr "Aperçu de {0}"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "Vendeur mis à jour avec succès"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "{tierLabel} plan"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"

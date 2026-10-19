@@ -7,31 +7,66 @@ import {
     type LockedPageCard,
 } from '@/vdb/framework/platform-promotion/locked-capabilities.js';
 import { usePlatformPromotion } from '@/vdb/hooks/use-platform-promotion.js';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Plural, Trans } from '@lingui/react/macro';
 import { ChevronRight, Lock } from 'lucide-react';
 import { ReactNode, useMemo, useState } from 'react';
 
 import { PlatformPromoDialog, PlatformPromoEntry, PlatformPromoList } from './platform-promo.js';
 
-function useCardSummary(pageId: string | undefined, card: LockedPageCard) {
-    const { t } = useLingui();
+function CardSummary({ pageId, card }: Readonly<{ pageId: string | undefined; card: LockedPageCard }>) {
     const count = card.capabilities.length;
     const names = card.capabilities.map(c => c.title).join(', ');
     switch (pageId) {
         case 'order-detail':
-            return t`${count} more for orders with Vendure Platform: ${names}`;
+            return (
+                <Plural
+                    value={count}
+                    one={`# more for orders with Vendure Platform: ${names}`}
+                    other={`# more for orders with Vendure Platform: ${names}`}
+                />
+            );
         case 'product-detail':
         case 'product-variant-detail':
         case 'product-list':
-            return t`${count} more for products with Vendure Platform: ${names}`;
+            return (
+                <Plural
+                    value={count}
+                    one={`# more for products with Vendure Platform: ${names}`}
+                    other={`# more for products with Vendure Platform: ${names}`}
+                />
+            );
         case 'customer-detail':
-            return t`${count} more for customers with Vendure Platform: ${names}`;
+            return (
+                <Plural
+                    value={count}
+                    one={`# more for customers with Vendure Platform: ${names}`}
+                    other={`# more for customers with Vendure Platform: ${names}`}
+                />
+            );
         case 'collection-detail':
-            return t`${count} more for collections with Vendure Platform: ${names}`;
+            return (
+                <Plural
+                    value={count}
+                    one={`# more for collections with Vendure Platform: ${names}`}
+                    other={`# more for collections with Vendure Platform: ${names}`}
+                />
+            );
         case 'role-detail':
-            return t`${count} more for roles with Vendure Platform: ${names}`;
+            return (
+                <Plural
+                    value={count}
+                    one={`# more for roles with Vendure Platform: ${names}`}
+                    other={`# more for roles with Vendure Platform: ${names}`}
+                />
+            );
         default:
-            return t`${count} more with Vendure Platform: ${names}`;
+            return (
+                <Plural
+                    value={count}
+                    one={`# more with Vendure Platform: ${names}`}
+                    other={`# more with Vendure Platform: ${names}`}
+                />
+            );
     }
 }
 
@@ -49,7 +84,6 @@ export function PlatformPromotionPageCard({
     column: 'main' | 'side';
     blockId: string;
 }>) {
-    const summary = useCardSummary(pageId, card);
     const [selected, setSelected] = useState<PlatformPromoEntry>();
     const entries = card.capabilities.map(promotion => ({ label: promotion.title, promotion }));
     return (
@@ -58,7 +92,9 @@ export function PlatformPromotionPageCard({
                 <Collapsible data-testid="platform-promotion-page-card">
                     <CollapsibleTrigger className="group/promo flex w-full items-center gap-2 text-start text-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
                         <Lock className="size-4 shrink-0" aria-hidden="true" />
-                        <span className="flex-1">{summary}</span>
+                        <span className="flex-1">
+                            <CardSummary pageId={pageId} card={card} />
+                        </span>
                         <ChevronRight
                             className="size-4 shrink-0 transition-transform group-data-[panel-open]/promo:rotate-90 rtl:rotate-180"
                             aria-hidden="true"

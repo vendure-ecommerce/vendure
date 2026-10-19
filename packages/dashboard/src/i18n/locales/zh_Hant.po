@@ -636,6 +636,10 @@ msgstr "管理員"
 #~ msgid "Gross price: <0/>"
 #~ msgstr "總價：<0/>"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Start free trial"
+msgstr ""
+
 #: src/lib/components/data-table/data-table-pagination.tsx
 #: src/lib/components/data-table/data-table.tsx
 msgid "Go to next page"
@@ -715,6 +719,10 @@ msgstr "建立 {enabledCount} 個變體"
 msgid "Payment #{0} transitioned to {1}"
 msgstr "付款 #{0} 已轉換到 {1}"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for collections with Vendure Platform: {names}} other {# more for collections with Vendure Platform: {names}}}"
+msgstr ""
+
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx
 msgid "Error loading customer history: {0}"
@@ -768,6 +776,10 @@ msgstr "移動集合"
 #: src/app/routes/_authenticated/_roles/roles.tsx
 msgid "Roles"
 msgstr "角色"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "More with Vendure Platform"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid "Grid view"
@@ -1442,6 +1454,10 @@ msgstr "找不到結果"
 msgid "Set a shipping address and select a shipping method"
 msgstr "設定收貨地址並選擇配送方式"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for products with Vendure Platform: {names}} other {# more for products with Vendure Platform: {names}}}"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Off"
 msgstr "關閉"
@@ -1514,6 +1530,10 @@ msgstr "未選取項目"
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid ", {0} selected"
 msgstr "，已選取 {0} 項"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Scale"
+msgstr ""
 
 #: src/lib/components/shared/country-selector.tsx
 msgid "No countries found"
@@ -1754,6 +1774,10 @@ msgstr "之前"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Failed to set customer for order: {0}"
 msgstr "為訂單設定客戶失敗：{0}"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for roles with Vendure Platform: {names}} other {# more for roles with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid "Size"
@@ -2154,6 +2178,10 @@ msgstr "無屬性值"
 msgid "A reason for the refund is required"
 msgstr "需要提供退款原因"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "More with Platform"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Could not remove option group"
 msgstr "無法移除選項群組"
@@ -2227,6 +2255,10 @@ msgstr "付款方式"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Destination"
+msgstr ""
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Or add it to this project:"
 msgstr ""
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
@@ -2317,6 +2349,10 @@ msgstr "從區域移除"
 #: src/lib/components/layout/manage-languages-dialog.tsx
 msgid "Select from globally available languages for this channel"
 msgstr "從此通路的全域可用語言中選取"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for customers with Vendure Platform: {names}} other {# more for customers with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 msgid "Upload timed out"
@@ -3110,6 +3146,10 @@ msgstr "新增稅務類別"
 #~ msgid "No stock locations available on current channel"
 #~ msgstr "目前通路無可用庫存位置"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Enterprise"
+msgstr ""
+
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 msgid "Successfully created channel"
 msgstr "已成功建立通路"
@@ -3317,6 +3357,11 @@ msgstr "新增客戶"
 msgid "Image"
 msgstr "圖片"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Upgrade to {tierLabel}"
+msgstr ""
+
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 msgid "Successfully created administrator"
 msgstr "成功建立管理員"
@@ -3507,6 +3552,10 @@ msgstr "昨天"
 #~ msgid "Are you sure you want to remove {0} {1} from this zone?"
 #~ msgstr "確定要從此區域移除 {0} {1} 嗎？"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Growth"
+msgstr ""
+
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
 msgid "Adding {0} surcharge(s)"
@@ -3548,6 +3597,7 @@ msgstr "未選取標籤"
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 #: src/lib/components/data-table/data-table-facet-value-faceted-filter.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "Back"
 msgstr "返回"
 
@@ -4441,6 +4491,10 @@ msgstr "{0, plural, other {無法刪除 {2} 個庫存地點}}"
 msgid "Unsaved view"
 msgstr "未儲存的檢視"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Talk to sales"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/components/cancel-jobs-bulk-action.tsx
 #~ msgid "{rejected, plural, one {{0}} other {{1}}}"
 #~ msgstr ""
@@ -5049,6 +5103,10 @@ msgstr "超級管理員"
 #~ msgid "Some resources are down"
 #~ msgstr "部分資源已關閉"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more with Vendure Platform: {names}} other {# more with Vendure Platform: {names}}}"
+msgstr ""
+
 #: src/lib/components/shared/rich-text-editor/resizable-image.tsx
 msgid "Resize image from left"
 msgstr "從左側調整圖片大小"
@@ -5221,6 +5279,10 @@ msgstr "排程模式"
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx
 msgid "Payment failed"
 msgstr "付款失敗"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for orders with Vendure Platform: {names}} other {# more for orders with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/layout/channel-switcher.tsx
 msgid "Add channel"
@@ -5673,6 +5735,10 @@ msgstr "取消修改"
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Apply filters to the table and click \"Save View\" to get started."
 msgstr "對表格套用篩選器，然後按一下「儲存檢視」開始。"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Starter"
+msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/link-bubble-menu.tsx
 msgid "Link URL"
@@ -6204,6 +6270,10 @@ msgstr "{0} 的預覽"
 #: src/app/routes/_authenticated/_sellers/sellers_.$id.tsx
 msgid "Successfully updated seller"
 msgstr "已成功更新賣家"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "{tierLabel} plan"
+msgstr ""
 
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"
