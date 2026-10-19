@@ -1,4 +1,4 @@
-import { Injector } from '@vendure/core';
+import { Injector, Logger, ProcessContext } from '@vendure/core';
 import Redis from 'ioredis';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -6,28 +6,30 @@ import { BullMQJobQueueStrategy } from '../src/bullmq/bullmq-job-queue-strategy'
 import { BULLMQ_PLUGIN_OPTIONS } from '../src/bullmq/constants';
 import { JobListIndexService } from '../src/bullmq/job-list-index.service';
 import { RedisHealthIndicator } from '../src/bullmq/redis-health-indicator';
+import { BullMQPluginOptions } from '../src/bullmq/types';
 
 const redisHost = '127.0.0.1';
 const redisPort = process.env.CI ? +(process.env.E2E_REDIS_PORT || 6379) : 6379;
 const PREFIX = 'destroy-e2e';
 const CONNECTION_NAME = 'destroy-e2e-connection';
 
-async function createStrategy() {
+async function createStrategy(jobListIndexService?: (options: BullMQPluginOptions) => JobListIndexService) {
+    const options: BullMQPluginOptions = {
+        connection: {
+            host: redisHost,
+            port: redisPort,
+            maxRetriesPerRequest: null,
+            connectionName: CONNECTION_NAME,
+        },
+        workerOptions: { prefix: PREFIX },
+        queueOptions: { prefix: PREFIX },
+    };
     const providers = new Map<unknown, unknown>([
+        [BULLMQ_PLUGIN_OPTIONS, options],
         [
-            BULLMQ_PLUGIN_OPTIONS,
-            {
-                connection: {
-                    host: redisHost,
-                    port: redisPort,
-                    maxRetriesPerRequest: null,
-                    connectionName: CONNECTION_NAME,
-                },
-                workerOptions: { prefix: PREFIX },
-                queueOptions: { prefix: PREFIX },
-            },
+            JobListIndexService,
+            jobListIndexService?.(options) ?? { register: () => undefined, close: () => Promise.resolve() },
         ],
-        [JobListIndexService, { register: () => undefined, close: () => Promise.resolve() }],
         [RedisHealthIndicator, { isHealthy: () => Promise.resolve({ redis: { status: 'up' } }) }],
     ]);
     const strategy = new BullMQJobQueueStrategy();
@@ -68,5 +70,26 @@ describe('BullMQJobQueueStrategy destroy', () => {
         await strategy.destroy();
 
         await vi.waitFor(async () => expect(await openConnections()).toBe(0));
+    });
+
+    it('lets the job index migration finish before closing the connection', async () => {
+        const pipeline = redis.pipeline();
+        for (let i = 0; i < 1000; i++) {
+            pipeline.hset(`${PREFIX}:vendure-job-queue:${i}`, { name: 'destroy-test', timestamp: String(i) });
+            pipeline.zadd(`${PREFIX}:vendure-job-queue:completed`, i, String(i));
+        }
+        await pipeline.exec();
+        const loggerError = vi.spyOn(Logger, 'error');
+
+        // A worker migrates the existing jobs into the index on startup, without awaiting it
+        const strategy = await createStrategy(
+            options => new JobListIndexService(options, { isServer: false } as ProcessContext),
+        );
+        await strategy.destroy();
+        // Commands which were still pending when the connection closed reject shortly afterwards
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        expect(loggerError).not.toHaveBeenCalled();
+        loggerError.mockRestore();
     });
 });
