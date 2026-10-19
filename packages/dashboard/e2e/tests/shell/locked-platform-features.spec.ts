@@ -1,6 +1,6 @@
 import { type Page, expect, test } from '@playwright/test';
+import { platformPromotionSnapshot as snapshot } from '@vendure/common/lib/platform-promotion-snapshot';
 
-import { platformPromotionSnapshot as snapshot } from '../../../vite/platform-promotion-snapshot.js';
 import { VendureAdminClient } from '../../utils/vendure-admin-client.js';
 
 // OSS-891: locked Vendure Platform items in an OSS-only project (no License Guard in the
