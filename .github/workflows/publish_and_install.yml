@@ -22,6 +22,10 @@ on:
             - 'bun.lock'
             - 'bunfig.toml'
 
+env:
+    # CI never fetches the Platform catalog from api.vendure.io. The Dashboard uses its bundled snapshot.
+    VENDURE_DASHBOARD_SKIP_PLATFORM_CATALOG_FETCH: 'true'
+
 defaults:
     run:
         shell: bash
