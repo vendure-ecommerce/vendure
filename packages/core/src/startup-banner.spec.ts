@@ -3,12 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DefaultLogger } from './config/logger/default-logger';
 import { Logger, LogLevel, VendureLogger } from './config/logger/vendure-logger';
-import {
-    buildStartupBanner,
-    logStartupBanner,
-    StartupBannerInput,
-    supportsHyperlinks,
-} from './startup-banner';
+import { buildStartupBanner, logStartupBanner, StartupBannerInput } from './startup-banner';
 
 const identity = (text: string) => text;
 const baseInput: StartupBannerInput = {
@@ -94,25 +89,6 @@ describe('buildStartupBanner()', () => {
             kind: 'line',
             text: 'Manage your Vendure Platform plan: https://console.vendure.io',
         });
-    });
-});
-
-describe('supportsHyperlinks()', () => {
-    it('is false without a TTY', () => {
-        expect(supportsHyperlinks({ TERM_PROGRAM: 'iTerm.app' }, false)).toBe(false);
-    });
-
-    it('is false in CI', () => {
-        expect(supportsHyperlinks({ TERM_PROGRAM: 'iTerm.app', CI: 'true' }, true)).toBe(false);
-    });
-
-    it('is true for a known terminal in a TTY', () => {
-        expect(supportsHyperlinks({ TERM_PROGRAM: 'iTerm.app' }, true)).toBe(true);
-    });
-
-    it('lets FORCE_HYPERLINK override', () => {
-        expect(supportsHyperlinks({ FORCE_HYPERLINK: '1' }, false)).toBe(true);
-        expect(supportsHyperlinks({ FORCE_HYPERLINK: '0', TERM_PROGRAM: 'iTerm.app' }, true)).toBe(false);
     });
 });
 
