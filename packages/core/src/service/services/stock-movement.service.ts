@@ -379,7 +379,7 @@ export class StockMovementService {
             where: {
                 id: In(lineInputs.map(l => l.orderLineId)),
             },
-            relations: ['productVariant'],
+            relations: { productVariant: true },
         });
 
         await this.stockLevelService.lockStockLevelsForVariants(
@@ -435,7 +435,7 @@ export class StockMovementService {
         const releases: Release[] = [];
         const orderLines = await this.connection.getRepository(ctx, OrderLine).find({
             where: { id: In(lineInputs.map(l => l.orderLineId)) },
-            relations: ['productVariant'],
+            relations: { productVariant: true },
         });
         await this.stockLevelService.lockStockLevelsForVariants(
             ctx,

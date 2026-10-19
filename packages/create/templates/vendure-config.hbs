@@ -32,13 +32,6 @@ export const config: VendureConfig = {
             origin: IS_DEV ? true : (process.env.CORS_ORIGINS?.split(',').map(o => o.trim()).filter(Boolean) ?? []),
             credentials: true,
         },
-        // The following options are useful in development mode,
-        // but are best turned off for production for security
-        // reasons.
-        ...(IS_DEV ? {
-            adminApiDebug: true,
-            shopApiDebug: true,
-        } : {}),
     },
     authOptions: {
         tokenMethod: ['bearer', 'cookie'],
@@ -114,7 +107,9 @@ export const config: VendureConfig = {
       and vendurehq/tanstack-starter-vendure (src/routes/). Both are installed from main. --}}
                 verifyEmailAddressUrl: 'http://localhost:{{ storefrontPort }}/verify',
                 passwordResetUrl: 'http://localhost:{{ storefrontPort }}/reset-password',
-                changeEmailAddressUrl: 'http://localhost:{{ storefrontPort }}/account/verify-email'
+                changeEmailAddressUrl: 'http://localhost:{{ storefrontPort }}/account/verify-email',
+                // The URL of the password reset page of the Vendure Dashboard.
+                adminPasswordResetUrl: `http://localhost:${serverPort}/dashboard/reset-password`
             },
         }),
         DashboardPlugin.init({

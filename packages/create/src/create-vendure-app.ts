@@ -10,6 +10,7 @@ import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import pc from 'picocolors';
 
+import { showConsoleHint } from './console-hint';
 import {
     AUTO_RUN_DELAY_MS,
     CI_PAUSE_AFTER_CLOSE_MS,
@@ -358,7 +359,11 @@ export async function createVendureApp(
     }
 
     // Install dependencies
-    const { dependencies, devDependencies } = getDependencies(dbType, `@${packageJson.version as string}`);
+    const { dependencies, devDependencies } = getDependencies(
+        dbType,
+        `@${packageJson.version as string}`,
+        packageManager,
+    );
 
     // Install server dependencies
     await installDependenciesWithSpinner({
@@ -521,9 +526,8 @@ export async function createVendureApp(
         const { populate } = projectRequire(
             path.join(resolvePackageRootDir('@vendure/core', serverRoot), 'cli', 'populate'),
         );
-        const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = projectRequire(
-            path.join(resolvePackageRootDir('@vendure/core', serverRoot), 'dist', 'index'),
-        );
+        const { bootstrap, generateMigration, runMigrations, DefaultLogger, LogLevel, JobQueueService } =
+            projectRequire(path.join(resolvePackageRootDir('@vendure/core', serverRoot), 'dist', 'index'));
         const { config } = projectRequire(configFile);
         const assetsDir = path.join(__dirname, '../assets');
         superAdminCredentials = config.authOptions.superadminCredentials;
@@ -535,8 +539,40 @@ export async function createVendureApp(
                   ? LogLevel.Verbose
                   : LogLevel.Info;
 
+        // Generate an initial "baseline" migration and run it, so that a fresh project ships with a
+        // schema-creating migration from day one. This lets the very first remote deploy build its
+        // schema via migrations instead of relying on `synchronize`, which is unsafe in production.
+        //
+        // `fromEmpty` diffs against a temporary empty database, so a complete baseline is produced
+        // even if the configured database is not pristine (e.g. a re-run pointing at a database left
+        // populated by an earlier attempt) - avoiding a silently-empty migrations directory.
+        // VENDURE_RUNNING_IN_CLI makes generateMigration/runMigrations throw on failure rather than
+        // logging and continuing, so any error surfaces to the catch below instead of letting the
+        // scaffold proceed against a broken schema.
+        await checkDbConnection(config.dbConnectionOptions, serverRoot);
+        const migrationsGlob = Array.isArray(config.dbConnectionOptions.migrations)
+            ? config.dbConnectionOptions.migrations[0]
+            : undefined;
+        const migrationsDir =
+            typeof migrationsGlob === 'string'
+                ? path.dirname(migrationsGlob)
+                : path.join(serverRoot, 'src', 'migrations');
+        process.env.VENDURE_RUNNING_IN_CLI = 'true';
+        try {
+            const migrationFile = await generateMigration(config, {
+                name: 'init',
+                outputDir: migrationsDir,
+                fromEmpty: true,
+            });
+            if (!migrationFile) {
+                throw new Error('Failed to generate the initial database migration.');
+            }
+            await runMigrations(config);
+        } finally {
+            delete process.env.VENDURE_RUNNING_IN_CLI;
+        }
+
         const bootstrapFn = async () => {
-            await checkDbConnection(config.dbConnectionOptions, serverRoot);
             const _app = await bootstrap({
                 ...config,
                 apiOptions: {
@@ -545,7 +581,7 @@ export async function createVendureApp(
                 },
                 dbConnectionOptions: {
                     ...config.dbConnectionOptions,
-                    synchronize: true,
+                    synchronize: false,
                 },
                 logger: new DefaultLogger({ level: vendureLogLevel }),
                 importExportOptions: {
@@ -796,6 +832,7 @@ function displayOutro(outroOptions: OutroOptions) {
     }
 
     note(nextSteps.join('\n'), pc.green('Setup complete!'));
+    showConsoleHint();
     outro(`Happy hacking!`);
 }
 
