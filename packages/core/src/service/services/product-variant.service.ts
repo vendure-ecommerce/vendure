@@ -911,7 +911,7 @@ export class ProductVariantService {
             input.productVariantIds,
             ctx.channelId,
             {
-                relations: { taxCategory: true, assets: true, options: true },
+                relations: { taxCategory: true, assets: true, options: { group: true } },
             },
         );
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
@@ -936,9 +936,15 @@ export class ProductVariantService {
             );
             const assetIds = variant.assets?.map(a => a.assetId) || [];
             await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
+            // An active variant can still reference a soft-deleted option or group.
+            // assignToChannels throws on those, so they are skipped.
             for (const option of variant.options ?? []) {
-                optionIds.push(option.id);
-                optionGroupIds.push(option.groupId);
+                if (!option.deletedAt) {
+                    optionIds.push(option.id);
+                }
+                if (!option.group?.deletedAt) {
+                    optionGroupIds.push(option.groupId);
+                }
             }
             assignedVariantIds.push(variant.id);
         }
