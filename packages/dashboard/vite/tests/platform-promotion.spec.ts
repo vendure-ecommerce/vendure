@@ -1,7 +1,9 @@
+import 'reflect-metadata';
+
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import type { Plugin } from 'vite';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { platformPromotionSnapshot } from '../platform-promotion-snapshot.js';
 import {
@@ -26,6 +28,13 @@ function stubFetch(impl: (url: string, init: RequestInit) => Promise<Response>) 
 function jsonResponse(body: unknown, status = 200) {
     return Promise.resolve(new Response(JSON.stringify(body), { status }));
 }
+
+beforeEach(() => {
+    // vite.config.mts sets this variable for all unit tests.
+    vi.stubEnv(SKIP_PLATFORM_CATALOG_FETCH_ENV, '');
+    // No test may reach a real host.
+    stubFetch(() => Promise.reject(new Error('Unexpected fetch')));
+});
 
 afterEach(() => {
     vi.unstubAllGlobals();
