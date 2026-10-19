@@ -2362,6 +2362,11 @@ export class OrderService implements OnApplicationBootstrap {
      * Applies promotions, taxes and shipping to the Order. If the `updatedOrderLines` argument is passed in,
      * then all of those OrderLines will have their prices re-calculated using the configured {@link OrderItemPriceCalculationStrategy}.
      *
+     * The Order's Surcharges are reloaded from the database before the totals are calculated, so the
+     * totals always include every Surcharge row attached to the Order, including any added by an event
+     * handler or a concurrent request after the Order was loaded. A Surcharge must therefore be saved
+     * before calling this method: one which only exists in the `order.surcharges` array is not included.
+     *
      * Pass `options.recalculateShipping: false` to leave the Order's existing ShippingLine prices
      * untouched. This is needed when the Order's ShippingMethods cannot be resolved in the current
      * Channel, e.g. for a seller Order whose ShippingLines were already calculated on the aggregate
@@ -2442,7 +2447,8 @@ export class OrderService implements OnApplicationBootstrap {
             }
         }
 
-        // Reload surcharges so totals reflect the DB, not a stale load-time snapshot.
+        // A blocking event handler or a concurrent request can add or remove a Surcharge after
+        // this Order was loaded. Reload them so the totals include every persisted row.
         order.surcharges = await this.connection.getRepository(ctx, Surcharge).find({
             where: { order: { id: order.id } },
         });
