@@ -87,7 +87,8 @@ test.describe('Locked Platform features', () => {
         const builtInBox = await sidebar.getByRole('link', { name: 'Customer Groups' }).boundingBox();
         const lockedBox = await link.boundingBox();
         expect(lockedBox?.height).toBe(builtInBox?.height);
-        await expect(link).not.toContainText(/starter|growth|scale|enterprise/i);
+        // The tier text in the row is for screen readers only.
+        await expect(link.getByText(/starter|growth|scale|enterprise/i)).toHaveClass(/sr-only/);
         await icon.hover();
         await expect(page.locator('[data-slot="tooltip-content"]')).toContainText(
             new RegExp(`${lockedCapability.tier} plan`, 'i'),
