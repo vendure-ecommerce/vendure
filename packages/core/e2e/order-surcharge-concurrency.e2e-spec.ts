@@ -5,14 +5,17 @@ import {
     idsAreEqual,
     LanguageCode,
     mergeConfig,
+    Order,
     OrderLineEvent,
     OrderService,
     PromotionCondition,
     PromotionOrderAction,
     RequestContextService,
+    TransactionalConnection,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
+import { EntitySubscriberInterface } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -23,6 +26,7 @@ import { createPromotionDocument } from './graphql/shared-definitions';
 import {
     addItemToOrderDocument,
     adjustItemQuantityDocument,
+    setShippingAddressDocument,
     testOrderFragment,
 } from './graphql/shop-definitions';
 
@@ -30,6 +34,16 @@ import {
  * How long a request which should be waiting for the Order lock is given to finish anyway.
  */
 const LOCK_WAIT_PROBE_MS = 1000;
+
+/**
+ * Resolves `true` if the promise settles within {@link LOCK_WAIT_PROBE_MS}.
+ */
+function finishesWithinProbe(promise: Promise<unknown>): Promise<boolean> {
+    return Promise.race([
+        promise.then(() => true),
+        new Promise<boolean>(resolve => setTimeout(() => resolve(false), LOCK_WAIT_PROBE_MS)),
+    ]);
+}
 
 let heldOrder: { orderId: ID; reached: () => void; released: Promise<void> } | undefined;
 
@@ -44,16 +58,6 @@ function holdRepricing(orderId: ID) {
     const reachedPromise = new Promise<void>(resolve => (reached = resolve));
     heldOrder = { orderId, reached, released: new Promise<void>(resolve => (release = resolve)) };
     return { reached: reachedPromise, release };
-}
-
-/**
- * Resolves `true` if the promise settles within {@link LOCK_WAIT_PROBE_MS}.
- */
-function finishesWithinProbe(promise: Promise<unknown>): Promise<boolean> {
-    return Promise.race([
-        promise.then(() => true),
-        new Promise<boolean>(resolve => setTimeout(() => resolve(false), LOCK_WAIT_PROBE_MS)),
-    ]);
 }
 
 const holdCondition = new PromotionCondition({
@@ -138,6 +142,24 @@ describe('Order Surcharges under concurrent repricing', () => {
         expect(order!.subTotal).toBe(expectedSubTotal);
     }
 
+    /**
+     * Resolves when the given Order is next loaded from the database, by any request.
+     */
+    function onNextLoadOfOrder(orderId: number): Promise<void> {
+        const subscribers = server.app.get(TransactionalConnection).rawConnection.subscribers;
+        return new Promise(resolve => {
+            const subscriber: EntitySubscriberInterface = {
+                afterLoad: entity => {
+                    if (entity instanceof Order && idsAreEqual(entity.id, orderId)) {
+                        subscribers.splice(subscribers.indexOf(subscriber), 1);
+                        resolve();
+                    }
+                },
+            };
+            subscribers.push(subscriber);
+        });
+    }
+
     async function addLoyaltySurcharge(orderId: number) {
         const ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
         return server.app.get(OrderService).addSurchargeToOrder(ctx, orderId, {
@@ -211,6 +233,38 @@ describe('Order Surcharges under concurrent repricing', () => {
             expect(adjustOrderLine.subTotal).toBe(
                 adjustOrderLine.lines.reduce((sum, l) => sum + l.linePrice, 0) - 500,
             );
+        },
+    );
+
+    // Targets MySQL and MariaDB like the previous test. `setShippingAddress` loads the Order, then
+    // updates the Order row, then reprices. A plain read after that update returns the transaction's
+    // own new row, so the reprice must not compare against one to decide whether its snapshot is
+    // stale.
+    it.skipIf(!process.env.DB || process.env.DB === 'sqljs')(
+        'includes a Surcharge committed while setShippingAddress was waiting for the Order lock',
+        async () => {
+            const { orderId } = await createOrder();
+
+            const hold = holdRepricing(orderId);
+            const addSurcharge = addLoyaltySurcharge(orderId);
+            await hold.reached;
+
+            // The request's snapshot is taken when it loads the Order, before request 1 commits.
+            const orderLoaded = onNextLoadOfOrder(orderId);
+            const setAddress = shopClient.query(setShippingAddressDocument, {
+                input: { streetLine1: '1 Test Street', countryCode: 'AT' },
+            });
+            await orderLoaded;
+            hold.release();
+            await addSurcharge;
+            await setAddress;
+
+            const ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
+            const order = await server.app.get(OrderService).findOne(ctx, orderId);
+            expect(order!.shippingAddress.streetLine1).toBe('1 Test Street');
+            expect(order!.surcharges.map(s => s.listPrice)).toEqual([-500]);
+            const expectedSubTotal = order!.lines.reduce((sum, l) => sum + l.proratedLinePrice, 0) - 500;
+            expect(order!.subTotal).toBe(expectedSubTotal);
         },
     );
 });
