@@ -14,7 +14,7 @@ declare module 'virtual:plugin-translations' {
 }
 
 declare module 'virtual:vendure-platform-promotion' {
-    import { DashboardPromotionV1 } from './framework/platform-promotion/platform-promotion-types.js';
+    import { DashboardPromotionV1 } from '@/vdb/framework/platform-promotion/platform-promotion-types.js';
     export const dashboardPromotion: DashboardPromotionV1;
     export const licenseGuardConfigured: boolean;
 }

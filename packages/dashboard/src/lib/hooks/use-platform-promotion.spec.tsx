@@ -1,6 +1,7 @@
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DashboardPromotionV1 } from '@/vdb/framework/platform-promotion/platform-promotion-types.js';
 import { globalRegistry } from '@/vdb/framework/registry/global-registry.js';
@@ -38,7 +39,16 @@ async function importWithLicenseGuard(licenseGuardConfigured: boolean) {
 }
 
 describe('usePlatformPromotion', () => {
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
     beforeEach(() => {
+        // No test may reach a real host.
+        vi.stubGlobal(
+            'fetch',
+            vi.fn(() => Promise.reject(new Error('Unexpected fetch'))),
+        );
         const store = globalRegistry.get('platformGrantedCapabilities');
         if (store) {
             store.capabilities = undefined;
@@ -93,5 +103,15 @@ describe('usePlatformPromotion', () => {
 
         expect(states[0]).toEqual({ hideAll: true, locked: false });
         expect(states[states.length - 1]).toEqual({ hideAll: false, locked: true });
+    });
+
+    it('renders with renderToStaticMarkup', async () => {
+        const { usePlatformPromotion } = await importWithLicenseGuard(false);
+        function Probe() {
+            const { isLocked } = usePlatformPromotion();
+            return <span>{String(isLocked('org.accounts'))}</span>;
+        }
+
+        expect(renderToStaticMarkup(<Probe />)).toBe('<span>true</span>');
     });
 });
