@@ -26,8 +26,17 @@ export class RedisJobBufferStorageStrategy implements JobBufferStorageStrategy {
     }
 
     async destroy() {
-        if (this.ownsRedisConnection) {
+        if (!this.ownsRedisConnection) {
+            return;
+        }
+        try {
             await this.redis.quit();
+        } catch (e: any) {
+            Logger.error(
+                `Error closing Redis connection: ${JSON.stringify(e?.message)}`,
+                loggerCtx,
+                e?.stack,
+            );
         }
     }
 

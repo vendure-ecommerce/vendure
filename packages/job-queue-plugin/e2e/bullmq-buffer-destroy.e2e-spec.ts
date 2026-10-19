@@ -1,4 +1,4 @@
-import { Injector } from '@vendure/core';
+import { Injector, Logger } from '@vendure/core';
 import Redis from 'ioredis';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -48,6 +48,24 @@ describe('RedisJobBufferStorageStrategy destroy', () => {
         await strategy.destroy();
 
         await vi.waitFor(async () => expect(await openConnections()).toBe(0));
+    });
+
+    it('logs instead of throwing when the connection is already closed', async () => {
+        const strategy = createStrategy({
+            host: redisHost,
+            port: redisPort,
+            maxRetriesPerRequest: null,
+            connectionName: CONNECTION_NAME,
+        });
+        await strategy.bufferSize([]);
+        await strategy.destroy();
+        const loggerError = vi.spyOn(Logger, 'error').mockImplementation(() => undefined);
+
+        await expect(strategy.destroy()).resolves.toBeUndefined();
+
+        expect(loggerError).toHaveBeenCalledTimes(1);
+        expect(loggerError.mock.calls[0][0]).toContain('Error closing Redis connection');
+        loggerError.mockRestore();
     });
 
     it('leaves a connection supplied by the caller open', async () => {
