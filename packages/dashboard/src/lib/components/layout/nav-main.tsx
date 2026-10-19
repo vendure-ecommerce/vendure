@@ -1,3 +1,4 @@
+import { LockedTierLabel } from '@/vdb/components/platform-promotion/platform-promo.js';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/components/ui/collapsible.js';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/vdb/components/ui/hover-card.js';
 import {
@@ -13,7 +14,10 @@ import {
 } from '@/vdb/components/ui/sidebar.js';
 import { NavMenuItem, NavMenuSection } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 import { resolveNavMenu } from '@/vdb/framework/nav-menu/resolve-nav-menu.js';
+import { getLockedCapability } from '@/vdb/framework/platform-promotion/locked-capabilities.js';
+import { getLockedNavItemCapability } from '@/vdb/framework/platform-promotion/register-locked-navigation.js';
 import { useDashboardUserContext } from '@/vdb/hooks/use-dashboard-user-context.js';
+import { usePlatformPromotion } from '@/vdb/hooks/use-platform-promotion.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { useLingui } from '@lingui/react';
 import { Link, useRouter, useRouterState } from '@tanstack/react-router';
@@ -27,6 +31,13 @@ import { buildShortcutMap, isEditableTarget } from './navigation-shortcuts.js';
  */
 function escapeRegexChars(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** The lock icon and tier label of a locked Platform nav item, or nothing for other items. */
+function LockedNavLabel({ itemId }: Readonly<{ itemId: string }>) {
+    const capability = getLockedNavItemCapability(itemId);
+    const promotion = capability ? getLockedCapability(usePlatformPromotion(), capability) : undefined;
+    return promotion ? <LockedTierLabel promotion={promotion} className="ms-auto" /> : null;
 }
 
 const HOVER_OPEN_DELAY = 150;
@@ -79,6 +90,7 @@ function CollapsedSectionMenu({
                             )}
                         >
                             {i18n.t(subItem.title)}
+                            <LockedNavLabel itemId={subItem.id} />
                         </Link>
                     </NavItemWrapper>
                 ))}
@@ -87,8 +99,27 @@ function CollapsedSectionMenu({
     );
 }
 
-export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavMenuItem> }>) {
+export function NavMain({ items: allItems }: Readonly<{ items: Array<NavMenuSection | NavMenuItem> }>) {
     const router = useRouter();
+    const platformPromotion = usePlatformPromotion();
+    // A locked Platform item goes away when its capability is granted, or when all locked
+    // items are hidden. A section left with no items is then dropped by resolveNavMenu.
+    const items = React.useMemo(
+        () =>
+            allItems.map(section => {
+                if (!('items' in section)) {
+                    return section;
+                }
+                return {
+                    ...section,
+                    items: section.items?.filter(item => {
+                        const capability = getLockedNavItemCapability(item.id);
+                        return !capability || !!getLockedCapability(platformPromotion, capability);
+                    }),
+                };
+            }),
+        [allItems, platformPromotion],
+    );
     const routerState = useRouterState();
     // With no isVisible predicate anywhere, the resolved output cannot depend on
     // administrator custom fields, so a vanilla install skips that request entirely.
@@ -389,6 +420,7 @@ export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavM
                                                 isActive={isPathActive(subItem.url)}
                                             >
                                                 <span>{i18n.t(subItem.title)}</span>
+                                                <LockedNavLabel itemId={subItem.id} />
                                                 {navigationChordActive ? (
                                                     <ShortcutBadge shortcut={subItem.shortcut} />
                                                 ) : null}
