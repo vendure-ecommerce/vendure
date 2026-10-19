@@ -118,7 +118,7 @@ describe('usePlatformPromotion', () => {
 
     it('Platform promotion turned off in the build: all locked items are hidden', async () => {
         const { getPlatformPromotion, setPlatformGrantedCapabilities } = await importWithLicenseGuard(
-            false,
+            true,
             false,
         );
 
