@@ -2,6 +2,7 @@ import { LS_KEY_SELECTED_CHANNEL_TOKEN } from '@/vdb/constants.js';
 import { api } from '@/vdb/graphql/api.js';
 import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { useLingui } from '@lingui/react/macro';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 
@@ -27,7 +28,8 @@ export interface AuthContext {
     authenticationError?: string;
     /**
      * @description
-     * Whether the user is authenticated.
+     * Whether the user is authenticated. An Administrator without access to any Channel
+     * is not authenticated, as they cannot use the Dashboard.
      */
     isAuthenticated: boolean;
     /**
@@ -127,6 +129,15 @@ const CurrentUserQuery = graphql(`
     }
 `);
 
+/**
+ * An Administrator needs access to at least one Channel to use the Dashboard. Without it, every
+ * Channel-scoped query is forbidden, including the server config which the Dashboard waits for
+ * before it renders. See #5617
+ */
+function hasDashboardAccess(currentUser: ResultOf<typeof CurrentUserQuery> | undefined): boolean {
+    return !!currentUser?.me?.channels.length;
+}
+
 const CurrentAdministratorAvatarQuery = `
     query CurrentAdministratorAvatar {
         activeAdministrator {
@@ -148,6 +159,8 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
     const [isLoginLogoutInProgress, setIsLoginLogoutInProgress] = React.useState(false);
     const { settings, setActiveChannelId } = useUserSettings();
     const queryClient = useQueryClient();
+    const { t } = useLingui();
+    const noChannelAccessError = t`You do not have access to any channel`;
 
     // Query for current user
     const {
@@ -174,7 +187,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
     }, [settings.activeChannelId, currentUserData?.me?.channels]);
 
     // Determine isAuthenticated from currentUserData
-    const isAuthenticated = !!currentUserData?.me?.id;
+    const isAuthenticated = hasDashboardAccess(currentUserData);
     const { data: avatarData } = useQuery<{
         activeAdministrator: { avatar: AdministratorAvatar | null } | null;
     }>({
@@ -195,6 +208,15 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                     if (data.login.__typename === 'CurrentUser') {
                         setAuthenticationError(undefined);
                         const { data: refetchedData } = await refetchCurrentUser();
+                        if (!hasDashboardAccess(refetchedData)) {
+                            // The session cannot be used, so end it
+                            await api.mutate(LogOutMutation)({});
+                            queryClient.removeQueries({ queryKey: ['currentUser'] });
+                            setAuthenticationError(noChannelAccessError);
+                            setStatus('unauthenticated');
+                            setIsLoginLogoutInProgress(false);
+                            return;
+                        }
                         // Synchronously set the channel token in localStorage before
                         // invalidating queries. This is critical for non-superadmin users
                         // whose roles are scoped only to non-default channels. Without this,
@@ -232,7 +254,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                     setIsLoginLogoutInProgress(false);
                 });
         },
-        [refetchCurrentUser, queryClient, settings.activeChannelId, setActiveChannelId],
+        [refetchCurrentUser, queryClient, settings.activeChannelId, setActiveChannelId, noChannelAccessError],
     );
 
     const logout = React.useCallback(
@@ -259,7 +281,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                 // means react-query won't auto-refetch this query).
                 setAuthenticationError(error instanceof Error ? error.message : String(error));
                 const { data: refreshedData, error: refreshedError } = await refetchCurrentUser();
-                if (refreshedError || !refreshedData?.me?.id) {
+                if (refreshedError || !hasDashboardAccess(refreshedData)) {
                     setStatus('unauthenticated');
                 } else {
                     setStatus('authenticated');
@@ -308,13 +330,25 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
 
         // If query has completed (not loading) and we're in verifying state, determine final status
         if (!isLoading && status === 'verifying') {
-            if (currentUserError || !currentUserData?.me?.id) {
+            if (currentUserError || !isAuthenticated) {
+                if (currentUserData?.me?.id) {
+                    // Signed in, but without access to any channel, e.g. after it was removed
+                    setAuthenticationError(noChannelAccessError);
+                }
                 setStatus('unauthenticated');
             } else {
                 setStatus('authenticated');
             }
         }
-    }, [isLoading, currentUserData, currentUserError, status, isLoginLogoutInProgress]);
+    }, [
+        isLoading,
+        currentUserData,
+        currentUserError,
+        isAuthenticated,
+        status,
+        isLoginLogoutInProgress,
+        noChannelAccessError,
+    ]);
 
     const refreshCurrentUser = () => {
         queryClient.invalidateQueries({
