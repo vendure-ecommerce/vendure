@@ -207,8 +207,8 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                 .then(async data => {
                     if (data.login.__typename === 'CurrentUser') {
                         setAuthenticationError(undefined);
-                        const { data: refetchedData } = await refetchCurrentUser();
-                        if (!hasDashboardAccess(refetchedData)) {
+                        const { data: refetchedData, error: refetchError } = await refetchCurrentUser();
+                        if (!refetchError && !hasDashboardAccess(refetchedData)) {
                             // The session cannot be used, so end it
                             await api.mutate(LogOutMutation)({});
                             queryClient.removeQueries({ queryKey: ['currentUser'] });

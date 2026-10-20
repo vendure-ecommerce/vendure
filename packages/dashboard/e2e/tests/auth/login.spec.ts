@@ -121,6 +121,36 @@ test.describe('Administrator without access to any channel', () => {
         await loginPage.expectVisible();
         await context.close();
     });
+
+    test('does not report missing channel access when the current user cannot be loaded', async ({
+        browser,
+    }) => {
+        const { context, page: adminPage, loginPage } = await newLoginPage(browser);
+        // Fail the first current-user request after the login, as a network error would
+        let loginSent = false;
+        let failedRefetch = false;
+        await adminPage.route('**/admin-api**', async route => {
+            const operation = route.request().postDataJSON()?.query ?? '';
+            if (operation.includes('mutation Login')) {
+                loginSent = true;
+            } else if (loginSent && !failedRefetch && operation.includes('query CurrentUserInformation')) {
+                failedRefetch = true;
+                return route.abort();
+            }
+            return route.continue();
+        });
+        await loginPage.goto();
+        await loginPage.login('superadmin', 'superadmin');
+
+        await expect(adminPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
+        expect(failedRefetch).toBe(true);
+        await expect(
+            adminPage
+                .locator('[data-sonner-toast]')
+                .filter({ hasText: 'You do not have access to any channel' }),
+        ).toHaveCount(0);
+        await context.close();
+    });
 });
 
 // #1116 — administrators should be able to reset a forgotten password
