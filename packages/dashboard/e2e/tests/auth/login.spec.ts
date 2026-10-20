@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { LoginPage } from '../../page-objects/login-page.js';
+import { VendureAdminClient } from '../../utils/vendure-admin-client.js';
 
 // These tests need a clean browser with no saved auth state
 test.use({ storageState: { cookies: [], origins: [] } });
@@ -29,6 +30,93 @@ test.describe('Login', () => {
     test('should redirect to login when accessing protected route unauthenticated', async ({ page }) => {
         await page.goto('/products');
         await expect(page).toHaveURL(/\/login/);
+    });
+});
+
+// #5623 — after a logout, the next user's navigation should match their permissions without a reload
+test.describe('Switching user', () => {
+    test('shows the navigation of a user whose role is on another channel', async ({ page, browser }) => {
+        const suffix = Date.now();
+        const superAdminEmailAddress = `switch-superadmin-${suffix}@test.com`;
+        const emailAddress = `switch-user-${suffix}@test.com`;
+        const password = 'test-password';
+        const client = new VendureAdminClient(page);
+        await client.login();
+        // Logging out ends all sessions of a User, so a separate SuperAdmin is logged out
+        // instead of the one which the other tests use
+        const { roles } = await client.gql(
+            `query { roles(options: { filter: { code: { eq: "__super_admin_role__" } } }) { items { id } } }`,
+        );
+        await client.gql(
+            `mutation ($input: CreateAdministratorInput!) { createAdministrator(input: $input) { id } }`,
+            {
+                input: {
+                    firstName: 'Switch',
+                    lastName: 'SuperAdmin',
+                    emailAddress: superAdminEmailAddress,
+                    password,
+                    roleIds: [roles.items[0].id],
+                },
+            },
+        );
+        const { createChannel } = await client.gql(
+            `mutation ($input: CreateChannelInput!) { createChannel(input: $input) { ... on Channel { id } } }`,
+            {
+                input: {
+                    code: `switch-user-${suffix}`,
+                    token: `switch-user-${suffix}`,
+                    defaultLanguageCode: 'en',
+                    currencyCode: 'USD',
+                    pricesIncludeTax: false,
+                    defaultShippingZoneId: '1',
+                    defaultTaxZoneId: '1',
+                },
+            },
+        );
+        const { createRole } = await client.gql(
+            `mutation ($input: CreateRoleInput!) { createRole(input: $input) { id } }`,
+            {
+                input: {
+                    code: `switch-user-${suffix}`,
+                    description: 'Catalog access on another channel',
+                    permissions: ['ReadCatalog'],
+                    channelIds: [createChannel.id],
+                },
+            },
+        );
+        await client.gql(
+            `mutation ($input: CreateAdministratorInput!) { createAdministrator(input: $input) { id } }`,
+            {
+                input: {
+                    firstName: 'Switch',
+                    lastName: 'User',
+                    emailAddress,
+                    password,
+                    roleIds: [createRole.id],
+                },
+            },
+        );
+
+        // A fresh browser context, so that the page is not signed in as the SuperAdmin
+        const context = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+        const userPage = await context.newPage();
+        const loginPage = new LoginPage(userPage);
+        await loginPage.goto();
+        await loginPage.login(superAdminEmailAddress, password);
+        await expect(userPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
+
+        await userPage.locator('[data-sidebar="footer"] [data-sidebar="menu-button"]').last().click();
+        await userPage.getByRole('menuitem', { name: 'Log out' }).click();
+        await loginPage.expectVisible();
+        await loginPage.login(emailAddress, password);
+        await expect(userPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
+
+        await expect(
+            userPage.locator('[data-sidebar="menu-button"]').filter({ hasText: 'Catalog' }),
+        ).toBeVisible({
+            timeout: 10_000,
+        });
+        await context.close();
     });
 });
 
