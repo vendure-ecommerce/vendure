@@ -194,17 +194,20 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                 .then(async data => {
                     if (data.login.__typename === 'CurrentUser') {
                         setAuthenticationError(undefined);
-                        // Load the current user before writing it to the query cache. The cached
-                        // user enables the Channel-scoped queries (activeChannel, channels, server
-                        // config), so the channel token must be in localStorage first. Otherwise
-                        // they are sent with the previous session's token, or with none, and a user
-                        // whose roles are scoped only to other channels gets FORBIDDEN. See #5623
-                        const currentUser = await api.query(CurrentUserQuery);
-                        if (currentUser.me?.channels?.length) {
+                        const { data: refetchedData } = await refetchCurrentUser();
+                        // Synchronously set the channel token in localStorage before
+                        // invalidating queries. This is critical for non-superadmin users
+                        // whose roles are scoped only to non-default channels. Without this,
+                        // the invalidateQueries() call below triggers the activeChannel and
+                        // channels queries before React effects in ChannelProvider have a
+                        // chance to write the token to localStorage. When no vendure-token
+                        // header is present, the backend defaults to the default channel,
+                        // and the user gets FORBIDDEN because they have no permissions on it.
+                        if (refetchedData?.me?.channels?.length) {
                             const previousChannel = settings.activeChannelId
-                                ? currentUser.me.channels.find(c => c.id === settings.activeChannelId)
+                                ? refetchedData.me.channels.find(c => c.id === settings.activeChannelId)
                                 : undefined;
-                            const channel = previousChannel ?? currentUser.me.channels[0];
+                            const channel = previousChannel ?? refetchedData.me.channels[0];
                             try {
                                 localStorage.setItem(LS_KEY_SELECTED_CHANNEL_TOKEN, channel.token);
                             } catch (e) {
@@ -212,7 +215,10 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                             }
                             setActiveChannelId(channel.id);
                         }
-                        queryClient.setQueryData(['currentUser'], currentUser);
+                        // Queries enabled by the refetched user may still be running with the
+                        // previous session's channel token. invalidateQueries() would wait for them
+                        // instead of refetching, so cancel them first. See #5623
+                        await queryClient.cancelQueries();
                         // Invalidate all queries to ensure fresh data after login
                         await queryClient.invalidateQueries();
                         setStatus('authenticated');
@@ -230,7 +236,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                     setIsLoginLogoutInProgress(false);
                 });
         },
-        [queryClient, settings.activeChannelId, setActiveChannelId],
+        [refetchCurrentUser, queryClient, settings.activeChannelId, setActiveChannelId],
     );
 
     const logout = React.useCallback(

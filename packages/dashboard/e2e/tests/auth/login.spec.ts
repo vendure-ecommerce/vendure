@@ -36,7 +36,7 @@ test.describe('Login', () => {
 // #5623 — after a logout, the next user's navigation should match their permissions without a reload
 test.describe('Switching user', () => {
     test('shows the navigation of a user whose role is on another channel', async ({ page, browser }) => {
-        const suffix = Date.now();
+        const suffix = `${Date.now()}-${Math.round(Math.random() * 1000)}`;
         const superAdminEmailAddress = `switch-superadmin-${suffix}@test.com`;
         const emailAddress = `switch-user-${suffix}@test.com`;
         const password = 'test-password';
