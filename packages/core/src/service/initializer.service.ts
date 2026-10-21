@@ -5,7 +5,10 @@ import { TransactionalConnection } from '../connection/transactional-connection'
 import { Administrator } from '../entity/administrator/administrator.entity';
 import { EventBus } from '../event-bus';
 import { InitializerEvent } from '../event-bus/events/initializer-event';
-import { ensureRoleAssignmentDataMigrated } from '../migration-utils/v4_0_role_assignments';
+import {
+    ensureRoleAssignmentDataMigrated,
+    hasLegacyRoleTables,
+} from '../migration-utils/v4_0_role_assignments';
 
 import { AdministratorService } from './services/administrator.service';
 import { ChannelService } from './services/channel.service';
@@ -66,6 +69,8 @@ export class InitializerService {
      * role_assignment table would be empty and every Administrator except the configured
      * superadmin would be locked out. With synchronize enabled there is no migration to run
      * the data migration from, so it runs here instead.
+     *
+     * Warns while the pre-v4 tables still exist, until removeLegacyRoleData() has run.
      */
     private async ensureRoleAssignmentDataMigrated() {
         const queryRunner = this.connection.rawConnection.createQueryRunner();
@@ -75,6 +80,14 @@ export class InitializerService {
             });
             if (migrated) {
                 Logger.info('Migrated the pre-v4 role grants to role assignments (synchronize is enabled)');
+            }
+            if (await hasLegacyRoleTables(queryRunner)) {
+                Logger.warn(
+                    'The pre-v4 user_roles_role and role_channels_channel tables still exist. Once no ' +
+                        'v3 server or worker is running, call removeLegacyRoleData() from a migration. ' +
+                        'See https://docs.vendure.io/current/framework/developer-guide/migrating-from-v3/' +
+                        'database-migration#removing-the-legacy-tables',
+                );
             }
         } finally {
             await queryRunner.release();

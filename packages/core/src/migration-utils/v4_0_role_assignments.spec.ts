@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     assertRoleAssignmentDataMigrated,
     ensureRoleAssignmentDataMigrated,
+    hasLegacyRoleTables,
     migrateRoleAssignmentData,
     removeLegacyRoleData,
 } from './v4_0_role_assignments';
@@ -108,6 +109,22 @@ describe('migrateRoleAssignmentData()', () => {
         );
     }
 
+    /**
+     * Inserts role_assignment rows as a v4 server writes them after the copy: with a later
+     * createdAt than the copied rows.
+     */
+    async function insertWrittenOnV4(values: string) {
+        await queryRunner.query(
+            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId", "createdAt")
+             SELECT v."column1", v."column2", v."column3", datetime('now', '+1 minute')
+             FROM (VALUES ${values}) v`,
+        );
+    }
+
+    function loggedLine(log: { mock: { calls: unknown[][] } }, prefix: string): string | undefined {
+        return log.mock.calls.map(call => String(call[0])).find(line => line.startsWith(prefix));
+    }
+
     it('migrates the cross product of roles and channels, excluding the customer role', async () => {
         await createSchema();
         await seedData();
@@ -165,92 +182,41 @@ describe('migrateRoleAssignmentData()', () => {
         );
     });
 
-    it('leaves pre-existing assignments as-is', async () => {
+    it('leaves the legacy tables as they are, updates the system Roles and records the copy', async () => {
         await createSchema();
         await seedData();
-        await queryRunner.query(
-            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (2, 3, 2)`,
-        );
 
-        const insertedCount = await migrateRoleAssignmentData(queryRunner);
+        await migrateRoleAssignmentData(queryRunner);
 
-        expect(insertedCount).toBe(2);
-        expect((await getAssignments()).filter(a => a.userId === 2)).toEqual([
-            { userId: 2, roleId: 3, channelId: 2 },
-        ]);
-    });
-
-    it('fails verification on a pre-existing row the legacy tables do not grant', async () => {
-        await createSchema();
-        await seedData();
-        // e.g. copied by an earlier pass of a staged rollout, then revoked in the legacy tables
-        await queryRunner.query(
-            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (2, 3, 1)`,
-        );
-
-        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            /Would gain access \(present after the copy, not granted before v4\): 1 grant\(s\)\n {2}sales-admin: sales on __default_channel__/,
-        );
-        // Nothing destructive runs before a successful verification
-        const customerRoles = await queryRunner.query(
-            `SELECT "id" FROM "role" WHERE "code" = '__customer_role__'`,
-        );
-        expect(customerRoles.length).toBe(1);
-        expect(await queryRunner.hasTable('user_roles_role')).toBe(true);
+        expect(await hasLegacyRoleTables(queryRunner)).toBe(true);
         expect(await queryRunner.hasTable('role_channels_channel')).toBe(true);
+        expect((await queryRunner.query(`SELECT * FROM "user_roles_role"`)).length).toBe(5);
+        expect(await queryRunner.query(`SELECT "code", "permissions" FROM "role" ORDER BY "id"`)).toEqual([
+            {
+                code: '__super_admin_role__',
+                permissions: 'SuperAdmin,CreateRole,ReadRole,UpdateRole,DeleteRole',
+            },
+            { code: '__customer_role__', permissions: 'Authenticated' },
+            { code: 'sales', permissions: 'Authenticated,ReadOrder' },
+            {
+                code: '__role_editor_role__',
+                permissions: 'Authenticated,CreateRole,ReadRole,UpdateRole,DeleteRole',
+            },
+        ]);
+        expect(await queryRunner.query(`SELECT "id" FROM "role_assignment_migration"`)).toEqual([{ id: 1 }]);
     });
 
-    it('fails verification on a SuperAdmin row outside the default channel', async () => {
+    it('lets v4 start once the copy is recorded, while the legacy tables exist', async () => {
         await createSchema();
         await seedData();
-        await queryRunner.query(
-            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (1, 1, 2)`,
+        await expect(assertRoleAssignmentDataMigrated(queryRunner)).rejects.toThrow();
+
+        await migrateRoleAssignmentData(queryRunner);
+
+        await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
+        await expect(ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: false })).resolves.toBe(
+            false,
         );
-
-        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            /Would gain access .*: 1 grant\(s\)\n {2}superadmin: __super_admin_role__ on second/,
-        );
-    });
-
-    it('fails verification on a Customer role row', async () => {
-        await createSchema();
-        await seedData();
-        await queryRunner.query(
-            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (3, 2, 1)`,
-        );
-
-        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            /Would gain access .*: 1 grant\(s\)\n {2}customer-a: __customer_role__ on __default_channel__/,
-        );
-    });
-
-    it('fails verification when grants go missing in the copy, naming the user', async () => {
-        await createSchema();
-        await seedData();
-        // a faulty copy: inserts for the sales admin are silently dropped
-        await queryRunner.query(
-            `CREATE TRIGGER "drop_sales_admin" BEFORE INSERT ON "role_assignment"
-             WHEN NEW."userId" = 2 BEGIN SELECT RAISE(IGNORE); END`,
-        );
-
-        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            /Would lose access \(granted before v4, missing after the copy\): 1 grant\(s\)\n {2}sales-admin: sales on second/,
-        );
-        expect(await queryRunner.hasTable('user_roles_role')).toBe(true);
-    });
-
-    it('generates uuid primary keys when the id column has no database-side default', async () => {
-        await createSchema({ idType: 'uuid' });
-        await seedData();
-
-        const insertedCount = await migrateRoleAssignmentData(queryRunner);
-
-        expect(insertedCount).toBe(3);
-        const rows: Array<{ id: string }> = await queryRunner.query(`SELECT "id" FROM "role_assignment"`);
-        for (const row of rows) {
-            expect(row.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
-        }
-        expect(new Set(rows.map(row => row.id)).size).toBe(3);
     });
 
     it('creates the RoleEditor role without granting it to anyone', async () => {
@@ -287,113 +253,65 @@ describe('migrateRoleAssignmentData()', () => {
         expect((await getAssignments()).filter(a => a.roleId === 10)).toEqual([]);
     });
 
-    it('keeps the Customer role row for the archive', async () => {
+    it('leaves pre-existing assignments as-is', async () => {
         await createSchema();
         await seedData();
-
-        await migrateRoleAssignmentData(queryRunner);
-
-        const customerRoles = await queryRunner.query(
-            `SELECT "id" FROM "role" WHERE "code" = '__customer_role__'`,
+        await queryRunner.query(
+            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (2, 3, 2)`,
         );
-        expect(customerRoles).toEqual([{ id: 2 }]);
-    });
 
-    it('archives the legacy tables with all their rows and without foreign keys', async () => {
-        await createSchema();
-        await seedData();
+        const insertedCount = await migrateRoleAssignmentData(queryRunner);
 
-        await migrateRoleAssignmentData(queryRunner);
-
-        expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
-        expect(await queryRunner.hasTable('role_channels_channel')).toBe(false);
-        // The Customer role's rows are part of the archive too
-        expect(
-            await queryRunner.query(`SELECT * FROM "_v3_user_roles_role" ORDER BY "userId", "roleId"`),
-        ).toEqual([
-            { userId: 1, roleId: 1 },
-            { userId: 2, roleId: 3 },
-            { userId: 3, roleId: 2 },
-            { userId: 4, roleId: 2 },
-            { userId: 4, roleId: 3 },
+        expect(insertedCount).toBe(2);
+        expect((await getAssignments()).filter(a => a.userId === 2)).toEqual([
+            { userId: 2, roleId: 3, channelId: 2 },
         ]);
-        expect((await queryRunner.query(`SELECT * FROM "_v3_role_channels_channel"`)).length).toBe(5);
-        expect((await queryRunner.getTable('_v3_user_roles_role'))?.foreignKeys).toEqual([]);
-        expect((await queryRunner.getTable('_v3_role_channels_channel'))?.foreignKeys).toEqual([]);
-        // Deleting a Role no longer cascades into the archive
-        await queryRunner.query(`DELETE FROM "role" WHERE "id" = 3`);
-        expect((await queryRunner.query(`SELECT * FROM "_v3_user_roles_role"`)).length).toBe(5);
     });
 
-    // On MySQL each DDL statement commits on its own, so a run can stop after any of them.
-    // The archive runs four: two foreign key drops, then two renames.
-    it.each([1, 2, 3, 4])(
-        'refuses to start and completes on a re-run after the archive stopped at DDL statement %i',
-        async failingStatement => {
-            await createSchema();
-            await seedData();
-            let statements = 0;
-            const failAt = <T extends (...args: any[]) => Promise<any>>(original: T) =>
-                (async (...args: Parameters<T>) => {
-                    if (++statements === failingStatement) {
-                        throw new Error('Connection lost');
-                    }
-                    return original(...args);
-                }) as T;
-            const originalDropForeignKeys = queryRunner.dropForeignKeys.bind(queryRunner);
-            const originalRenameTable = queryRunner.renameTable.bind(queryRunner);
-            const dropForeignKeys = vi
-                .spyOn(queryRunner, 'dropForeignKeys')
-                .mockImplementation(failAt(originalDropForeignKeys));
-            const renameTable = vi
-                .spyOn(queryRunner, 'renameTable')
-                .mockImplementation(failAt(originalRenameTable));
-
-            await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow('Connection lost');
-            dropForeignKeys.mockRestore();
-            renameTable.mockRestore();
-
-            await expect(assertRoleAssignmentDataMigrated(queryRunner)).rejects.toThrow();
-            await migrateRoleAssignmentData(queryRunner);
-            await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
-            expect((await getAssignments()).length).toBe(3);
-            expect(await queryRunner.hasTable('role_channels_channel')).toBe(false);
-            expect((await queryRunner.getTable('_v3_user_roles_role'))?.foreignKeys).toEqual([]);
-            expect((await queryRunner.getTable('_v3_role_channels_channel'))?.foreignKeys).toEqual([]);
-        },
-    );
-
-    it('names the recovery when a previous run stopped between the two renames', async () => {
+    it('fails verification on a row the legacy tables do not grant, and records no copy', async () => {
         await createSchema();
         await seedData();
-        await queryRunner.renameTable('role_channels_channel', '_v3_role_channels_channel');
-
-        await expect(assertRoleAssignmentDataMigrated(queryRunner)).rejects.toThrow(
-            'A previous run of migrateRoleAssignmentData() stopped before archiving the user_roles_role table',
+        await queryRunner.query(
+            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (2, 3, 1)`,
         );
-    });
-
-    it('completes a partially archived migration on startup when synchronize is enabled', async () => {
-        await createSchema();
-        await seedData();
-        await queryRunner.renameTable('role_channels_channel', '_v3_role_channels_channel');
-
-        expect(await ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: true })).toBe(true);
-        expect((await getAssignments()).length).toBe(3);
-        expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
-    });
-
-    it('throws when the archive table name is already taken', async () => {
-        await createSchema();
-        await seedData();
-        await queryRunner.query(`CREATE TABLE "_v3_role_channels_channel" ("id" integer)`);
 
         await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            'Cannot archive role_channels_channel: a table named _v3_role_channels_channel already exists',
+            /Would gain access \(present after the copy, not granted before v4\): 1 grant\(s\)\n {2}sales-admin: sales on __default_channel__/,
         );
+        await expect(assertRoleAssignmentDataMigrated(queryRunner)).rejects.toThrow();
     });
 
-    it('skips migration when the legacy tables have been archived or dropped', async () => {
+    it('fails verification when grants go missing in the copy, naming the user', async () => {
+        await createSchema();
+        await seedData();
+        // a faulty copy: inserts for the sales admin are silently dropped
+        await queryRunner.query(
+            `CREATE TRIGGER "drop_sales_admin" BEFORE INSERT ON "role_assignment"
+             WHEN NEW."userId" = 2 BEGIN SELECT RAISE(IGNORE); END`,
+        );
+
+        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
+            /Would lose access \(granted before v4, missing after the copy\): 1 grant\(s\)\n {2}sales-admin: sales on second/,
+        );
+        expect(await queryRunner.hasTable('user_roles_role')).toBe(true);
+        expect(await queryRunner.hasTable('role_assignment_migration')).toBe(false);
+    });
+
+    it('generates uuid primary keys when the id column has no database-side default', async () => {
+        await createSchema({ idType: 'uuid' });
+        await seedData();
+
+        const insertedCount = await migrateRoleAssignmentData(queryRunner);
+
+        expect(insertedCount).toBe(3);
+        const rows: Array<{ id: string }> = await queryRunner.query(`SELECT "id" FROM "role_assignment"`);
+        for (const row of rows) {
+            expect(row.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+        }
+        expect(new Set(rows.map(row => row.id)).size).toBe(3);
+    });
+
+    it('skips migration when the legacy tables have been dropped', async () => {
         await createSchema();
         await queryRunner.query(`DROP TABLE "user_roles_role"`);
         await queryRunner.query(`DROP TABLE "role_channels_channel"`);
@@ -403,16 +321,26 @@ describe('migrateRoleAssignmentData()', () => {
         expect(insertedCount).toBe(0);
     });
 
-    it('throws when only one legacy table exists and there is no archive of the other', async () => {
+    it('throws when only role_channels_channel exists', async () => {
         await createSchema();
         await queryRunner.query(`DROP TABLE "user_roles_role"`);
 
         await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-            'Neither the user_roles_role table nor its archive _v3_user_roles_role exists',
+            'The user_roles_role table does not exist, but role_channels_channel does',
         );
     });
 
-    it('runs on startup when synchronize is enabled', async () => {
+    it('throws when only user_roles_role exists and no copy was recorded', async () => {
+        await createSchema();
+        await seedData();
+        await queryRunner.query(`DROP TABLE "role_channels_channel"`);
+
+        await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
+            'The role_channels_channel table does not exist, but user_roles_role does',
+        );
+    });
+
+    it('runs both steps on startup when synchronize is enabled', async () => {
         await createSchema();
         await seedData();
 
@@ -420,7 +348,8 @@ describe('migrateRoleAssignmentData()', () => {
 
         expect(migrated).toBe(true);
         expect((await getAssignments()).length).toBe(3);
-        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(true);
+        expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
+        expect(await queryRunner.hasTable('role_assignment_migration')).toBe(false);
         expect(await ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: true })).toBe(false);
     });
 
@@ -437,16 +366,184 @@ describe('migrateRoleAssignmentData()', () => {
     it('rolls back a failed migration on startup', async () => {
         await createSchema();
         await seedData();
-        // a row the legacy tables do not grant fails the verification
+        // a faulty copy: inserts for the sales admin are silently dropped
         await queryRunner.query(
-            `INSERT INTO "role_assignment" ("userId", "roleId", "channelId") VALUES (2, 3, 1)`,
+            `CREATE TRIGGER "drop_sales_admin" BEFORE INSERT ON "role_assignment"
+             WHEN NEW."userId" = 2 BEGIN SELECT RAISE(IGNORE); END`,
         );
 
         await expect(ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: true })).rejects.toThrow(
             'Role assignment verification failed',
         );
-        expect(await getAssignments()).toEqual([{ userId: 2, roleId: 3, channelId: 1 }]);
+        expect(await getAssignments()).toEqual([]);
         expect(await queryRunner.hasTable('user_roles_role')).toBe(true);
+    });
+
+    describe('removeLegacyRoleData()', () => {
+        it('drops the legacy tables and the copy record, and deletes the Customer role', async () => {
+            await createSchema();
+            await seedData();
+            await migrateRoleAssignmentData(queryRunner);
+
+            await removeLegacyRoleData(queryRunner);
+
+            expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
+            expect(await queryRunner.hasTable('role_channels_channel')).toBe(false);
+            expect(await queryRunner.hasTable('role_assignment_migration')).toBe(false);
+            expect(await queryRunner.query(`SELECT "code" FROM "role" ORDER BY "id"`)).toEqual([
+                { code: '__super_admin_role__' },
+                { code: 'sales' },
+                { code: '__role_editor_role__' },
+            ]);
+            expect((await getAssignments()).length).toBe(3);
+            await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
+        });
+
+        it('is idempotent', async () => {
+            await createSchema();
+            await seedData();
+            await migrateRoleAssignmentData(queryRunner);
+
+            await removeLegacyRoleData(queryRunner);
+            await removeLegacyRoleData(queryRunner);
+
+            expect((await getAssignments()).length).toBe(3);
+            expect(await migrateRoleAssignmentData(queryRunner)).toBe(0);
+        });
+
+        it('deletes the copied grants revoked on v3 and keeps the rows written on v4', async () => {
+            await createSchema();
+            await seedData();
+            await migrateRoleAssignmentData(queryRunner);
+            // On a v3 server: the sales admin loses the sales role
+            await queryRunner.query(`DELETE FROM "user_roles_role" WHERE "userId" = 2 AND "roleId" = 3`);
+            // On a v4 server: the customer who holds the sales role also gets it on channel 3,
+            // which the legacy tables do not grant
+            await insertWrittenOnV4('(4, 3, 3)');
+            const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+            await removeLegacyRoleData(queryRunner);
+
+            expect(await getAssignments()).toEqual([
+                { userId: 1, roleId: 1, channelId: 1 },
+                { userId: 4, roleId: 3, channelId: 2 },
+                { userId: 4, roleId: 3, channelId: 3 },
+            ]);
+            const deletion = loggedLine(log, 'Deleted');
+            expect(deletion).toContain('Deleted 1 role assignment(s)');
+            expect(deletion).toContain('sales-admin: sales on second');
+            expect(loggedLine(log, 'Not applied')).toBeUndefined();
+            log.mockRestore();
+        });
+
+        it('reports the grants it cannot attribute and does not apply them', async () => {
+            await createSchema();
+            await seedData();
+            await migrateRoleAssignmentData(queryRunner);
+            // On a v4 server: the sales admin loses the sales role
+            await queryRunner.query(`DELETE FROM "role_assignment" WHERE "userId" = 2`);
+            // On a v3 server: the sales role is assigned to channel 3
+            await queryRunner.query(
+                `INSERT INTO "role_channels_channel" ("roleId", "channelId") VALUES (3, 3)`,
+            );
+            const log = vi.spyOn(console, 'log').mockImplementation(() => undefined);
+
+            await removeLegacyRoleData(queryRunner);
+
+            expect(await getAssignments()).toEqual([
+                { userId: 1, roleId: 1, channelId: 1 },
+                { userId: 4, roleId: 3, channelId: 2 },
+            ]);
+            const report = loggedLine(log, 'Not applied');
+            expect(report).toContain('Not applied: 3 grant(s)');
+            expect(report).toContain('sales-admin: sales on second, programmatic');
+            expect(report).toContain('customer-b: sales on programmatic');
+            log.mockRestore();
+        });
+
+        it('refuses to run before migrateRoleAssignmentData()', async () => {
+            await createSchema();
+            await seedData();
+
+            await expect(removeLegacyRoleData(queryRunner)).rejects.toThrow(
+                'Call migrateRoleAssignmentData() before removeLegacyRoleData()',
+            );
+            expect(await queryRunner.hasTable('user_roles_role')).toBe(true);
+        });
+
+        // On MySQL each DDL statement commits on its own, so a run can stop after any of them.
+        // The grants are reconciled before the first drop, and v4 keeps starting throughout.
+        it.each([1, 2, 3])(
+            'completes on a re-run after the drop stopped at DDL statement %i',
+            async failingStatement => {
+                await createSchema();
+                await seedData();
+                await migrateRoleAssignmentData(queryRunner);
+                let statements = 0;
+                const originalDropTable = queryRunner.dropTable.bind(queryRunner);
+                const dropTable = vi
+                    .spyOn(queryRunner, 'dropTable')
+                    .mockImplementation(async (...args: Parameters<typeof originalDropTable>) => {
+                        if (++statements === failingStatement) {
+                            throw new Error('Connection lost');
+                        }
+                        return originalDropTable(...args);
+                    });
+
+                await expect(removeLegacyRoleData(queryRunner)).rejects.toThrow('Connection lost');
+                dropTable.mockRestore();
+
+                await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
+                await removeLegacyRoleData(queryRunner);
+                expect((await getAssignments()).length).toBe(3);
+                expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
+                expect(await queryRunner.hasTable('role_channels_channel')).toBe(false);
+                expect(await queryRunner.hasTable('role_assignment_migration')).toBe(false);
+                expect(
+                    await queryRunner.query(`SELECT 1 FROM "role" WHERE "code" = '__customer_role__'`),
+                ).toEqual([]);
+            },
+        );
+
+        it('completes a partly dropped run on startup when synchronize is enabled', async () => {
+            await createSchema();
+            await seedData();
+            await migrateRoleAssignmentData(queryRunner);
+            await queryRunner.dropTable('role_channels_channel');
+
+            expect(await ensureRoleAssignmentDataMigrated(queryRunner, { synchronize: true })).toBe(true);
+            expect((await getAssignments()).length).toBe(3);
+            expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
+        });
+
+        it('refuses to delete the Customer role while role_assignment holds rows of it', async () => {
+            await createSchema();
+            await seedData();
+            await migrateRoleAssignmentData(queryRunner);
+            await insertWrittenOnV4('(3, 2, 1)');
+
+            await expect(removeLegacyRoleData(queryRunner)).rejects.toThrow(
+                /holds 1 assignment\(s\) of the legacy Customer role[\s\S]*customer-a: __customer_role__ on __default_channel__/,
+            );
+            expect(
+                await queryRunner.query(`SELECT "id" FROM "role" WHERE "code" = '__customer_role__'`),
+            ).toEqual([{ id: 2 }]);
+
+            await queryRunner.query(`DELETE FROM "role_assignment" WHERE "userId" = 3`);
+            await removeLegacyRoleData(queryRunner);
+            expect(
+                await queryRunner.query(`SELECT "id" FROM "role" WHERE "code" = '__customer_role__'`),
+            ).toEqual([]);
+        });
+
+        it('skips the copy once the legacy tables are gone', async () => {
+            await createSchema();
+            await seedData();
+            await migrateRoleAssignmentData(queryRunner);
+            await removeLegacyRoleData(queryRunner);
+
+            expect(await migrateRoleAssignmentData(queryRunner)).toBe(0);
+        });
     });
 
     it('throws when the role_assignment table has not been created yet', async () => {
@@ -456,115 +553,9 @@ describe('migrateRoleAssignmentData()', () => {
         await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
             'The role_assignment table does not exist',
         );
-    });
-});
-
-describe('removeLegacyRoleData()', () => {
-    it('drops the archive tables and deletes the Customer role', async () => {
-        const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
-        await dataSource.initialize();
-        const queryRunner = dataSource.createQueryRunner();
-        await queryRunner.query(`CREATE TABLE "_v3_user_roles_role" ("userId" integer, "roleId" integer)`);
-        await queryRunner.query(
-            `CREATE TABLE "_v3_role_channels_channel" ("roleId" integer, "channelId" integer)`,
-        );
-        await queryRunner.query(`CREATE TABLE "role" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
-        await queryRunner.query(
-            `INSERT INTO "role" ("id", "code") VALUES (1, '__super_admin_role__'), (2, '__customer_role__')`,
-        );
-
-        await removeLegacyRoleData(queryRunner);
-
-        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
-        expect(await queryRunner.hasTable('_v3_role_channels_channel')).toBe(false);
-        expect(await queryRunner.query(`SELECT "code" FROM "role"`)).toEqual([
-            { code: '__super_admin_role__' },
-        ]);
-        await queryRunner.release();
-        await dataSource.destroy();
-    });
-
-    it('skips missing tables and roles', async () => {
-        const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
-        await dataSource.initialize();
-        const queryRunner = dataSource.createQueryRunner();
-        await queryRunner.query(`CREATE TABLE "_v3_user_roles_role" ("userId" integer, "roleId" integer)`);
-
-        await removeLegacyRoleData(queryRunner);
-        await removeLegacyRoleData(queryRunner);
-
-        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
-        await queryRunner.release();
-        await dataSource.destroy();
-    });
-
-    it.each([
-        { state: 'not migrated', legacyTables: ['user_roles_role', 'role_channels_channel'] },
-        { state: 'partially archived', legacyTables: ['role_channels_channel'] },
-    ])('refuses to run when the legacy tables are $state', async ({ legacyTables }) => {
-        const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
-        await dataSource.initialize();
-        const queryRunner = dataSource.createQueryRunner();
-        for (const tableName of legacyTables) {
-            await queryRunner.query(`CREATE TABLE "${tableName}" ("a" integer, "b" integer)`);
-        }
-        await queryRunner.query(`CREATE TABLE "role" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
-        await queryRunner.query(`INSERT INTO "role" ("id", "code") VALUES (2, '__customer_role__')`);
-
         await expect(removeLegacyRoleData(queryRunner)).rejects.toThrow(
-            'Run migrateRoleAssignmentData() before removeLegacyRoleData()',
+            'The role_assignment table does not exist',
         );
-
-        expect(await queryRunner.query(`SELECT "code" FROM "role"`)).toEqual([{ code: '__customer_role__' }]);
-        await queryRunner.release();
-        await dataSource.destroy();
-    });
-
-    it('refuses to run while role_assignment holds Customer-role rows', async () => {
-        const dataSource = new DataSource({ type: 'better-sqlite3', database: ':memory:' });
-        await dataSource.initialize();
-        const queryRunner = dataSource.createQueryRunner();
-        await queryRunner.query(`CREATE TABLE "_v3_user_roles_role" ("userId" integer, "roleId" integer)`);
-        await queryRunner.query(`CREATE TABLE "role" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
-        await queryRunner.query(
-            `CREATE TABLE "user" ("id" integer PRIMARY KEY, "identifier" varchar NOT NULL)`,
-        );
-        await queryRunner.query(`CREATE TABLE "channel" ("id" integer PRIMARY KEY, "code" varchar NOT NULL)`);
-        await queryRunner.query(
-            `CREATE TABLE "role_assignment" ("id" integer PRIMARY KEY, "userId" integer, "roleId" integer, "channelId" integer)`,
-        );
-        await queryRunner.query(
-            `INSERT INTO "role" ("id", "code") VALUES (1, '__super_admin_role__'), (2, '__customer_role__')`,
-        );
-        await queryRunner.query(
-            `INSERT INTO "user" ("id", "identifier") VALUES (1, 'superadmin'), (2, 'alice')`,
-        );
-        await queryRunner.query(`INSERT INTO "channel" ("id", "code") VALUES (1, '__default_channel__')`);
-        await queryRunner.query(
-            `INSERT INTO "role_assignment" ("id", "userId", "roleId", "channelId") VALUES (1, 1, 1, 1), (2, 2, 2, 1)`,
-        );
-
-        const error = await removeLegacyRoleData(queryRunner).catch((e: Error) => e);
-
-        expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toContain('holds 1 assignment(s) of the legacy Customer role');
-        expect((error as Error).message).toContain('alice: __customer_role__ on __default_channel__');
-        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(true);
-        expect(await queryRunner.query(`SELECT "code" FROM "role" ORDER BY "id"`)).toEqual([
-            { code: '__super_admin_role__' },
-            { code: '__customer_role__' },
-        ]);
-
-        await queryRunner.query(`DELETE FROM "role_assignment" WHERE "id" = 2`);
-        await removeLegacyRoleData(queryRunner);
-
-        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
-        expect(await queryRunner.query(`SELECT "code" FROM "role"`)).toEqual([
-            { code: '__super_admin_role__' },
-        ]);
-        expect(await queryRunner.query(`SELECT "id" FROM "role_assignment"`)).toEqual([{ id: 1 }]);
-        await queryRunner.release();
-        await dataSource.destroy();
     });
 });
 
@@ -604,7 +595,7 @@ describe('assertRoleAssignmentDataMigrated()', () => {
 });
 
 describe('migrateRoleAssignmentData() with an entityPrefix', () => {
-    it('reads, writes and archives the prefixed tables', async () => {
+    it('reads, writes and drops the prefixed tables', async () => {
         const dataSource = new DataSource({
             type: 'better-sqlite3',
             database: ':memory:',
@@ -627,6 +618,7 @@ describe('migrateRoleAssignmentData() with an entityPrefix', () => {
         );
         await queryRunner.query(
             `CREATE TABLE "vdr_role_assignment" ("id" integer PRIMARY KEY AUTOINCREMENT,
+             "createdAt" datetime NOT NULL DEFAULT (datetime('now')),
              "userId" integer NOT NULL, "roleId" integer NOT NULL, "channelId" integer NOT NULL)`,
         );
         await queryRunner.query(
@@ -640,6 +632,8 @@ describe('migrateRoleAssignmentData() with an entityPrefix', () => {
         await queryRunner.query(`INSERT INTO "vdr_user_roles_role" VALUES (1, 1), (2, 3)`);
 
         const insertedCount = await migrateRoleAssignmentData(queryRunner);
+        expect(await queryRunner.hasTable('vdr_role_assignment_migration')).toBe(true);
+        await removeLegacyRoleData(queryRunner);
 
         expect(insertedCount).toBe(2);
         expect(
@@ -650,8 +644,9 @@ describe('migrateRoleAssignmentData() with an entityPrefix', () => {
             { userId: 1, roleId: 1, channelId: 1 },
             { userId: 2, roleId: 3, channelId: 2 },
         ]);
-        expect(await queryRunner.hasTable('vdr__v3_user_roles_role')).toBe(true);
-        expect(await queryRunner.hasTable('vdr__v3_role_channels_channel')).toBe(true);
+        expect(await queryRunner.hasTable('vdr_user_roles_role')).toBe(false);
+        expect(await queryRunner.hasTable('vdr_role_channels_channel')).toBe(false);
+        expect(await queryRunner.hasTable('vdr_role_assignment_migration')).toBe(false);
         await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
         await queryRunner.release();
         await dataSource.destroy();

@@ -8,18 +8,18 @@ import {
     ROLE_EDITOR_ROLE_DESCRIPTION,
     SUPER_ADMIN_ROLE_CODE,
 } from '@vendure/common/lib/shared-constants';
-import { QueryRunner } from 'typeorm';
+import { QueryRunner, Table } from 'typeorm';
 
 const MIGRATION_GUIDE_URL =
     'https://docs.vendure.io/current/framework/developer-guide/migrating-from-v3/role-assignments';
 
 /**
  * @description
- * Populates the new `role_assignment` table from the pre-v4 `user_roles_role` and
- * `role_channels_channel` join tables. In the old model a User received each of their
- * Roles' permissions on every Channel the Role was assigned to, so the effective grants
- * are the cross product of the two join tables, which this helper writes out as explicit
- * `(user, role, channel)` rows.
+ * The first step of the role assignment migration. Populates the new `role_assignment` table
+ * from the pre-v4 `user_roles_role` and `role_channels_channel` join tables. In the old model
+ * a User received each of their Roles' permissions on every Channel the Role was assigned to,
+ * so the effective grants are the cross product of the two join tables, which this helper
+ * writes out as explicit `(user, role, channel)` rows.
  *
  * Two Roles are treated specially:
  *
@@ -27,15 +27,19 @@ const MIGRATION_GUIDE_URL =
  *   are derived at check time from the Customer's channel memberships (`Authenticated` on
  *   every member Channel), so migrating the old rows (which granted every customer
  *   permissions on every Channel) would both reintroduce that permission leak and write
- *   one row per customer per channel. The role row itself is kept, so that the archived
- *   legacy rows can still be matched to it; v4 never reads it, and
- *   {@link removeLegacyRoleData} deletes it. If your instance broadened the Customer
- *   role's permissions via a direct repository write, be aware that this customization has
- *   no v4 equivalent: customers hold exactly `Authenticated` on their member Channels.
+ *   one row per customer per channel. The Customer role itself is deleted by
+ *   {@link removeLegacyRoleData}. If your instance broadened the Customer role's permissions
+ *   via a direct repository write, be aware that this customization has no v4 equivalent:
+ *   customers hold exactly `Authenticated` on their member Channels.
  * - **SuperAdmin role**: holders receive exactly one row, on the default Channel, whatever
  *   `role_channels_channel` records for the role. In v4 the SuperAdmin Role is held on every
  *   Channel or not at all: access is derived at check time from that single row, which
  *   stands for all Channels (see `RoleAssignment`).
+ *
+ * After copying, the helper verifies that `role_assignment` holds exactly the grants the
+ * legacy tables describe under these rules, and throws if any row is missing or extra. To
+ * review the intended behavior changes for your data before migrating, see
+ * {@link previewRoleAssignmentMigration}.
  *
  * The RoleEditor system role (which bundles the Role CRUD permissions) is created if
  * absent. It is not granted to anyone. Pre-v4 versions gated Role CRUD on the Administrator
@@ -49,43 +53,37 @@ const MIGRATION_GUIDE_URL =
  * without this step a migrated instance would present a stale permission list on the
  * SuperAdmin role.
  *
- * After copying, the helper verifies that `role_assignment` holds exactly the grants the
- * legacy tables describe under these rules, and throws if any row is missing or extra.
- * Nothing else is changed before the check passes. To review the intended behavior
- * changes for your data before migrating, see {@link previewRoleAssignmentMigration}.
+ * Finally the helper records when the copy ran in the `role_assignment_migration` table,
+ * which {@link removeLegacyRoleData} reads.
  *
- * Once verified, the legacy tables are **archived, not dropped**: they are renamed to
- * `_v3_user_roles_role` and `_v3_role_channels_channel` and their foreign keys removed, so
- * they keep a frozen copy of the pre-v4 grants for auditing. The archive is not a way back
- * to v3: after going live on v4, rolling back means restoring a backup taken before the
- * migration. Vendure refuses to start while `user_roles_role` still exists under its
- * original name. Drop the archive with {@link removeLegacyRoleData} once you no longer
- * need it.
+ * The legacy tables are left as they are, so v3 servers keep working during a rolling
+ * deployment, and v4 servers can change role assignments straight away. Once no
+ * v3 server or worker is running, call {@link removeLegacyRoleData}, in the same migration
+ * if you stop v3 before migrating, or in a later deployment otherwise.
  *
  * Call this from your migration's `up()` method **after** the `role_assignment` table
  * has been created. A generated migration does not touch the legacy tables, so nothing
  * else in it needs to change.
  *
- * The helper is idempotent: rows which already exist are left as-is, a partially
- * archived state is completed, and a fully archived one is skipped. It is safe to re-run,
- * e.g. after a partial failure on MySQL (where DDL is non-transactional) or as the delta
- * pass of a staged rollout in which the bulk of the data was copied while the previous
- * version was still serving traffic.
+ * The helper is idempotent: once the copy has been recorded, it is skipped. It is safe to
+ * re-run, e.g. after a partial failure on MySQL (where DDL is non-transactional).
  *
  * Table names honor the `entityPrefix` of the connection options.
  *
  * ```ts
  * import { MigrationInterface, QueryRunner } from 'typeorm';
- * import { migrateRoleAssignmentData } from '\@vendure/core';
+ * import { migrateRoleAssignmentData, removeLegacyRoleData } from '\@vendure/core';
  *
- * export class RoleAssignments1234567890 implements MigrationInterface {
+ * export class V4Upgrade1234567890 implements MigrationInterface {
  *     public async up(queryRunner: QueryRunner): Promise<any> {
  *         // --- Auto-generated DDL ---
  *         // (Create role_assignment table and FK constraints)
  *         // ...
  *
- *         // --- Populate new table with existing data, verify, archive the old tables ---
+ *         // --- Copy the role grants, keep the legacy tables for v3 servers ---
  *         await migrateRoleAssignmentData(queryRunner);
+ *         // --- Only when no v3 server or worker is running any more ---
+ *         await removeLegacyRoleData(queryRunner);
  *     }
  *
  *     public async down(queryRunner: QueryRunner): Promise<any> {
@@ -100,51 +98,145 @@ const MIGRATION_GUIDE_URL =
  */
 export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promise<number> {
     const t = getTableNames(queryRunner);
-    if (!(await queryRunner.hasTable(t.roleAssignment))) {
-        throw new Error(
-            `The ${t.roleAssignment} table does not exist. Call migrateRoleAssignmentData() after ` +
-                `the part of your migration which creates the ${t.roleAssignment} table.`,
-        );
-    }
-    const sources = await resolveSourceTables(queryRunner);
-    if (!sources) {
+    const state = await getLegacyTablesState(queryRunner, 'migrateRoleAssignmentData');
+    if (state === 'dropped') {
         console.log(
-            `The ${t.userRoles} and ${t.roleChannels} tables have already been archived or do not ` +
+            `The ${t.userRoles} and ${t.roleChannels} tables have already been dropped or do not ` +
                 'exist. Skipping role assignment data migration.',
         );
         return 0;
     }
-
-    const startedAt = Date.now();
-    const esc = (name: string) => queryRunner.connection.driver.escape(name);
-    const idInsert = await getExplicitIdClauses(queryRunner, t.roleAssignment);
-    const countRows = async (): Promise<number> => {
-        const rows: Array<{ count: string | number }> = await queryRunner.query(
-            `SELECT COUNT(*) AS ${esc('count')} FROM ${esc(t.roleAssignment)}`,
+    if (await hasRecordedCopy(queryRunner)) {
+        console.log(
+            `The role grants have already been copied to the ${t.roleAssignment} table. Skipping ` +
+                'role assignment data migration.',
         );
-        return Number(rows[0].count);
-    };
-    const countBefore = await countRows();
-
-    // 1. Write out the cross product of user_roles_role and role_channels_channel for all
-    // Roles except the Customer role, whose permissions are derived from channel membership,
-    // and the SuperAdmin role, which step 2 writes as a single default-channel row.
-    // 2. Write one row on the default Channel per SuperAdmin role holder. The row stands for
-    // every Channel: SuperAdmin access is derived from it at check time.
-    const pending = getPendingGrantQueries(queryRunner, sources, idInsert.select);
-    for (const pendingGrants of [pending.legacyGrants, pending.superAdminGrants]) {
-        await queryRunner.query(
-            `INSERT INTO ${esc(t.roleAssignment)} (${idInsert.columns}${esc('userId')}, ${esc('roleId')}, ${esc('channelId')})
-             ${pendingGrants}`,
+        return 0;
+    }
+    if (state === 'partly-dropped') {
+        throw new Error(
+            `The ${t.roleChannels} table does not exist, but ${t.userRoles} does. The legacy role ` +
+                'data cannot be migrated.',
         );
     }
 
-    // Verify the copy before anything else is touched: a mismatch aborts the migration with
-    // the source data preserved.
-    await verifyRoleAssignmentData(queryRunner, sources);
+    const startedAt = Date.now();
+    // 1.-2. Copy the grants and verify the result: a mismatch aborts the migration before
+    // the copy is recorded.
+    const insertedCount = await copyRoleAssignmentGrants(queryRunner, LEGACY_SOURCES(t));
+    // 3.-4. Create the RoleEditor role and update the SuperAdmin role.
+    await updateSystemRoles(queryRunner);
+    // 5. Record the copy, which removeLegacyRoleData() needs to tell copied rows from rows
+    // written by v4 servers since.
+    await recordCopy(queryRunner);
 
-    // 3. Create the RoleEditor role if it does not yet exist, so that a migrated instance
-    // presents the same system roles as a fresh one before RoleService.initRoles() runs.
+    console.log(
+        `Successfully migrated ${insertedCount} role assignments to the ${t.roleAssignment} table in ` +
+            `${formatSecondsSince(startedAt)} s. ${await describeRoleAssignmentCounts(queryRunner)} ` +
+            'Compare with the counts of previewRoleAssignmentMigration(). The legacy tables ' +
+            `${t.userRoles} and ${t.roleChannels} are kept for v3 servers. Once none is running, ` +
+            'call removeLegacyRoleData().',
+    );
+    return insertedCount;
+}
+
+/**
+ * @description
+ * The second step of the role assignment migration. Call it once no v3 server or worker is
+ * running: in the same migration as {@link migrateRoleAssignmentData} if you stop v3 before
+ * migrating, or from a migration in a later deployment otherwise. Running it stops v3 servers
+ * from working.
+ *
+ * Between the two steps, v3 and v4 servers may both have changed role grants. v4 servers
+ * write `role_assignment` and v3 servers write the legacy tables, so this helper first
+ * reconciles what it can tell apart:
+ *
+ * - A row which {@link migrateRoleAssignmentData} copied, and which the legacy tables no
+ *   longer grant, was revoked on a v3 server. It is deleted, and logged.
+ * - A grant which the legacy tables hold and `role_assignment` does not was either removed
+ *   on a v4 server or granted on a v3 server after the copy. The two cannot be told apart,
+ *   so it is logged and not applied. Grant it again with `assignRolesToUser` if needed.
+ * - Rows written by v4 servers since the copy are left as they are.
+ *
+ * It then **drops** the legacy tables and the `role_assignment_migration` table, and
+ * deletes the Customer role. The way back to v3 is the backup taken before the migration,
+ * which also holds the pre-v4 grants should you need them later.
+ *
+ * The helper is idempotent: a partially dropped state is completed, and a fully dropped one
+ * is skipped. It is safe to re-run, e.g. after a partial failure on MySQL (where DDL is
+ * non-transactional).
+ *
+ * ```ts
+ * import { MigrationInterface, QueryRunner } from 'typeorm';
+ * import { removeLegacyRoleData } from '\@vendure/core';
+ *
+ * export class RemoveLegacyRoleData1234567891 implements MigrationInterface {
+ *     public async up(queryRunner: QueryRunner): Promise<any> {
+ *         await removeLegacyRoleData(queryRunner);
+ *     }
+ *
+ *     public async down(queryRunner: QueryRunner): Promise<any> {
+ *         // Restore the backup taken before the upgrade to go back to v3
+ *     }
+ * }
+ * ```
+ *
+ * @throws if the legacy tables hold grants which {@link migrateRoleAssignmentData} has not copied
+ * @since 4.0.0
+ * @docsCategory migration
+ */
+export async function removeLegacyRoleData(queryRunner: QueryRunner): Promise<void> {
+    const t = getTableNames(queryRunner);
+    const state = await getLegacyTablesState(queryRunner, 'removeLegacyRoleData');
+    // A previous run which stopped between the drops (possible on MySQL, where DDL is not
+    // transactional) had already reconciled the grants.
+    if (state === 'present') {
+        if (!(await hasRecordedCopy(queryRunner))) {
+            if (await hasUnmigratedRoleGrants(queryRunner)) {
+                throw new Error(
+                    `The ${t.userRoles} table holds role grants which have not been copied to the ` +
+                        `${t.roleAssignment} table. Call migrateRoleAssignmentData() before ` +
+                        `removeLegacyRoleData(). See ${MIGRATION_GUIDE_URL}`,
+                );
+            }
+        } else {
+            // 1. Delete the copied rows which v3 servers revoked since the copy.
+            await deleteRevokedRoleAssignments(queryRunner, LEGACY_SOURCES(t));
+            // 2. Report the grants which cannot be attributed to v3 or v4.
+            await reportUnappliedGrants(queryRunner, LEGACY_SOURCES(t));
+        }
+    }
+
+    // 3. Drop the legacy tables, user_roles_role after role_channels_channel: a run which
+    // stopped in between is recognized by it and completed on the next run.
+    for (const tableName of [t.roleChannels, t.userRoles, t.copyRecord]) {
+        if (await queryRunner.hasTable(tableName)) {
+            await queryRunner.dropTable(tableName);
+        }
+    }
+    // 4. Delete the Customer role, which v4 does not use. With the legacy tables gone,
+    // nothing cascades from it.
+    await deleteLegacyCustomerRole(queryRunner);
+
+    console.log(
+        `Removed the legacy tables ${t.userRoles} and ${t.roleChannels} and the Customer role. ` +
+            (await describeRoleAssignmentCounts(queryRunner)),
+    );
+}
+
+/**
+ * Creates the RoleEditor role if it does not yet exist, so that a migrated instance
+ * presents the same system roles as a fresh one before RoleService.initRoles() runs.
+ *
+ * Appends the new Role CRUD permissions to the SuperAdmin role's stored permissions
+ * array. SuperAdmin access is derived at check time from the SuperAdmin permission, so
+ * this changes nothing about what SuperAdmins can do — but pre-v4 versions re-synced the
+ * stored array with all assignable permissions on boot and v4 no longer does, so without
+ * this a migrated instance would present a stale permission list on the role.
+ */
+async function updateSystemRoles(queryRunner: QueryRunner): Promise<void> {
+    const t = getTableNames(queryRunner);
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
     const roleIdInsert = await getExplicitIdClauses(queryRunner, t.role);
     const roleCrudPermissions = ['CreateRole', 'ReadRole', 'UpdateRole', 'DeleteRole'];
     const roleEditorPermissions = ['Authenticated', ...roleCrudPermissions];
@@ -163,11 +255,6 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
          )`,
     );
 
-    // 4. Append the new Role CRUD permissions to the SuperAdmin role's stored permissions
-    // array. SuperAdmin access is derived at check time from the SuperAdmin permission, so
-    // this changes nothing about what SuperAdmins can do — but pre-v4 versions re-synced
-    // the stored array with all assignable permissions on boot and v4 no longer does, so
-    // without this a migrated instance would present a stale permission list on the role.
     const superAdminRoleRows: Array<{ id: string | number; permissions: string }> = await queryRunner.query(
         `SELECT ${esc('id')}, ${esc('permissions')} FROM ${esc(t.role)}
              WHERE ${esc('code')} = '${SUPER_ADMIN_ROLE_CODE}'`,
@@ -186,83 +273,15 @@ export async function migrateRoleAssignmentData(queryRunner: QueryRunner): Promi
             );
         }
     }
-
-    // 5. Archive the legacy tables: remove their foreign keys and rename them, so that the
-    // archive is a frozen copy which later User or Role deletes cannot cascade into. The
-    // Customer role row stays, so the archived Customer rows can still be identified;
-    // removeLegacyRoleData() deletes it.
-    await archiveLegacyTables(queryRunner);
-
-    const countAfter = await countRows();
-    const insertedCount = countAfter - countBefore;
-    const userRows: Array<{ count: string | number }> = await queryRunner.query(
-        `SELECT COUNT(DISTINCT ${esc('userId')}) AS ${esc('count')} FROM ${esc(t.roleAssignment)}`,
-    );
-    const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
-    console.log(
-        `Successfully migrated ${insertedCount} role assignments to the ${t.roleAssignment} table in ` +
-            `${seconds} s. It now holds ${countAfter} role assignments for ${Number(userRows[0].count)} ` +
-            'users; compare with the counts of previewRoleAssignmentMigration(). The legacy tables were ' +
-            `archived as ${t.archivedUserRoles} and ${t.archivedRoleChannels}.`,
-    );
-    return insertedCount;
 }
 
 /**
- * @description
- * Drops the `_v3_user_roles_role` and `_v3_role_channels_channel` tables which
- * {@link migrateRoleAssignmentData} archives the pre-v4 role grants to, and deletes the
- * legacy Customer role, which v4 does not use. Call it from a later migration once you no
- * longer need the archive for auditing. Tables and roles which do not exist are skipped,
- * so it is safe to re-run. It throws while `user_roles_role` or `role_channels_channel`
- * still exists under its original name, that is, before {@link migrateRoleAssignmentData} has
- * archived the legacy tables. It also throws while `role_assignment` holds rows of the
- * Customer role, which can still be granted until this helper runs: deleting the role would
- * remove those rows without a `RoleAssignmentEvent` or a session eviction. Remove them
- * with `removeRolesFromUser` first. Nothing is changed when it throws.
- *
- * The archive has no foreign keys, so hard-deleting a User does not remove its rows from
- * the archive. If you erase personal data on request (e.g. under the GDPR), drop the
- * archive once your audit period ends, and include it in your erasure process until then.
- *
- * ```ts
- * import { MigrationInterface, QueryRunner } from 'typeorm';
- * import { removeLegacyRoleData } from '\@vendure/core';
- *
- * export class RemoveLegacyRoleData1234567890 implements MigrationInterface {
- *     public async up(queryRunner: QueryRunner): Promise<any> {
- *         await removeLegacyRoleData(queryRunner);
- *     }
- *
- *     public async down(queryRunner: QueryRunner): Promise<any> {
- *         // The archive cannot be restored
- *     }
- * }
- * ```
- *
- * @since 4.0.0
- * @docsCategory migration
+ * Deletes the legacy Customer role. Throws, changing nothing, while `role_assignment` holds
+ * rows of it: its `roleId` foreign key cascades, so deleting the role would remove them
+ * with no `RoleAssignmentEvent` and no session eviction.
  */
-export async function removeLegacyRoleData(queryRunner: QueryRunner): Promise<void> {
+async function deleteLegacyCustomerRole(queryRunner: QueryRunner): Promise<void> {
     const t = getTableNames(queryRunner);
-    // Deleting the Customer role before the legacy tables are archived would cascade into
-    // them and remove its grants from what becomes the archive.
-    for (const tableName of [t.userRoles, t.roleChannels]) {
-        if (await queryRunner.hasTable(tableName)) {
-            throw new Error(
-                `The ${tableName} table still exists, so the role assignment data has not been ` +
-                    'migrated and archived yet. Run migrateRoleAssignmentData() before ' +
-                    'removeLegacyRoleData().',
-            );
-        }
-    }
-    await assertNoCustomerRoleAssignments(queryRunner);
-    for (const tableName of [t.archivedUserRoles, t.archivedRoleChannels]) {
-        if (await queryRunner.hasTable(tableName)) {
-            await queryRunner.dropTable(tableName);
-            console.log(`Dropped the archived ${tableName} table.`);
-        }
-    }
     if (!(await queryRunner.hasTable(t.role))) {
         return;
     }
@@ -270,34 +289,238 @@ export async function removeLegacyRoleData(queryRunner: QueryRunner): Promise<vo
     const customerRoleRows: Array<{ id: string | number }> = await queryRunner.query(
         `SELECT ${esc('id')} FROM ${esc(t.role)} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
     );
+    if (!customerRoleRows.length) {
+        return;
+    }
+    await assertNoCustomerRoleAssignments(queryRunner);
     for (const row of customerRoleRows) {
         const idLiteral = typeof row.id === 'number' ? row.id : `'${row.id}'`;
         await queryRunner.query(`DELETE FROM ${esc(t.role)} WHERE ${esc('id')} = ${idLiteral}`);
-        console.log('Deleted the legacy Customer role (customer permissions are membership-derived in v4).');
     }
+}
+
+type LegacyTablesState = 'present' | 'partly-dropped' | 'dropped';
+
+/**
+ * Whether the legacy tables are both present, both dropped, or partly dropped: a run of
+ * {@link removeLegacyRoleData} stopped after dropping `role_channels_channel` and before
+ * dropping `user_roles_role`. Throws when the role_assignment table has not been created
+ * yet, or when only `role_channels_channel` is left, which no run of the helpers leaves
+ * behind.
+ */
+async function getLegacyTablesState(
+    queryRunner: QueryRunner,
+    helperName: string,
+): Promise<LegacyTablesState> {
+    const t = getTableNames(queryRunner);
+    if (!(await queryRunner.hasTable(t.roleAssignment))) {
+        throw new Error(
+            `The ${t.roleAssignment} table does not exist. Call ${helperName}() after ` +
+                `the part of your migration which creates the ${t.roleAssignment} table.`,
+        );
+    }
+    const hasUserRoles = await queryRunner.hasTable(t.userRoles);
+    const hasRoleChannels = await queryRunner.hasTable(t.roleChannels);
+    if (hasUserRoles && hasRoleChannels) {
+        return 'present';
+    }
+    if (hasUserRoles) {
+        return 'partly-dropped';
+    }
+    if (hasRoleChannels) {
+        throw new Error(
+            `The ${t.userRoles} table does not exist, but ${t.roleChannels} does. The legacy role ` +
+                'data cannot be migrated.',
+        );
+    }
+    return 'dropped';
+}
+
+const LEGACY_SOURCES = (t: TableNames): SourceTables => ({
+    userRoles: t.userRoles,
+    roleChannels: t.roleChannels,
+});
+
+/**
+ * Makes `role_assignment` hold exactly the grants the legacy tables describe:
+ *
+ * 1. Writes out the cross product of user_roles_role and role_channels_channel for all
+ *    Roles except the Customer role, whose permissions are derived from channel membership,
+ *    and the SuperAdmin role, which step 2 writes as a single default-channel row.
+ * 2. Writes one row on the default Channel per SuperAdmin role holder. The row stands for
+ *    every Channel: SuperAdmin access is derived from it at check time.
+ *
+ * Then verifies the result.
+ *
+ * @returns the number of rows inserted.
+ */
+async function copyRoleAssignmentGrants(queryRunner: QueryRunner, sources: SourceTables): Promise<number> {
+    const t = getTableNames(queryRunner);
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const idInsert = await getExplicitIdClauses(queryRunner, t.roleAssignment);
+    const countBefore = await countRoleAssignments(queryRunner);
+    const pending = getPendingGrantQueries(queryRunner, sources, idInsert.select);
+    for (const pendingGrants of [pending.legacyGrants, pending.superAdminGrants]) {
+        await queryRunner.query(
+            `INSERT INTO ${esc(t.roleAssignment)} (${idInsert.columns}${esc('userId')}, ${esc('roleId')}, ${esc('channelId')})
+             ${pendingGrants}`,
+        );
+    }
+    const insertedCount = (await countRoleAssignments(queryRunner)) - countBefore;
+    await verifyRoleAssignmentData(queryRunner, sources);
+    return insertedCount;
+}
+
+/**
+ * Records in the `role_assignment_migration` table when the copy ran: the latest
+ * `createdAt` of the `role_assignment` rows, which at this point are all copied rows,
+ * because v4 refuses to start before the copy. Rows which v4 servers write later have a
+ * later `createdAt`. The column takes the type of `role_assignment.createdAt`, so the
+ * comparison is exact on every database. The row is written last, so a run which stopped
+ * earlier is not recorded and copies again.
+ */
+async function recordCopy(queryRunner: QueryRunner): Promise<void> {
+    const t = getTableNames(queryRunner);
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const createdAtColumn = (await queryRunner.getTable(t.roleAssignment))?.findColumnByName('createdAt');
+    if (!createdAtColumn) {
+        throw new Error(`Could not inspect the createdAt column of the ${t.roleAssignment} table.`);
+    }
+    if (!(await queryRunner.hasTable(t.copyRecord))) {
+        await queryRunner.createTable(
+            new Table({
+                name: t.copyRecord,
+                columns: [
+                    // A primary key, which some managed MySQL servers require on every table
+                    { name: 'id', type: 'integer', isPrimary: true },
+                    {
+                        name: 'copiedAt',
+                        type: createdAtColumn.type,
+                        precision: createdAtColumn.precision,
+                        isNullable: true,
+                    },
+                ],
+            }),
+        );
+    }
+    await queryRunner.query(
+        `INSERT INTO ${esc(t.copyRecord)} (${esc('id')}, ${esc('copiedAt')})
+         SELECT 1, MAX(ra.${esc('createdAt')}) FROM ${esc(t.roleAssignment)} ra`,
+    );
+}
+
+async function hasRecordedCopy(queryRunner: QueryRunner): Promise<boolean> {
+    const t = getTableNames(queryRunner);
+    if (!(await queryRunner.hasTable(t.copyRecord))) {
+        return false;
+    }
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const rows: unknown[] = await queryRunner.query(`SELECT 1 FROM ${esc(t.copyRecord)}`);
+    return rows.length > 0;
+}
+
+const DELETE_BATCH_SIZE = 500;
+
+/**
+ * Deletes the rows which {@link migrateRoleAssignmentData} copied and the legacy tables no
+ * longer grant: grants revoked on a v3 server since the copy. Rows written by v4 servers
+ * since have a later `createdAt` and are left as they are.
+ */
+async function deleteRevokedRoleAssignments(queryRunner: QueryRunner, sources: SourceTables): Promise<void> {
+    const t = getTableNames(queryRunner);
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const revokedQuery = getExtraGrantsQuery(queryRunner, sources, { copiedOnly: true });
+    const revoked = await describeGrants(queryRunner, revokedQuery);
+    if (revoked.total === 0) {
+        return;
+    }
+    // MySQL cannot delete from a table which a subquery of the same statement reads, so the
+    // ids are fetched first and deleted in batches.
+    const rows: Array<{ id: string | number }> = await queryRunner.query(
+        `SELECT g.${esc('id')} AS ${esc('id')} FROM (${revokedQuery}) g`,
+    );
+    for (let i = 0; i < rows.length; i += DELETE_BATCH_SIZE) {
+        const idLiterals = rows
+            .slice(i, i + DELETE_BATCH_SIZE)
+            .map(row => (typeof row.id === 'number' ? row.id : `'${row.id}'`));
+        await queryRunner.query(
+            `DELETE FROM ${esc(t.roleAssignment)} WHERE ${esc('id')} IN (${idLiterals.join(', ')})`,
+        );
+    }
+    console.log(
+        [
+            `Deleted ${revoked.total} role assignment(s) which migrateRoleAssignmentData() copied and ` +
+                `the ${t.userRoles} and ${t.roleChannels} tables no longer grant, because they were ` +
+                'revoked on a v3 server since:',
+            ...formatGrantsByUser(revoked.grants),
+        ].join('\n'),
+    );
+}
+
+/**
+ * Logs the grants which the legacy tables hold and `role_assignment` does not. Each was either
+ * removed on a v4 server or granted on a v3 server after the copy, so none is applied.
+ */
+async function reportUnappliedGrants(queryRunner: QueryRunner, sources: SourceTables): Promise<void> {
+    const t = getTableNames(queryRunner);
+    const pending = getPendingGrantQueries(queryRunner, sources);
+    const unapplied = await describeGrants(
+        queryRunner,
+        `${pending.legacyGrants} UNION ALL ${pending.superAdminGrants}`,
+    );
+    if (unapplied.total === 0) {
+        return;
+    }
+    console.log(
+        [
+            `Not applied: ${unapplied.total} grant(s) which the ${t.userRoles} and ${t.roleChannels} ` +
+                `tables hold and the ${t.roleAssignment} table does not. Each was either removed on a ` +
+                'v4 server or granted on a v3 server after migrateRoleAssignmentData() ran. Grant ' +
+                'the ones still needed again with assignRolesToUser:',
+            ...formatGrantsByUser(unapplied.grants),
+        ].join('\n'),
+    );
+}
+
+async function countRoleAssignments(queryRunner: QueryRunner): Promise<number> {
+    const t = getTableNames(queryRunner);
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const rows: Array<{ count: string | number }> = await queryRunner.query(
+        `SELECT COUNT(*) AS ${esc('count')} FROM ${esc(t.roleAssignment)}`,
+    );
+    return Number(rows[0].count);
+}
+
+async function describeRoleAssignmentCounts(queryRunner: QueryRunner): Promise<string> {
+    const t = getTableNames(queryRunner);
+    const esc = (name: string) => queryRunner.connection.driver.escape(name);
+    const userRows: Array<{ count: string | number }> = await queryRunner.query(
+        `SELECT COUNT(DISTINCT ${esc('userId')}) AS ${esc('count')} FROM ${esc(t.roleAssignment)}`,
+    );
+    return (
+        `It now holds ${await countRoleAssignments(queryRunner)} role assignments for ` +
+        `${Number(userRows[0].count)} users.`
+    );
+}
+
+function formatSecondsSince(startedAt: number): string {
+    return ((Date.now() - startedAt) / 1000).toFixed(1);
 }
 
 /**
  * Throws if the pre-v4 `user_roles_role` table still exists under its original name and
- * holds rows, meaning {@link migrateRoleAssignmentData} has not been run or did not finish.
- * Without the migration the `role_assignment` table is empty and every Administrator
- * except the configured superadmin would be locked out.
+ * holds rows which {@link migrateRoleAssignmentData} has not copied: without the copy the
+ * `role_assignment` table is empty and every Administrator except the configured superadmin
+ * would be locked out.
+ *
+ * Passes once the copy has been recorded, although the legacy tables still exist: v4 then
+ * starts next to v3 servers until {@link removeLegacyRoleData} drops the legacy tables.
  */
 export async function assertRoleAssignmentDataMigrated(queryRunner: QueryRunner): Promise<void> {
-    if (!(await hasUnmigratedRoleGrants(queryRunner))) {
+    if (!(await hasUnmigratedRoleGrants(queryRunner)) || (await hasRecordedCopy(queryRunner))) {
         return;
     }
     const t = getTableNames(queryRunner);
-    if (await queryRunner.hasTable(t.archivedRoleChannels)) {
-        throw new Error(
-            `A previous run of migrateRoleAssignmentData() stopped before archiving the ` +
-                `${t.userRoles} table. On MySQL and MariaDB, where DDL statements are not ` +
-                'transactional, the migration which called it is not recorded as executed and ' +
-                'cannot simply be run again. Restore the backup taken before the migration, or ' +
-                'run migrateRoleAssignmentData() again to finish the archive and record the ' +
-                `migration as executed. See ${MIGRATION_GUIDE_URL}`,
-        );
-    }
     throw new Error(
         `The pre-v4 ${t.userRoles} table still holds role grants, so they have not been ` +
             `migrated to the ${t.roleAssignment} table, or the migration did not finish. Run ` +
@@ -308,9 +531,18 @@ export async function assertRoleAssignmentDataMigrated(queryRunner: QueryRunner)
 }
 
 /**
+ * Whether the pre-v4 `user_roles_role` table still exists, that is,
+ * {@link removeLegacyRoleData} has not run yet.
+ */
+export async function hasLegacyRoleTables(queryRunner: QueryRunner): Promise<boolean> {
+    return queryRunner.hasTable(getTableNames(queryRunner).userRoles);
+}
+
+/**
  * Called on bootstrap. With `synchronize` enabled there is no migration to call
- * {@link migrateRoleAssignmentData} from, so unmigrated pre-v4 grants are migrated here, in
- * one transaction. Otherwise this is {@link assertRoleAssignmentDataMigrated}.
+ * {@link migrateRoleAssignmentData} and {@link removeLegacyRoleData} from, so unmigrated
+ * pre-v4 grants are migrated here, both steps in one transaction. Otherwise this is
+ * {@link assertRoleAssignmentDataMigrated}.
  *
  * @returns whether a migration ran.
  */
@@ -328,12 +560,13 @@ export async function ensureRoleAssignmentDataMigrated(
     await queryRunner.startTransaction();
     try {
         await migrateRoleAssignmentData(queryRunner);
+        await removeLegacyRoleData(queryRunner);
         await queryRunner.commitTransaction();
         return true;
     } catch (e: unknown) {
         await queryRunner.rollbackTransaction();
         // The server and the worker bootstrap at the same time. If the other process
-        // migrated first, this one failed on its archive step and has nothing left to do.
+        // migrated first, this one failed on its drop step and has nothing left to do.
         if (!(await hasUnmigratedRoleGrants(queryRunner))) {
             return false;
         }
@@ -358,8 +591,7 @@ interface TableNames {
     roleAssignment: string;
     userRoles: string;
     roleChannels: string;
-    archivedUserRoles: string;
-    archivedRoleChannels: string;
+    copyRecord: string;
 }
 
 /**
@@ -375,80 +607,13 @@ function getTableNames(queryRunner: QueryRunner): TableNames {
         roleAssignment: `${prefix}role_assignment`,
         userRoles: `${prefix}user_roles_role`,
         roleChannels: `${prefix}role_channels_channel`,
-        archivedUserRoles: `${prefix}_v3_user_roles_role`,
-        archivedRoleChannels: `${prefix}_v3_role_channels_channel`,
+        copyRecord: `${prefix}role_assignment_migration`,
     };
 }
 
 interface SourceTables {
     userRoles: string;
     roleChannels: string;
-}
-
-/**
- * The tables to read the legacy grants from. Normally the original join tables; after a
- * partial failure between the two renames (possible on MySQL, where DDL is not
- * transactional) one of them is already archived. Returns undefined when neither original
- * table exists any more: the migration has completed, and the role_assignment table may
- * have changed since, so the archive must not be compared against it.
- */
-async function resolveSourceTables(queryRunner: QueryRunner): Promise<SourceTables | undefined> {
-    const t = getTableNames(queryRunner);
-    const hasUserRoles = await queryRunner.hasTable(t.userRoles);
-    const hasRoleChannels = await queryRunner.hasTable(t.roleChannels);
-    if (!hasUserRoles && !hasRoleChannels) {
-        return undefined;
-    }
-    const resolve = async (original: string, archived: string, hasOriginal: boolean) => {
-        if (hasOriginal) {
-            return original;
-        }
-        if (await queryRunner.hasTable(archived)) {
-            return archived;
-        }
-        throw new Error(
-            `Neither the ${original} table nor its archive ${archived} exists. The legacy role ` +
-                'data cannot be migrated.',
-        );
-    };
-    return {
-        userRoles: await resolve(t.userRoles, t.archivedUserRoles, hasUserRoles),
-        roleChannels: await resolve(t.roleChannels, t.archivedRoleChannels, hasRoleChannels),
-    };
-}
-
-/**
- * On MySQL each DDL statement commits on its own, so a run can stop between any two of
- * them. The boot check looks for `user_roles_role`, so renaming it is the last statement:
- * a run which stopped earlier keeps Vendure from starting until it is completed.
- */
-async function archiveLegacyTables(queryRunner: QueryRunner): Promise<void> {
-    const t = getTableNames(queryRunner);
-    const pairs = [
-        { original: t.roleChannels, archived: t.archivedRoleChannels },
-        { original: t.userRoles, archived: t.archivedUserRoles },
-    ];
-    for (const { original, archived } of pairs) {
-        if ((await queryRunner.hasTable(original)) && (await queryRunner.hasTable(archived))) {
-            throw new Error(
-                `Cannot archive ${original}: a table named ${archived} already exists. ` +
-                    'Rename or drop it and run the migration again.',
-            );
-        }
-    }
-    for (const { original, archived } of pairs) {
-        const table = await queryRunner.getTable(
-            (await queryRunner.hasTable(original)) ? original : archived,
-        );
-        if (table?.foreignKeys.length) {
-            await queryRunner.dropForeignKeys(table, table.foreignKeys);
-        }
-    }
-    for (const { original, archived } of pairs) {
-        if (await queryRunner.hasTable(original)) {
-            await queryRunner.renameTable(original, archived);
-        }
-    }
 }
 
 /**
@@ -491,20 +656,25 @@ const MAX_REPORTED_USERS = 20;
 const MAX_FETCHED_MISMATCHES = 500;
 
 /**
- * Checks that `role_assignment` holds exactly the grants the legacy tables describe under
- * the v4 rules: every legacy triple except the Customer role's, and one default-channel
- * row per SuperAdmin holder. Throws on any missing or extra row, naming the affected
- * users, roles and channels. An extra row is most likely a grant which was revoked in the
- * legacy tables after an earlier pass of a staged rollout copied it.
+ * The SELECT yielding the `role_assignment` rows the legacy tables do not grant under the
+ * v4 rules: every legacy triple except the Customer role's, and one default-channel row
+ * per SuperAdmin holder. With `copiedOnly`, only the rows the recorded copy wrote.
  */
-async function verifyRoleAssignmentData(queryRunner: QueryRunner, sources: SourceTables): Promise<void> {
+function getExtraGrantsQuery(
+    queryRunner: QueryRunner,
+    sources: SourceTables,
+    options: { copiedOnly: boolean } = { copiedOnly: false },
+): string {
     const esc = (name: string) => queryRunner.connection.driver.escape(name);
     const t = getTableNames(queryRunner);
-    const pending = getPendingGrantQueries(queryRunner, sources);
-    const missingQuery = `${pending.legacyGrants} UNION ALL ${pending.superAdminGrants}`;
-    const extraQuery = `SELECT ra.${esc('userId')} AS ${esc('userId')}, ra.${esc('roleId')} AS ${esc('roleId')}, ra.${esc('channelId')} AS ${esc('channelId')}
+    const copiedOnlyJoin = options.copiedOnly
+        ? `INNER JOIN ${esc(t.copyRecord)} m ON ra.${esc('createdAt')} <= m.${esc('copiedAt')}`
+        : '';
+    return `SELECT ra.${esc('id')} AS ${esc('id')}, ra.${esc('userId')} AS ${esc('userId')},
+                ra.${esc('roleId')} AS ${esc('roleId')}, ra.${esc('channelId')} AS ${esc('channelId')}
          FROM ${esc(t.roleAssignment)} ra
          LEFT JOIN ${esc(t.role)} r ON r.${esc('id')} = ra.${esc('roleId')}
+         ${copiedOnlyJoin}
          WHERE NOT (
              (COALESCE(r.${esc('code')}, '') NOT IN ('${CUSTOMER_ROLE_CODE}', '${SUPER_ADMIN_ROLE_CODE}')
                  AND EXISTS (
@@ -524,15 +694,26 @@ async function verifyRoleAssignmentData(queryRunner: QueryRunner, sources: Sourc
                      AND ur.${esc('roleId')} = ra.${esc('roleId')}
                  ))
          )`;
+}
+
+/**
+ * Checks that `role_assignment` holds exactly the grants the legacy tables describe under
+ * the v4 rules. Throws on any missing or extra row, naming the affected users, roles and
+ * channels.
+ */
+async function verifyRoleAssignmentData(queryRunner: QueryRunner, sources: SourceTables): Promise<void> {
+    const pending = getPendingGrantQueries(queryRunner, sources);
+    const missingQuery = `${pending.legacyGrants} UNION ALL ${pending.superAdminGrants}`;
     const missing = await describeGrants(queryRunner, missingQuery);
-    const extra = await describeGrants(queryRunner, extraQuery);
+    const extra = await describeGrants(queryRunner, getExtraGrantsQuery(queryRunner, sources));
     if (missing.total === 0 && extra.total === 0) {
         return;
     }
     const lines = [
         'Role assignment verification failed: the copied role assignments do not match the ' +
             'pre-v4 grants. The legacy tables have not been changed, so the migration can be run ' +
-            'again once the cause is fixed.',
+            'again once the cause is fixed. If a Vendure server changed Role grants while the ' +
+            'migration ran, run it again once no Role grants are being changed.',
     ];
     if (missing.total) {
         lines.push(
@@ -546,10 +727,6 @@ async function verifyRoleAssignmentData(queryRunner: QueryRunner, sources: Sourc
             '',
             `Would gain access (present after the copy, not granted before v4): ${extra.total} grant(s)`,
             ...formatGrantsByUser(extra.grants),
-            '',
-            'A grant present but not granted before v4 is usually one which was revoked after an ' +
-                'earlier pass of a staged rollout copied it. Remove it from the role_assignment ' +
-                'table and run the migration again.',
         );
     }
     throw new Error(lines.join('\n'));
@@ -579,9 +756,9 @@ async function assertNoCustomerRoleAssignments(queryRunner: QueryRunner): Promis
     throw new Error(
         [
             `The ${t.roleAssignment} table holds ${customerGrants.total} assignment(s) of the legacy ` +
-                'Customer role, granted after the migration. Deleting the role would remove them ' +
-                'without a RoleAssignmentEvent or a session eviction, so nothing has been changed. ' +
-                'Remove them with removeRolesFromUser and run removeLegacyRoleData() again.',
+                'Customer role, granted on a v4 server. Deleting the role would remove them without a ' +
+                'RoleAssignmentEvent or a session eviction, so the role has been kept. Remove them ' +
+                'with removeRolesFromUser and run removeLegacyRoleData() again.',
             '',
             ...formatGrantsByUser(customerGrants.grants),
         ].join('\n'),

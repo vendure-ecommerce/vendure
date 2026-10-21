@@ -57,13 +57,19 @@ describe('migrateRoleAssignmentData()', () => {
         ordersAndCatalog: 'orders-and-catalog@test.com',
         roleCrud: 'role-crud@test.com',
     };
+    // Not part of the permission snapshots: a v3 server revokes its Role between the two
+    // migration steps.
+    const REVOKED_ON_V3 = 'revoked-on-v3@test.com';
+    const ADDED_ON_V4 = 'added-on-v4@test.com';
 
     let queryRunner: QueryRunner;
     let esc: (name: string) => string;
     let channelB: { id: string; token: string };
     let apiKey: string;
+    let ordersRoleId: string;
     let customerEmails: string[];
     let triplesBefore: string[];
+    let triplesAfter: string[];
     let permissionsBefore: PermissionSnapshot;
     let legacyRowCounts: { userRoles: number; roleChannels: number };
 
@@ -84,6 +90,7 @@ describe('migrateRoleAssignmentData()', () => {
         // A v3 Role held its permissions on the same Channels for every holder, so each
         // Role is granted on the same Channels to everyone who holds it.
         const ordersRole = await createRole('orders', [Permission.ReadOrder, Permission.UpdateOrder]);
+        ordersRoleId = ordersRole.id;
         const catalogRole = await createRole('catalog', [Permission.ReadCatalog, Permission.UpdateCatalog]);
         const roleCrudRole = await createRole('role-crud', [
             Permission.CreateRole,
@@ -99,6 +106,7 @@ describe('migrateRoleAssignmentData()', () => {
         await createAdministrator(ADMINS.orders, ordersGrants);
         await createAdministrator(ADMINS.ordersAndCatalog, [...ordersGrants, ...catalogGrants]);
         await createAdministrator(ADMINS.roleCrud, [{ roleId: roleCrudRole.id, channelId: 'T_1' }]);
+        await createAdministrator(REVOKED_ON_V3, ordersGrants);
 
         // An API key can only be used on the channels it was created on
         adminClient.setChannelToken(channelC.token);
@@ -379,39 +387,77 @@ describe('migrateRoleAssignmentData()', () => {
         expect(permissions['api-key']).toEqual({});
     });
 
-    it('a failed check stops the migration with the legacy tables untouched', async () => {
-        // A grant the legacy tables do not hold: role-crud on channel-b
-        await queryRunner.query(
-            `INSERT INTO ${esc('role_assignment')} (${esc('userId')}, ${esc('roleId')}, ${esc('channelId')})
-             SELECT u.${esc('id')}, r.${esc('id')}, c.${esc('id')}
-             FROM ${esc('user')} u, ${esc('role')} r, ${esc('channel')} c
-             WHERE u.${esc('identifier')} = '${ADMINS.roleCrud}'
-             AND r.${esc('code')} = 'role-crud' AND c.${esc('code')} = 'channel-b'`,
-        );
-        await queryRunner.startTransaction();
-        try {
-            await expect(migrateRoleAssignmentData(queryRunner)).rejects.toThrow(
-                `${ADMINS.roleCrud}: role-crud on channel-b`,
-            );
-        } finally {
-            await queryRunner.rollbackTransaction();
-        }
+    it('migrateRoleAssignmentData copies the grants and leaves the legacy tables untouched', async () => {
+        const insertedCount = await migrateRoleAssignmentData(queryRunner);
 
-        expect(await getTriples()).toEqual([`${ADMINS.roleCrud} / role-crud / channel-b`]);
+        expect(insertedCount).toBe(triplesBefore.length);
+        expect(await getTriples()).toEqual(triplesBefore);
         expect(await countRows('user_roles_role')).toBe(legacyRowCounts.userRoles);
         expect(await countRows('role_channels_channel')).toBe(legacyRowCounts.roleChannels);
         expect((await queryRunner.getTable('user_roles_role'))?.foreignKeys).toHaveLength(2);
         expect((await queryRunner.getTable('role_channels_channel'))?.foreignKeys).toHaveLength(2);
-        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
-
-        await queryRunner.query(`DELETE FROM ${esc('role_assignment')}`);
     });
 
-    it('copies every legacy grant exactly once', async () => {
-        const insertedCount = await migrateRoleAssignmentData(queryRunner);
+    describe('while v3 and v4 servers run side by side', () => {
+        it('starts with the same permissions as before for every administrator, the API key and every customer', async () => {
+            await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
+            expect(await snapshotPermissions()).toEqual(permissionsBefore);
+        });
 
-        expect(await getTriples()).toEqual(triplesBefore);
-        expect(insertedCount).toBe(triplesBefore.length);
+        it('changes role assignments on v4', async () => {
+            // SQLite stores createdAt with second precision. A row written in the second of
+            // the copy would count as copied.
+            await new Promise(resolve => setTimeout(resolve, 1100));
+
+            // The same Channels as the other holders of the orders role, so that the legacy
+            // tables can express it in the synchronize test below
+            await createAdministrator(ADDED_ON_V4, [
+                { roleId: ordersRoleId, channelId: 'T_1' },
+                { roleId: ordersRoleId, channelId: channelB.id },
+            ]);
+
+            expect(await getTriples()).toContain(`${ADDED_ON_V4} / orders / ${DEFAULT_CHANNEL_CODE}`);
+        });
+
+        it('refuses to assign the legacy Customer role on v4', async () => {
+            const [customerRole]: Array<{ id: string | number }> = await queryRunner.query(
+                `SELECT ${esc('id')} FROM ${esc('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
+            );
+
+            await assertThrowsWithMessage(
+                () =>
+                    adminClient.query(createAdministratorDocument, {
+                        input: {
+                            firstName: 'Test',
+                            lastName: 'Admin',
+                            emailAddress: 'customer-role@test.com',
+                            password: 'test',
+                            roleAssignments: [{ roleId: `T_${customerRole.id}`, channelId: 'T_1' }],
+                        },
+                    }),
+                'The pre-v4 Customer role cannot be assigned',
+            )();
+        });
+    });
+
+    it('removeLegacyRoleData deletes the grants revoked on v3, keeps those added on v4 and drops the legacy tables', async () => {
+        // On a v3 server: the orders role is revoked
+        await queryRunner.query(
+            `DELETE FROM ${esc('user_roles_role')} WHERE ${esc('userId')} IN (
+                 SELECT ${esc('id')} FROM ${esc('user')} WHERE ${esc('identifier')} = '${REVOKED_ON_V3}'
+             )`,
+        );
+        triplesAfter = [
+            ...triplesBefore.filter(t => !t.startsWith(`${REVOKED_ON_V3} /`)),
+            `${ADDED_ON_V4} / orders / ${DEFAULT_CHANNEL_CODE}`,
+            `${ADDED_ON_V4} / orders / channel-b`,
+        ].sort();
+
+        await removeLegacyRoleData(queryRunner);
+
+        expect(await getTriples()).toEqual(triplesAfter);
+        expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
+        expect(await queryRunner.hasTable('role_assignment_migration')).toBe(false);
     });
 
     it('every administrator, the API key and every customer has the same permissions as before', async () => {
@@ -466,47 +512,18 @@ describe('migrateRoleAssignmentData()', () => {
 
     it('is idempotent', async () => {
         expect(await migrateRoleAssignmentData(queryRunner)).toBe(0);
-        expect(await getTriples()).toEqual(triplesBefore);
+        await removeLegacyRoleData(queryRunner);
+        expect(await getTriples()).toEqual(triplesAfter);
     });
 
-    it('archives the legacy tables with all their rows and without foreign keys', async () => {
+    it('drops the legacy tables and the Customer role', async () => {
         expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
         expect(await queryRunner.hasTable('role_channels_channel')).toBe(false);
-        expect(await countRows('_v3_user_roles_role')).toBe(legacyRowCounts.userRoles);
-        expect(await countRows('_v3_role_channels_channel')).toBe(legacyRowCounts.roleChannels);
-        expect((await queryRunner.getTable('_v3_user_roles_role'))?.foreignKeys).toEqual([]);
-        expect((await queryRunner.getTable('_v3_role_channels_channel'))?.foreignKeys).toEqual([]);
-        await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
-    });
-
-    // On MySQL and MariaDB each DDL statement commits on its own, so a run can stop after
-    // archiving role_channels_channel and before archiving user_roles_role.
-    it('completes a run which stopped before archiving user_roles_role', async () => {
-        await queryRunner.renameTable('_v3_user_roles_role', 'user_roles_role');
-        await expect(assertRoleAssignmentDataMigrated(queryRunner)).rejects.toThrow(
-            'A previous run of migrateRoleAssignmentData() stopped before archiving the user_roles_role table',
-        );
-
-        expect(await migrateRoleAssignmentData(queryRunner)).toBe(0);
-
-        expect(await queryRunner.hasTable('user_roles_role')).toBe(false);
-        expect(await countRows('_v3_user_roles_role')).toBe(legacyRowCounts.userRoles);
-        expect(await getTriples()).toEqual(triplesBefore);
-        await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
-    });
-
-    it('removeLegacyRoleData drops the archive and the Customer role', async () => {
-        await removeLegacyRoleData(queryRunner);
-
-        expect(await queryRunner.hasTable('_v3_user_roles_role')).toBe(false);
-        expect(await queryRunner.hasTable('_v3_role_channels_channel')).toBe(false);
         const customerRoles: unknown[] = await queryRunner.query(
             `SELECT 1 FROM ${esc('role')} WHERE ${esc('code')} = '${CUSTOMER_ROLE_CODE}'`,
         );
         expect(customerRoles).toEqual([]);
-        expect(await getTriples()).toEqual(triplesBefore);
-
-        await expect(removeLegacyRoleData(queryRunner)).resolves.toBeUndefined();
+        await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
     });
 
     // With synchronize enabled there is no migration to call the helper from, so Vendure
@@ -521,6 +538,12 @@ describe('migrateRoleAssignmentData()', () => {
         expect(await getTriples()).toEqual(expectedTriples);
         expect(await snapshotPermissions()).toEqual(expectedPermissions);
         await expect(assertRoleAssignmentDataMigrated(queryRunner)).resolves.toBeUndefined();
+    });
+
+    it('changes role assignments once the migration has finished', async () => {
+        await createAdministrator('after-upgrade@test.com', [{ roleId: ordersRoleId, channelId: 'T_1' }]);
+
+        expect(await getTriples()).toContain(`after-upgrade@test.com / orders / ${DEFAULT_CHANNEL_CODE}`);
     });
 });
 
