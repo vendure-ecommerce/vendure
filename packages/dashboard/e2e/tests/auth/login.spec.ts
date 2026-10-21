@@ -37,86 +37,125 @@ test.describe('Login', () => {
 test.describe('Switching user', () => {
     test('shows the navigation of a user whose role is on another channel', async ({ page, browser }) => {
         const suffix = `${Date.now()}-${Math.round(Math.random() * 1000)}`;
-        const superAdminEmailAddress = `switch-superadmin-${suffix}@test.com`;
+        const firstEmailAddress = `switch-first-user-${suffix}@test.com`;
         const emailAddress = `switch-user-${suffix}@test.com`;
         const password = 'test-password';
         const client = new VendureAdminClient(page);
         await client.login();
-        // Logging out ends all sessions of a User, so a separate SuperAdmin is logged out
-        // instead of the one which the other tests use
-        const { roles } = await client.gql(
-            `query { roles(options: { filter: { code: { eq: "__super_admin_role__" } } }) { items { id } } }`,
+        // Logging out ends all sessions of a User, so a separate administrator is logged out
+        // instead of the SuperAdmin which the other tests use. Its role is on the default
+        // channel rather than the SuperAdmin role: the SuperAdmin role gains every channel
+        // which a parallel test creates, and then this client's session may not grant it.
+        const { activeChannel } = await client.gql(`query { activeChannel { id } }`);
+        const { zones } = await client.gql(
+            `query { zones(options: { filter: { name: { eq: "Europe" } } }) { items { id } } }`,
         );
-        await client.gql(
-            `mutation ($input: CreateAdministratorInput!) { createAdministrator(input: $input) { id } }`,
-            {
-                input: {
-                    firstName: 'Switch',
-                    lastName: 'SuperAdmin',
-                    emailAddress: superAdminEmailAddress,
-                    password,
-                    roleIds: [roles.items[0].id],
-                },
-            },
-        );
+        const zoneId = zones.items[0]?.id as string;
+        expect(zoneId).toBeTruthy();
         const { createChannel } = await client.gql(
-            `mutation ($input: CreateChannelInput!) { createChannel(input: $input) { ... on Channel { id } } }`,
+            `mutation ($input: CreateChannelInput!) {
+                createChannel(input: $input) {
+                    ... on Channel { id }
+                    ... on ErrorResult { errorCode message }
+                }
+            }`,
             {
                 input: {
                     code: `switch-user-${suffix}`,
                     token: `switch-user-${suffix}`,
                     defaultLanguageCode: 'en',
-                    currencyCode: 'USD',
                     pricesIncludeTax: false,
-                    defaultShippingZoneId: '1',
-                    defaultTaxZoneId: '1',
+                    defaultCurrencyCode: 'USD',
+                    availableCurrencyCodes: ['USD'],
+                    defaultTaxZoneId: zoneId,
+                    defaultShippingZoneId: zoneId,
                 },
             },
         );
-        const { createRole } = await client.gql(
-            `mutation ($input: CreateRoleInput!) { createRole(input: $input) { id } }`,
-            {
-                input: {
-                    code: `switch-user-${suffix}`,
-                    description: 'Catalog access on another channel',
-                    permissions: ['ReadCatalog'],
-                    channelIds: [createChannel.id],
+        const channelId = createChannel.id as string;
+        expect(channelId).toBeTruthy();
+        const roleIds: string[] = [];
+        const administratorIds: string[] = [];
+        const createAdministrator = async (
+            code: string,
+            lastName: string,
+            administratorEmailAddress: string,
+            roleChannelId: string,
+        ) => {
+            const { createRole } = await client.gql(
+                `mutation ($input: CreateRoleInput!) { createRole(input: $input) { id } }`,
+                {
+                    input: {
+                        code,
+                        description: 'Catalog access',
+                        permissions: ['ReadCatalog'],
+                        channelIds: [roleChannelId],
+                    },
                 },
-            },
-        );
-        await client.gql(
-            `mutation ($input: CreateAdministratorInput!) { createAdministrator(input: $input) { id } }`,
-            {
-                input: {
-                    firstName: 'Switch',
-                    lastName: 'User',
-                    emailAddress,
-                    password,
-                    roleIds: [createRole.id],
+            );
+            roleIds.push(createRole.id);
+            const { createAdministrator: administrator } = await client.gql(
+                `mutation ($input: CreateAdministratorInput!) { createAdministrator(input: $input) { id } }`,
+                {
+                    input: {
+                        firstName: 'Switch',
+                        lastName,
+                        emailAddress: administratorEmailAddress,
+                        password,
+                        roleIds: [createRole.id],
+                    },
                 },
-            },
-        );
+            );
+            administratorIds.push(administrator.id);
+        };
 
         // A fresh browser context, so that the page is not signed in as the SuperAdmin
         const context = await browser.newContext({ storageState: { cookies: [], origins: [] } });
-        const userPage = await context.newPage();
-        const loginPage = new LoginPage(userPage);
-        await loginPage.goto();
-        await loginPage.login(superAdminEmailAddress, password);
-        await expect(userPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
+        try {
+            await createAdministrator(
+                `switch-first-user-${suffix}`,
+                'FirstUser',
+                firstEmailAddress,
+                activeChannel.id,
+            );
+            await createAdministrator(`switch-user-${suffix}`, 'User', emailAddress, channelId);
 
-        await userPage.locator('[data-sidebar="footer"] [data-sidebar="menu-button"]').last().click();
-        await userPage.getByRole('menuitem', { name: 'Log out' }).click();
-        await loginPage.expectVisible();
-        await loginPage.login(emailAddress, password);
-        await expect(userPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
+            const userPage = await context.newPage();
+            const loginPage = new LoginPage(userPage);
+            await loginPage.goto();
+            await loginPage.login(firstEmailAddress, password);
+            await expect(userPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
 
-        await expect(
-            userPage.locator('[data-sidebar="menu-button"]').filter({ hasText: 'Catalog' }),
-        ).toBeVisible({
-            timeout: 10_000,
-        });
-        await context.close();
+            await userPage
+                .locator('[data-sidebar="footer"] [data-sidebar="menu-button"]')
+                .filter({ hasText: 'Switch FirstUser' })
+                .click();
+            await userPage.getByRole('menuitem', { name: 'Log out' }).click();
+            await loginPage.expectVisible();
+            await loginPage.login(emailAddress, password);
+            await expect(userPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
+
+            await expect(
+                userPage.locator('[data-sidebar="menu-button"]').filter({ hasText: 'Catalog' }),
+            ).toBeVisible({
+                timeout: 10_000,
+            });
+        } finally {
+            await context.close();
+            // Remove the test data even if an assertion above failed, so that later tests
+            // which reuse the e2e database do not see an extra channel
+            await client
+                .gql(`mutation ($ids: [ID!]!) { deleteAdministrators(ids: $ids) { result } }`, {
+                    ids: administratorIds,
+                })
+                .catch(() => {});
+            await client
+                .gql(`mutation ($ids: [ID!]!) { deleteRoles(ids: $ids) { result } }`, { ids: roleIds })
+                .catch(() => {});
+            await client
+                .gql(`mutation ($id: ID!) { deleteChannel(id: $id) { result } }`, { id: channelId })
+                .catch(() => {});
+        }
     });
 });
 
