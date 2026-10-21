@@ -69,7 +69,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private options: BullMQPluginOptions;
     private jobListIndexService: JobListIndexService;
     private readonly queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
-    private cancellationSub: Redis;
+    private cancellationSub: Redis | Cluster;
     private cancellationSubscribed = false;
     private readonly cancelRunningJob$ = new Subject<string>();
     private readonly CANCEL_JOB_CHANNEL = 'cancel-job';
@@ -163,7 +163,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         };
         // Subscription-mode Redis connection for the cancellation messages
         this.cancellationSub = suppliedConnection
-            ? (suppliedConnection.duplicate() as Redis)
+            ? suppliedConnection.duplicate()
             : new Redis(this.connectionOptions as RedisOptions);
         this.jobListIndexService.register(this.redisConnection, this.queue);
     }
