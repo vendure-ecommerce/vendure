@@ -5,6 +5,7 @@ import {
     Permission,
     SortOrder,
 } from '@vendure/common/lib/generated-types';
+import { ProductOption, ProductVariant, TransactionalConnection } from '@vendure/core';
 import type { ErrorResultGuard } from '@vendure/testing';
 import { createErrorResultGuard, createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import { fail } from 'assert';
@@ -1516,11 +1517,20 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
             expect(deleteProductOption.result).toBe(DeletionResult.DELETED);
 
-            // updateProductVariants accepts the soft-deleted option, so an active variant now
-            // references it. Deleting the group then soft-deletes it, as the option is in use.
-            await adminClient.query(updateProductVariantsDocument, {
-                input: [{ id: variantId, optionIds: [blueOptionId] }],
+            // updateProductVariants rejects a soft-deleted option, so the repository points the active
+            // variant at it directly. Deleting the group then soft-deletes it, as the option is in use.
+            const { rawConnection } = server.app.get(TransactionalConnection);
+            const variantRepository = rawConnection.getRepository(ProductVariant);
+            const variant = await variantRepository.findOneOrFail({
+                where: { sku: 'VOC-RED' },
+                relations: { options: true },
             });
+            variant.options = [
+                await rawConnection
+                    .getRepository(ProductOption)
+                    .findOneOrFail({ where: { code: 'voc-blue' } }),
+            ];
+            await variantRepository.save(variant);
             const { deleteProductOptionGroup } = await adminClient.query(deleteProductOptionGroupDocument, {
                 id: optionGroupId,
                 force: true,
