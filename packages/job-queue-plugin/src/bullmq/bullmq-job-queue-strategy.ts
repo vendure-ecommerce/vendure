@@ -13,13 +13,13 @@ import {
 import Bull, {
     Job as BullJob,
     ConnectionOptions,
+    isRedisInstance,
     JobType,
     Processor,
     Queue,
     Worker,
     WorkerOptions,
 } from 'bullmq';
-import { EventEmitter } from 'events';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -69,7 +69,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private options: BullMQPluginOptions;
     private jobListIndexService: JobListIndexService;
     private readonly queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
-    private cancellationSub: Redis;
+    private cancellationSub: Redis | Cluster;
     private cancellationSubscribed = false;
     private readonly cancelRunningJob$ = new Subject<string>();
     private cancelJobChannel: string;
@@ -96,11 +96,11 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             options.connection ??
             ({ host: 'localhost', port: 6379, maxRetriesPerRequest: null } as RedisOptions);
 
-        this.ownsRedisConnection = !(this.connectionOptions instanceof EventEmitter);
-        this.redisConnection =
-            this.connectionOptions instanceof EventEmitter
-                ? this.connectionOptions
-                : new Redis(this.connectionOptions);
+        const suppliedConnection = isRedisInstance(this.connectionOptions)
+            ? this.connectionOptions
+            : undefined;
+        this.ownsRedisConnection = !suppliedConnection;
+        this.redisConnection = suppliedConnection ?? new Redis(this.connectionOptions as RedisOptions);
 
         this.defineCustomLuaScripts();
 
@@ -165,7 +165,9 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             throw new InternalServerError(`No processor defined for the queue "${queueName}"`);
         };
         // Subscription-mode Redis connection for the cancellation messages
-        this.cancellationSub = new Redis(this.connectionOptions as RedisOptions);
+        this.cancellationSub = suppliedConnection
+            ? suppliedConnection.duplicate()
+            : new Redis(this.connectionOptions as RedisOptions);
         this.jobListIndexService.register(this.redisConnection, this.queue);
     }
 
