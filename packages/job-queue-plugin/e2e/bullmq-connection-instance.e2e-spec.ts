@@ -56,18 +56,27 @@ describe('BullMQJobQueuePlugin with a Redis instance as connection', () => {
             [RedisHealthIndicator, new RedisHealthIndicator(options)],
         ]);
         const strategy = new BullMQJobQueueStrategy();
-        await strategy.init({ get: (token: unknown) => providers.get(token) } as unknown as Injector);
-        await strategy.start('instance-test', () => Promise.resolve());
+        let destroyed = false;
+        try {
+            await strategy.init({ get: (token: unknown) => providers.get(token) } as unknown as Injector);
+            await strategy.start('instance-test', () => Promise.resolve());
 
-        expect(supplied.status).toBe('ready');
-        await expect(supplied.ping()).resolves.toBe('PONG');
-        // The supplied instance and the cancellation subscriber duplicated from it
-        await vi.waitFor(async () => expect(await openConnections()).toBe(2));
+            expect(supplied.status).toBe('ready');
+            await expect(supplied.ping()).resolves.toBe('PONG');
+            // The supplied instance and the cancellation subscriber duplicated from it
+            await vi.waitFor(async () => expect(await openConnections()).toBe(2));
 
-        await strategy.destroy();
+            await strategy.destroy();
+            destroyed = true;
 
-        expect(supplied.status).toBe('ready');
-        await vi.waitFor(async () => expect(await openConnections()).toBe(1));
-        await supplied.quit();
+            expect(supplied.status).toBe('ready');
+            await vi.waitFor(async () => expect(await openConnections()).toBe(1));
+        } finally {
+            // Close everything when an assertion fails part way through
+            if (!destroyed) {
+                await strategy.destroy().catch(() => undefined);
+            }
+            supplied.disconnect();
+        }
     });
 });
