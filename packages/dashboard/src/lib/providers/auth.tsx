@@ -215,6 +215,10 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                             }
                             setActiveChannelId(channel.id);
                         }
+                        // Queries enabled by the refetched user may still be running with the
+                        // previous session's channel token. invalidateQueries() would wait for them
+                        // instead of refetching, so cancel them first. See #5623
+                        await queryClient.cancelQueries();
                         // Invalidate all queries to ensure fresh data after login
                         await queryClient.invalidateQueries();
                         setStatus('authenticated');
