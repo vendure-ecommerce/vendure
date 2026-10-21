@@ -125,6 +125,10 @@ Do not change Roles, Administrators, API keys or Channels while both run. v4 log
 A Customer who registers on a v4 server while v3 servers still run gets no v3 Customer role, so v3 servers refuse their customer-scoped requests, such as `activeCustomer`, with a `ForbiddenError`. Requests which reach a v4 server work. Once the last v3 server is replaced, everything works again without the Customer logging in anew. Existing Customers and guest checkouts are not affected. To avoid it, replace the v3 servers at a quiet time, or route each session to one server (sticky sessions).
 </Callout>
 
+<Callout type="info">
+If v3 and v4 servers share a session cache, for example `DefaultSessionCacheStrategy` over Redis or the database, v3 servers also refuse most requests of a SuperAdmin with a `ForbiddenError`, for up to `sessionCacheTTL` each time a v4 server caches their session. v4 caches SuperAdmin access in `globalPermissions`, which v3 does not read. Requests which reach a v4 server work, and other Administrators are not affected. To avoid it, replace the v3 servers at a quiet time, or use sticky sessions.
+</Callout>
+
 ## After migrating
 
 ### Check the result
@@ -136,7 +140,20 @@ A Customer who registers on a v4 server while v3 servers still run gets no v3 Cu
 
 ### Clear the session cache
 
-Cached sessions keep their v3 permissions until they expire after [`sessionCacheTTL`](/reference/typescript-api/auth/auth-options#sessioncachettl) seconds (300 by default). With the default in-memory cache, restarting Vendure clears them. If your [`SessionCacheStrategy`](/reference/typescript-api/auth/session-cache-strategy) stores sessions outside the process, for example in Redis or through the `DefaultCachePlugin` in the database, clear that store when you switch to v4.
+A cached session keeps the permissions it was cached with until it expires after [`sessionCacheTTL`](/reference/typescript-api/auth/auth-options#sessioncachettl) seconds (300 by default). A session cached by v3 grants Customers `Authenticated` on every Channel, and v4 uses it as it is. Without further action, v4 uses sessions cached by v3 for up to `sessionCacheTTL` after the last v3 server stops.
+
+To end that window at once, clear the session cache after the last v3 server has stopped, and before the first v4 server takes traffic if your deployment allows it. Clearing it earlier does not help, because v3 servers keep caching sessions with v3 permissions. If the window is acceptable, wait `sessionCacheTTL` instead.
+
+Sessions themselves stay in the database, so nobody is logged out. Each session is loaded from the database again on its next request.
+
+- **Default `CacheStrategy` (in memory):** nothing to do. Each server has its own cache, and a v4 server starts with an empty one.
+- **`RedisCachePlugin`:** delete the keys matching `vendure-cache:vendure-session-cache:*`, for example with `redis-cli --scan --pattern 'vendure-cache:vendure-session-cache:*' | xargs redis-cli del`.
+- **`DefaultCachePlugin`:** delete the rows of the `cache_item` table whose `key` starts with `vendure-session-cache:`. Their `cache_tag` rows are deleted with them.
+- **Custom [`SessionCacheStrategy`](/reference/typescript-api/auth/session-cache-strategy):** delete the sessions from its store.
+
+The names above use the default `namespace` of the `RedisCachePlugin`, the default `cachePrefix` of the `DefaultSessionCacheStrategy`, and no `entityPrefix`. Adjust them if you changed any of these.
+
+**Done when:** the session cache holds no `vendure-session-cache:` entries, or `sessionCacheTTL` has passed since the last v3 server stopped.
 
 ### Grant the RoleEditor Role
 
