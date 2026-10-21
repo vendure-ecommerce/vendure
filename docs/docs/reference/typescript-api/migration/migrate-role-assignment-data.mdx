@@ -2,7 +2,7 @@
 title: "MigrateRoleAssignmentData"
 generated: true
 ---
-<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments.ts" sourceLine="98" packageName="@vendure/core" since="4.0.0" />
+<GenerationInfo sourceFile="packages/core/src/migration-utils/v4_0_role_assignments.ts" sourceLine="101" packageName="@vendure/core" since="4.0.0" />
 
 Populates the new `role_assignment` table from the pre-v4 `user_roles_role` and
 `role_channels_channel` join tables. In the old model a User received each of their
@@ -27,10 +27,10 @@ Two Roles are treated specially:
   stands for all Channels (see `RoleAssignment`).
 
 The RoleEditor system role (which bundles the Role CRUD permissions) is created if
-absent. It is not granted to anyone: an Administrator who held `CreateRole`, `ReadRole`,
-`UpdateRole` or `DeleteRole` through a pre-v4 Role keeps those permissions through the
-migrated assignment rows of that Role, and every other Administrator has to be granted
-RoleEditor explicitly by an actor who may grant it.
+absent. It is not granted to anyone. Pre-v4 versions gated Role CRUD on the Administrator
+permissions, and `CreateRole`, `ReadRole`, `UpdateRole` and `DeleteRole` are new in v4, so
+after migrating only SuperAdmins can create, edit or delete Roles until an actor who may
+grant RoleEditor grants it.
 
 The SuperAdmin role's stored permissions array also gains the new Role CRUD
 permissions. Pre-v4 versions re-synced that array with all assignable permissions on
