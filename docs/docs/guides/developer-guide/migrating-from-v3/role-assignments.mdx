@@ -1,7 +1,7 @@
 ---
 title: "Role Assignments"
 metaTitle: "Vendure v4 Role Assignments - Migration Guide"
-metaDescription: "Migrate from v3 Roles scoped to Channels to v4 role assignments: preview and run the data migration, update plugins and API clients, and remove the archived role data."
+metaDescription: "Migrate from v3 Roles scoped to Channels to v4 role assignments: preview and run the data migration, and update plugins, API clients and storefronts."
 order: 5
 ---
 
@@ -46,7 +46,7 @@ With `synchronize: true`, starting Vendure v4 migrates the data straight away. R
 
 The report has these sections:
 
-- **Migration:** how many Users get rows and how many rows the migration writes, with an estimated run time. The estimate comes from measurements on PostgreSQL. Time the migration on a copy of your production database before you plan the downtime.
+- **Migration:** how many Users get rows and how many rows the migration writes, with an estimated run time. The estimate comes from measurements on PostgreSQL. Time the migration on a copy of your production database before you plan the [migration](/developer-guide/migrating-from-v3/database-migration#running-the-migration).
 - **Administrators and API keys:** no change in access.
 - **Customers holding other roles:** Customers who also hold another Role, for example as an Administrator. The migration copies those Roles like any other.
 - **Shop customers:** per Channel, how many Customers lose access because they are not a member of it, and how many gain access because they are a member of a Channel the Customer role did not cover. See [Storefront changes](#storefront-changes) for what this means for shoppers.
@@ -63,15 +63,15 @@ In v3 a User received each of their Roles' permissions on every Channel the Role
 - **SuperAdmin role:** one row per holder, on the default Channel. That row grants every permission on every Channel.
 - **Roles assigned to no Channel:** no rows. These Roles granted nothing in v3, so nobody loses access. The Roles themselves stay.
 
-It also creates the `RoleEditor` Role, without granting it to anyone, and adds the new Role permissions to the SuperAdmin Role.
+It also creates the `RoleEditor` Role, without granting it to anyone, and adds the new Role permissions to the SuperAdmin Role. It leaves the v3 tables `user_roles_role` and `role_channels_channel` in place, so v3 servers keep working until the last one is replaced. [`removeLegacyRoleData`](/reference/typescript-api/migration/remove-legacy-role-data) then drops them and deletes the Customer role. The backup taken before the migration is the way back to v3, and holds the v3 grants should you need them later.
 
-### Calling the helper
+### Calling the helpers
 
-With migrations, call the helper in your v4 migration after the generated statements that create the `role_assignment` table. See [Database migration](/developer-guide/migrating-from-v3/database-migration) for the whole migration.
+Call both helpers in your v4 migration after the generated statements that create the `role_assignment` table. For a rolling deployment, call `removeLegacyRoleData` from a later migration instead. See [Database migration](/developer-guide/migrating-from-v3/database-migration#running-the-migration) for the whole migration.
 
 ```ts
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import { migrateRoleAssignmentData } from '@vendure/core';
+import { migrateRoleAssignmentData, removeLegacyRoleData } from '@vendure/core';
 
 export class V4Upgrade1234567890 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<any> {
@@ -79,8 +79,10 @@ export class V4Upgrade1234567890 implements MigrationInterface {
         // (Create role_assignment table and FK constraints)
         // ...
 
-        // --- Populate new table with existing data, verify, archive the old tables ---
+        // --- Populate the new table with existing data and verify it ---
         await migrateRoleAssignmentData(queryRunner);
+        // --- Drop the v3 tables once no v3 server or worker is running ---
+        await removeLegacyRoleData(queryRunner);
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
@@ -89,25 +91,39 @@ export class V4Upgrade1234567890 implements MigrationInterface {
 }
 ```
 
-When it succeeds, the helper logs a line like this:
+When it succeeds, `migrateRoleAssignmentData` logs a line like this:
 
 ```text
-Successfully migrated 1240 role assignments to the role_assignment table in 0.8 s. It now holds 1240 role assignments for 310 users; compare with the counts of previewRoleAssignmentMigration(). The legacy tables were archived as _v3_user_roles_role and _v3_role_channels_channel.
+Successfully migrated 1240 role assignments to the role_assignment table in 0.8 s. It now holds 1240 role assignments for 310 users. Compare with the counts of previewRoleAssignmentMigration(). The legacy tables user_roles_role and role_channels_channel are kept for v3 servers. Once none is running, call removeLegacyRoleData().
 ```
 
 **Done when:** the role assignment and user counts in that line match the preview's "Role assignments to be written" and "Users with role assignments".
 
-With `dbConnectionOptions.synchronize` enabled, there is no migration to call it from. Vendure runs it on the first v4 startup instead, in one transaction. Run the preview first all the same.
+With `dbConnectionOptions.synchronize` enabled, there is no migration to call them from. Vendure runs both on the first v4 startup instead, in one transaction. Run the preview first all the same.
 
 Table names use the `entityPrefix` of your connection options.
 
 ### Startup check
 
-Vendure v4 refuses to start while the `user_roles_role` table still exists with rows. Without this check it would start with an empty `role_assignment` table and lock out every Administrator except the configured superadmin.
+Vendure v4 refuses to start while the `user_roles_role` table holds rows and `migrateRoleAssignmentData` has not run. Without this check it would start with an empty `role_assignment` table and lock out every Administrator except the configured superadmin.
 
 ### Verification
 
-After copying, the helper checks that `role_assignment` holds exactly the grants the v3 tables describe under the rules above. If any row is missing or extra, it throws an error that names the affected Users, Roles and Channels, and changes nothing else.
+After copying, `migrateRoleAssignmentData` checks that `role_assignment` holds exactly the grants the v3 tables describe under the rules above. If any row is missing or extra, it throws an error that names the affected Users, Roles and Channels, and does not record the copy, so v4 still refuses to start. It records the copy in a `role_assignment_migration` table, which `removeLegacyRoleData` reads and then drops.
+
+### During a rolling deployment
+
+Between `migrateRoleAssignmentData` and `removeLegacyRoleData`, v3 and v4 servers can serve the same shop. v4 works fully, but the two do not see each other's role changes:
+
+- A change made on a v4 server does not reach the v3 servers.
+- A grant revoked on a v3 server is removed from `role_assignment` when `removeLegacyRoleData` runs. Other changes made on a v3 server are not carried over. `removeLegacyRoleData` lists them as "Not applied".
+- The Customer role cannot be assigned on v4. It exists only until `removeLegacyRoleData` deletes it.
+
+Do not change Roles, Administrators, API keys or Channels while both run. v4 logs a warning on startup until `removeLegacyRoleData` has run.
+
+<Callout type="info">
+A Customer who registers on a v4 server while v3 servers still run gets no v3 Customer role, so v3 servers refuse their customer-scoped requests, such as `activeCustomer`, with a `ForbiddenError`. Requests which reach a v4 server work. Once the last v3 server is replaced, everything works again without the Customer logging in anew. Existing Customers and guest checkouts are not affected. To avoid it, replace the v3 servers at a quiet time, or route each session to one server (sticky sessions).
+</Callout>
 
 ## After migrating
 
@@ -127,10 +143,6 @@ Cached sessions keep their v3 permissions until they expire after [`sessionCache
 In v3 the Administrator permissions covered Role CRUD. In v4 Role CRUD needs `CreateRole`, `UpdateRole` and `DeleteRole`, bundled in the `RoleEditor` Role, which the migration grants to nobody. Until a SuperAdmin grants it, only SuperAdmins can create, edit or delete Roles.
 
 An Administrator can manage a Role only when they hold `RoleEditor` on every Channel where that Role is currently assigned.
-
-### Remove the archived role data later
-
-The migration keeps a copy of the v3 role tables. Once your audit period ends, remove it as described in [Removing the archived role data](#removing-the-archived-role-data).
 
 ## Updating your code
 
@@ -305,37 +317,3 @@ In v3, a declining strategy only meant the membership was not saved, and the req
 ### `CurrentUser.channels` lists member Channels only
 
 The `channels` returned by `login`, `authenticate` and `me` used to list every Channel of the instance for a Customer. In v4 it lists the Channels the Customer is a member of, and grows as they visit new Channels. Storefront code that builds a Channel picker from this list, or treats a single entry as a special case, sees fewer entries.
-
-## The archived role data
-
-Once the verification passes, the helper **archives the v3 tables instead of dropping them**. It renames them to `_v3_user_roles_role` and `_v3_role_channels_channel` and removes their foreign keys. It keeps the Customer role row, so the archived rows can still be matched to it.
-
-The archive is a frozen copy of the v3 grants for auditing. It is not a way back to v3: Vendure v4 never reads it, and rolling back means restoring the backup taken before the migration.
-
-<Callout type="warning">
-The archive has no foreign keys, so hard-deleting a User does not remove its rows from it. If you erase personal data on request (for example under the GDPR), include the archive in your erasure process until you remove it.
-</Callout>
-
-### Removing the archived role data
-
-Once your audit period ends, call [`removeLegacyRoleData`](/reference/typescript-api/migration/remove-legacy-role-data) from a later migration. It drops both archive tables and deletes the Customer role.
-
-```ts
-import { MigrationInterface, QueryRunner } from 'typeorm';
-import { removeLegacyRoleData } from '@vendure/core';
-
-export class RemoveLegacyRoleData1234567890 implements MigrationInterface {
-    public async up(queryRunner: QueryRunner): Promise<any> {
-        await removeLegacyRoleData(queryRunner);
-    }
-
-    public async down(queryRunner: QueryRunner): Promise<any> {
-        // The archive cannot be restored
-    }
-}
-```
-
-It throws, and changes nothing, in two cases:
-
-- `migrateRoleAssignmentData` has not archived the v3 tables yet.
-- `role_assignment` holds rows of the Customer role. Until the helper deletes the Customer role, Administrators can still grant it, and deleting it would remove those rows without a `RoleAssignmentEvent` or a session cache eviction. Remove them with the `removeRolesFromUser` mutation first.

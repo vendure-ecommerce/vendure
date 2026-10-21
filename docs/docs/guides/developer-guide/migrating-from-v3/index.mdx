@@ -63,9 +63,9 @@ Run the read-only previews against your production data. See [Previewing the dat
 
 ### 6. Migrate your database
 
-Generate and run the v4 migration. See [Database migration](/developer-guide/migrating-from-v3/database-migration).
+Generate and run the v4 migration. It copies the role grants and keeps the v3 tables, then drops them: in the same migration if you stop v3 first, or in a later one for a rolling deployment. See [Database migration](/developer-guide/migrating-from-v3/database-migration#running-the-migration).
 
-**Done when:** the migration has run, each data-migration helper logged its result, and Vendure v4 starts.
+**Done when:** the migration has run, each data-migration helper logged its result, and Vendure v4 starts. For a rolling deployment, also once the migration that drops the v3 tables has run.
 
 ### 7. Update your storefront
 
@@ -75,4 +75,4 @@ See [Storefront migration](/developer-guide/migrating-from-v3/storefront-migrati
 
 ### 8. Finish the steps after go-live
 
-- Role assignments: [clear the session cache](/developer-guide/migrating-from-v3/role-assignments#clear-the-session-cache), [grant the RoleEditor Role](/developer-guide/migrating-from-v3/role-assignments#grant-the-roleeditor-role) to the Administrators who manage Roles, and once your audit period ends, [remove the archived role data](/developer-guide/migrating-from-v3/role-assignments#removing-the-archived-role-data).
+- Role assignments: [check the session cache](/developer-guide/migrating-from-v3/role-assignments#clear-the-session-cache) and [grant the RoleEditor Role](/developer-guide/migrating-from-v3/role-assignments#grant-the-roleeditor-role) to the Administrators who manage Roles.
