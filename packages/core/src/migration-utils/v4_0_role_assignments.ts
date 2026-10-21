@@ -10,6 +10,9 @@ import {
 } from '@vendure/common/lib/shared-constants';
 import { QueryRunner } from 'typeorm';
 
+const MIGRATION_GUIDE_URL =
+    'https://docs.vendure.io/current/framework/developer-guide/migrating-from-v3/role-assignments';
+
 /**
  * @description
  * Populates the new `role_assignment` table from the pre-v4 `user_roles_role` and
@@ -292,7 +295,7 @@ export async function assertRoleAssignmentDataMigrated(queryRunner: QueryRunner)
                 'transactional, the migration which called it is not recorded as executed and ' +
                 'cannot simply be run again. Restore the backup taken before the migration, or ' +
                 'run migrateRoleAssignmentData() again to finish the archive and record the ' +
-                'migration as executed. See the v4 migration guide.',
+                `migration as executed. See ${MIGRATION_GUIDE_URL}`,
         );
     }
     throw new Error(
@@ -300,7 +303,7 @@ export async function assertRoleAssignmentDataMigrated(queryRunner: QueryRunner)
             `migrated to the ${t.roleAssignment} table, or the migration did not finish. Run ` +
             'migrateRoleAssignmentData() from a database migration before starting Vendure v4. ' +
             'With dbConnectionOptions.synchronize enabled, Vendure runs it on startup instead. ' +
-            'See the v4 migration guide.',
+            `See ${MIGRATION_GUIDE_URL}`,
     );
 }
 
