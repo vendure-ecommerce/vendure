@@ -1,0 +1,78 @@
+---
+title: "Database Migration"
+metaTitle: "Vendure v3 to v4 Database Migration Guide"
+metaDescription: "Generate and run the Vendure v4 database migration, including the data-migration helpers that move existing data into the new schema."
+order: 2
+---
+
+import { Callout } from '@vendure-io/docs-provider/components';
+
+Vendure v4 changes the database schema. A generated migration handles the new tables and columns. Some changes also need existing data moved into the new schema, which you do by calling a data-migration helper from the same migration.
+
+Before you start, complete steps 1 to 4 of [Migrating from v3](/developer-guide/migrating-from-v3): your project must be on v4 packages and compile.
+
+<Callout type="danger">
+Back up your production data before you migrate. After you go live on v4, restoring this backup is the only way back to v3, and it loses everything written on v4 since.
+</Callout>
+
+## Data-migration helpers
+
+| Helper | Change | Preview | With `synchronize: true` |
+|---|---|---|---|
+| [`migrateRoleAssignmentData`](/reference/typescript-api/migration/migrate-role-assignment-data) | [Role assignments](/developer-guide/migrating-from-v3/role-assignments#migrating-the-data) | [`previewRoleAssignmentMigration`](/developer-guide/migrating-from-v3/role-assignments#previewing-the-migration) | Runs on the first v4 startup |
+
+Each helper's guide explains what it does, how it checks its result, and any steps after go-live.
+
+## Previewing the data migrations
+
+Some helpers have a read-only preview that reports how the migration will change your data. Run each one **before** migrating, while the database still has its v3 shape. Previews only read, so they are safe to run against production. The table above links each preview.
+
+<Callout type="warning">
+With `synchronize: true`, starting Vendure v4 runs the data migrations straight away. Run the previews before you start v4 for the first time.
+</Callout>
+
+## Running the migration
+
+### With migrations
+
+1. Generate the migration:
+   ```bash
+   npx vendure migrate --generate v4-upgrade
+   ```
+   Running `npx vendure migrate` without flags opens an interactive menu with the same options.
+2. In the generated file, call each data-migration helper after the generated statements:
+   ```ts
+   import { MigrationInterface, QueryRunner } from 'typeorm';
+   import { migrateRoleAssignmentData } from '@vendure/core';
+
+   export class V4Upgrade1234567890 implements MigrationInterface {
+       public async up(queryRunner: QueryRunner): Promise<any> {
+           // --- Auto-generated DDL ---
+           // ...
+
+           // --- Data-migration helpers ---
+           await migrateRoleAssignmentData(queryRunner);
+       }
+
+       public async down(queryRunner: QueryRunner): Promise<any> {
+           // Auto-generated reverse DDL
+       }
+   }
+   ```
+3. Run the migration:
+   ```bash
+   npx vendure migrate --run
+   ```
+
+**Done when:** the migration command succeeds, each helper logs its result (see the helper's guide), and Vendure v4 starts.
+
+### With `synchronize: true`
+
+If `dbConnectionOptions.synchronize` is enabled, there is no migration to call the helpers from. Vendure runs `migrateRoleAssignmentData` on the first v4 startup instead, in one transaction.
+
+**Done when:** Vendure v4 starts and logs each helper's result.
+
+## Next steps
+
+- Update your storefront: see [Storefront migration](/developer-guide/migrating-from-v3/storefront-migration).
+- For the full upgrade order, go back to [Migrating from v3](/developer-guide/migrating-from-v3).
