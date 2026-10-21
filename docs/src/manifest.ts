@@ -279,17 +279,23 @@ const manifestInput: DocsPackageManifestInput = {
                         {
                             title: 'Database Migration',
                             slug: 'database-migration',
-                            file: file('docs/guides/developer-guide/migrating-from-v3/database-migration.mdx'),
+                            file: file(
+                                'docs/guides/developer-guide/migrating-from-v3/database-migration.mdx',
+                            ),
                         },
                         {
                             title: 'Breaking API Changes',
                             slug: 'breaking-api-changes',
-                            file: file('docs/guides/developer-guide/migrating-from-v3/breaking-api-changes.mdx'),
+                            file: file(
+                                'docs/guides/developer-guide/migrating-from-v3/breaking-api-changes.mdx',
+                            ),
                         },
                         {
                             title: 'Storefront Migration',
                             slug: 'storefront-migration',
-                            file: file('docs/guides/developer-guide/migrating-from-v3/storefront-migration.mdx'),
+                            file: file(
+                                'docs/guides/developer-guide/migrating-from-v3/storefront-migration.mdx',
+                            ),
                         },
                         {
                             title: 'Role Assignments',
