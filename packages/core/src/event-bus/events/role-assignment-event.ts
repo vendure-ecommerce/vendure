@@ -15,8 +15,9 @@ import { VendureEvent } from '../vendure-event';
  * and Administrators created via external authentication. It is emitted for grants made by an
  * actor or an authentication strategy (`assignRolesToUser` / `removeRolesFromUser`, the
  * `roleAssignments` and deprecated `roleIds` inputs of the administrator and API-key mutations,
- * SSO administrator creation). System-mandated rows are not reported: the SuperAdmin rows
- * materialized on Channel creation and the bootstrap SuperAdmin seed.
+ * SSO administrator creation, the bootstrap SuperAdmin seed). Deleting an Administrator, an API
+ * key or a Channel emits `'removed'` for the rows it removes. Rows written by
+ * {@link migrateRoleAssignmentData} are not reported.
  *
  * This event replaces the `RoleChangeEvent` removed in v4.0.0, which was keyed on the
  * Administrator and could not express the Channel a Role was granted on.
