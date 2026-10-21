@@ -12,8 +12,12 @@ export class RedisHealthIndicator extends HealthIndicator {
         super();
     }
     async isHealthy(key: string, timeoutMs = 5000): Promise<HealthIndicatorResult> {
-        const suppliedConnection = isRedisInstance(this.options.connection);
-        const connection = new RedisConnection(this.options.connection ?? {}, { shared: suppliedConnection });
+        // A supplied instance belongs to the caller, so `shared` stops `close()` from quitting it.
+        // `shared` is only passed for an instance: bullmq before 5.38 takes it as a positional
+        // boolean, where any options object is truthy and would leave our own connection open.
+        const connection = isRedisInstance(this.options.connection)
+            ? new RedisConnection(this.options.connection, { shared: true })
+            : new RedisConnection(this.options.connection ?? {});
         const pingResult = await new Promise(async (resolve, reject) => {
             try {
                 connection.on('error', err => {
