@@ -1517,9 +1517,8 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
             expect(deleteProductOption.result).toBe(DeletionResult.DELETED);
 
-            // updateProductVariants rejects the soft-deleted option, so an active variant is pointed
-            // at it directly, as in data written before it was rejected. Deleting the group then
-            // soft-deletes it, as the option is in use.
+            // updateProductVariants rejects a soft-deleted option, so the repository points the active
+            // variant at it directly. Deleting the group then soft-deletes it, as the option is in use.
             const { rawConnection } = server.app.get(TransactionalConnection);
             const variantRepository = rawConnection.getRepository(ProductVariant);
             const variant = await variantRepository.findOneOrFail({
