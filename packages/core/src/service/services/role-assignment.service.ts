@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@vendure/common/lib/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { CUSTOMER_ROLE_CODE, DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { In, IsNull, LockNotSupportedOnGivenDriverError, ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
-import { EntityNotFoundError, ForbiddenError, InternalServerError } from '../../common/error/errors';
+import {
+    EntityNotFoundError,
+    ForbiddenError,
+    IllegalOperationError,
+    InternalServerError,
+} from '../../common/error/errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
@@ -410,6 +415,7 @@ export class RoleAssignmentService {
      * changes go through {@link assign}.
      *
      * @throws {EntityNotFoundError} if the User does not exist
+     * @throws {IllegalOperationError} if a pair names the legacy Customer role
      * @since 4.0.0
      */
     async createAssignments(ctx: RequestContext, userId: ID, pairs: RoleChannelPair[]): Promise<void> {
@@ -422,6 +428,7 @@ export class RoleAssignmentService {
         if (!toAdd.length) {
             return;
         }
+        await this.assertNoLegacyCustomerRole(ctx, toAdd);
         await repository.save(
             toAdd.map(({ roleId, channelId }) => new RoleAssignment({ userId, roleId, channelId })),
         );
@@ -504,6 +511,20 @@ export class RoleAssignmentService {
                 'removed',
             ),
         );
+    }
+
+    /**
+     * The pre-v4 Customer role exists until `removeLegacyRoleData()` deletes it. v4 derives
+     * Customer permissions from channel memberships, and an assignment of the role would make
+     * `removeLegacyRoleData()` refuse to delete it.
+     */
+    private async assertNoLegacyCustomerRole(ctx: RequestContext, pairs: RoleChannelPair[]): Promise<void> {
+        const customerRole = await this.connection
+            .getRepository(ctx, Role)
+            .findOne({ where: { code: CUSTOMER_ROLE_CODE } });
+        if (customerRole && pairs.some(pair => idsAreEqual(pair.roleId, customerRole.id))) {
+            throw new IllegalOperationError('error.cannot-assign-legacy-customer-role');
+        }
     }
 
     private matches(assignment: RoleAssignment, pair: RoleChannelPair): boolean {

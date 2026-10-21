@@ -4,6 +4,7 @@
     "active-user-does-not-have-sufficient-permissions": "Active user does not have sufficient permissions",
     "api-key-impersonated-user-cannot-receive-roles": "Roles cannot be assigned through an ApiKey whose user is an existing user",
     "available-currency-codes-must-include-default": "availableCurrencyCodes must include the defaultCurrencyCode ({ defaultCurrencyCode })",
+    "cannot-assign-legacy-customer-role": "The pre-v4 Customer role cannot be assigned. Customers hold the Authenticated permission on the Channels they are a member of",
     "cannot-delete-role": "The role \"{ roleCode }\" cannot be deleted",
     "cannot-delete-sole-superadmin": "The sole SuperAdmin cannot be deleted",
     "email-address-already-exists-for-administrator": "An administrator with this email address already exists",
