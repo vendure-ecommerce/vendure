@@ -139,13 +139,13 @@
           "title": "User Management",
           "slug": "user-management",
           "file": "docs/guides/core-concepts/user-management/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-21T15:33:29+02:00"
         },
         {
           "title": "Roles",
           "slug": "roles",
           "file": "docs/guides/core-concepts/roles/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-21T15:33:29+02:00"
         },
         {
           "title": "Permissions",
@@ -175,7 +175,7 @@
           "title": "Channels",
           "slug": "channels",
           "file": "docs/guides/core-concepts/channels/index.mdx",
-          "lastModified": "2026-07-08T08:06:18Z"
+          "lastModified": "2026-10-21T15:33:29+02:00"
         },
         {
           "title": "Email",
@@ -272,7 +272,7 @@
           "title": "API Keys",
           "slug": "api-keys",
           "file": "docs/guides/developer-guide/api-keys/index.mdx",
-          "lastModified": "2026-03-31T15:06:52+02:00"
+          "lastModified": "2026-10-21T15:33:29+02:00"
         },
         {
           "title": "Strategies & Configurable Operations",
@@ -291,6 +291,38 @@
           "slug": "updating",
           "file": "docs/guides/developer-guide/updating/index.mdx",
           "lastModified": "2026-02-12T16:47:03+01:00"
+        },
+        {
+          "title": "Migrating from v3",
+          "slug": "migrating-from-v3",
+          "file": "docs/guides/developer-guide/migrating-from-v3/index.mdx",
+          "children": [
+            {
+              "title": "Database Migration",
+              "slug": "database-migration",
+              "file": "docs/guides/developer-guide/migrating-from-v3/database-migration.mdx",
+              "lastModified": "2026-10-21T15:33:29+02:00"
+            },
+            {
+              "title": "Breaking API Changes",
+              "slug": "breaking-api-changes",
+              "file": "docs/guides/developer-guide/migrating-from-v3/breaking-api-changes.mdx",
+              "lastModified": "2026-10-21T15:33:29+02:00"
+            },
+            {
+              "title": "Storefront Migration",
+              "slug": "storefront-migration",
+              "file": "docs/guides/developer-guide/migrating-from-v3/storefront-migration.mdx",
+              "lastModified": "2026-10-21T15:33:29+02:00"
+            },
+            {
+              "title": "Role Assignments",
+              "slug": "role-assignments",
+              "file": "docs/guides/developer-guide/migrating-from-v3/role-assignments.mdx",
+              "lastModified": "2026-10-21T15:33:29+02:00"
+            }
+          ],
+          "lastModified": "2026-10-21T15:33:29+02:00"
         },
         {
           "title": "Worker & Job Queue",
@@ -1990,7 +2022,7 @@
                   "title": "Event Types",
                   "slug": "event-types",
                   "file": "docs/reference/typescript-api/events/event-types.mdx",
-                  "lastModified": "2026-09-10T15:41:07Z"
+                  "lastModified": "2026-10-21T15:33:29+02:00"
                 },
                 {
                   "title": "EventBus",
@@ -2332,7 +2364,7 @@
                   "title": "MigrateRoleAssignmentData",
                   "slug": "migrate-role-assignment-data",
                   "file": "docs/reference/typescript-api/migration/migrate-role-assignment-data.mdx",
-                  "lastModified": "2026-10-14T15:49:58+02:00"
+                  "lastModified": "2026-10-21T15:33:29+02:00"
                 },
                 {
                   "title": "MigrationOptions",
@@ -2350,7 +2382,7 @@
                   "title": "RemoveLegacyRoleData",
                   "slug": "remove-legacy-role-data",
                   "file": "docs/reference/typescript-api/migration/remove-legacy-role-data.mdx",
-                  "lastModified": "2026-10-15T14:07:53+02:00"
+                  "lastModified": "2026-10-21T15:33:29+02:00"
                 },
                 {
                   "title": "RevertLastMigration",
@@ -3024,7 +3056,7 @@
                   "title": "InitializerService",
                   "slug": "initializer-service",
                   "file": "docs/reference/typescript-api/services/initializer-service.mdx",
-                  "lastModified": "2026-10-14T14:44:39+02:00"
+                  "lastModified": "2026-10-21T15:33:29+02:00"
                 },
                 {
                   "title": "OrderService",
@@ -3090,7 +3122,7 @@
                   "title": "RoleAssignmentService",
                   "slug": "role-assignment-service",
                   "file": "docs/reference/typescript-api/services/role-assignment-service.mdx",
-                  "lastModified": "2026-10-01T16:17:49Z"
+                  "lastModified": "2026-10-21T15:33:29+02:00"
                 },
                 {
                   "title": "RoleService",
@@ -5212,7 +5244,7 @@
               "title": "Administrators & Roles",
               "slug": "administrators-roles",
               "file": "docs/user-guide/settings/administrators-roles.mdx",
-              "lastModified": "2026-02-12T16:47:03+01:00"
+              "lastModified": "2026-10-21T15:33:29+02:00"
             },
             {
               "title": "Channels",
