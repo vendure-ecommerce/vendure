@@ -73,7 +73,6 @@ export function MoneyInput(props: Readonly<MoneyInputProps>) {
     return (
         <AffixedInput
             type="text"
-            className="bg-background"
             value={displayValue}
             disabled={readOnly}
             {...rest}
