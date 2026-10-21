@@ -379,9 +379,28 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
         if (!this.cancellationSubscribed) {
             this.cancellationSubscribed = true;
+            await this.waitUntilReady(this.cancellationSub);
             await this.cancellationSub.subscribe(this.cancelJobChannel);
             this.cancellationSub.on('message', this.subscribeToCancellationEvents);
         }
+    }
+
+    private waitUntilReady(connection: Redis | Cluster): Promise<void> {
+        if (connection.status === 'ready') {
+            return Promise.resolve();
+        }
+        return new Promise((resolve, reject) => {
+            const onReady = () => {
+                connection.off('end', onEnd);
+                resolve();
+            };
+            const onEnd = () => {
+                connection.off('ready', onReady);
+                reject(new Error('Redis connection closed before it became ready'));
+            };
+            connection.once('ready', onReady);
+            connection.once('end', onEnd);
+        });
     }
 
     private readonly subscribeToCancellationEvents = (channel: string, jobId: string) => {
