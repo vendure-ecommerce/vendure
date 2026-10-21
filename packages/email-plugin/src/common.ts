@@ -16,15 +16,11 @@ export function isDevModeOptions(
  * In dev mode the plugin mounts the dev mailbox, which has no authentication. It lists and serves
  * every generated email, and its `/generate/:type/:languageCode` endpoint generates emails from mock
  * events. Dev mode also uses the file transport, so no email is sent.
- *
- * Exported for unit testing. Production callers rely on the default `process.env.NODE_ENV`.
  */
 export function getDevModeProductionWarning(
     pluginOptions: EmailPluginOptions | EmailPluginDevModeOptions,
-    options: { nodeEnv?: string } = {},
 ): string | undefined {
-    const nodeEnv = options.nodeEnv ?? process.env.NODE_ENV;
-    if (!isDevModeOptions(pluginOptions) || nodeEnv !== 'production') {
+    if (!isDevModeOptions(pluginOptions) || process.env.NODE_ENV !== 'production') {
         return undefined;
     }
     return (

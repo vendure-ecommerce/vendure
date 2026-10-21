@@ -25,7 +25,6 @@ import path from 'path';
 import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { getDevModeProductionWarning } from './common';
 import { EmailProcessor } from './email-processor';
 import { EmailEventListener } from './event-listener';
 import { NoopEmailGenerator } from './generator/noop-email-generator';
@@ -1229,15 +1228,14 @@ describe('EmailPlugin', () => {
         });
 
         it('does not warn in production when a transport is configured instead of devMode', () => {
-            expect(
-                getDevModeProductionWarning(
-                    {
-                        handlers: [],
-                        transport: { type: 'smtp', host: 'smtp.example.com' },
-                    },
-                    { nodeEnv: 'production' },
-                ),
-            ).toBeUndefined();
+            vi.stubEnv('NODE_ENV', 'production');
+
+            configureServerPlugin({
+                handlers: [],
+                transport: { type: 'smtp', host: 'smtp.example.com' },
+            } as unknown as InitializedEmailPluginOptions);
+
+            expect(testingLogger.warnSpy).not.toHaveBeenCalled();
         });
     });
 });

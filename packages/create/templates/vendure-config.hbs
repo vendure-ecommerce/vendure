@@ -89,8 +89,7 @@ export const config: VendureConfig = {
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
         EmailPlugin.init({
             // In dev mode, emails are written to disk instead of being sent, and the dev mailbox
-            // at /mailbox lists and serves all of them without authentication. It is only
-            // enabled when APP_ENV is "dev".
+            // at /mailbox lists and serves all of them without authentication.
             ...(IS_DEV ? {
                 devMode: true,
                 outputPath: path.join(__dirname, '../static/email/test-emails'),
