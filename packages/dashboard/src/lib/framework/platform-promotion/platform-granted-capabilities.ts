@@ -40,7 +40,7 @@ globalRegistry.register('platformGrantedCapabilities', {
  *
  * @docsCategory extensions-api
  * @docsPage PlatformPromotion
- * @since 3.8.1
+ * @since 3.9.0
  */
 export function setPlatformGrantedCapabilities(capabilities: readonly string[]) {
     const store = globalRegistry.get('platformGrantedCapabilities');

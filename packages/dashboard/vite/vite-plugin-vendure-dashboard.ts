@@ -238,7 +238,7 @@ export type VitePluginVendureDashboardOptions = {
      * and the build fails.
      *
      * @default true
-     * @since 3.8.1
+     * @since 3.9.0
      */
     platformPromotion?: boolean;
 } & UiConfigPluginOptions;

@@ -20,7 +20,7 @@ import {
  *
  * @docsCategory extensions-api
  * @docsPage PlatformPromotion
- * @since 3.8.1
+ * @since 3.9.0
  */
 export interface PlatformPromotionState {
     /**
@@ -86,7 +86,7 @@ function createState(reported: ReadonlySet<string> | undefined): PlatformPromoti
  *
  * @docsCategory extensions-api
  * @docsPage PlatformPromotion
- * @since 3.8.1
+ * @since 3.9.0
  */
 export function getPlatformPromotion(): PlatformPromotionState {
     const reported = getReportedPlatformGrantedCapabilities();
@@ -110,7 +110,7 @@ export function getPlatformPromotion(): PlatformPromotionState {
  *
  * @docsCategory extensions-api
  * @docsPage PlatformPromotion
- * @since 3.8.1
+ * @since 3.9.0
  */
 export function usePlatformPromotion(): PlatformPromotionState {
     return useSyncExternalStore(
