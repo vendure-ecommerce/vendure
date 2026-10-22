@@ -23,7 +23,6 @@ import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
 import { hmrPlugin } from './vite-plugin-hmr.js';
 import { linguiBabelPlugin } from './vite-plugin-lingui-babel.js';
-import { platformPromotionPlugin } from './vite-plugin-platform-promotion.js';
 import { dashboardTailwindSourcePlugin } from './vite-plugin-tailwind-source.js';
 import { DashboardThemeOptions, themeVariablesPlugin } from './vite-plugin-theme.js';
 import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
@@ -179,7 +178,6 @@ export type VitePluginVendureDashboardOptions = {
         bundleEntry?: boolean;
         adminApiSchema?: boolean;
         dashboardMetadata?: boolean;
-        platformPromotion?: boolean;
         uiConfig?: boolean;
         gqlTada?: boolean;
         transformIndexHtml?: boolean;
@@ -352,10 +350,6 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         {
             key: 'dashboardMetadata',
             plugin: () => dashboardMetadataPlugin(),
-        },
-        {
-            key: 'platformPromotion',
-            plugin: () => platformPromotionPlugin(),
         },
         {
             key: 'uiConfig',
