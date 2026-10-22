@@ -1,6 +1,6 @@
 {
   "id": "core",
-  "name": "Vendure Core Documentation",
+  "name": "Vendure Framework Documentation",
   "version": "3.8.0",
   "vendureVersion": "v3",
   "navigation": [
@@ -2174,6 +2174,18 @@
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"
+            },
+            {
+              "title": "Extensions Api",
+              "slug": "extensions-api",
+              "file": "docs/reference/typescript-api/extensions-api/index.mdx",
+              "children": [
+                {
+                  "title": "PlatformPromotion",
+                  "slug": "platform-promotion",
+                  "file": "docs/reference/typescript-api/extensions-api/platform-promotion.mdx"
+                }
+              ]
             },
             {
               "title": "Fulfillment",
