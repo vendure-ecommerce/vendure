@@ -95,6 +95,7 @@ export function viteConfigPlugin({
                     'virtual:admin-api-schema',
                     'virtual:dashboard-extensions',
                     'virtual:plugin-translations',
+                    'virtual:vendure-platform-promotion',
                 ],
                 // We however do want to pre-bundle recharts, as it depends
                 // on lodash which is a CJS packages and _does_ require

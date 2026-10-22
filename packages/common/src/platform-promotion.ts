@@ -1,6 +1,7 @@
 /*
  * The `dashboardPromotion` data of the Vendure catalog (`GET https://api.vendure.io/v1/catalog`).
- * The Core startup banner uses it to list the Vendure Platform capabilities.
+ * The Dashboard uses it to show locked Vendure Platform capabilities. The Core startup banner
+ * uses it to list the Vendure Platform capabilities.
  */
 /**
  * @description
@@ -109,7 +110,7 @@ const isArrayOf = (value: unknown, check: (item: any) => boolean): value is unkn
 /**
  * @description
  * Returns `true` when `value` has all required fields of {@link DashboardPromotionV1}.
- * The snapshot generator does not use a payload that fails this check.
+ * The Dashboard build and the snapshot generator do not use a payload that fails this check.
  *
  * @docsCategory extensions-api
  * @docsPage PlatformPromotion

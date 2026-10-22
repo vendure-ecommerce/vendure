@@ -23,6 +23,7 @@ import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
 import { hmrPlugin } from './vite-plugin-hmr.js';
 import { linguiBabelPlugin } from './vite-plugin-lingui-babel.js';
+import { platformPromotionPlugin } from './vite-plugin-platform-promotion.js';
 import { dashboardTailwindSourcePlugin } from './vite-plugin-tailwind-source.js';
 import { DashboardThemeOptions, themeVariablesPlugin } from './vite-plugin-theme.js';
 import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
@@ -178,6 +179,7 @@ export type VitePluginVendureDashboardOptions = {
         bundleEntry?: boolean;
         adminApiSchema?: boolean;
         dashboardMetadata?: boolean;
+        platformPromotion?: boolean;
         uiConfig?: boolean;
         gqlTada?: boolean;
         transformIndexHtml?: boolean;
@@ -226,6 +228,19 @@ export type VitePluginVendureDashboardOptions = {
      * ```
      */
     theme?: DashboardThemeOptions;
+    /**
+     * @description
+     * Set to `false` to turn off the Vendure Platform items in the Dashboard: locked navigation
+     * items, locked pages, page cards and the related page actions. The build then sends no
+     * request to `api.vendure.io`. The environment variable
+     * `VENDURE_DASHBOARD_PLATFORM_PROMOTION=false` has the same effect. Do not use
+     * `disablePlugins.platformPromotion` for this: it removes a module that the Dashboard needs,
+     * and the build fails.
+     *
+     * @default true
+     * @since 3.9.0
+     */
+    platformPromotion?: boolean;
 } & UiConfigPluginOptions;
 
 /**
@@ -350,6 +365,10 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         {
             key: 'dashboardMetadata',
             plugin: () => dashboardMetadataPlugin(),
+        },
+        {
+            key: 'platformPromotion',
+            plugin: () => platformPromotionPlugin({ enabled: options.platformPromotion }),
         },
         {
             key: 'uiConfig',

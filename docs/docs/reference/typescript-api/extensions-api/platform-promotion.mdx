@@ -4,7 +4,7 @@ generated: true
 ---
 ## PlatformTier
 
-<GenerationInfo sourceFile="packages/common/src/platform-promotion.ts" sourceLine="13" packageName="@vendure/common" since="3.8.1" />
+<GenerationInfo sourceFile="packages/common/src/platform-promotion.ts" sourceLine="14" packageName="@vendure/common" since="3.8.1" />
 
 A Vendure Platform plan tier. A capability's `tier` is the lowest tier that grants it.
 
@@ -13,7 +13,7 @@ type PlatformTier = 'starter' | 'growth' | 'scale' | 'enterprise'
 ```
 ## DashboardPromotionCapabilityV1
 
-<GenerationInfo sourceFile="packages/common/src/platform-promotion.ts" sourceLine="23" packageName="@vendure/common" since="3.8.1" />
+<GenerationInfo sourceFile="packages/common/src/platform-promotion.ts" sourceLine="24" packageName="@vendure/common" since="3.8.1" />
 
 The commercial copy for one Platform capability, as served by the Vendure catalog.
 
@@ -65,7 +65,7 @@ Exactly 3 lines.
 </div>
 ## DashboardPromotionV1
 
-<GenerationInfo sourceFile="packages/common/src/platform-promotion.ts" sourceLine="54" packageName="@vendure/common" since="3.8.1" />
+<GenerationInfo sourceFile="packages/common/src/platform-promotion.ts" sourceLine="55" packageName="@vendure/common" since="3.8.1" />
 
 Version 1 of the `dashboardPromotion` field of `GET https://api.vendure.io/v1/catalog`.
 It holds the Dashboard placements of the Vendure Platform plugins, and the commercial
@@ -154,10 +154,10 @@ The copy for each capability that a nav item, page block or action names.
 </div>
 ## isDashboardPromotionV1
 
-<GenerationInfo sourceFile="packages/common/src/platform-promotion.ts" sourceLine="118" packageName="@vendure/common" since="3.8.1" />
+<GenerationInfo sourceFile="packages/common/src/platform-promotion.ts" sourceLine="119" packageName="@vendure/common" since="3.8.1" />
 
 Returns `true` when `value` has all required fields of [DashboardPromotionV1](/reference/typescript-api/extensions-api/platform-promotion#dashboardpromotionv1).
-The snapshot generator does not use a payload that fails this check.
+The Dashboard build and the snapshot generator do not use a payload that fails this check.
 
 ```ts title="Signature"
 function isDashboardPromotionV1(value: unknown): value is DashboardPromotionV1
