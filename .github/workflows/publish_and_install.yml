@@ -23,7 +23,7 @@ on:
             - 'bunfig.toml'
 
 env:
-    # CI never fetches the Platform catalog from api.vendure.io. The Dashboard uses its bundled snapshot.
+    # CI never fetches the Platform catalog from api.vendure.io. The Dashboard build and the `version` lifecycle of `lerna publish` use the committed snapshot.
     VENDURE_DASHBOARD_SKIP_PLATFORM_CATALOG_FETCH: 'true'
 
 defaults:

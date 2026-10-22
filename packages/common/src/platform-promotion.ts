@@ -1,6 +1,7 @@
 /*
  * The `dashboardPromotion` data of the Vendure catalog (`GET https://api.vendure.io/v1/catalog`).
- * The Dashboard uses it to show locked Vendure Platform capabilities.
+ * The Dashboard uses it to show locked Vendure Platform capabilities. The Core startup banner
+ * uses it to list the Vendure Platform capabilities.
  */
 /**
  * @description

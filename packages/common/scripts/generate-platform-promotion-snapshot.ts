@@ -5,7 +5,8 @@ import { isDashboardPromotionV1 } from '../src/platform-promotion';
 
 /**
  * Writes the Platform catalog snapshot (src/platform-promotion-snapshot.ts). The Dashboard
- * build uses it when it cannot fetch the catalog. The Core release runs this script.
+ * build uses it when it cannot fetch the catalog. The Core startup banner also uses it.
+ * The Core release runs this script.
  *
  * Usage: bun scripts/generate-platform-promotion-snapshot.ts [source]
  *
