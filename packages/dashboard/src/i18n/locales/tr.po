@@ -292,6 +292,11 @@ msgstr "Satıcılar"
 msgid "Options"
 msgstr "Seçenekler"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Growth"
+msgstr ""
+
 #: src/lib/framework/dashboard-widget/top-products-widget/index.tsx
 msgid "Loading top products…"
 msgstr "En çok satan ürünler yükleniyor…"
@@ -640,6 +645,10 @@ msgstr "Yöneticiler"
 #~ msgid "Gross price: <0/>"
 #~ msgstr "Brüt fiyat: <0/>"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Start free trial"
+msgstr ""
+
 #: src/lib/components/data-table/data-table-pagination.tsx
 #: src/lib/components/data-table/data-table.tsx
 msgid "Go to next page"
@@ -719,6 +728,10 @@ msgstr "{enabledCount} varyant oluştur"
 msgid "Payment #{0} transitioned to {1}"
 msgstr "Ödeme #{0}, {1} durumuna geçti"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for collections with Vendure Platform: {names}} other {# more for collections with Vendure Platform: {names}}}"
+msgstr ""
+
 #. placeholder {0}: error.message
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-container.tsx
 msgid "Error loading customer history: {0}"
@@ -772,6 +785,10 @@ msgstr "Koleksiyonları Taşı"
 #: src/app/routes/_authenticated/_roles/roles.tsx
 msgid "Roles"
 msgstr "Roller"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "More with Vendure Platform"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid "Grid view"
@@ -1446,6 +1463,10 @@ msgstr "Sonuç bulunamadı"
 msgid "Set a shipping address and select a shipping method"
 msgstr "Teslimat adresi belirleyin ve kargo yöntemi seçin"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for products with Vendure Platform: {names}} other {# more for products with Vendure Platform: {names}}}"
+msgstr ""
+
 #: src/app/routes/_authenticated/_system/job-queue.tsx
 msgid "Off"
 msgstr "Kapalı"
@@ -1518,6 +1539,10 @@ msgstr "Öğe seçilmedi"
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid ", {0} selected"
 msgstr ", {0} seçildi"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#~ msgid "Scale"
+#~ msgstr ""
 
 #: src/lib/components/shared/country-selector.tsx
 msgid "No countries found"
@@ -1758,6 +1783,10 @@ msgstr "önce"
 #: src/app/routes/_authenticated/_orders/orders_.draft.$id.tsx
 msgid "Failed to set customer for order: {0}"
 msgstr "Sipariş için müşteri ayarlanamadı: {0}"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for roles with Vendure Platform: {names}} other {# more for roles with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-gallery.tsx
 msgid "Size"
@@ -2158,6 +2187,10 @@ msgstr "Özellik değeri yok"
 msgid "A reason for the refund is required"
 msgstr "İade için bir neden gereklidir"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "More with Platform"
+msgstr ""
+
 #: src/app/routes/_authenticated/_products/products_.$id.tsx
 msgid "Could not remove option group"
 msgstr "Seçenek grubu kaldırılamadı"
@@ -2231,6 +2264,10 @@ msgstr "Ödeme yöntemi"
 
 #: src/app/routes/_authenticated/_orders/components/payment-details.tsx
 msgid "Destination"
+msgstr ""
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Or add it to this project:"
 msgstr ""
 
 #: src/app/routes/_authenticated/_orders/orders_.$id_.modify.tsx
@@ -2321,6 +2358,10 @@ msgstr "Bölgeden kaldır"
 #: src/lib/components/layout/manage-languages-dialog.tsx
 msgid "Select from globally available languages for this channel"
 msgstr "Bu kanal için genel olarak kullanılabilir dillerden seçin"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for customers with Vendure Platform: {names}} other {# more for customers with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/shared/asset/asset-upload-modal.tsx
 msgid "Upload timed out"
@@ -3114,6 +3155,10 @@ msgstr "Yeni Vergi Kategorisi"
 #~ msgid "No stock locations available on current channel"
 #~ msgstr "Mevcut kanalda kullanılabilir stok konumu yok"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#~ msgid "Enterprise"
+#~ msgstr ""
+
 #: src/app/routes/_authenticated/_channels/channels_.$id.tsx
 msgid "Successfully created channel"
 msgstr "Kanal başarıyla oluşturuldu"
@@ -3321,6 +3366,12 @@ msgstr "Yeni müşteri"
 msgid "Image"
 msgstr "Görsel"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Upgrade to {tierLabel}"
+msgstr ""
+
 #: src/app/routes/_authenticated/_administrators/administrators_.$id.tsx
 msgid "Successfully created administrator"
 msgstr "Yönetici başarıyla oluşturuldu"
@@ -3511,6 +3562,10 @@ msgstr "Dün"
 #~ msgid "Are you sure you want to remove {0} {1} from this zone?"
 #~ msgstr "{0} {1} öğesini bu bölgeden kaldırmak istediğinizden emin misiniz?"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#~ msgid "Growth"
+#~ msgstr ""
+
 #. placeholder {0}: addedSurcharges.length
 #: src/app/routes/_authenticated/_orders/components/order-modification-summary.tsx
 msgid "Adding {0} surcharge(s)"
@@ -3552,6 +3607,7 @@ msgstr "Etiket seçilmedi"
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 #: src/app/routes/_authenticated/_products/components/generate-variants-panel.tsx
 #: src/lib/components/data-table/data-table-facet-value-faceted-filter.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
 msgid "Back"
 msgstr "Geri"
 
@@ -3988,6 +4044,11 @@ msgstr "Mevcut diller"
 
 #: src/lib/components/shared/channel-color-picker.tsx
 msgid "Color 3"
+msgstr ""
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Scale"
 msgstr ""
 
 #: src/lib/framework/dashboard-widget/low-stock-widget/index.tsx
@@ -4444,6 +4505,10 @@ msgstr "{0, plural, one {{1} stok konumu silinemedi} other {{2} stok konumu sili
 #: src/lib/components/data-table/data-table-views-tabs.tsx
 msgid "Unsaved view"
 msgstr "Kaydedilmemiş görünüm"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "Talk to sales"
+msgstr ""
 
 #: src/app/routes/_authenticated/_system/components/cancel-jobs-bulk-action.tsx
 #~ msgid "{rejected, plural, one {{0}} other {{1}}}"
@@ -5053,6 +5118,10 @@ msgstr "Süper Yönetici"
 #~ msgid "Some resources are down"
 #~ msgstr "Bazı kaynaklar çalışmıyor"
 
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more with Vendure Platform: {names}} other {# more with Vendure Platform: {names}}}"
+msgstr ""
+
 #: src/lib/components/shared/rich-text-editor/resizable-image.tsx
 msgid "Resize image from left"
 msgstr "Görseli soldan boyutlandır"
@@ -5225,6 +5294,10 @@ msgstr "Zamanlama Deseni"
 #: src/app/routes/_authenticated/_orders/components/order-history/order-history-utils.tsx
 msgid "Payment failed"
 msgstr "Ödeme başarısız oldu"
+
+#: src/lib/components/platform-promotion/platform-promotion-page-card.tsx
+msgid "{count, plural, one {# more for orders with Vendure Platform: {names}} other {# more for orders with Vendure Platform: {names}}}"
+msgstr ""
 
 #: src/lib/components/layout/channel-switcher.tsx
 msgid "Add channel"
@@ -5677,6 +5750,10 @@ msgstr "Değişikliği iptal et"
 #: src/lib/components/data-table/views-sheet.tsx
 msgid "Apply filters to the table and click \"Save View\" to get started."
 msgstr "Tabloya filtre uygulayın ve başlamak için \"Görünümü Kaydet\"e tıklayın."
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#~ msgid "Starter"
+#~ msgstr ""
 
 #: src/lib/components/shared/rich-text-editor/link-bubble-menu.tsx
 msgid "Link URL"
@@ -6209,6 +6286,11 @@ msgstr "{0} önizlemesi"
 msgid "Successfully updated seller"
 msgstr "Satıcı başarıyla güncellendi"
 
+#: src/lib/components/platform-promotion/platform-promo.tsx
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgid "{tierLabel} plan"
+msgstr ""
+
 #: src/app/routes/_authenticated/_orders/components/order-detail-shared.tsx
 msgid "Failed to transition order to state"
 msgstr "Sipariş duruma geçirilemedi"
@@ -6217,6 +6299,11 @@ msgstr "Sipariş duruma geçirilemedi"
 #: src/lib/components/shared/history-timeline/history-timeline-with-grouping.tsx
 msgid "Show all ({0})"
 msgstr "Tümünü göster ({0})"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Starter"
+msgstr ""
 
 #: src/app/routes/_authenticated/_tax-rates/tax-rates_.$id.tsx
 msgid "Failed to create tax rate"
@@ -6653,6 +6740,11 @@ msgstr "İade et ve siparişi iptal et"
 #: src/app/routes/_authenticated/_customers/components/customer-history/customer-history-utils.tsx
 msgid "Email update verified"
 msgstr "E-posta güncelleme doğrulandı"
+
+#: src/lib/components/platform-promotion/platform-promo.tsx
+msgctxt "Vendure Platform plan name"
+msgid "Enterprise"
+msgstr ""
 
 #: src/lib/components/data-table/human-readable-operator.tsx
 msgid "is between"
