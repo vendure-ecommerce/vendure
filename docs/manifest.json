@@ -190,7 +190,7 @@
           "lastModified": "2026-02-12T16:47:03+01:00"
         }
       ],
-      "lastModified": "2026-02-12T16:59:36+01:00"
+      "lastModified": "2026-10-19T11:44:34+02:00"
     },
     {
       "title": "Developer Guide",
@@ -212,13 +212,13 @@
           "title": "The Service Layer",
           "slug": "the-service-layer",
           "file": "docs/guides/developer-guide/the-service-layer/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "CLI",
           "slug": "cli",
           "file": "docs/guides/developer-guide/cli/index.mdx",
-          "lastModified": "2026-10-15T14:50:01+02:00"
+          "lastModified": "2026-10-19T20:40:40+02:00"
         },
         {
           "title": "AI-assisted Development",
@@ -236,7 +236,7 @@
           "title": "Custom Fields",
           "slug": "custom-fields",
           "file": "docs/guides/developer-guide/custom-fields/index.mdx",
-          "lastModified": "2026-10-13T15:13:38+02:00"
+          "lastModified": "2026-10-16T15:12:48Z"
         },
         {
           "title": "Secret Fields",
@@ -266,7 +266,7 @@
           "title": "Plugins",
           "slug": "plugins",
           "file": "docs/guides/developer-guide/plugins/index.mdx",
-          "lastModified": "2026-07-20T16:45:15+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Security",
@@ -284,7 +284,7 @@
           "title": "Strategies & Configurable Operations",
           "slug": "strategies-configurable-operations",
           "file": "docs/guides/developer-guide/strategies-configurable-operations/index.mdx",
-          "lastModified": "2026-10-13T15:13:38+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Testing",
@@ -296,7 +296,7 @@
           "title": "Updating",
           "slug": "updating",
           "file": "docs/guides/developer-guide/updating/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Worker & Job Queue",
@@ -314,13 +314,13 @@
           "title": "REST Endpoint",
           "slug": "rest-endpoint",
           "file": "docs/guides/developer-guide/rest-endpoint/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Custom Permissions",
           "slug": "custom-permissions",
           "file": "docs/guides/developer-guide/custom-permissions/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-16T15:12:48Z"
         },
         {
           "title": "Database Entity",
@@ -362,7 +362,7 @@
           "title": "Cache",
           "slug": "cache",
           "file": "docs/guides/developer-guide/cache/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Dataloaders",
@@ -380,7 +380,7 @@
           "title": "Importing Data",
           "slug": "importing-data",
           "file": "docs/guides/developer-guide/importing-data/index.mdx",
-          "lastModified": "2026-07-24T08:34:54+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Logging",
@@ -392,13 +392,13 @@
           "title": "Scheduled Tasks",
           "slug": "scheduled-tasks",
           "file": "docs/guides/developer-guide/scheduled-tasks/index.mdx",
-          "lastModified": "2026-09-11T13:49:04+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Stand-alone Scripts",
           "slug": "stand-alone-scripts",
           "file": "docs/guides/developer-guide/stand-alone-scripts/index.mdx",
-          "lastModified": "2026-07-20T16:45:15+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Translations",
@@ -482,7 +482,7 @@
           "title": "Publish Plugin",
           "slug": "publish-plugin",
           "file": "docs/guides/how-to/publish-plugin/index.mdx",
-          "lastModified": "2026-02-12T16:47:03+01:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "S3 Asset Storage",
@@ -494,7 +494,7 @@
           "title": "Telemetry",
           "slug": "telemetry",
           "file": "docs/guides/how-to/telemetry/index.mdx",
-          "lastModified": "2026-10-12T11:08:48+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         }
       ]
     },
@@ -977,7 +977,7 @@
           "title": "Registering Custom Tools",
           "slug": "custom-tools",
           "file": "docs/guides/mcp-server/custom-tools/index.mdx",
-          "lastModified": "2026-10-08T19:48:44+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "Production Hardening",
@@ -1001,7 +1001,7 @@
           "title": "Built-in Tool Reference",
           "slug": "built-in-tools",
           "file": "docs/guides/mcp-server/built-in-tools/index.mdx",
-          "lastModified": "2026-10-01T19:26:07+02:00"
+          "lastModified": "2026-10-19T08:14:21+02:00"
         },
         {
           "title": "OAuth Protocol Reference",
@@ -1360,7 +1360,7 @@
                   "title": "VENDURE_VERSION",
                   "slug": "vendure_version",
                   "file": "docs/reference/typescript-api/common/vendure_version.mdx",
-                  "lastModified": "2026-01-28T14:49:21+01:00"
+                  "lastModified": "2026-10-19T08:14:21+02:00"
                 },
                 {
                   "title": "Admin Ui",
@@ -1830,7 +1830,7 @@
                   "title": "Channel",
                   "slug": "channel",
                   "file": "docs/reference/typescript-api/entities/channel.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-19T13:56:33Z"
                 },
                 {
                   "title": "Collection",
@@ -1854,7 +1854,7 @@
                   "title": "CustomerGroup",
                   "slug": "customer-group",
                   "file": "docs/reference/typescript-api/entities/customer-group.mdx",
-                  "lastModified": "2026-09-29T13:28:32Z"
+                  "lastModified": "2026-10-19T13:56:33Z"
                 },
                 {
                   "title": "CustomerHistoryEntry",
@@ -1872,13 +1872,13 @@
                   "title": "FacetValue",
                   "slug": "facet-value",
                   "file": "docs/reference/typescript-api/entities/facet-value.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-19T13:56:33Z"
                 },
                 {
                   "title": "Fulfillment",
                   "slug": "fulfillment",
                   "file": "docs/reference/typescript-api/entities/fulfillment.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-19T13:56:33Z"
                 },
                 {
                   "title": "GlobalSettings",
@@ -1956,19 +1956,19 @@
                   "title": "ProductOption",
                   "slug": "product-option",
                   "file": "docs/reference/typescript-api/entities/product-option.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-19T13:56:33Z"
                 },
                 {
                   "title": "ProductOptionGroup",
                   "slug": "product-option-group",
                   "file": "docs/reference/typescript-api/entities/product-option-group.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-19T13:56:33Z"
                 },
                 {
                   "title": "ProductVariant",
                   "slug": "product-variant",
                   "file": "docs/reference/typescript-api/entities/product-variant.mdx",
-                  "lastModified": "2026-04-20T16:08:16+02:00"
+                  "lastModified": "2026-10-19T13:56:33Z"
                 },
                 {
                   "title": "ProductVariantPrice",
@@ -1980,7 +1980,7 @@
                   "title": "Promotion",
                   "slug": "promotion",
                   "file": "docs/reference/typescript-api/entities/promotion.mdx",
-                  "lastModified": "2026-06-30T07:18:09+02:00"
+                  "lastModified": "2026-10-19T13:56:33Z"
                 },
                 {
                   "title": "Province",
@@ -2183,9 +2183,11 @@
                 {
                   "title": "PlatformPromotion",
                   "slug": "platform-promotion",
-                  "file": "docs/reference/typescript-api/extensions-api/platform-promotion.mdx"
+                  "file": "docs/reference/typescript-api/extensions-api/platform-promotion.mdx",
+                  "lastModified": "2026-10-22T06:20:30Z"
                 }
-              ]
+              ],
+              "lastModified": "2026-10-19T19:05:00Z"
             },
             {
               "title": "Fulfillment",
@@ -2880,7 +2882,7 @@
                   "title": "VendurePluginMetadata",
                   "slug": "vendure-plugin-metadata",
                   "file": "docs/reference/typescript-api/plugin/vendure-plugin-metadata.mdx",
-                  "lastModified": "2026-09-15T12:28:00Z"
+                  "lastModified": "2026-10-19T08:14:21+02:00"
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"
@@ -3240,7 +3242,7 @@
                   "title": "OrderService",
                   "slug": "order-service",
                   "file": "docs/reference/typescript-api/services/order-service.mdx",
-                  "lastModified": "2026-09-25T17:20:15+02:00"
+                  "lastModified": "2026-10-19T19:00:30Z"
                 },
                 {
                   "title": "OrderTestingService",
@@ -3282,7 +3284,7 @@
                   "title": "ProductVariantService",
                   "slug": "product-variant-service",
                   "file": "docs/reference/typescript-api/services/product-variant-service.mdx",
-                  "lastModified": "2026-10-05T09:30:37+02:00"
+                  "lastModified": "2026-10-19T10:45:31Z"
                 },
                 {
                   "title": "PromotionService",
@@ -3740,7 +3742,7 @@
               "lastModified": "2026-01-28T14:49:21+01:00"
             }
           ],
-          "lastModified": "2026-01-28T14:49:21+01:00"
+          "lastModified": "2026-10-19T19:05:00Z"
         },
         {
           "title": "Core Plugins",
@@ -3921,7 +3923,7 @@
                   "lastModified": "2026-09-09T11:11:11Z"
                 }
               ],
-              "lastModified": "2026-01-28T14:49:21+01:00"
+              "lastModified": "2026-10-21T08:21:29Z"
             },
             {
               "title": "GraphiQLPlugin",
@@ -4110,7 +4112,7 @@
                   "lastModified": "2026-01-28T14:49:21+01:00"
                 }
               ],
-              "lastModified": "2026-09-11T14:17:58+02:00"
+              "lastModified": "2026-10-19T08:14:21+02:00"
             }
           ],
           "lastModified": "2026-09-29T10:57:44+02:00"
