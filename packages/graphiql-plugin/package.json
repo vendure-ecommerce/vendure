@@ -14,7 +14,7 @@
     },
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
-        "build": "rimraf dist && npm run build:app && tsc -p ./tsconfig.build.json",
+        "build": "rimraf dist && vite build && tsc -p ./tsconfig.build.json",
         "build:app": "vite build",
         "ci": "npm run build",
         "dev": "vite",
