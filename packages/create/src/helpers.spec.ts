@@ -617,7 +617,7 @@ describe('registerTemplateHelpers + Dockerfile template', () => {
 
     it('renders a pnpm Dockerfile on node with corepack and a frozen install', () => {
         const out = renderDockerfile('pnpm');
-        expect(out).toContain('FROM node:20');
+        expect(out).toContain('FROM node:24');
         expect(out).toContain('RUN corepack enable');
         expect(out).toContain('COPY package.json pnpm-lock.yaml ./');
         expect(out).toContain('RUN pnpm install --frozen-lockfile');
