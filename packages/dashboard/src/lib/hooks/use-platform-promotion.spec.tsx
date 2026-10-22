@@ -26,11 +26,12 @@ const dashboardPromotion: DashboardPromotionV1 = {
     ],
 };
 
-async function importWithLicenseGuard(licenseGuardConfigured: boolean) {
+async function importWithLicenseGuard(licenseGuardConfigured: boolean, platformPromotionEnabled = true) {
     vi.resetModules();
     vi.doMock('virtual:vendure-platform-promotion', () => ({
         dashboardPromotion,
         licenseGuardConfigured,
+        platformPromotionEnabled,
     }));
     const hook = await import('./use-platform-promotion.js');
     const extensionPoint =
@@ -113,5 +114,17 @@ describe('usePlatformPromotion', () => {
         }
 
         expect(renderToStaticMarkup(<Probe />)).toBe('<span>true</span>');
+    });
+
+    it('Platform promotion turned off in the build: all locked items are hidden', async () => {
+        const { getPlatformPromotion, setPlatformGrantedCapabilities } = await importWithLicenseGuard(
+            true,
+            false,
+        );
+
+        expect(getPlatformPromotion().hideAll).toBe(true);
+        setPlatformGrantedCapabilities(['org.accounts']);
+        expect(getPlatformPromotion().hideAll).toBe(true);
+        expect(getPlatformPromotion().isLocked('quote.requests')).toBe(false);
     });
 });

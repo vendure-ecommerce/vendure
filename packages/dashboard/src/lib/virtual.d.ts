@@ -17,6 +17,7 @@ declare module 'virtual:vendure-platform-promotion' {
     import { DashboardPromotionV1 } from '@/vdb/framework/platform-promotion/platform-promotion-types.js';
     export const dashboardPromotion: DashboardPromotionV1;
     export const licenseGuardConfigured: boolean;
+    export const platformPromotionEnabled: boolean;
 }
 
 declare module 'virtual:vendure-ui-config' {

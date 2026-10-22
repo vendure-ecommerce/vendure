@@ -15,7 +15,19 @@ export const PLATFORM_CATALOG_TIMEOUT_MS = 2000;
  * the snapshot that ships with `@vendure/common`.
  */
 export const SKIP_PLATFORM_CATALOG_FETCH_ENV = 'VENDURE_DASHBOARD_SKIP_PLATFORM_CATALOG_FETCH';
+/**
+ * Set this environment variable to `false` to turn off all Platform promotion in the Dashboard.
+ */
+export const PLATFORM_PROMOTION_ENV = 'VENDURE_DASHBOARD_PLATFORM_PROMOTION';
 const LICENSE_GUARD_PLUGIN_NAME = 'LicenseGuardPlugin';
+const EMPTY_PROMOTION: DashboardPromotionV1 = {
+    version: 1,
+    navSections: [],
+    navItems: [],
+    pageBlocks: [],
+    actions: [],
+    capabilities: [],
+};
 
 /**
  * Fetches the `dashboardPromotion` data from the Vendure catalog one time. If the fetch
@@ -55,17 +67,24 @@ export async function loadDashboardPromotion(
  *
  * The data is read at build time (and at dev server start), so the browser makes no
  * request to `api.vendure.io`.
+ *
+ * When `enabled` is `false` or `VENDURE_DASHBOARD_PLATFORM_PROMOTION` is `false`, the
+ * plugin sends no request, the module holds no promotion data, and
+ * `platformPromotionEnabled` is `false`.
  */
-export function platformPromotionPlugin(): Plugin {
+export function platformPromotionPlugin(options: { enabled?: boolean } = {}): Plugin {
     let configLoaderApi: ConfigLoaderApi;
     let dashboardPromotion: Promise<DashboardPromotionV1> | undefined;
+    const isEnabled = () => options.enabled !== false && process.env[PLATFORM_PROMOTION_ENV] !== 'false';
+    const getDashboardPromotion = (log: (message: string) => void) =>
+        (dashboardPromotion ??= isEnabled() ? loadDashboardPromotion(log) : Promise.resolve(EMPTY_PROMOTION));
     return {
         name: 'vendure:platform-promotion',
         configResolved({ plugins }) {
             configLoaderApi = getConfigLoaderApi(plugins);
         },
         buildStart() {
-            dashboardPromotion ??= loadDashboardPromotion(message => this.warn(message));
+            void getDashboardPromotion(message => this.warn(message));
         },
         resolveId(id) {
             if (id === virtualModuleId) {
@@ -74,9 +93,8 @@ export function platformPromotionPlugin(): Plugin {
         },
         async load(id) {
             if (id === resolvedVirtualModuleId) {
-                dashboardPromotion ??= loadDashboardPromotion(message => this.warn(message));
                 const [promotion, { vendureConfig }] = await Promise.all([
-                    dashboardPromotion,
+                    getDashboardPromotion(message => this.warn(message)),
                     configLoaderApi.getVendureConfig(),
                 ]);
                 const licenseGuardConfigured =
@@ -84,6 +102,7 @@ export function platformPromotionPlugin(): Plugin {
                 return [
                     `export const dashboardPromotion = ${JSON.stringify(promotion)};`,
                     `export const licenseGuardConfigured = ${JSON.stringify(licenseGuardConfigured)};`,
+                    `export const platformPromotionEnabled = ${JSON.stringify(isEnabled())};`,
                 ].join('\n');
             }
         },

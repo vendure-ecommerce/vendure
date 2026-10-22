@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
     loadDashboardPromotion,
     PLATFORM_CATALOG_URL,
+    PLATFORM_PROMOTION_ENV,
     platformPromotionPlugin,
     SKIP_PLATFORM_CATALOG_FETCH_ENV,
 } from '../vite-plugin-platform-promotion.js';
@@ -92,9 +93,8 @@ describe('loadDashboardPromotion', () => {
 });
 
 describe('platformPromotionPlugin', () => {
-    async function loadVirtualModule(plugins: unknown[]) {
-        vi.stubEnv(SKIP_PLATFORM_CATALOG_FETCH_ENV, 'true');
-        const plugin = platformPromotionPlugin();
+    async function loadVirtualModule(plugins: unknown[], options?: { enabled?: boolean }) {
+        const plugin = platformPromotionPlugin(options);
         const configLoader = {
             name: 'vendure:config-loader',
             api: { getVendureConfig: () => Promise.resolve({ vendureConfig: { plugins } }) },
@@ -109,6 +109,7 @@ describe('platformPromotionPlugin', () => {
     }
 
     it('exports the promotion data and licenseGuardConfigured: false without License Guard', async () => {
+        vi.stubEnv(SKIP_PLATFORM_CATALOG_FETCH_ENV, 'true');
         class DefaultSearchPlugin {}
         const code = await loadVirtualModule([DefaultSearchPlugin]);
 
@@ -116,12 +117,31 @@ describe('platformPromotionPlugin', () => {
             `export const dashboardPromotion = ${JSON.stringify(platformPromotionSnapshot)};`,
         );
         expect(code).toContain('export const licenseGuardConfigured = false;');
+        expect(code).toContain('export const platformPromotionEnabled = true;');
     });
 
     it('exports licenseGuardConfigured: true when the config contains LicenseGuardPlugin', async () => {
+        vi.stubEnv(SKIP_PLATFORM_CATALOG_FETCH_ENV, 'true');
         class LicenseGuardPlugin {}
         const code = await loadVirtualModule([{ module: LicenseGuardPlugin }]);
 
         expect(code).toContain('export const licenseGuardConfigured = true;');
+    });
+
+    function expectNoPromotion(code: string) {
+        expect(fetch).not.toHaveBeenCalled();
+        expect(code).toContain('export const platformPromotionEnabled = false;');
+        expect(code).toContain(
+            'export const dashboardPromotion = {"version":1,"navSections":[],"navItems":[],"pageBlocks":[],"actions":[],"capabilities":[]};',
+        );
+    }
+
+    it('turns off all promotion with the platformPromotion: false option alone', async () => {
+        expectNoPromotion(await loadVirtualModule([], { enabled: false }));
+    });
+
+    it(`turns off all promotion with ${PLATFORM_PROMOTION_ENV}=false alone`, async () => {
+        vi.stubEnv(PLATFORM_PROMOTION_ENV, 'false');
+        expectNoPromotion(await loadVirtualModule([]));
     });
 });
