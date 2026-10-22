@@ -319,9 +319,8 @@ describe('Product related assets', () => {
             const { product } = await adminClient.query(getProductWithVariantsDocument, {
                 id: productId,
             });
-            expect(product!.assets.map(a => a.id).sort()).toEqual(
-                [defaultChannelAssetId, sharedAssetId].sort(),
-            );
+            // The Asset of the default channel keeps its position before the Asset saved in channel2
+            expect(product!.assets.map(a => a.id)).toEqual([defaultChannelAssetId, sharedAssetId]);
         });
 
         it('keeps the featured asset of another channel when all assets are removed', async () => {

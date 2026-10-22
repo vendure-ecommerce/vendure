@@ -292,9 +292,12 @@ export class AssetService {
                 .filter(notNullOrUndefined);
             const orderableAssetsOfOtherChannels = await this.removeExistingOrderableAssets(ctx, entity);
             if (sortedAssets.length > 0) {
+                // Place the new Assets after those of other Channels, so that no two share a position
+                const positions = orderableAssetsOfOtherChannels.map(oa => oa.position);
+                const firstPosition = Math.max(-1, ...positions) + 1;
                 entity.assets = [
                     ...orderableAssetsOfOtherChannels,
-                    ...(await this.createOrderableAssets(ctx, entity, sortedAssets)),
+                    ...(await this.createOrderableAssets(ctx, entity, sortedAssets, firstPosition)),
                 ];
             } else {
                 entity.assets = orderableAssetsOfOtherChannels;
@@ -689,8 +692,11 @@ export class AssetService {
         ctx: RequestContext,
         entity: EntityWithAssets,
         assets: Asset[],
+        firstPosition = 0,
     ): Promise<OrderableAsset[]> {
-        const orderableAssets = assets.map((asset, i) => this.getOrderableAsset(ctx, entity, asset, i));
+        const orderableAssets = assets.map((asset, i) =>
+            this.getOrderableAsset(ctx, entity, asset, firstPosition + i),
+        );
         return this.connection.getRepository(ctx, orderableAssets[0].constructor).save(orderableAssets);
     }
 
@@ -738,7 +744,10 @@ export class AssetService {
         return orderableAssets.filter(orderableAsset => !isInChannel(orderableAsset));
     }
 
-    private async isFeaturedAssetOfOtherChannel(ctx: RequestContext, entity: EntityWithAssets) {
+    private async isFeaturedAssetOfOtherChannel(
+        ctx: RequestContext,
+        entity: EntityWithAssets,
+    ): Promise<boolean> {
         if (!entity.id) {
             return false;
         }
