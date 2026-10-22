@@ -1,4 +1,4 @@
-import { type Browser, expect, test } from '@playwright/test';
+import { type Browser, expect, type Page, test } from '@playwright/test';
 
 import { LoginPage } from '../../page-objects/login-page.js';
 import { VendureAdminClient } from '../../utils/vendure-admin-client.js';
@@ -88,6 +88,26 @@ test.describe('Administrator without access to any channel', () => {
         return { context, page, loginPage: new LoginPage(page) };
     }
 
+    // Fails the first current-user request after the login, as a network error would
+    async function failFirstCurrentUserRefetch(page: Page) {
+        const state = { loginSent: false, failedRefetch: false };
+        await page.route('**/admin-api**', async route => {
+            const operation = route.request().postDataJSON()?.query ?? '';
+            if (operation.includes('mutation Login')) {
+                state.loginSent = true;
+            } else if (
+                state.loginSent &&
+                !state.failedRefetch &&
+                operation.includes('query CurrentUserInformation')
+            ) {
+                state.failedRefetch = true;
+                return route.abort();
+            }
+            return route.continue();
+        });
+        return state;
+    }
+
     test('shows an error and the login form after logging in', async ({ page, browser }) => {
         const client = new VendureAdminClient(page);
         await client.login();
@@ -148,28 +168,12 @@ test.describe('Administrator without access to any channel', () => {
     }) => {
         const { context, page: adminPage, loginPage } = await newLoginPage(browser);
         try {
-            // Fail the first current-user request after the login, as a network error would
-            let loginSent = false;
-            let failedRefetch = false;
-            await adminPage.route('**/admin-api**', async route => {
-                const operation = route.request().postDataJSON()?.query ?? '';
-                if (operation.includes('mutation Login')) {
-                    loginSent = true;
-                } else if (
-                    loginSent &&
-                    !failedRefetch &&
-                    operation.includes('query CurrentUserInformation')
-                ) {
-                    failedRefetch = true;
-                    return route.abort();
-                }
-                return route.continue();
-            });
+            const refetch = await failFirstCurrentUserRefetch(adminPage);
             await loginPage.goto();
             await loginPage.login('superadmin', 'superadmin');
 
             await expect(adminPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
-            expect(failedRefetch).toBe(true);
+            expect(refetch.failedRefetch).toBe(true);
             await expect(
                 adminPage
                     .locator('[data-sonner-toast]')
@@ -177,6 +181,32 @@ test.describe('Administrator without access to any channel', () => {
             ).toHaveCount(0);
         } finally {
             await context.close();
+        }
+    });
+
+    test('shows an error and the login form when the current user cannot be loaded after logging in', async ({
+        page,
+        browser,
+    }) => {
+        const client = new VendureAdminClient(page);
+        await client.login();
+        const administrator = await createAdministrator(client, []);
+        const { context, page: adminPage, loginPage } = await newLoginPage(browser);
+        try {
+            const refetch = await failFirstCurrentUserRefetch(adminPage);
+            await loginPage.goto();
+            await loginPage.login(administrator.emailAddress, password);
+
+            await expect(
+                adminPage
+                    .locator('[data-sonner-toast]')
+                    .filter({ hasText: 'You do not have access to any channel' }),
+            ).toBeVisible({ timeout: 10_000 });
+            await loginPage.expectVisible();
+            expect(refetch.failedRefetch).toBe(true);
+        } finally {
+            await context.close();
+            await cleanupAdministrator(client, administrator);
         }
     });
 });

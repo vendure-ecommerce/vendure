@@ -203,18 +203,21 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
         (username: string, password: string, onLoginSuccess?: () => void) => {
             setIsLoginLogoutInProgress(true);
             setStatus('verifying');
+            // The session cannot be used, so end it
+            const endSessionWithoutChannelAccess = async () => {
+                await api.mutate(LogOutMutation)({});
+                queryClient.removeQueries({ queryKey: ['currentUser'] });
+                setAuthenticationError(noChannelAccessError);
+                setStatus('unauthenticated');
+                setIsLoginLogoutInProgress(false);
+            };
             api.mutate(LoginMutation)({ username, password })
                 .then(async data => {
                     if (data.login.__typename === 'CurrentUser') {
                         setAuthenticationError(undefined);
                         const { data: refetchedData, error: refetchError } = await refetchCurrentUser();
                         if (!refetchError && !hasDashboardAccess(refetchedData)) {
-                            // The session cannot be used, so end it
-                            await api.mutate(LogOutMutation)({});
-                            queryClient.removeQueries({ queryKey: ['currentUser'] });
-                            setAuthenticationError(noChannelAccessError);
-                            setStatus('unauthenticated');
-                            setIsLoginLogoutInProgress(false);
+                            await endSessionWithoutChannelAccess();
                             return;
                         }
                         // Synchronously set the channel token in localStorage before
@@ -243,6 +246,24 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                         await queryClient.cancelQueries();
                         // Invalidate all queries to ensure fresh data after login
                         await queryClient.invalidateQueries();
+                        // The refetch above can fail, so check the access again with the reloaded
+                        // user. Without access, the Dashboard would wait for the server config forever.
+                        const currentUserState = queryClient.getQueryState<ResultOf<typeof CurrentUserQuery>>(
+                            ['currentUser'],
+                        );
+                        if (
+                            currentUserState?.status === 'success' &&
+                            !hasDashboardAccess(currentUserState.data)
+                        ) {
+                            await endSessionWithoutChannelAccess();
+                            return;
+                        }
+                        if (!hasDashboardAccess(currentUserState?.data)) {
+                            setAuthenticationError(currentUserState?.error?.message);
+                            setStatus('unauthenticated');
+                            setIsLoginLogoutInProgress(false);
+                            return;
+                        }
                         setStatus('authenticated');
                         setIsLoginLogoutInProgress(false);
                         onLoginSuccess?.();
@@ -335,7 +356,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
         // If query has completed (not loading) and we're in verifying state, determine final status
         if (!isLoading && status === 'verifying') {
             if (currentUserError || !isAuthenticated) {
-                if (currentUserData?.me?.id) {
+                if (!currentUserError && currentUserData?.me?.id) {
                     // Signed in, but without access to any channel, e.g. after it was removed
                     setAuthenticationError(noChannelAccessError);
                 }
