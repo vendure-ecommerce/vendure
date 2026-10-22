@@ -2,7 +2,7 @@
 import { CurrencyCode, DeletionResult, LanguageCode } from '@vendure/common/lib/generated-types';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import path from 'path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
@@ -13,6 +13,7 @@ import {
     assignProductToChannelDocument,
     createAssetsDocument,
     createChannelDocument,
+    createProductDocument,
     deleteAssetDocument,
     getAssetDocument,
     getProductWithVariantsDocument,
@@ -253,6 +254,90 @@ describe('Product related assets', () => {
             },
         });
         expect(updateProduct.assets).toEqual([]);
+    });
+
+    // #5629 — updating the assets of a Product in one channel should keep its assets of other channels
+    describe('updating assets in channel2', () => {
+        let productId: string;
+        let defaultChannelAssetId: string;
+        let sharedAssetId: string;
+        let productCount = 0;
+
+        // A new Product in both channels, whose assets are an Asset of the default channel, which is
+        // also its featured Asset, and an Asset of both channels. New entities are used, because
+        // assigning a Product to a channel also assigns its Assets, which other tests rely on.
+        beforeEach(async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { createAssets } = await adminClient.fileUploadMutation({
+                mutation: createAssetsDocument,
+                filePaths: [
+                    path.join(__dirname, 'fixtures/assets/box-of-8.jpg'),
+                    path.join(__dirname, 'fixtures/assets/box-of-12.jpg'),
+                ],
+                mapVariables: filePaths => ({
+                    input: filePaths.map(() => ({ file: null })),
+                }),
+            });
+            [defaultChannelAssetId, sharedAssetId] = createAssets.map((asset: { id: string }) => asset.id);
+            productCount++;
+            const { createProduct } = await adminClient.query(createProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: `Channel assets ${productCount}`,
+                            slug: `channel-assets-${productCount}`,
+                            description: '',
+                        },
+                    ],
+                },
+            });
+            productId = createProduct.id;
+            await adminClient.query(assignProductToChannelDocument, {
+                input: { channelId: channel2Id, productIds: [productId] },
+            });
+            await adminClient.query(assignAssetsToChannelDocument, {
+                input: { assetIds: [sharedAssetId], channelId: channel2Id },
+            });
+            await adminClient.query(updateProductDocument, {
+                input: {
+                    id: productId,
+                    assetIds: [defaultChannelAssetId],
+                    featuredAssetId: defaultChannelAssetId,
+                },
+            });
+        });
+
+        it('keeps the assets of other channels', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { updateProduct } = await adminClient.query(updateProductDocument, {
+                input: { id: productId, assetIds: [sharedAssetId] },
+            });
+            expect(updateProduct.assets.map(a => a.id)).toEqual([sharedAssetId]);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { product } = await adminClient.query(getProductWithVariantsDocument, {
+                id: productId,
+            });
+            expect(product!.assets.map(a => a.id).sort()).toEqual(
+                [defaultChannelAssetId, sharedAssetId].sort(),
+            );
+        });
+
+        it('keeps the featured asset of another channel when all assets are removed', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { updateProduct } = await adminClient.query(updateProductDocument, {
+                input: { id: productId, assetIds: [] },
+            });
+            expect(updateProduct.assets).toEqual([]);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { product } = await adminClient.query(getProductWithVariantsDocument, {
+                id: productId,
+            });
+            expect(product!.assets.map(a => a.id)).toEqual([defaultChannelAssetId]);
+            expect(product!.featuredAsset?.id).toBe(defaultChannelAssetId);
+        });
     });
 });
 
