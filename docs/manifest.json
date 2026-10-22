@@ -2184,7 +2184,7 @@
                   "title": "PlatformPromotion",
                   "slug": "platform-promotion",
                   "file": "docs/reference/typescript-api/extensions-api/platform-promotion.mdx",
-                  "lastModified": "2026-10-19T19:05:00Z"
+                  "lastModified": "2026-10-22T06:20:30Z"
                 }
               ],
               "lastModified": "2026-10-19T19:05:00Z"
@@ -4901,7 +4901,7 @@
                   "title": "VendureDashboardPlugin",
                   "slug": "vendure-dashboard-plugin",
                   "file": "docs/reference/dashboard/vite-plugin/vendure-dashboard-plugin.mdx",
-                  "lastModified": "2026-10-19T19:05:00Z"
+                  "lastModified": "2026-10-22T06:20:30Z"
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"
