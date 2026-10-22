@@ -1121,7 +1121,7 @@ export class ProductVariantService {
         if (
             !samplesEach(
                 optionIds,
-                activeOptions.map(g => g.options.map(o => o.id)),
+                activeOptions.map(g => g.options.filter(o => !o.deletedAt).map(o => o.id)),
             )
         ) {
             this.throwIncompatibleOptionsError(optionGroups);

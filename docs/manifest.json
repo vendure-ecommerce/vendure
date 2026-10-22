@@ -662,7 +662,7 @@
           "title": "Deployment",
           "slug": "deployment",
           "file": "docs/guides/extending-the-dashboard/deployment/index.mdx",
-          "lastModified": "2026-10-19T21:03:28+02:00"
+          "lastModified": "2026-10-22T08:18:52+02:00"
         },
         {
           "title": "Tech Stack",
@@ -1270,7 +1270,7 @@
                   "title": "Bootstrap",
                   "slug": "bootstrap",
                   "file": "docs/reference/typescript-api/common/bootstrap.mdx",
-                  "lastModified": "2026-09-15T12:28:00Z"
+                  "lastModified": "2026-10-22T06:39:48Z"
                 },
                 {
                   "title": "CurrencyCode",
@@ -1462,7 +1462,7 @@
                   "title": "ApiOptions",
                   "slug": "api-options",
                   "file": "docs/reference/typescript-api/configuration/api-options.mdx",
-                  "lastModified": "2026-10-12T10:23:42+02:00"
+                  "lastModified": "2026-10-22T11:24:53Z"
                 },
                 {
                   "title": "CollectionFilter",
@@ -2184,7 +2184,7 @@
                   "title": "PlatformPromotion",
                   "slug": "platform-promotion",
                   "file": "docs/reference/typescript-api/extensions-api/platform-promotion.mdx",
-                  "lastModified": "2026-10-19T19:05:00Z"
+                  "lastModified": "2026-10-22T06:20:30Z"
                 }
               ],
               "lastModified": "2026-10-19T19:05:00Z"
@@ -3724,7 +3724,7 @@
                   "title": "BootstrapWorker",
                   "slug": "bootstrap-worker",
                   "file": "docs/reference/typescript-api/worker/bootstrap-worker.mdx",
-                  "lastModified": "2026-09-15T12:28:00Z"
+                  "lastModified": "2026-10-22T06:39:48Z"
                 },
                 {
                   "title": "VendureWorker",
@@ -3923,7 +3923,7 @@
                   "lastModified": "2026-09-09T11:11:11Z"
                 }
               ],
-              "lastModified": "2026-01-28T14:49:21+01:00"
+              "lastModified": "2026-10-21T08:21:29Z"
             },
             {
               "title": "GraphiQLPlugin",
@@ -4594,12 +4594,6 @@
                   "lastModified": "2026-07-29T16:21:34+02:00"
                 },
                 {
-                  "title": "PlatformPromotion",
-                  "slug": "platform-promotion",
-                  "file": "docs/reference/dashboard/extensions-api/platform-promotion.mdx",
-                  "lastModified": "2026-10-19T19:05:00Z"
-                },
-                {
                   "title": "RefundDestinations",
                   "slug": "refund-destinations",
                   "file": "docs/reference/dashboard/extensions-api/refund-destinations.mdx",
@@ -4907,7 +4901,7 @@
                   "title": "VendureDashboardPlugin",
                   "slug": "vendure-dashboard-plugin",
                   "file": "docs/reference/dashboard/vite-plugin/vendure-dashboard-plugin.mdx",
-                  "lastModified": "2026-10-19T19:05:00Z"
+                  "lastModified": "2026-10-22T06:20:30Z"
                 }
               ],
               "lastModified": "2026-01-28T14:49:21+01:00"

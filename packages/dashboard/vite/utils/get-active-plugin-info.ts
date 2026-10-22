@@ -64,10 +64,8 @@ export function filterActivePluginInfo(
  * also keys on `name`), so this filter does not regress anything. If a future
  * change tracks `(pluginPath, name)` tuples through discovery, this filter
  * should be updated to match on the same key.
- *
- * @internal
  */
-export function getActivePluginNames(vendureConfig: Pick<VendureConfig, 'plugins'>): Set<string> {
+function getActivePluginNames(vendureConfig: Pick<VendureConfig, 'plugins'>): Set<string> {
     const names = new Set<string>();
     const visited = new Set<object>();
     const visit = (entry: unknown) => {
