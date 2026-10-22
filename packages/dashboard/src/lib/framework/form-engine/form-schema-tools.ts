@@ -38,6 +38,7 @@ function mapGraphQLCustomFieldToConfig(field: StructField) {
         requiresPermission: [],
         nullable: true, // Default to true since GraphQL fields are nullable by default
         secret: false, // struct sub-fields cannot be secret
+        defaultValue: null, // struct sub-fields do not have configured defaults
     };
 
     switch (field.__typename) {
@@ -372,11 +373,39 @@ export function getDefaultValuesFromFields(
     fields: FieldInfo[],
     defaultLanguageCode?: string,
     customFieldConfigs?: CustomFieldConfig[],
+    isTranslationContext = false,
 ) {
     const defaultValues: Record<string, any> = {};
     for (const field of fields) {
-        if (field.typeInfo) {
-            const nestedObjectDefaults = getDefaultValuesFromFields(field.typeInfo, defaultLanguageCode);
+        if (field.name === 'customFields') {
+            const customFields = field.typeInfo
+                ? getDefaultValuesFromFields(field.typeInfo, defaultLanguageCode)
+                : {};
+            for (const config of customFieldConfigs ?? []) {
+                const isLocalized = config.type === 'localeString' || config.type === 'localeText';
+                if (
+                    isLocalized === isTranslationContext &&
+                    !config.secret &&
+                    !config.readonly &&
+                    (!field.typeInfo || field.typeInfo.some(input => input.name === config.name)) &&
+                    config.type !== 'relation' &&
+                    config.type !== 'struct' &&
+                    config.defaultValue != null
+                ) {
+                    customFields[config.name] = structuredClone(config.defaultValue);
+                }
+            }
+            defaultValues[field.name] = customFields;
+        } else if (field.typeInfo) {
+            // Translation inputs and an operation's input wrapper belong to the same entity.
+            // Nested entities (such as ProductVariantPrice) have their own configuration.
+            const isTranslation = field.name === 'translations';
+            const nestedObjectDefaults = getDefaultValuesFromFields(
+                field.typeInfo,
+                defaultLanguageCode,
+                isTranslation || field.name === 'input' ? customFieldConfigs : undefined,
+                isTranslation,
+            );
             if (field.list) {
                 defaultValues[field.name] = [nestedObjectDefaults];
             } else {
