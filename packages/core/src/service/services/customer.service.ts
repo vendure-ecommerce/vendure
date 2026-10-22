@@ -635,18 +635,22 @@ export class CustomerService {
     async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
         const user = await this.userService.setPasswordResetToken(ctx, emailAddress);
         if (user) {
-            await this.eventBus.publish(new PasswordResetEvent(ctx, user));
             const customer = await this.findOneByUserId(ctx, user.id);
             if (!customer) {
                 throw new InternalServerError('error.cannot-locate-customer-for-user');
             }
-            await this.historyService.createHistoryEntryForCustomer({
-                customerId: customer.id,
-                ctx,
-                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
-                data: {},
-            });
+            await this.publishPasswordResetRequested(ctx, user, customer.id);
         }
+    }
+
+    private async publishPasswordResetRequested(ctx: RequestContext, user: User, customerId: ID) {
+        await this.eventBus.publish(new PasswordResetEvent(ctx, user));
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+            data: {},
+        });
     }
 
     /**
@@ -677,6 +681,36 @@ export class CustomerService {
         });
         await this.eventBus.publish(new PasswordResetVerifiedEvent(ctx, result));
         return result;
+    }
+
+    /**
+     * @description
+     * Requests a password reset email for the Customer on behalf of an administrator, the same as
+     * {@link CustomerService.requestPasswordReset}: sets a reset token and publishes a
+     * {@link PasswordResetEvent}. The event carries the administrator's RequestContext, so an email
+     * sent from it uses the administrator's language.
+     *
+     * When `authOptions.requireVerification` is on, a Customer who has not verified their account is
+     * marked as verified when they complete the reset. No {@link AccountVerifiedEvent} is published.
+     *
+     * A Customer with no User (a guest checkout), or whose User has no native authentication method,
+     * has no native credential to reset, and is rejected.
+     *
+     * @since 3.9.0
+     */
+    async requestCustomerPasswordReset(ctx: RequestContext, customerId: ID): Promise<void> {
+        const customer = await this.connection.getEntityOrThrow(ctx, Customer, customerId, {
+            channelId: ctx.channelId,
+            relations: ['user', 'user.authenticationMethods'],
+        });
+        if (!customer.user) {
+            throw new UserInputError('error.customer-has-no-user-account');
+        }
+        const user = await this.userService.setPasswordResetTokenForUser(ctx, customer.user);
+        if (!user) {
+            throw new UserInputError('error.cannot-set-password-without-native-credential');
+        }
+        await this.publishPasswordResetRequested(ctx, user, customer.id);
     }
 
     /**

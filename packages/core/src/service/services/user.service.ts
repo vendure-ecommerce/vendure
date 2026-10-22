@@ -461,6 +461,18 @@ export class UserService {
         if (!user) {
             return;
         }
+        return this.setPasswordResetTokenForUser(ctx, user);
+    }
+
+    /**
+     * @description
+     * Sets the {@link NativeAuthenticationMethod} `passwordResetToken` on the given User, which must be
+     * loaded with its `authenticationMethods`. Returns `undefined` if the User has no
+     * NativeAuthenticationMethod.
+     *
+     * @since 3.9.0
+     */
+    async setPasswordResetTokenForUser(ctx: RequestContext, user: User): Promise<User | undefined> {
         const nativeAuthMethod = user.getNativeAuthenticationMethod(false);
         if (!nativeAuthMethod) {
             return undefined;
