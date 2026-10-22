@@ -4549,7 +4549,7 @@
                   "title": "DefineDashboardExtension",
                   "slug": "define-dashboard-extension",
                   "file": "docs/reference/dashboard/extensions-api/define-dashboard-extension.mdx",
-                  "lastModified": "2026-09-25T17:20:15+02:00"
+                  "lastModified": "2026-10-22T08:19:54Z"
                 },
                 {
                   "title": "DetailForms",
@@ -4869,25 +4869,25 @@
                   "title": "Page",
                   "slug": "page",
                   "file": "docs/reference/dashboard/page-layout/page.mdx",
-                  "lastModified": "2026-09-29T13:43:24Z"
+                  "lastModified": "2026-10-22T08:19:54Z"
                 },
                 {
                   "title": "PageActionBar",
                   "slug": "page-action-bar",
                   "file": "docs/reference/dashboard/page-layout/page-action-bar.mdx",
-                  "lastModified": "2026-09-29T13:43:24Z"
+                  "lastModified": "2026-10-22T08:19:54Z"
                 },
                 {
                   "title": "PageBlock",
                   "slug": "page-block",
                   "file": "docs/reference/dashboard/page-layout/page-block.mdx",
-                  "lastModified": "2026-09-29T13:43:24Z"
+                  "lastModified": "2026-10-22T08:19:54Z"
                 },
                 {
                   "title": "PageTitle",
                   "slug": "page-title",
                   "file": "docs/reference/dashboard/page-layout/page-title.mdx",
-                  "lastModified": "2026-09-29T13:43:24Z"
+                  "lastModified": "2026-10-22T08:19:54Z"
                 },
                 {
                   "title": "UsePageBlock",
@@ -4896,7 +4896,7 @@
                   "lastModified": "2026-01-28T14:49:21+01:00"
                 }
               ],
-              "lastModified": "2026-09-29T13:43:24Z"
+              "lastModified": "2026-10-22T08:19:54Z"
             },
             {
               "title": "Vite Plugin",
