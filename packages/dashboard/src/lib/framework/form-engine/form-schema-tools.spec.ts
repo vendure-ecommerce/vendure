@@ -880,6 +880,38 @@ describe('form-schema-tools', () => {
             expect(defaults.prices).toEqual([{ customFields: {} }]);
         });
 
+        // #5442 — an explicit empty select default must survive shared normalization.
+        it('preserves an explicitly configured empty-string select default', () => {
+            const configs = [
+                {
+                    name: 'featureType',
+                    type: 'string',
+                    nullable: true,
+                    readonly: false,
+                    list: false,
+                    defaultValue: '',
+                    options: [{ value: '' }, { value: 'standard' }],
+                },
+            ] as any;
+            const defaults = getDefaultValuesFromFields(
+                [createMockField('customFields', 'JSON', true)],
+                'en',
+                configs,
+            );
+            expect(defaults.customFields.featureType).toBe('');
+            expect(applyNullableSelectCustomFieldDefaults(defaults, configs).customFields.featureType).toBe(
+                '',
+            );
+            expect(
+                applyNullableSelectCustomFieldDefaults({ customFields: { featureType: undefined } }, configs)
+                    .customFields.featureType,
+            ).toBeNull();
+            expect(
+                applyNullableSelectCustomFieldDefaults({ customFields: { featureType: null } }, configs)
+                    .customFields.featureType,
+            ).toBeNull();
+        });
+
         it('seeds only writable custom fields present in the input', () => {
             const fields = [
                 createMockField('customFields', 'Object', true, false, [

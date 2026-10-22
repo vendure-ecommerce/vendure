@@ -421,7 +421,7 @@ export function getDefaultValuesFromFields(
 }
 
 /**
- * Nullable string fields with options should default to `null`, not `''`.
+ * Unset nullable string fields with options default to `null`, preserving an explicit `''` default.
  */
 export function applyNullableSelectCustomFieldDefaults<T extends Record<string, any>>(
     values: T,
@@ -457,7 +457,7 @@ function applyNullableSelectDefaultsToCustomFieldsObject(
             config.type === 'string' &&
             isStringFieldWithOptions(config as ConfigurableFieldDef) &&
             config.nullable !== false &&
-            (result[config.name] === '' || result[config.name] === undefined)
+            (result[config.name] === undefined || (result[config.name] === '' && config.defaultValue !== ''))
         ) {
             result[config.name] = null;
         }
