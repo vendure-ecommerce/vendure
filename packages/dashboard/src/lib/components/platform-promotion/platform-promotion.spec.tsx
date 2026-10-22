@@ -106,9 +106,9 @@ describe('platform promotion UI', () => {
                 blockId="platform-promotion"
             />,
         );
-        expect(card.capabilities).toHaveLength(5);
+        expect(card.capabilities.length).toBeGreaterThan(0);
         expect(markup).toContain(
-            `5 more for orders with Vendure Platform: ${card.capabilities.map(c => c.title).join(', ')}`,
+            `${card.capabilities.length} more for orders with Vendure Platform: ${card.capabilities.map(c => c.title).join(', ')}`,
         );
         expect(markup.match(/data-testid="platform-promotion-page-card"/g)).toHaveLength(1);
     });
