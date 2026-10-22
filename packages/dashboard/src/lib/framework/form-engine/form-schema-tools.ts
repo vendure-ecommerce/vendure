@@ -376,15 +376,17 @@ export function getDefaultValuesFromFields(
     isTranslationContext = false,
 ) {
     const defaultValues: Record<string, any> = {};
+    const contextConfigs = customFieldConfigs?.filter(config => {
+        const isLocalized = config.type === 'localeString' || config.type === 'localeText';
+        return isLocalized === isTranslationContext;
+    });
     for (const field of fields) {
         if (field.name === 'customFields') {
             const customFields = field.typeInfo
                 ? getDefaultValuesFromFields(field.typeInfo, defaultLanguageCode)
                 : {};
-            for (const config of customFieldConfigs ?? []) {
-                const isLocalized = config.type === 'localeString' || config.type === 'localeText';
+            for (const config of contextConfigs ?? []) {
                 if (
-                    isLocalized === isTranslationContext &&
                     !config.secret &&
                     !config.readonly &&
                     (!field.typeInfo || field.typeInfo.some(input => input.name === config.name)) &&
@@ -415,7 +417,7 @@ export function getDefaultValuesFromFields(
             defaultValues[field.name] = getDefaultValueFromField(field, defaultLanguageCode);
         }
     }
-    return applyNullableSelectCustomFieldDefaults(defaultValues, customFieldConfigs);
+    return applyNullableSelectCustomFieldDefaults(defaultValues, contextConfigs);
 }
 
 /**

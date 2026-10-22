@@ -863,9 +863,17 @@ describe('form-schema-tools', () => {
                 { name: 'zero', type: 'int', defaultValue: 0 },
                 { name: 'enabled', type: 'boolean', defaultValue: false },
                 { name: 'tagline', type: 'localeString', defaultValue: 'Hello' },
+                {
+                    name: 'priority',
+                    type: 'string',
+                    readonly: false,
+                    list: false,
+                    nullable: true,
+                    options: [{ value: 'low' }],
+                },
             ] as any;
             const defaults = getDefaultValuesFromFields(fields, 'en', configs);
-            expect(defaults.customFields).toEqual({ cost: 1250, zero: 0, enabled: false });
+            expect(defaults.customFields).toEqual({ cost: 1250, zero: 0, enabled: false, priority: null });
             expect(defaults.translations).toEqual([
                 { languageCode: 'en', customFields: { tagline: 'Hello' } },
             ]);
