@@ -47,6 +47,15 @@ export function getFeaturedCapabilities(
     return featured;
 }
 
+/** Cuts `text` to `width` characters and ends it with an ellipsis when it is longer. */
+function fit(text: string, width: number): string {
+    return text.length > width ? `${text.slice(0, width - 1)}…` : text;
+}
+
+/**
+ * Wraps `text` into at most `maxLines` lines of at most `width` characters. A word longer than
+ * `width`, and text that needs more lines, ends with an ellipsis.
+ */
 function wrap(text: string, width: number, maxLines: number): string[] {
     const lines: string[] = [];
     let current = '';
@@ -59,12 +68,10 @@ function wrap(text: string, width: number, maxLines: number): string[] {
         }
     }
     lines.push(current);
-    if (lines.length <= maxLines) {
-        return lines;
+    const kept = lines.slice(0, maxLines).map(line => fit(line, width));
+    if (lines.length > maxLines) {
+        kept[maxLines - 1] = fit(`${kept[maxLines - 1].replace(/…$/, '')}…`, width);
     }
-    const kept = lines.slice(0, maxLines);
-    const last = kept[maxLines - 1];
-    kept[maxLines - 1] = `${last.length >= width ? last.slice(0, width - 1) : last}…`;
     return kept;
 }
 
@@ -106,7 +113,7 @@ export function buildStartupBanner(input: StartupBannerInput): StartupBanner {
         const pick = capabilities[index];
         capabilityRows.push(
             '',
-            `Today's pick: ${pick.title}.`,
+            fit(`Today's pick: ${pick.title}.`, textWidth),
             ...wrap(pick.summary, textWidth, MAX_SUMMARY_LINES),
         );
         // Name as many other capabilities as fit on one line.
@@ -139,7 +146,7 @@ export function buildStartupBanner(input: StartupBannerInput): StartupBanner {
     const lines = [
         paint(`╭${horizontal}╮`),
         ...rows.map(([visible, rendered]) => {
-            const padding = ' '.repeat(contentWidth - visible.length);
+            const padding = ' '.repeat(Math.max(0, contentWidth - visible.length));
             return `${paint('│')}  ${rendered}${padding}${paint('│')}`;
         }),
         paint(`╰${horizontal}╯`),
@@ -166,27 +173,32 @@ function brandPainter(): (text: string) => string {
  * local file and makes no network call.
  */
 export function logStartupBanner(surface: StartupBannerSurface): void {
-    const logger = Logger.logger;
-    if (logger instanceof DefaultLogger && logger.level < LogLevel.Info) {
-        return;
-    }
-    const interactive =
-        logger instanceof DefaultLogger &&
-        process.stdout.isTTY === true &&
-        !isCI() &&
-        process.env.TERM !== 'dumb';
-    const banner = buildStartupBanner({
-        surface,
-        linked: fs.existsSync(path.join(process.cwd(), '.vendure', 'project.json')),
-        box: interactive,
-        hyperlinks: supportsHyperlinks(),
-        paint: brandPainter(),
-        capabilities: getFeaturedCapabilities(),
-        now: new Date(),
-    });
-    if (banner.kind === 'box') {
-        process.stdout.write(`${banner.text}\n`);
-    } else {
-        Logger.info(banner.text);
+    // The banner is promotional text. Nothing in it may fail the start of the server or worker.
+    try {
+        const logger = Logger.logger;
+        if (logger instanceof DefaultLogger && logger.level < LogLevel.Info) {
+            return;
+        }
+        const interactive =
+            logger instanceof DefaultLogger &&
+            process.stdout.isTTY === true &&
+            !isCI() &&
+            process.env.TERM !== 'dumb';
+        const banner = buildStartupBanner({
+            surface,
+            linked: fs.existsSync(path.join(process.cwd(), '.vendure', 'project.json')),
+            box: interactive,
+            hyperlinks: supportsHyperlinks(),
+            paint: brandPainter(),
+            capabilities: getFeaturedCapabilities(),
+            now: new Date(),
+        });
+        if (banner.kind === 'box') {
+            process.stdout.write(`${banner.text}\n`);
+        } else {
+            Logger.info(banner.text);
+        }
+    } catch {
+        // Show no banner.
     }
 }

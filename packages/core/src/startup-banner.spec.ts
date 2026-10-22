@@ -114,6 +114,36 @@ describe('buildStartupBanner()', () => {
         expect(lines.some(l => l.includes('…'))).toBe(true);
     });
 
+    it('shortens a title that is wider than the box', () => {
+        const capabilities: FeaturedCapability[] = [{ title: 'T'.repeat(80), summary: 'Short.' }];
+        const lines = buildStartupBanner({ ...baseInput, capabilities }).text.split('\n');
+
+        expect(new Set(lines.map(l => l.length))).toEqual(new Set([58]));
+        expect(lines.some(l => l.includes("Today's pick: TTT") && l.includes('…'))).toBe(true);
+    });
+
+    it('cuts a single summary word that is wider than the box', () => {
+        const capabilities: FeaturedCapability[] = [{ title: 'Long word', summary: `a ${'w'.repeat(90)} b` }];
+        const lines = buildStartupBanner({ ...baseInput, capabilities }).text.split('\n');
+
+        expect(new Set(lines.map(l => l.length))).toEqual(new Set([58]));
+        expect(lines.some(l => l.includes('www…'))).toBe(true);
+    });
+
+    it('keeps the box aligned for titles and summaries of any length', () => {
+        for (const length of [1, 20, 39, 40, 52, 53, 54, 55, 100, 400]) {
+            const capabilities: FeaturedCapability[] = [
+                { title: 'x'.repeat(length), summary: 'y'.repeat(length) },
+                { title: 'z'.repeat(length), summary: `${'w '.repeat(length)}` },
+            ];
+            for (let offset = 0; offset < 2; offset++) {
+                const { text } = buildStartupBanner({ ...baseInput, capabilities, now: day(offset) });
+
+                expect(new Set(text.split('\n').map(l => l.length))).toEqual(new Set([58]));
+            }
+        }
+    });
+
     it('shows a box without capability lines when the list is empty', () => {
         const { text } = buildStartupBanner({ ...baseInput, capabilities: [] });
 
@@ -263,6 +293,37 @@ describe('logStartupBanner()', () => {
 
         expect(info).toHaveBeenCalledWith('Manage your Vendure Platform plan: https://console.vendure.io');
         expect(written.join('')).not.toContain('╭');
+    });
+
+    it('does not throw when reading the project link file throws', () => {
+        vi.mocked(fs.existsSync).mockImplementation(() => {
+            throw new Error('EACCES');
+        });
+        Logger.useLogger(new DefaultLogger());
+
+        expect(() => logStartupBanner('server')).not.toThrow();
+        expect(written).toEqual([]);
+    });
+
+    it('does not throw when a snapshot entry has no summary', () => {
+        const promoted = new Set(
+            platformPromotionSnapshot.navItems.filter(item => item.promoted).map(item => item.capability),
+        );
+        const originals = platformPromotionSnapshot.capabilities.map(c => c.summary);
+        platformPromotionSnapshot.capabilities.forEach(c => {
+            if (promoted.has(c.key)) {
+                (c as { summary?: string }).summary = undefined;
+            }
+        });
+        Logger.useLogger(new DefaultLogger());
+
+        try {
+            expect(() => logStartupBanner('server')).not.toThrow();
+        } finally {
+            platformPromotionSnapshot.capabilities.forEach((c, i) => {
+                c.summary = originals[i];
+            });
+        }
     });
 
     it('prints nothing when the log level hides info messages', () => {
