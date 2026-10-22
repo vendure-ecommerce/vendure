@@ -4594,6 +4594,12 @@
                   "lastModified": "2026-07-29T16:21:34+02:00"
                 },
                 {
+                  "title": "PlatformPromotion",
+                  "slug": "platform-promotion",
+                  "file": "docs/reference/dashboard/extensions-api/platform-promotion.mdx",
+                  "lastModified": "2026-10-19T19:05:00Z"
+                },
+                {
                   "title": "RefundDestinations",
                   "slug": "refund-destinations",
                   "file": "docs/reference/dashboard/extensions-api/refund-destinations.mdx",
