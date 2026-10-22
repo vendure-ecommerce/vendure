@@ -14,7 +14,8 @@
     "type": "commonjs",
     "scripts": {
         "build": "rimraf dist && tsc -p ./tsconfig.build.json",
-        "watch": "tsc -p ./tsconfig.build.json --watch"
+        "watch": "tsc -p ./tsconfig.build.json --watch",
+        "test": "vitest --config vitest.config.mts --run"
     },
     "publishConfig": {
         "access": "public"
