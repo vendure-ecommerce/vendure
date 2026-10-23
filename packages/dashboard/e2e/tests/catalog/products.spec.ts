@@ -183,7 +183,7 @@ test.describe('Product detail features', () => {
         await expect(page.getByTestId('dt-column-settings-trigger')).toBeVisible();
     });
 
-    // #5619 — enabling the SKU column in the product's variants table should show each variant's SKU
+    // #5619 — the SKU column of the product's variants table shows each variant's SKU
     test('should show variant SKUs in the embedded variants table SKU column', async ({ page }) => {
         const client = new VendureAdminClient(page);
         await client.login();
@@ -202,14 +202,17 @@ test.describe('Product detail features', () => {
             const variantsTable = page.locator('table').filter({ hasText: 'Small variant' });
             await expect(variantsTable).toBeVisible({ timeout: 10_000 });
 
-            // SKU is hidden by default. Column visibility is saved per user, so it can be
-            // visible already on a retry; only toggle it when it is hidden.
+            // Column visibility is saved per user, so reset it to the defaults (SKU hidden)
+            const columnSettingsTrigger = page.getByTestId('dt-column-settings-trigger');
             const skuHeader = variantsTable.locator('thead th').filter({ hasText: /sku/i });
-            if ((await skuHeader.count()) === 0) {
-                await page.getByTestId('dt-column-settings-trigger').click();
-                await page.getByRole('menuitemcheckbox', { name: /sku/i }).click();
-                await page.keyboard.press('Escape');
-            }
+            await columnSettingsTrigger.click();
+            await page.getByRole('menuitem', { name: 'Reset' }).click();
+            await page.keyboard.press('Escape');
+            await expect(skuHeader).toHaveCount(0);
+
+            await columnSettingsTrigger.click();
+            await page.getByRole('menuitemcheckbox', { name: /sku/i }).click();
+            await page.keyboard.press('Escape');
 
             await expect(skuHeader).toBeVisible();
             await expect(
@@ -218,10 +221,11 @@ test.describe('Product detail features', () => {
             await expect(
                 variantsTable.locator('tbody tr').filter({ hasText: 'Large variant' }),
             ).toContainText(largeSku);
-        } finally {
+
             // Restore the default columns so other product detail tests are unaffected
-            await page.getByTestId('dt-column-settings-trigger').click();
+            await columnSettingsTrigger.click();
             await page.getByRole('menuitem', { name: 'Reset' }).click();
+        } finally {
             await cleanupVariantEditorProduct(client, productId, optionGroupId);
         }
     });

@@ -529,9 +529,9 @@ export function PaginatedListDataTable<
         includeSelectionColumn,
     });
     const columnVisibility = getColumnVisibility(columns, defaultColumnVisibility, customFieldColumnNames);
-    // The DataTable owns the live column visibility state (the user can toggle columns
-    // via the column settings). The query must select the fields of the columns that are
-    // actually displayed, otherwise a column the user has just shown renders empty cells.
+    // DataTable owns column visibility and reports it via onColumnVisibilityChange. Mirror it
+    // here so the list query selects every visible column, including when the caller does
+    // not persist visibility.
     const [liveColumnVisibility, setLiveColumnVisibility] = React.useState<VisibilityState>();
     const handleColumnVisibilityChange = (table: Table<any>, visibility: VisibilityState) => {
         setLiveColumnVisibility(visibility);
