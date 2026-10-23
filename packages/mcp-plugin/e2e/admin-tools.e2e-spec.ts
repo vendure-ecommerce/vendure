@@ -1343,6 +1343,57 @@ describe('MCP built-in admin tools (direct mode)', () => {
         });
     });
 
+    // #5652 — on a database with row locks, concurrent adjustments must each apply their delta rather
+    // than overwrite one another with a stock figure read before the other committed.
+    it('adjust_stock applies every delta of concurrent calls', async () => {
+        const token = await adminAccessToken();
+        const stockOnHand = async () =>
+            (
+                await connection
+                    .getRepository(adminCtx, StockLevel)
+                    .findOneOrFail({ where: { productVariantId: variantId, stockLocationId } })
+            ).stockOnHand;
+        const before = await stockOnHand();
+        const calls = 5;
+
+        try {
+            const responses = await Promise.all(
+                Array.from({ length: calls }, (_, i) =>
+                    postMcp(
+                        baseUrl(),
+                        'admin',
+                        callTool(
+                            'adjust_stock',
+                            { variantId, locationId: stockLocationId, delta: 1, confirm: true },
+                            i + 1,
+                        ),
+                        { token },
+                    ),
+                ),
+            );
+
+            for (const response of responses) {
+                expect(response.body.result.isError).toBeUndefined();
+            }
+            expect(await stockOnHand()).toBe(before + calls);
+        } finally {
+            // Put the stock back, so the adjustments do not leak into later tests.
+            const delta = before - (await stockOnHand());
+            if (delta !== 0) {
+                await postMcp(
+                    baseUrl(),
+                    'admin',
+                    callTool(
+                        'adjust_stock',
+                        { variantId, locationId: stockLocationId, delta, confirm: true },
+                        calls + 1,
+                    ),
+                    { token },
+                );
+            }
+        }
+    });
+
     it('get_stock_levels refuses a variant that is not in the active channel', async () => {
         const token = await adminAccessToken();
         // The seeded variant belongs to the default channel only, so once this grant is switched to the

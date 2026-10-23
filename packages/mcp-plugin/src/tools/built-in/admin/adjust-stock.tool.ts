@@ -56,15 +56,17 @@ export class AdjustStockTool implements McpToolHandler<AdjustStockInput> {
     ) {}
 
     async execute(ctx: RequestContext, input: AdjustStockInput) {
-        // The stock read below only sees locations in the active channel, but the write below does
-        // not, so we check the location here to avoid silently overwriting another channel's stock.
+        // The stock read and write below are not limited to the active channel, so we check the
+        // location here to avoid silently overwriting another channel's stock.
         const location = await this.stockLocationService.findOne(ctx, input.locationId);
         if (!location) {
             throw new UserInputError(
                 `Stock location ${input.locationId} is not available in the active channel.`,
             );
         }
-        const levels = await this.stockLevelService.getStockLevelsForVariant(ctx, input.variantId);
+        // The write sets an absolute stockOnHand, so the read must hold the row lock until the tool's
+        // transaction commits. Otherwise a concurrent adjustment would be overwritten. See #5652
+        const levels = await this.stockLevelService.getLockedStockLevelsForVariant(ctx, input.variantId);
         const current = levels.find(level => idsAreEqual(level.stockLocationId, input.locationId));
         const stockOnHand = (current?.stockOnHand ?? 0) + input.delta;
         if (stockOnHand < GRAPHQL_INT_MIN || stockOnHand > GRAPHQL_INT_MAX) {

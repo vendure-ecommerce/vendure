@@ -8,7 +8,10 @@ const serializer = { stockLevel: (level: unknown) => level } as any;
 function build(location: unknown, levels: Array<{ stockLocationId: number; stockOnHand: number }>) {
     const update = vi.fn().mockResolvedValue([]);
     const productVariantService = { update } as any;
-    const stockLevelService = { getStockLevelsForVariant: () => Promise.resolve(levels) } as any;
+    const stockLevelService = {
+        getLockedStockLevelsForVariant: () => Promise.resolve(levels),
+        getStockLevelsForVariant: () => Promise.resolve(levels),
+    } as any;
     const stockLocationService = { findOne: () => Promise.resolve(location) } as any;
     const tool = new AdjustStockTool(
         productVariantService,
