@@ -444,8 +444,16 @@ export class McpToolSerializerService {
                 continue;
             }
             const value = values[config.name] ?? null;
-            readable[config.name] =
-                config.secret === true && value != null ? REDACTED_SECRET_PLACEHOLDER : value;
+            if (config.secret === true && value != null) {
+                readable[config.name] = REDACTED_SECRET_PLACEHOLDER;
+            } else if (config.type === 'datetime') {
+                // ISO strings, like the other dates of a tool result.
+                readable[config.name] = Array.isArray(value)
+                    ? value.map((date: Date) => this.isoDate(date))
+                    : this.isoDate(value as Date | null);
+            } else {
+                readable[config.name] = value;
+            }
         }
         return readable;
     }

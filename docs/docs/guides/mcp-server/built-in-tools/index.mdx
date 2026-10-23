@@ -198,6 +198,7 @@ payment method quotes. It holds the custom fields the caller may read, by the sa
   toolset, `public: true` makes it visible to everyone, as in the Shop API.
 - A `readonly` field is returned like any other. Only writing it is refused.
 - A localized field (`localeString` or `localeText`) holds the value in the language of the request.
+- A `datetime` field is an ISO 8601 string in UTC, like the other dates of a tool result.
 - A field that has no value is returned as `null`.
 
 Two rules differ from the GraphQL API, because the output is read by a language model:
