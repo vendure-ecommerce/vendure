@@ -1,4 +1,4 @@
-import { expect, type Page, test } from '@playwright/test';
+import { type Browser, expect, type Page, test } from '@playwright/test';
 
 import {
     LS_KEY_SESSION_TOKEN,
@@ -35,6 +35,193 @@ test.describe('Login', () => {
     test('should redirect to login when accessing protected route unauthenticated', async ({ page }) => {
         await page.goto('/products');
         await expect(page).toHaveURL(/\/login/);
+    });
+});
+
+// #5617 — an administrator without access to any channel cannot use the Dashboard
+test.describe('Administrator without access to any channel', () => {
+    const password = 'test-password';
+
+    async function createAdministrator(client: VendureAdminClient, channelIds?: string[]) {
+        const suffix = `${Date.now()}-${Math.round(Math.random() * 1000)}`;
+        const emailAddress = `no-channel-${suffix}@test.com`;
+        const { createRole } = await client.gql(
+            `mutation ($input: CreateRoleInput!) { createRole(input: $input) { id } }`,
+            {
+                input: {
+                    code: `no-channel-${suffix}`,
+                    description: 'Role for an administrator without channels',
+                    permissions: ['ReadCatalog'],
+                    channelIds,
+                },
+            },
+        );
+        const { createAdministrator: administrator } = await client.gql(
+            `mutation ($input: CreateAdministratorInput!) { createAdministrator(input: $input) { id } }`,
+            {
+                input: {
+                    firstName: 'No',
+                    lastName: 'Channel',
+                    emailAddress,
+                    password,
+                    roleIds: [createRole.id],
+                },
+            },
+        );
+        return {
+            emailAddress,
+            administratorId: administrator.id as string,
+            roleId: createRole.id as string,
+        };
+    }
+
+    // Removes the test data, so that later tests which reuse the e2e database do not see it
+    async function cleanupAdministrator(
+        client: VendureAdminClient,
+        { administratorId, roleId }: { administratorId: string; roleId: string },
+    ) {
+        await client.gql(`mutation ($ids: [ID!]!) { deleteAdministrators(ids: $ids) { result } }`, {
+            ids: [administratorId],
+        });
+        await client.gql(`mutation ($ids: [ID!]!) { deleteRoles(ids: $ids) { result } }`, { ids: [roleId] });
+    }
+
+    // A fresh browser context, so that the page is not signed in as the SuperAdmin
+    async function newLoginPage(browser: Browser) {
+        const context = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+        const page = await context.newPage();
+        return { context, page, loginPage: new LoginPage(page) };
+    }
+
+    // Fails the first current-user request after the login, as a network error would
+    async function failFirstCurrentUserRefetch(page: Page) {
+        const state = { loginSent: false, failedRefetch: false };
+        await page.route('**/admin-api**', async route => {
+            const operation = route.request().postDataJSON()?.query ?? '';
+            if (operation.includes('mutation Login')) {
+                state.loginSent = true;
+            } else if (
+                state.loginSent &&
+                !state.failedRefetch &&
+                operation.includes('query CurrentUserInformation')
+            ) {
+                state.failedRefetch = true;
+                return route.abort();
+            }
+            return route.continue();
+        });
+        return state;
+    }
+
+    test('shows an error and the login form after logging in', async ({ page, browser }) => {
+        const client = new VendureAdminClient(page);
+        await client.login();
+        const administrator = await createAdministrator(client, []);
+        const { context, page: adminPage, loginPage } = await newLoginPage(browser);
+        try {
+            await loginPage.goto();
+            await loginPage.login(administrator.emailAddress, password);
+
+            await expect(
+                adminPage
+                    .locator('[data-sonner-toast]')
+                    .filter({ hasText: 'You do not have access to any channel' }),
+            ).toBeVisible({ timeout: 10_000 });
+            await loginPage.expectVisible();
+
+            // The session was ended, so a reload still shows the login form
+            await adminPage.reload();
+            await loginPage.expectVisible();
+        } finally {
+            await context.close();
+            await cleanupAdministrator(client, administrator);
+        }
+    });
+
+    test('shows the login form after a reload when access to all channels was removed', async ({
+        page,
+        browser,
+    }) => {
+        const client = new VendureAdminClient(page);
+        await client.login();
+        const administrator = await createAdministrator(client);
+        const { context, page: adminPage, loginPage } = await newLoginPage(browser);
+        try {
+            await loginPage.goto();
+            await loginPage.login(administrator.emailAddress, password);
+            await expect(adminPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
+
+            const { activeChannel } = await client.gql(`query { activeChannel { id } }`);
+            await client.gql(`mutation ($input: UpdateRoleInput!) { updateRole(input: $input) { id } }`, {
+                input: { id: administrator.roleId, channelIds: [] },
+            });
+            await adminPage.reload();
+
+            await expect(
+                adminPage
+                    .locator('[data-sonner-toast]')
+                    .filter({ hasText: 'You do not have access to any channel' }),
+            ).toBeVisible({ timeout: 10_000 });
+            await loginPage.expectVisible();
+
+            // The session was ended, so it stays signed out even once the access is given back
+            await client.gql(`mutation ($input: UpdateRoleInput!) { updateRole(input: $input) { id } }`, {
+                input: { id: administrator.roleId, channelIds: [activeChannel.id] },
+            });
+            await adminPage.reload();
+            await loginPage.expectVisible();
+            await expect(adminPage).toHaveURL(/\/login/);
+        } finally {
+            await context.close();
+            await cleanupAdministrator(client, administrator);
+        }
+    });
+
+    test('does not report missing channel access when the current user cannot be loaded', async ({
+        browser,
+    }) => {
+        const { context, page: adminPage, loginPage } = await newLoginPage(browser);
+        try {
+            const refetch = await failFirstCurrentUserRefetch(adminPage);
+            await loginPage.goto();
+            await loginPage.login('superadmin', 'superadmin');
+
+            await expect(adminPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
+            expect(refetch.failedRefetch).toBe(true);
+            await expect(
+                adminPage
+                    .locator('[data-sonner-toast]')
+                    .filter({ hasText: 'You do not have access to any channel' }),
+            ).toHaveCount(0);
+        } finally {
+            await context.close();
+        }
+    });
+
+    test('shows an error and the login form when the current user cannot be loaded after logging in', async ({
+        page,
+        browser,
+    }) => {
+        const client = new VendureAdminClient(page);
+        await client.login();
+        const administrator = await createAdministrator(client, []);
+        const { context, page: adminPage, loginPage } = await newLoginPage(browser);
+        try {
+            const refetch = await failFirstCurrentUserRefetch(adminPage);
+            await loginPage.goto();
+            await loginPage.login(administrator.emailAddress, password);
+
+            await expect(
+                adminPage
+                    .locator('[data-sonner-toast]')
+                    .filter({ hasText: 'You do not have access to any channel' }),
+            ).toBeVisible({ timeout: 10_000 });
+            await loginPage.expectVisible();
+            expect(refetch.failedRefetch).toBe(true);
+        } finally {
+            await context.close();
+            await cleanupAdministrator(client, administrator);
+        }
     });
 });
 
