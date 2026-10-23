@@ -23,7 +23,10 @@ const DEFAULT_SAFETY_INTERVAL_MS = 5 * 60 * 1000;
 const MAX_RECONNECT_DELAY_MS = 30_000;
 const INITIAL_RECONNECT_DELAY_MS = 1_000;
 const PROBE_TIMEOUT_MS = 3_000;
-/** Not a valid queue name in practice, so `wake()` finds no waiters for it. */
+/**
+ * Marks the listener's test notifications, which the notification handler skips so that
+ * they are not taken for a queue name.
+ */
 const PROBE_PREFIX = '__vendure_job_probe__:';
 /**
  * How long a retry is still tracked after its backoff has elapsed. `SqlJobQueueStrategy`
@@ -86,8 +89,8 @@ export interface PgNotifyJobQueueStrategyConfig extends PollingJobQueueStrategyC
      * listener at the direct database host, or at a pooler port in session mode.
      *
      * On connect, the listener sends itself a test notification. If it does not arrive
-     * within 3 seconds, the strategy logs a warning and the queues poll at `pollInterval`
-     * until the process restarts.
+     * within 3 seconds, the strategy logs a warning and the queues poll at `pollInterval`,
+     * backing off up to `maxIdlePollInterval` if it is set, until the process restarts.
      *
      * @default undefined
      */
@@ -124,7 +127,11 @@ export interface PgNotifyJobQueueStrategyConfig extends PollingJobQueueStrategyC
  * While the listener is not connected, queues poll at `pollInterval`, backing off up to
  * `maxIdlePollInterval` if it is set.
  *
- * Each `add()` makes one extra database round trip to send the notification.
+ * Each `add()` makes one extra database round trip to send the notification. Postgres
+ * also commits transactions which sent a notification one at a time, across the whole
+ * database. A transaction which adds a job, such as placing an order, therefore waits
+ * for any other such transaction to finish committing. Under a high rate of concurrent
+ * writes which add jobs, this lowers throughput.
  *
  * @example
  * ```ts
@@ -192,6 +199,15 @@ export class PgNotifyJobQueueStrategy extends SqlJobQueueStrategy {
 
     init(injector: Injector) {
         super.init(injector);
+        // `destroy()` leaves this state behind, and the same instance can be bootstrapped
+        // again, for example when the server restarts in a test.
+        this.shuttingDown = false;
+        this.listenerStarted = false;
+        this.reconnectDelay = INITIAL_RECONNECT_DELAY_MS;
+        this.waiters.clear();
+        this.stopping.clear();
+        this.pendingWakes.clear();
+        this.retries.clear();
         this.txConnection = injector.get(TransactionalConnection);
         this.dataSource = this.txConnection.rawConnection;
         this.notifySupported = getDatabaseType(this.dataSource) === 'postgres';
@@ -208,28 +224,38 @@ export class PgNotifyJobQueueStrategy extends SqlJobQueueStrategy {
     }
 
     /**
-     * Queries the database once. If there is no job, parks until a notification or a
-     * timeout, then queries once more. A job found by the first query is returned
+     * Queries the database. If there is no job, parks until a notification or a timeout,
+     * then queries again, until a job is found. A job found by the first query is returned
      * immediately, so a backlog drains at the same speed as with polling.
+     *
+     * Returns no job only while the listener is down or the queue is stopping. Returning
+     * no job after every wake-up would make `ActiveQueue` back off towards
+     * `maxIdlePollInterval`, and a notification arriving during that delay would wait
+     * for it.
      */
     async next(queueName: string): Promise<Job | undefined> {
-        const job = await super.next(queueName);
-        if (job || !this.notifySupported) {
-            return job;
+        for (;;) {
+            // A notification sent before `LISTEN` ran is never delivered. The query is only
+            // known to have seen every job which was not notified if the same listener was
+            // connected before and after it.
+            const listener = this.listener;
+            const job = await super.next(queueName);
+            if (job || !this.notifySupported) {
+                return job;
+            }
+            if (!listener || listener !== this.listener) {
+                // Until the listener is connected, and whenever it is down, a notification
+                // would go unheard, so the queue polls instead of parking.
+                this.ensureListener();
+                return undefined;
+            }
+            await this.waitForWork(queueName);
+            if (this.shuttingDown || this.stopping.has(queueName)) {
+                // `ActiveQueue.stop()` has already stopped tracking jobs, so a job claimed
+                // now would be left `RUNNING`.
+                return undefined;
+            }
         }
-        if (!this.listener) {
-            // Until the listener is connected, and whenever it is down, a notification
-            // would go unheard, so the queue polls at `pollInterval` instead of parking.
-            this.ensureListener();
-            return undefined;
-        }
-        await this.waitForWork(queueName);
-        if (this.shuttingDown || this.stopping.has(queueName)) {
-            // `ActiveQueue.stop()` has already stopped tracking jobs, so a job claimed now
-            // would be left `RUNNING`.
-            return undefined;
-        }
-        return super.next(queueName);
     }
 
     async update(job: Job<any>): Promise<void> {
@@ -366,7 +392,8 @@ export class PgNotifyJobQueueStrategy extends SqlJobQueueStrategy {
 
     /**
      * The safety interval, or less if a job this process set to `RETRYING` on this queue
-     * becomes due sooner.
+     * becomes due sooner. A retry which is already due, but which the last query did not
+     * find, is checked again every `pollInterval` until its grace period ends.
      */
     private parkTimeout(queueName: string): number {
         const now = Date.now();
@@ -376,10 +403,18 @@ export class PgNotifyJobQueueStrategy extends SqlJobQueueStrategy {
                 // Picked up by another worker, or not due by the database's clock either.
                 this.retries.delete(id);
             } else if (retry.queueName === queueName) {
-                timeout = Math.min(timeout, Math.max(retry.dueAt - now, MIN_RETRY_WAIT_MS));
+                const wait =
+                    retry.dueAt > now
+                        ? Math.max(retry.dueAt - now, MIN_RETRY_WAIT_MS)
+                        : this.queuePollInterval(queueName);
+                timeout = Math.min(timeout, wait);
             }
         }
         return timeout;
+    }
+
+    private queuePollInterval(queueName: string): number {
+        return typeof this.pollInterval === 'function' ? this.pollInterval(queueName) : this.pollInterval;
     }
 
     /**
@@ -472,7 +507,16 @@ export class PgNotifyJobQueueStrategy extends SqlJobQueueStrategy {
         try {
             await client.connect();
             await client.query(`LISTEN ${CHANNEL}`);
-            if (!(await this.probe(client))) {
+            const probe = await this.probe(client);
+            if (probe === 'failed') {
+                // The test notification could not be sent, or the listener dropped while
+                // waiting for it. Neither says anything about a pooler, so try again.
+                void client.end().catch(() => undefined);
+                Logger.warn('Job queue listener could not complete its test notification', loggerCtx);
+                this.scheduleReconnect();
+                return;
+            }
+            if (probe === 'timeout') {
                 // `this.listener` is not yet set, so ending the client does not trigger
                 // `onLost()` and a reconnect.
                 void client.end().catch(() => undefined);
@@ -498,25 +542,36 @@ export class PgNotifyJobQueueStrategy extends SqlJobQueueStrategy {
      * Sends a notification through the regular pool and checks that the listener receives
      * it. A pooler in transaction mode accepts `LISTEN` without error but never delivers
      * anything, which would otherwise leave every job waiting for the safety interval.
+     *
+     * Resolves to `'timeout'` only if the notification was sent and did not arrive, and
+     * to `'failed'` if it could not be sent or the listener connection dropped.
      */
-    private probe(client: Client): Promise<boolean> {
+    private probe(client: Client): Promise<'received' | 'timeout' | 'failed'> {
         const payload = PROBE_PREFIX + randomUUID();
         return new Promise(resolve => {
-            const finish = (received: boolean) => {
+            let settled = false;
+            const finish = (result: 'received' | 'timeout' | 'failed') => {
+                if (settled) {
+                    return;
+                }
+                settled = true;
                 clearTimeout(timer);
                 client.off('notification', onNotification);
-                resolve(received);
+                client.off('error', onFailed);
+                client.off('end', onFailed);
+                resolve(result);
             };
             const onNotification = (message: Notification) => {
                 if (message.payload === payload) {
-                    finish(true);
+                    finish('received');
                 }
             };
-            const timer = setTimeout(() => finish(false), PROBE_TIMEOUT_MS);
+            const onFailed = () => finish('failed');
+            const timer = setTimeout(() => finish('timeout'), PROBE_TIMEOUT_MS);
             client.on('notification', onNotification);
-            this.dataSource?.manager
-                .query('SELECT pg_notify($1, $2)', [CHANNEL, payload])
-                .catch(() => finish(false));
+            client.on('error', onFailed);
+            client.on('end', onFailed);
+            this.dataSource?.manager.query('SELECT pg_notify($1, $2)', [CHANNEL, payload]).catch(onFailed);
         });
     }
 

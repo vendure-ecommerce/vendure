@@ -185,7 +185,8 @@ describe('PgNotifyJobQueueStrategy', () => {
             const pending = strategy.next('video');
 
             expect(await settledWithin(pending, 50)).toBe('parked');
-            expect(await settledWithin(pending, 200)).toBeUndefined();
+            expect(next).toHaveBeenCalledTimes(1);
+            await settledWithin(pending, 200);
             expect(next).toHaveBeenCalledTimes(2);
         });
 
@@ -193,7 +194,7 @@ describe('PgNotifyJobQueueStrategy', () => {
             strategy = new PgNotifyJobQueueStrategy({ safetyIntervalMs: 60_000, backoffStrategy: () => 100 });
             (strategy as any).connectListener = vi.fn().mockResolvedValue(undefined);
             vi.spyOn(SqlJobQueueStrategy.prototype, 'update').mockResolvedValue(undefined);
-            vi.spyOn(SqlJobQueueStrategy.prototype, 'next').mockResolvedValue(undefined);
+            const next = vi.spyOn(SqlJobQueueStrategy.prototype, 'next').mockResolvedValue(undefined);
             initPostgres();
             const pending = strategy.next('video');
             expect(await settledWithin(pending, 20)).toBe('parked');
@@ -204,7 +205,53 @@ describe('PgNotifyJobQueueStrategy', () => {
             job.fail(new Error('boom'));
             await strategy.update(job);
 
-            expect(await settledWithin(pending, 20)).toBeUndefined();
+            // Released immediately, then woken again once the 100ms backoff is due.
+            await settledWithin(pending, 20);
+            expect(next).toHaveBeenCalledTimes(2);
+            await settledWithin(pending, 200);
+            expect(next).toHaveBeenCalledTimes(3);
+        });
+
+        it('parks again when a wake-up finds no job, so ActiveQueue does not back off', async () => {
+            const job = new Job({ id: 1, queueName: 'video', data: {} });
+            const next = vi
+                .spyOn(SqlJobQueueStrategy.prototype, 'next')
+                .mockResolvedValueOnce(undefined)
+                .mockResolvedValueOnce(undefined)
+                .mockResolvedValueOnce(job as any);
+            initPostgres();
+
+            const pending = strategy.next('video');
+            await settledWithin(pending, 10);
+            // Another worker claimed the job this notification was for.
+            (strategy as any).wake('video');
+            expect(await settledWithin(pending, 20)).toBe('parked');
+            expect(next).toHaveBeenCalledTimes(2);
+
+            (strategy as any).wake('video');
+            expect(await settledWithin(pending, 20)).toBe(job);
+        });
+
+        it('does not park when the listener connected during the query, which may have missed a notification', async () => {
+            vi.spyOn(SqlJobQueueStrategy.prototype, 'next').mockImplementation(async () => {
+                (strategy as any).listener = { end: () => Promise.resolve() };
+                return undefined;
+            });
+            strategy.init(mockInjector('postgres'));
+
+            expect(await settledWithin(strategy.next('video'), 50)).toBeUndefined();
+        });
+
+        it('connects the listener again when the same instance is bootstrapped after destroy()', async () => {
+            vi.spyOn(SqlJobQueueStrategy.prototype, 'next').mockResolvedValue(undefined);
+            strategy.init(mockInjector('postgres'));
+            await strategy.next('video');
+            strategy.destroy();
+
+            strategy.init(mockInjector('postgres'));
+            await strategy.next('video');
+
+            expect((strategy as any).connectListener).toHaveBeenCalledTimes(2);
         });
 
         it('builds the listener config from replication master and extra, like TypeORM', () => {
@@ -256,7 +303,7 @@ describe('PgNotifyJobQueueStrategy', () => {
                 return Promise.resolve();
             });
 
-            expect(await (strategy as any).probe(client)).toBe(true);
+            expect(await (strategy as any).probe(client)).toBe('received');
         });
 
         it('rejects a listener behind a transaction-mode pooler, which never receives the probe', async () => {
@@ -266,8 +313,24 @@ describe('PgNotifyJobQueueStrategy', () => {
             const result = (strategy as any).probe(new EventEmitter());
             await vi.advanceTimersByTimeAsync(3_000);
 
-            expect(await result).toBe(false);
+            expect(await result).toBe('timeout');
             vi.useRealTimers();
+        });
+
+        it('does not take a probe which could not be sent for a pooler', async () => {
+            initPostgres();
+            manager.query.mockRejectedValue(new Error('timeout exceeded when trying to connect'));
+
+            expect(await (strategy as any).probe(new EventEmitter())).toBe('failed');
+        });
+
+        it('does not take a listener which dropped during the probe for a pooler', async () => {
+            initPostgres();
+            const client = new EventEmitter();
+            const result = (strategy as any).probe(client);
+            client.emit('error', new Error('Connection terminated unexpectedly'));
+
+            expect(await result).toBe('failed');
         });
     });
 });
