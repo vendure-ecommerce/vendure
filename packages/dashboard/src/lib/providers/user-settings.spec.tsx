@@ -3,6 +3,7 @@ import { act, useContext } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { SETTINGS_STORE_KEY_USER_SETTINGS } from '../storage-keys.js';
 import { UserSettingsContext, type UserSettingsContextType, UserSettingsProvider } from './user-settings.js';
 
 const apiMock = vi.hoisted(() => ({ query: vi.fn(), mutate: vi.fn() }));
@@ -104,8 +105,11 @@ describe('UserSettingsProvider', () => {
         expect(context.settingsReady).toBe(true);
         expect(context.settings.displayLanguage).toBe('de');
         expect(context.settings.tableSettings).toEqual({ products: { pageSize: 37 } });
+        // The stored value has no active channel, so it replaces the one which the login set
+        expect(context.settings.activeChannelId).toBe('');
         expect(apiMock.mutate).not.toHaveBeenCalled();
 
+        // Stands in for the "Set active channel if needed" effect in AuthProvider
         await act(async () => context.setActiveChannelId('1'));
         await flush();
         expect(savedValues()).toEqual([
@@ -115,6 +119,24 @@ describe('UserSettingsProvider', () => {
                 tableSettings: { products: { pageSize: 37 } },
             }),
         ]);
+    });
+
+    it('uses the local settings when the read after login finds no stored value', async () => {
+        apiMock.query.mockRejectedValue(forbiddenError());
+        await render();
+        expect(context.settingsReady).toBe(false);
+
+        apiMock.query.mockResolvedValue({ getSettingsStoreValue: null });
+        await act(async () => queryClient.invalidateQueries());
+        await flush();
+
+        expect(context.settingsReady).toBe(true);
+        expect(apiMock.mutate).not.toHaveBeenCalled();
+
+        const localSettings = context.settings;
+        await act(async () => context.setTheme('dark'));
+        await flush();
+        expect(savedValues()).toEqual([{ ...localSettings, theme: 'dark' }]);
     });
 
     it('becomes ready on a failed read without saving the local copy', async () => {
@@ -155,7 +177,7 @@ describe('UserSettingsProvider', () => {
     it('becomes ready when the settings store field is not registered', async () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
         apiMock.query.mockRejectedValue(
-            graphQLError('Settings store field not registered: vendure.dashboard.userSettings'),
+            graphQLError(`Settings store field not registered: ${SETTINGS_STORE_KEY_USER_SETTINGS}`),
         );
         await render();
 
