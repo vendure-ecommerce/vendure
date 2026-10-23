@@ -11,6 +11,8 @@ import {
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
+import { Client } from 'pg';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -110,21 +112,35 @@ describe.skipIf(process.env.DB !== 'postgres')('PgNotifyJobQueueStrategy', () =>
         await sleep(POLL_INTERVAL * 1.5);
         const connection = server.app.get(TransactionalConnection);
         const ctx = await server.app.get(RequestContextService).create({ apiType: 'admin' });
+        const { host, port, username, password, database } = connection.rawConnection
+            .options as PostgresConnectionOptions;
+        const observer = new Client({ host, port, user: username, password: password as string, database });
+        const notified: string[] = [];
+        observer.on('notification', message => notified.push(message.payload ?? ''));
+        await observer.connect();
+        await observer.query('LISTEN vendure_job');
 
-        await connection
-            .withTransaction(ctx, async txCtx => {
-                await PgNotifyTestPlugin.queue.add({ id: 'rolled-back' }, { ctx: txCtx });
-                throw new Error('roll back');
-            })
-            .catch(() => undefined);
-        const addedAt = Date.now();
-        await connection.withTransaction(ctx, txCtx =>
-            PgNotifyTestPlugin.queue.add({ id: 'committed' }, { ctx: txCtx }),
-        );
+        try {
+            await connection
+                .withTransaction(ctx, async txCtx => {
+                    await PgNotifyTestPlugin.queue.add({ id: 'rolled-back' }, { ctx: txCtx });
+                    throw new Error('roll back');
+                })
+                .catch(() => undefined);
+            await sleep(300);
+            expect(notified).not.toContain('pg-notify-test');
 
-        const [startedAt] = await waitForAttempts('committed', 1, 5_000);
-        expect(startedAt - addedAt).toBeLessThan(700);
-        expect(PgNotifyTestPlugin.attempts.has('rolled-back')).toBe(false);
+            const addedAt = Date.now();
+            await connection.withTransaction(ctx, txCtx =>
+                PgNotifyTestPlugin.queue.add({ id: 'committed' }, { ctx: txCtx }),
+            );
+
+            const [startedAt] = await waitForAttempts('committed', 1, 5_000);
+            expect(startedAt - addedAt).toBeLessThan(700);
+            expect(notified).toContain('pg-notify-test');
+        } finally {
+            await observer.end();
+        }
     });
 });
 
