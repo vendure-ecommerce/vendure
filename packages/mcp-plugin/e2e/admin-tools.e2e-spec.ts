@@ -1394,7 +1394,7 @@ describe('MCP built-in admin tools (direct mode)', () => {
             expect((await stockLevel()).stockOnHand).toBe(before.stockOnHand + 2);
         } finally {
             // Undo the adjustment, so the changed stock does not leak into later tests.
-            if (!response.body.result.isError) {
+            if (response.body.result && !response.body.result.isError) {
                 await postMcp(
                     baseUrl(),
                     'admin',
@@ -1412,15 +1412,13 @@ describe('MCP built-in admin tools (direct mode)', () => {
     // #5626 — an entity id may be sent as a string, as MCP clients and models often do
     it('update_variant accepts the id as a string', async () => {
         const token = await adminAccessToken();
-        const setEnabled = (enabled: boolean, requestId: number) =>
-            postMcp(
+        try {
+            const response = await postMcp(
                 baseUrl(),
                 'admin',
-                callTool('update_variant', { id: String(variantId), input: { enabled } }, requestId),
+                callTool('update_variant', { id: String(variantId), input: { enabled: false } }, 1),
                 { token },
             );
-        try {
-            const response = await setEnabled(false, 1);
 
             expect(response.body.result.isError).toBeUndefined();
             const variant = await connection
@@ -1428,8 +1426,15 @@ describe('MCP built-in admin tools (direct mode)', () => {
                 .findOneOrFail({ where: { id: variantId } });
             expect(variant.enabled).toBe(false);
         } finally {
-            // Put the variant back, so the disabled state does not leak into later tests.
-            await setEnabled(true, 2);
+            // Put the variant back, so the disabled state does not leak into later tests. The numeric id
+            // works even when the string id does not.
+            const restored = await postMcp(
+                baseUrl(),
+                'admin',
+                callTool('update_variant', { id: variantId, input: { enabled: true } }, 2),
+                { token },
+            );
+            expect(restored.body.result?.isError).toBeUndefined();
         }
     });
 
