@@ -4168,7 +4168,7 @@
               "title": "IdSchema",
               "slug": "id-schema",
               "file": "docs/reference/mcp-sdk/id-schema.mdx",
-              "lastModified": "2026-10-01T19:26:07+02:00"
+              "lastModified": "2026-10-23T13:51:18Z"
             },
             {
               "title": "Int32Schema",
@@ -4198,7 +4198,7 @@
               "title": "MAX_ID_LIST_LENGTH",
               "slug": "max_id_list_length",
               "file": "docs/reference/mcp-sdk/max_id_list_length.mdx",
-              "lastModified": "2026-10-01T19:26:07+02:00"
+              "lastModified": "2026-10-23T13:51:18Z"
             },
             {
               "title": "MAX_LIST_PAGE_SIZE",
