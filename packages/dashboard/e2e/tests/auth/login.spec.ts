@@ -1,5 +1,10 @@
 import { type Browser, expect, type Page, test } from '@playwright/test';
 
+import {
+    LS_KEY_SESSION_TOKEN,
+    LS_KEY_USER_SETTINGS,
+    SETTINGS_STORE_KEY_USER_SETTINGS,
+} from '../../../src/lib/storage-keys.js';
 import { LoginPage } from '../../page-objects/login-page.js';
 import { VendureAdminClient } from '../../utils/vendure-admin-client.js';
 
@@ -334,6 +339,106 @@ test.describe('Switching user', () => {
                 .gql(`mutation ($id: ID!) { deleteChannel(id: $id) { result } }`, { id: channelId })
                 .catch(() => {});
         }
+    });
+});
+
+// #5595 — signing in from a signed-out page must not overwrite the stored user settings
+test.describe('Stored user settings on login', () => {
+    const MARKER_TABLE_ID = 'e2e-5595';
+    const markerTableSettings = { pageSize: 37 };
+
+    /**
+     * The e2e server has no DashboardPlugin, so the user settings store is emulated here. Each
+     * request still goes to the server first, so that the server decides whether the session
+     * may read the settings: without a valid session it answers FORBIDDEN, as with the plugin.
+     * The emulated stored value has no `activeChannelId`, so the Dashboard writes the settings
+     * back soon after the login, once it has set the active channel.
+     */
+    async function emulateUserSettingsStore(page: Page) {
+        let storedSettings: Record<string, any> = {
+            displayLanguage: 'en',
+            tableSettings: { [MARKER_TABLE_ID]: markerTableSettings },
+        };
+        const savedValues: Array<Record<string, any>> = [];
+        await page.route('**/admin-api**', async route => {
+            const request = route.request().postDataJSON();
+            const query: string = request?.query ?? '';
+            const isRead =
+                query.includes('GetSettingsStoreValue') &&
+                request.variables?.key === SETTINGS_STORE_KEY_USER_SETTINGS;
+            const isWrite =
+                query.includes('SetSettingsStoreValue') &&
+                request.variables?.input?.key === SETTINGS_STORE_KEY_USER_SETTINGS;
+            if (!isRead && !isWrite) {
+                await route.fallback();
+                return;
+            }
+            const response = await route.fetch();
+            const json = await response.json();
+            if (json.errors?.some((e: any) => e.extensions?.code === 'FORBIDDEN')) {
+                await route.fulfill({ response });
+                return;
+            }
+            if (isWrite) {
+                storedSettings = request.variables.input.value;
+                savedValues.push(storedSettings);
+            }
+            await route.fulfill({
+                response,
+                json: isRead
+                    ? { data: { getSettingsStoreValue: storedSettings } }
+                    : {
+                          data: {
+                              setSettingsStoreValue: {
+                                  key: SETTINGS_STORE_KEY_USER_SETTINGS,
+                                  result: true,
+                                  error: null,
+                              },
+                          },
+                      },
+            });
+        });
+        return savedValues;
+    }
+
+    async function expectStoredSettingsKept(page: Page, savedValues: Array<Record<string, any>>) {
+        // Wait for the write which follows the login, then check that it kept the stored value
+        await expect.poll(() => savedValues.length, { timeout: 15_000 }).toBeGreaterThan(0);
+        for (const value of savedValues) {
+            expect(value.tableSettings?.[MARKER_TABLE_ID]).toEqual(markerTableSettings);
+        }
+        // The stored value is applied in the browser, too
+        const localSettings = await page.evaluate(
+            key => JSON.parse(localStorage.getItem(key) ?? '{}'),
+            LS_KEY_USER_SETTINGS,
+        );
+        expect(localSettings.tableSettings?.[MARKER_TABLE_ID]).toEqual(markerTableSettings);
+    }
+
+    test('keeps the stored settings when signing in from a fresh browser', async ({ page }) => {
+        const savedValues = await emulateUserSettingsStore(page);
+        const loginPage = new LoginPage(page);
+        await loginPage.goto();
+        await loginPage.expectVisible();
+        await loginPage.login('superadmin', 'superadmin');
+        await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+
+        await expectStoredSettingsKept(page, savedValues);
+    });
+
+    test('keeps the stored settings when signing in after the session token expired', async ({ page }) => {
+        const savedValues = await emulateUserSettingsStore(page);
+        const loginPage = new LoginPage(page);
+        await loginPage.goto();
+        // A session token which the server no longer accepts, as after the session expired
+        await page.evaluate(key => localStorage.setItem(key, 'expired-session-token'), LS_KEY_SESSION_TOKEN);
+        await page.goto('/products');
+        await expect(page).toHaveURL(/\/login/);
+        await loginPage.expectVisible();
+        await loginPage.login('superadmin', 'superadmin');
+        await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+
+        await expectStoredSettingsKept(page, savedValues);
     });
 });
 
