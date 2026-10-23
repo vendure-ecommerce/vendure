@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { OrderService, Permission, RequestContext } from '@vendure/core';
-import { McpTool, McpToolHandler } from '@vendure/mcp-sdk';
+import { idSchema, McpTool, McpToolHandler } from '@vendure/mcp-sdk';
 import { z } from 'zod';
 
 import { McpActiveOrderService } from '../active-order.service';
-import { idSchema } from '../id-schema';
 import { McpToolSerializerService } from '../serializer.service';
 
 const removeFromCartInput = z.strictObject({
@@ -41,7 +40,7 @@ export class RemoveFromCartTool implements McpToolHandler<RemoveFromCartInput> {
     async execute(ctx: RequestContext, input: RemoveFromCartInput) {
         const order = await this.activeOrder.findOrThrow(ctx);
         return this.serializer.orderOrError(
-            await this.orderService.removeItemFromOrder(order.ctx, order.id, input.orderLineId),
+            await this.orderService.removeItemFromOrder(ctx, order.id, input.orderLineId),
         );
     }
 }

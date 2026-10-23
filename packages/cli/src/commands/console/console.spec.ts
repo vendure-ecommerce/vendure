@@ -9,18 +9,25 @@ import { ConsoleCommandDependencies, consoleCommand, resolveConsoleEndpoints } f
 import { ConsoleReporter } from './console-reporter';
 import {
     ACCOUNT_ID,
-    LINK_ID,
     NOW,
     OTHER_LINK_ID,
-    POLLING_SECRET,
-    createResponse,
-    expiry,
+    OTHER_PROJECT_ID,
+    PROJECT_ID,
+    STORED_ACCESS_TOKEN,
+    WORKOS_AUTHENTICATE_URL,
+    accessToken,
+    createCliConfigDir,
+    fakeConsole,
     manifest,
+    projectList,
+    storeLogin,
+    withSingleAccount,
 } from './console.fixtures';
 import { PROJECT_LINK_KEEP_MANIFEST } from './project-link-gitignore';
 import { ProjectLinkManifest, getProjectLinkManifestPath } from './project-link-manifest';
 
 const UUID_V7_LINK_ID = '33333333-3333-7333-8333-333333333333';
+const INSTALLATION_ID = '77777777-7777-4777-8777-777777777777';
 const LOCAL_CONSOLE = {
     appOrigin: 'http://localhost:3000',
     apiOrigin: 'http://localhost:3001',
@@ -204,10 +211,7 @@ describe('console command', () => {
         const seen: Array<string | undefined> = [];
         const test = testDependencies(
             vendureProject(),
-            sequenceFetch(
-                jsonResponse(createResponse()),
-                jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-            ),
+            sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest)),
             {
                 env: {},
                 hooks: [
@@ -243,13 +247,9 @@ describe('console command', () => {
         expect(test.messages.join('\n')).toContain('not trusted');
     });
 
-    it('completes create, pending poll, approval, and atomic manifest write', async () => {
+    it('links the only project of the organization with the CLI login and writes the manifest', async () => {
         const root = vendureProject();
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: 'pending', expiresAt: expiry() }),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-        );
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
         const test = testDependencies(root, fetchMock);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
@@ -257,22 +257,138 @@ describe('console command', () => {
         expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(localManifest);
         expect(fs.readFileSync(path.join(root, '.gitignore'), 'utf8')).toContain('.vendure/*');
         expect(fs.readFileSync(path.join(root, '.gitignore'), 'utf8')).toContain('!.vendure/project.json');
-        expect(fetchMock).toHaveBeenCalledTimes(3);
-        expect(fetchMock.mock.calls[0][0]).toBe('http://localhost:3001/v1/project-links');
-        expect(fetchMock.mock.calls[1][0]).toBe(`http://localhost:3001/v1/project-links/${LINK_ID}/poll`);
-        expect(fetchMock.mock.calls[0][1]?.redirect).toBe('error');
-        expect(fetchMock.mock.calls[1][1]?.redirect).toBe('error');
-        expect(fetchMock.mock.calls[1][1]?.body).toBe(JSON.stringify({ pollingSecret: POLLING_SECRET }));
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+        expect(fetchMock.mock.calls[0][0]).toBe('http://localhost:3001/v1/projects');
+        expect(fetchMock.mock.calls[0][1]?.method).toBe('GET');
+        expect(fetchMock.mock.calls[1][0]).toBe(`http://localhost:3001/v1/projects/${PROJECT_ID}/link`);
+        expect(fetchMock.mock.calls[1][1]?.method).toBe('POST');
+        for (const [, init] of fetchMock.mock.calls) {
+            expect(init?.redirect).toBe('error');
+            expect(init?.headers).toMatchObject({ Authorization: `Bearer ${STORED_ACCESS_TOKEN}` });
+        }
         expect(test.messages.join('\n')).toContain('Updated');
         expect(test.messages.join('\n')).toContain('.gitignore');
     });
 
+    // OSS-884: a link attributes the Core telemetry of this installation to the Console Project.
+    it('creates the telemetry installation ID, sends it with the link and states the attribution', async () => {
+        const root = vendureProject();
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+
+        const installationId = fs.readFileSync(path.join(root, '.vendure', '.installation-id'), 'utf8');
+        expect(installationId).toMatch(
+            /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+        );
+        const [, init] = fetchMock.mock.calls[1];
+        expect(init?.headers).toEqual({
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${STORED_ACCESS_TOKEN}`,
+        });
+        expect(JSON.parse(init?.body as string)).toEqual({ telemetryInstallationId: installationId });
+        expect(test.messages).toContain(
+            'Telemetry from this installation is attributed to Console Project Storefront. ' +
+                'Set VENDURE_DISABLE_TELEMETRY=true to turn telemetry off.',
+        );
+    });
+
+    it('sends the installation ID the Vendure server already uses', async () => {
+        const root = vendureProject();
+        fs.outputFileSync(path.join(root, '.vendure', '.installation-id'), `${INSTALLATION_ID}\n`);
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+
+        expect(await consoleCommand('link', {}, testDependencies(root, fetchMock).dependencies)).toBe(0);
+
+        expect(JSON.parse(fetchMock.mock.calls[1][1]?.body as string)).toEqual({
+            telemetryInstallationId: INSTALLATION_ID,
+        });
+    });
+
+    it('keeps the installation ID next to the hoisted node_modules, where the server reads it', async () => {
+        const { workspace, project } = vendureMonorepo();
+        fs.ensureDirSync(path.join(workspace, 'node_modules'));
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+
+        expect(
+            await consoleCommand('link', { project }, testDependencies(workspace, fetchMock).dependencies),
+        ).toBe(0);
+
+        expect(fs.existsSync(path.join(project, '.vendure', '.installation-id'))).toBe(false);
+        expect(JSON.parse(fetchMock.mock.calls[1][1]?.body as string)).toEqual({
+            telemetryInstallationId: fs.readFileSync(
+                path.join(workspace, '.vendure', '.installation-id'),
+                'utf8',
+            ),
+        });
+    });
+
+    it('keeps an installation ID that Console does not accept and sends none', async () => {
+        const root = vendureProject();
+        const idPath = path.join(root, '.vendure', '.installation-id');
+        fs.outputFileSync(idPath, UUID_V7_LINK_ID);
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+
+        expect(fetchMock.mock.calls[1][1]?.body).toBeUndefined();
+        expect(fs.readFileSync(idPath, 'utf8')).toBe(UUID_V7_LINK_ID);
+        expect(test.messages.join('\n')).toContain('telemetry installation ID that Console accepts');
+    });
+
+    it('sends no installation ID and creates none when telemetry is turned off', async () => {
+        const root = vendureProject();
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
+        const test = testDependencies(root, fetchMock, {
+            env: { ...LOCAL_CONSOLE_ENV, VENDURE_DISABLE_TELEMETRY: 'true' },
+        });
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+
+        expect(fetchMock.mock.calls[1][1]?.body).toBeUndefined();
+        expect(fetchMock.mock.calls[1][1]?.headers).toEqual({
+            Authorization: `Bearer ${STORED_ACCESS_TOKEN}`,
+        });
+        expect(fs.existsSync(path.join(root, '.vendure', '.installation-id'))).toBe(false);
+        expect(test.messages.join('\n')).toContain('does not attribute telemetry');
+    });
+
+    // PDEV-478: a link is the step before the docs MCP grants development workflows.
+    // PDEV-553: the setup guide is the one the Console card links, for the same environment.
+    it.each([
+        ['https://console.vendure.io', 'https://api.vendure.io', 'https://docs.vendure.io/how-to-use'],
+        [STAGING_CONSOLE.appOrigin, STAGING_CONSOLE.apiOrigin, 'https://staging.docs.vendure.io/how-to-use'],
+    ])(
+        'points to the docs MCP setup after a link to %s without claiming it configured an assistant',
+        async (appOrigin, apiOrigin, guideUrl) => {
+            const root = vendureProject();
+            const test = testDependencies(
+                root,
+                sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest)),
+                {
+                    env: { VENDURE_CONSOLE_APP_URL: appOrigin, VENDURE_CONSOLE_API_URL: apiOrigin },
+                },
+            );
+
+            expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+            const guidance = test.messages[test.messages.length - 1];
+            expect(guidance).toContain(
+                'Vendure development workflows and patterns through your coding assistant',
+            );
+            expect(guidance).toContain('https://docs.vendure.io/mcp');
+            expect(guidance).toContain('sign in with Vendure Console');
+            expect(guidance).toContain('first time you use a development tool');
+            expect(guidance).toContain('Acme');
+            expect(guidance).toContain('did not configure or sign in to any coding assistant');
+            expect(guidance).toContain(`Setup guide: ${guideUrl}`);
+        },
+    );
+
     it('uses an explicit staging Console for a new link and records it', async () => {
         const root = vendureProject();
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-        );
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
         const test = testDependencies(root, fetchMock, {
             env: {
                 VENDURE_CONSOLE_APP_URL: STAGING_CONSOLE.appOrigin,
@@ -282,17 +398,14 @@ describe('console command', () => {
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
         expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(stagingManifest);
-        expect(fetchMock.mock.calls[0][0]).toBe(`${STAGING_CONSOLE.apiOrigin}/v1/project-links`);
+        expect(fetchMock.mock.calls[0][0]).toBe(`${STAGING_CONSOLE.apiOrigin}/v1/projects`);
     });
 
     it('does not rewrite a gitignore that already has the Project Link rules', async () => {
         const root = vendureProject();
         const gitignore = ['node_modules', '.vendure/*', '!.vendure/project.json', ''].join('\n');
         fs.writeFileSync(path.join(root, '.gitignore'), gitignore);
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-        );
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
         const test = testDependencies(root, fetchMock);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
@@ -303,10 +416,7 @@ describe('console command', () => {
     it('still writes the manifest when the project gitignore cannot be updated', async () => {
         const root = vendureProject();
         fs.ensureDirSync(path.join(root, '.gitignore'));
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-        );
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
         const test = testDependencies(root, fetchMock);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
@@ -316,10 +426,7 @@ describe('console command', () => {
 
     it('links an apps/vendure monorepo from the workspace root and updates the project gitignore', async () => {
         const { workspace, project } = vendureMonorepo({ gitignore: 'node_modules\n' });
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-        );
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
         const test = testDependencies(workspace, fetchMock);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
@@ -331,10 +438,7 @@ describe('console command', () => {
 
     it('does not rewrite a monorepo root gitignore during link', async () => {
         const { workspace, project } = vendureMonorepo({ gitignore: '.vendure/\n' });
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-        );
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
         const test = testDependencies(workspace, fetchMock);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
@@ -345,30 +449,24 @@ describe('console command', () => {
         );
     });
 
-    it('accepts unknown API fields and version-agnostic UUIDs', async () => {
+    it('accepts unknown API fields, version-agnostic UUIDs and skips archived projects', async () => {
         const root = vendureProject();
         const versionSevenManifest: ProjectLinkManifest = {
             ...manifest,
             link: { id: UUID_V7_LINK_ID, protocolVersion: 1 },
         };
         const fetchMock = sequenceFetch(
-            jsonResponse({
-                ...createResponse(),
-                id: UUID_V7_LINK_ID,
-                verificationPath: `/?link=${UUID_V7_LINK_ID}`,
-                serverCapability: 'future-value',
-            }),
-            jsonResponse({ state: 'pending', expiresAt: expiry(), retryHint: 'future-value' }),
-            jsonResponse({
-                state: 'approved',
-                expiresAt: expiry(),
-                manifest: versionSevenManifest,
-                auditId: 'future-value',
-            }),
+            jsonResponse([
+                ...projectList(),
+                { id: OTHER_PROJECT_ID, name: 'Old shop', state: 'archived' },
+                { id: '77777777-7777-7777-8777-777777777777', name: 'Next', state: 'future-state' },
+            ]),
+            jsonResponse(versionSevenManifest),
         );
         const test = testDependencies(root, fetchMock);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+        expect(fetchMock.mock.calls[1][0]).toBe(`http://localhost:3001/v1/projects/${PROJECT_ID}/link`);
         expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual({
             ...versionSevenManifest,
             schemaVersion: 1,
@@ -376,63 +474,97 @@ describe('console command', () => {
         });
     });
 
-    it('prints the safe verification URL and continues when browser launch fails', async () => {
+    it('asks which project to link when the organization has several', async () => {
         const root = vendureProject();
+        const other = { ...manifest, project: { id: OTHER_PROJECT_ID, name: 'Wholesale' } };
         const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
+            jsonResponse(
+                projectList([
+                    { id: PROJECT_ID, name: 'Storefront' },
+                    { id: OTHER_PROJECT_ID, name: 'Wholesale' },
+                ]),
+            ),
+            jsonResponse(other),
         );
-        const test = testDependencies(root, fetchMock, {
-            openUrl: () => Promise.reject(new Error('browser unavailable')),
-        });
+        const select = vi.fn(() => Promise.resolve(OTHER_PROJECT_ID));
+        const test = testDependencies(root, fetchMock, { isNonInteractive: () => false, select });
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
-        expect(test.urls).toEqual([`http://localhost:3000/?link=${LINK_ID}`]);
-        expect(test.messages.join('\n')).not.toContain(POLLING_SECRET);
+        expect(select).toHaveBeenCalledWith(expect.stringContaining('Acme'), [
+            { value: PROJECT_ID, label: 'Storefront' },
+            { value: OTHER_PROJECT_ID, label: 'Wholesale' },
+        ]);
+        expect(fetchMock.mock.calls[1][0]).toBe(`http://localhost:3001/v1/projects/${OTHER_PROJECT_ID}/link`);
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root)).project.name).toBe('Wholesale');
     });
 
-    it('does not write a manifest after denial or a malformed approval', async () => {
-        const deniedRoot = vendureProject();
-        const denied = testDependencies(
-            deniedRoot,
-            sequenceFetch(
-                jsonResponse(createResponse()),
-                jsonResponse({ state: 'denied', expiresAt: expiry() }),
+    it('does not guess between several projects without a terminal, and lists them', async () => {
+        const root = vendureProject();
+        const fetchMock = sequenceFetch(
+            jsonResponse(
+                projectList([
+                    { id: PROJECT_ID, name: 'Storefront' },
+                    { id: OTHER_PROJECT_ID, name: 'Wholesale' },
+                ]),
             ),
         );
-        expect(await consoleCommand('link', {}, denied.dependencies)).toBe(1);
-        expect(fs.existsSync(getProjectLinkManifestPath(deniedRoot))).toBe(false);
-        expect(fs.existsSync(path.join(deniedRoot, '.gitignore'))).toBe(false);
+        const select = vi.fn();
+        const test = testDependencies(root, fetchMock, { select });
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
+        expect(select).not.toHaveBeenCalled();
+        expect(fetchMock).toHaveBeenCalledOnce();
+        expect(test.messages.join('\n')).toContain(`Wholesale (${OTHER_PROJECT_ID})`);
+        expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
+    });
+
+    it('names the Console to create a project in when the organization has none', async () => {
+        const root = vendureProject();
+        const fetchMock = sequenceFetch(
+            jsonResponse(projectList([{ id: PROJECT_ID, name: 'Storefront', state: 'archived' }])),
+        );
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
+        expect(test.messages.join('\n')).toContain('Acme has no active project');
+        expect(test.messages.join('\n')).toContain(LOCAL_CONSOLE.appOrigin);
+        // PDEV-478: creating a Project is free, and the link still needs a real one.
+        expect(test.messages.join('\n')).toContain('without a plan or trial');
+        expect(test.messages.join('\n')).toContain('run vendure console link again');
+        expect(test.messages.join('\n')).not.toContain('https://docs.vendure.io/mcp');
+        expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
+    });
+
+    it('does not write a manifest when Console refuses the link or returns a malformed manifest', async () => {
+        const refusedRoot = vendureProject();
+        const refused = testDependencies(
+            refusedRoot,
+            sequenceFetch(jsonResponse(projectList()), new Response('{}', { status: 403 })),
+        );
+        expect(await consoleCommand('link', {}, refused.dependencies)).toBe(1);
+        expect(refused.messages.join('\n')).toContain('does not allow you to link Storefront');
+        expect(fs.existsSync(getProjectLinkManifestPath(refusedRoot))).toBe(false);
+        expect(fs.existsSync(path.join(refusedRoot, '.gitignore'))).toBe(false);
 
         const malformedRoot = vendureProject();
         const malformed = testDependencies(
             malformedRoot,
-            sequenceFetch(
-                jsonResponse(createResponse()),
-                jsonResponse({
-                    state: 'approved',
-                    expiresAt: expiry(),
-                    manifest: { ...manifest, pollingSecret: POLLING_SECRET },
-                }),
-            ),
+            sequenceFetch(jsonResponse(projectList()), jsonResponse({ ...manifest, secret: 'value' })),
         );
         expect(await consoleCommand('link', {}, malformed.dependencies)).toBe(1);
         expect(fs.existsSync(getProjectLinkManifestPath(malformedRoot))).toBe(false);
-        expect(malformed.messages.join('\n')).not.toContain(POLLING_SECRET);
+        expect(malformed.messages.join('\n')).not.toContain('value');
     });
 
-    it('reports an expired request without writing a manifest', async () => {
+    it('reports a project that is no longer active without writing a manifest', async () => {
         const root = vendureProject();
         const test = testDependencies(
             root,
-            sequenceFetch(
-                jsonResponse(createResponse()),
-                jsonResponse({ state: 'expired', expiresAt: new Date(NOW - 1).toISOString() }),
-            ),
+            sequenceFetch(jsonResponse(projectList()), new Response('{}', { status: 404 })),
         );
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
-        expect(test.messages.join('\n')).toContain('request expired');
+        expect(test.messages.join('\n')).toContain('Storefront is no longer an active project in Acme');
         expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
     });
 
@@ -467,10 +599,7 @@ describe('console command', () => {
     it('rejects an oversized Console API response', async () => {
         const root = vendureProject();
         const fetchMock = sequenceFetch(
-            jsonResponse({
-                ...createResponse(),
-                padding: 'x'.repeat(70_000),
-            }),
+            jsonResponse([{ ...(projectList()[0] as object), padding: 'x'.repeat(1_100_000) }]),
         );
         const test = testDependencies(root, fetchMock);
 
@@ -479,82 +608,84 @@ describe('console command', () => {
         expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
     });
 
-    it('retries HTTP 429 poll responses as transient failures', async () => {
+    it('renews the CLI login once when Console refuses its access token', async () => {
         const root = vendureProject();
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            new Response('', { status: 429 }),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-        );
-        const test = testDependencies(root, fetchMock);
+        const api = fakeConsole({
+            link: (projectId, authorization) =>
+                authorization === `Bearer ${STORED_ACCESS_TOKEN}`
+                    ? jsonResponse({}, 401)
+                    : jsonResponse({ ...manifest, project: { ...manifest.project, id: projectId } }),
+        });
+        const test = testDependencies(root, api.fetch);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
-        expect(test.sleeps).toEqual([500]);
+        const links = api.requests.filter(request => request.url.endsWith('/link'));
+        expect(links.map(request => request.authorization)).toEqual([
+            `Bearer ${STORED_ACCESS_TOKEN}`,
+            `Bearer ${accessToken('issued-1')}`,
+        ]);
+        expect(api.requests.filter(request => request.url === WORKOS_AUTHENTICATE_URL)).toHaveLength(1);
+        expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(true);
     });
 
-    it('rejects a non-string poll state instead of treating it as pending', async () => {
+    it('stops when Console refuses the renewed access token too', async () => {
+        const root = vendureProject();
+        const api = fakeConsole({ link: () => jsonResponse({}, 401) });
+        const test = testDependencies(root, api.fetch);
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
+        expect(api.requests.filter(request => request.url.endsWith('/link'))).toHaveLength(2);
+        expect(test.messages.join('\n')).toContain('did not accept the CLI login');
+        expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
+    });
+
+    it('refuses a manifest for a project other than the one it linked', async () => {
         const root = vendureProject();
         const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: ['approved'], expiresAt: expiry(), manifest }),
+            jsonResponse(projectList()),
+            jsonResponse({ ...manifest, project: { id: OTHER_PROJECT_ID, name: 'Wholesale' } }),
         );
         const test = testDependencies(root, fetchMock);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
-        expect(test.messages.join('\n')).toContain('unknown Project Link state');
+        expect(test.messages.join('\n')).toContain('for a different project');
         expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
     });
 
-    it('retries transient poll failures until expiry and does not retry request creation', async () => {
+    it('does not repeat a link request that failed', async () => {
         const root = vendureProject();
         const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
+            jsonResponse(projectList()),
             new Response('', { status: 503 }),
-            new Response('', { status: 502 }),
-            new Response('', { status: 503 }),
-            new Response('', { status: 502 }),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
+            jsonResponse(manifest),
         );
         const test = testDependencies(root, fetchMock);
 
-        expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
-        expect(test.sleeps).toEqual([500, 1_000, 2_000, 2_000]);
-
-        const createFailure = vi.fn(() =>
-            Promise.resolve(new Response('', { status: 503 })),
-        ) as unknown as typeof fetch;
-        const failed = testDependencies(vendureProject(), createFailure);
-        expect(await consoleCommand('link', {}, failed.dependencies)).toBe(1);
-        expect(createFailure).toHaveBeenCalledOnce();
+        // A repeated link records another Project Link, so a failure is reported, not retried.
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+        expect(test.messages.join('\n')).toContain('HTTP 503');
     });
 
-    it('never prints the polling secret when polling becomes unreachable', async () => {
+    it('never prints the access token when Console becomes unreachable', async () => {
         const root = vendureProject();
         const fetchMock = vi
             .fn()
-            .mockResolvedValueOnce(jsonResponse(createResponse(new Date(NOW + 1_500).toISOString())))
-            .mockRejectedValue(new Error(`network error ${POLLING_SECRET}`)) as unknown as typeof fetch;
+            .mockResolvedValueOnce(jsonResponse(projectList()))
+            .mockRejectedValue(new Error(`network error ${STORED_ACCESS_TOKEN}`)) as unknown as typeof fetch;
         const test = testDependencies(root, fetchMock);
 
         expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
-        expect([...test.messages, ...test.urls].join('\n')).not.toContain(POLLING_SECRET);
+        expect([...test.messages, ...test.urls].join('\n')).not.toContain(STORED_ACCESS_TOKEN);
         expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
     });
 
-    it('uses the latest expiry returned by polling', async () => {
+    it('reports a role that cannot list projects', async () => {
         const root = vendureProject();
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse(new Date(NOW + 1_000).toISOString())),
-            jsonResponse({ state: 'pending', expiresAt: new Date(NOW + 5_000).toISOString() }),
-            jsonResponse({
-                state: 'approved',
-                expiresAt: new Date(NOW + 5_000).toISOString(),
-                manifest,
-            }),
-        );
-        const test = testDependencies(root, fetchMock);
+        const test = testDependencies(root, sequenceFetch(new Response('{}', { status: 403 })));
 
-        expect(await consoleCommand('link', {}, test.dependencies)).toBe(0);
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
+        expect(test.messages.join('\n')).toContain('does not allow you to see its projects');
     });
 
     it('does not let --force bypass a cross-root Project Link Manifest', async () => {
@@ -586,10 +717,7 @@ describe('console command', () => {
         const replacement = { ...manifest, project: { ...manifest.project, name: 'Replacement' } };
         const allowed = testDependencies(
             root,
-            sequenceFetch(
-                jsonResponse(createResponse()),
-                jsonResponse({ state: 'approved', expiresAt: expiry(), manifest: replacement }),
-            ),
+            sequenceFetch(jsonResponse(projectList()), jsonResponse(replacement)),
         );
         expect(await consoleCommand('link', { force: true }, allowed.dependencies)).toBe(0);
         expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual({
@@ -609,10 +737,7 @@ describe('console command', () => {
         fs.ensureDirSync(path.dirname(getProjectLinkManifestPath(root)));
         fs.writeJsonSync(getProjectLinkManifestPath(root), previous);
         const contexts: Array<{ force: boolean; outcome: string }> = [];
-        const fetchMock = sequenceFetch(
-            jsonResponse(createResponse()),
-            jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-        );
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest));
         const test = testDependencies(root, fetchMock, {
             hooks: [
                 {
@@ -625,9 +750,92 @@ describe('console command', () => {
         });
 
         expect(await consoleCommand('link', { force: true }, test.dependencies)).toBe(0);
+        // The replaced link attributed no telemetry, so there is no detach request.
         expect(fetchMock).toHaveBeenCalledTimes(2);
         expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(localManifest);
         expect(contexts).toEqual([{ force: true, outcome: 'linked' }]);
+    });
+
+    // OSS-884: a forced link ends the attribution of the link it replaces before it links.
+    it('detaches the telemetry of the replaced link before a forced link', async () => {
+        const root = previouslyLinkedWithAttribution();
+        const fetchMock = sequenceFetch(
+            new Response(null, { status: 204 }),
+            jsonResponse(projectList()),
+            jsonResponse(manifest),
+        );
+
+        expect(
+            await consoleCommand('link', { force: true }, testDependencies(root, fetchMock).dependencies),
+        ).toBe(0);
+
+        expect(fetchMock.mock.calls.map(([url, init]) => `${init?.method} ${url}`)).toEqual([
+            `DELETE http://localhost:3001/v1/projects/${OTHER_PROJECT_ID}/link/telemetry-installations/${INSTALLATION_ID}`,
+            'GET http://localhost:3001/v1/projects',
+            `POST http://localhost:3001/v1/projects/${PROJECT_ID}/link`,
+        ]);
+        expect(JSON.parse(fetchMock.mock.calls[2][1]?.body as string)).toEqual({
+            telemetryInstallationId: INSTALLATION_ID,
+        });
+        expect(fs.readJsonSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toEqual({
+            linkId: manifest.link.id,
+            installationId: INSTALLATION_ID,
+        });
+    });
+
+    it('reports the kept link as not attributed when the forced link fails after the detach', async () => {
+        const root = previouslyLinkedWithAttribution();
+        const fetchMock = sequenceFetch(
+            new Response(null, { status: 204 }),
+            jsonResponse(projectList()),
+            jsonResponse({ message: 'unavailable' }, 503),
+        );
+
+        expect(
+            await consoleCommand('link', { force: true }, testDependencies(root, fetchMock).dependencies),
+        ).toBe(1);
+
+        expect(fetchMock.mock.calls[0][1]?.method).toBe('DELETE');
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root)).link.id).toBe(OTHER_LINK_ID);
+        expect(fs.existsSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toBe(false);
+        const status = testDependencies(root, vi.fn() as unknown as typeof fetch);
+        expect(await consoleCommand('status', {}, status.dependencies)).toBe(0);
+        expect(status.messages.join('\n')).toContain('Telemetry: not attributed');
+    });
+
+    it('names the replaced attribution and still links when Console cannot detach it', async () => {
+        const root = previouslyLinkedWithAttribution();
+        const fetchMock = vi
+            .fn()
+            .mockRejectedValueOnce(new TypeError('fetch failed'))
+            .mockResolvedValueOnce(jsonResponse(projectList()))
+            .mockResolvedValueOnce(jsonResponse(manifest));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('link', { force: true }, test.dependencies)).toBe(0);
+
+        const warning = test.messages.find(message => message.startsWith('Could not tell Vendure Console'));
+        expect(warning).toContain(`Previous (project ${OTHER_PROJECT_ID}, installation ${INSTALLATION_ID})`);
+        expect(warning).toContain('may stay in Console until someone unlinks it there');
+        expect(fs.readJsonSync(getProjectLinkManifestPath(root))).toEqual(localManifest);
+    });
+
+    it('detaches the replaced attribution but sends no installation ID when telemetry is turned off', async () => {
+        const root = previouslyLinkedWithAttribution();
+        const fetchMock = sequenceFetch(
+            new Response(null, { status: 204 }),
+            jsonResponse(projectList()),
+            jsonResponse(manifest),
+        );
+        const test = testDependencies(root, fetchMock, {
+            env: { ...LOCAL_CONSOLE_ENV, VENDURE_DISABLE_TELEMETRY: 'true' },
+        });
+
+        expect(await consoleCommand('link', { force: true }, test.dependencies)).toBe(0);
+
+        expect(fetchMock.mock.calls[0][1]?.method).toBe('DELETE');
+        expect(fetchMock.mock.calls[2][1]?.body).toBeUndefined();
+        expect(fs.existsSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toBe(false);
     });
 
     it('uses --yes for every CLI confirmation without forcing a new link', async () => {
@@ -656,10 +864,7 @@ describe('console command', () => {
         const replacementPrompt = vi.fn(() => Promise.resolve(false));
         const replacement = testDependencies(
             replacementRoot,
-            sequenceFetch(
-                jsonResponse(createResponse()),
-                jsonResponse({ state: 'approved', expiresAt: expiry(), manifest }),
-            ),
+            sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest)),
             { isNonInteractive: () => false, prompt: replacementPrompt },
         );
 
@@ -749,6 +954,37 @@ describe('console command', () => {
         const output = test.messages.join('\n');
         expect(output).toContain('Already linked to');
         expect(output).toContain('vendure console link --force');
+        expect(output).toContain('https://docs.vendure.io/mcp');
+    });
+
+    it('keeps the docs MCP guidance out of --non-interactive output', async () => {
+        const root = vendureProject();
+        fs.ensureDirSync(path.dirname(getProjectLinkManifestPath(root)));
+        fs.writeJsonSync(getProjectLinkManifestPath(root), localManifest);
+        const test = testDependencies(root, vi.fn());
+
+        expect(await consoleCommand('link', { nonInteractive: true }, test.dependencies)).toBe(0);
+        expect(test.messages.join('\n')).toContain('Already linked to');
+        expect(test.messages.join('\n')).not.toContain('https://docs.vendure.io/mcp');
+    });
+
+    it('does not show the docs MCP guidance when plugin setup after the link fails', async () => {
+        const root = vendureProject();
+        const test = testDependencies(
+            root,
+            sequenceFetch(jsonResponse(projectList()), jsonResponse(manifest)),
+            {
+                hooks: [
+                    {
+                        pluginId: '@example/p',
+                        hook: () => Promise.reject(new Error('setup failed')),
+                    },
+                ],
+            },
+        );
+
+        expect(await consoleCommand('link', {}, test.dependencies)).toBe(1);
+        expect(test.messages.join('\n')).not.toContain('https://docs.vendure.io/mcp');
     });
 
     // A manifest is meant to be committed, so an already-linked project may be
@@ -976,12 +1212,43 @@ describe('console command', () => {
         expect(linked.messages.join('\n')).toContain(`Account: Acme (${ACCOUNT_ID})`);
         expect(linked.messages.join('\n')).toContain(`Manifest: ${getProjectLinkManifestPath(root)}`);
         expect(linked.messages.join('\n')).toContain(`Console: ${LOCAL_CONSOLE.appOrigin}`);
-        expect(linked.messages.join('\n')).toContain('Authentication: Not stored locally');
+        // The login is `vendure auth status`'s to report.
+        expect(linked.messages.join('\n')).toContain('Login: run vendure auth status');
+        expect(linked.messages.join('\n')).not.toContain('dev@example.com');
 
         fs.writeFileSync(getProjectLinkManifestPath(root), '{invalid');
         const malformed = testDependencies(root, fetchMock);
         expect(await consoleCommand('status', {}, malformed.dependencies)).toBe(1);
         expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('shows whether this link attributes telemetry', async () => {
+        const root = vendureProject();
+        const fetchMock = sequenceFetch(jsonResponse(projectList()), jsonResponse(localManifest));
+        expect(await consoleCommand('link', {}, testDependencies(root, fetchMock).dependencies)).toBe(0);
+        const installationId = fs.readFileSync(path.join(root, '.vendure', '.installation-id'), 'utf8');
+
+        const attributed = testDependencies(root, fetchMock);
+        expect(await consoleCommand('status', {}, attributed.dependencies)).toBe(0);
+        expect(attributed.messages.join('\n')).toContain(
+            `Telemetry: attributed to Storefront (installation ${installationId})`,
+        );
+
+        const off = testDependencies(root, fetchMock, {
+            env: { ...LOCAL_CONSOLE_ENV, VENDURE_DISABLE_TELEMETRY: '1' },
+        });
+        expect(await consoleCommand('status', {}, off.dependencies)).toBe(0);
+        expect(off.messages.join('\n')).toContain('Telemetry: off (VENDURE_DISABLE_TELEMETRY)');
+
+        // A link made before attribution, or by another machine, sent no installation ID.
+        fs.writeJsonSync(getProjectLinkManifestPath(root), {
+            ...localManifest,
+            link: { ...localManifest.link, id: OTHER_LINK_ID },
+        });
+        const other = testDependencies(root, fetchMock);
+        expect(await consoleCommand('status', {}, other.dependencies)).toBe(0);
+        expect(other.messages.join('\n')).toContain('Telemetry: not attributed');
+        expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
     it('uses explicit staging origins for status when the manifest has no Console metadata', async () => {
@@ -1006,12 +1273,51 @@ describe('console command', () => {
         fs.ensureDirSync(path.dirname(manifestPath));
         fs.writeJsonSync(manifestPath, manifest);
         fs.writeFileSync(siblingPath, 'machine-local');
-        const test = testDependencies(root, vi.fn() as unknown as typeof fetch);
+        const fetchMock = vi.fn() as unknown as typeof fetch;
+        const test = testDependencies(root, fetchMock);
 
         expect(await consoleCommand('unlink', { force: true }, test.dependencies)).toBe(0);
         expect(fs.existsSync(manifestPath)).toBe(false);
         expect(fs.readFileSync(siblingPath, 'utf8')).toBe('machine-local');
         expect(fs.existsSync(path.dirname(manifestPath))).toBe(true);
+        // This link attributed no telemetry, so Console is not asked.
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('tells Console to drop the telemetry attribution on unlink', async () => {
+        const root = linkedWithAttribution();
+        const fetchMock = sequenceFetch(new Response(null, { status: 204 }));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('unlink', { force: true }, test.dependencies)).toBe(0);
+
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(fetchMock.mock.calls[0][0]).toBe(
+            `http://localhost:3001/v1/projects/${PROJECT_ID}/link/telemetry-installations/${INSTALLATION_ID}`,
+        );
+        expect(fetchMock.mock.calls[0][1]?.method).toBe('DELETE');
+        expect(fetchMock.mock.calls[0][1]?.headers).toEqual({
+            Authorization: `Bearer ${STORED_ACCESS_TOKEN}`,
+        });
+        expect(test.messages).toContain(
+            'Telemetry from this installation is no longer attributed to Console Project Storefront.',
+        );
+        expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
+        expect(fs.existsSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toBe(false);
+    });
+
+    it('still unlinks locally and warns when Console cannot drop the attribution', async () => {
+        const root = linkedWithAttribution();
+        const fetchMock = vi.fn().mockRejectedValue(new TypeError('fetch failed'));
+        const test = testDependencies(root, fetchMock);
+
+        expect(await consoleCommand('unlink', { force: true }, test.dependencies)).toBe(0);
+
+        expect(test.messages.join('\n')).toContain(
+            'Could not tell Vendure Console to stop attributing telemetry to Storefront',
+        );
+        expect(fs.existsSync(getProjectLinkManifestPath(root))).toBe(false);
+        expect(fs.existsSync(path.join(root, '.vendure', 'telemetry-attribution.json'))).toBe(false);
     });
 
     it('returns an interrupt exit code and leaves no partial manifest', async () => {
@@ -1020,14 +1326,19 @@ describe('console command', () => {
         const test = testDependencies(
             root,
             sequenceFetch(
-                jsonResponse(createResponse()),
-                jsonResponse({ state: 'pending', expiresAt: expiry() }),
+                jsonResponse(
+                    projectList([
+                        { id: PROJECT_ID, name: 'Storefront' },
+                        { id: OTHER_PROJECT_ID, name: 'Wholesale' },
+                    ]),
+                ),
             ),
             {
                 signal: externalAbort.signal,
-                sleep: () => {
+                isNonInteractive: () => false,
+                select: () => {
                     externalAbort.abort();
-                    return Promise.resolve();
+                    return Promise.resolve(undefined);
                 },
             },
         );
@@ -1038,6 +1349,11 @@ describe('console command', () => {
     });
 });
 
+/**
+ * Dependencies for one run. The CLI login lives in a temporary config
+ * directory and holds a login for the run's Console API, scoped to the Acme
+ * organization.
+ */
 function testDependencies(
     root: string,
     fetchImplementation: typeof fetch,
@@ -1045,13 +1361,19 @@ function testDependencies(
 ): {
     dependencies: Partial<ConsoleCommandDependencies>;
     messages: string[];
-    sleeps: number[];
     urls: string[];
 } {
     const messages: string[] = [];
     const urls: string[] = [];
-    const sleeps: number[] = [];
-    let currentTime = NOW;
+    const env: NodeJS.ProcessEnv = {
+        ...(overrides.env ?? {
+            VENDURE_CLI_NON_INTERACTIVE: 'true',
+            VENDURE_CONSOLE_APP_URL: 'http://localhost:3000',
+            VENDURE_CONSOLE_API_URL: 'http://localhost:3001',
+        }),
+        VENDURE_CLI_CONFIG_DIR: createCliConfigDir(temporaryDirectories),
+    };
+    storeLogin(env, env.VENDURE_CONSOLE_API_URL?.trim() || 'https://api.vendure.io');
     const reporter: ConsoleReporter = {
         error: message => messages.push(message),
         info: message => messages.push(message),
@@ -1062,33 +1384,57 @@ function testDependencies(
     return {
         dependencies: {
             cwd: root,
-            env: {
-                VENDURE_CLI_NON_INTERACTIVE: 'true',
-                VENDURE_CONSOLE_APP_URL: 'http://localhost:3000',
-                VENDURE_CONSOLE_API_URL: 'http://localhost:3001',
-            },
-            fetch: fetchImplementation,
+            fetch: withSingleAccount(fetchImplementation),
             isNonInteractive: () => true,
-            now: () => currentTime,
+            now: () => NOW,
             openUrl: () => Promise.resolve(),
             prompt: () => Promise.resolve(true),
+            select: () => Promise.resolve(undefined),
             reporter,
-            sleep: milliseconds => {
-                sleeps.push(milliseconds);
-                currentTime += milliseconds;
-                return Promise.resolve();
-            },
             ...overrides,
+            env,
         },
         messages,
-        sleeps,
         urls,
     };
 }
 
-function jsonResponse(value: unknown): Response {
+const LOCAL_CONSOLE_ENV = {
+    VENDURE_CLI_NON_INTERACTIVE: 'true',
+    VENDURE_CONSOLE_APP_URL: LOCAL_CONSOLE.appOrigin,
+    VENDURE_CONSOLE_API_URL: LOCAL_CONSOLE.apiOrigin,
+};
+
+/** A project whose link attributed `INSTALLATION_ID`. */
+function linkedWithAttribution(): string {
+    const root = vendureProject();
+    fs.outputJsonSync(getProjectLinkManifestPath(root), localManifest);
+    fs.outputJsonSync(path.join(root, '.vendure', 'telemetry-attribution.json'), {
+        linkId: localManifest.link.id,
+        installationId: INSTALLATION_ID,
+    });
+    return root;
+}
+
+/** A project linked to the Previous Project, whose link attributed `INSTALLATION_ID`. */
+function previouslyLinkedWithAttribution(): string {
+    const root = vendureProject();
+    fs.outputJsonSync(getProjectLinkManifestPath(root), {
+        ...localManifest,
+        project: { id: OTHER_PROJECT_ID, name: 'Previous' },
+        link: { ...localManifest.link, id: OTHER_LINK_ID },
+    });
+    fs.outputJsonSync(path.join(root, '.vendure', 'telemetry-attribution.json'), {
+        linkId: OTHER_LINK_ID,
+        installationId: INSTALLATION_ID,
+    });
+    fs.outputFileSync(path.join(root, '.vendure', '.installation-id'), INSTALLATION_ID);
+    return root;
+}
+
+function jsonResponse(value: unknown, status = 200): Response {
     return new Response(JSON.stringify(value), {
-        status: 200,
+        status,
         headers: { 'Content-Type': 'application/json' },
     });
 }

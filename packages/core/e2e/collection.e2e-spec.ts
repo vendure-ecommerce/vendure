@@ -2,6 +2,9 @@
 import { CurrencyCode, DeletionResult, LanguageCode, SortOrder } from '@vendure/common/lib/generated-types';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import {
+    Collection,
+    CollectionService,
+    CollectionTranslation,
     DefaultJobQueuePlugin,
     facetValueCollectionFilter,
     productIdCollectionFilter,
@@ -28,6 +31,8 @@ import {
     assignCollectionsToChannelDocument,
     createChannelDocument,
     createCollectionDocument,
+    createProductDocument,
+    createProductVariantsDocument,
     deleteProductDocument,
     deleteProductVariantDocument,
     getAssetListDocument,
@@ -2162,6 +2167,148 @@ describe('Collection resolver', () => {
         });
     });
 
+    describe('combining an AND-ed and an OR-ed filter', () => {
+        // https://github.com/vendurehq/vendure/issues/5415
+        it('does not duplicate variants pulled in by the OR-ed filter when they have multiple translations', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+            const { createProduct: nameMatchProduct } = await adminClient.query(createProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'combineWithAnd regression name match',
+                            slug: 'combine-with-and-regression-name-match',
+                            description: '',
+                        },
+                    ],
+                },
+            });
+            const { createProductVariants: nameMatchVariants } = await adminClient.query(
+                createProductVariantsDocument,
+                {
+                    input: [
+                        {
+                            productId: nameMatchProduct.id,
+                            sku: 'COMBINE-REGRESSION-CAMERA',
+                            optionIds: [],
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'combineWithAndRegressionCamera' },
+                            ],
+                        },
+                    ],
+                },
+            );
+
+            // Two products, since a Product cannot have two variants with no options.
+            const { createProduct: orMatchProductA } = await adminClient.query(createProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'combineWithAnd regression id match A',
+                            slug: 'combine-with-and-regression-id-match-a',
+                            description: '',
+                        },
+                    ],
+                },
+            });
+            const { createProduct: orMatchProductB } = await adminClient.query(createProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'combineWithAnd regression id match B',
+                            slug: 'combine-with-and-regression-id-match-b',
+                            description: '',
+                        },
+                    ],
+                },
+            });
+            const { createProductVariants: orMatchVariants } = await adminClient.query(
+                createProductVariantsDocument,
+                {
+                    input: [
+                        {
+                            productId: orMatchProductA.id,
+                            sku: 'COMBINE-REGRESSION-OR-A',
+                            optionIds: [],
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'combineWithAndRegressionOrA' },
+                            ],
+                        },
+                        {
+                            productId: orMatchProductB.id,
+                            sku: 'COMBINE-REGRESSION-OR-B',
+                            optionIds: [],
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'combineWithAndRegressionOrB' },
+                            ],
+                        },
+                    ],
+                },
+            );
+
+            // These only match via the OR-ed productId filter; multiple translations triggered the bug.
+            await adminClient.query(updateProductVariantsDocument, {
+                input: orMatchVariants.map(v => ({
+                    id: v.id,
+                    translations: [
+                        { languageCode: LanguageCode.en, name: v.name },
+                        { languageCode: LanguageCode.de, name: `${v.name} (DE)` },
+                        { languageCode: LanguageCode.fr, name: `${v.name} (FR)` },
+                    ],
+                })),
+            });
+
+            const { createCollection } = await adminClient.query(createCollectionDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'combineWithAnd regression collection',
+                            description: '',
+                            slug: 'combine-with-and-regression-collection',
+                        },
+                    ],
+                    filters: [
+                        {
+                            code: variantNameCollectionFilter.code,
+                            arguments: [
+                                { name: 'operator', value: 'contains' },
+                                { name: 'term', value: 'combinewithandregressioncamera' },
+                                { name: 'combineWithAnd', value: 'true' },
+                            ],
+                        },
+                        {
+                            code: productIdCollectionFilter.code,
+                            arguments: [
+                                {
+                                    name: 'productIds',
+                                    value: `["${orMatchProductA.id}", "${orMatchProductB.id}"]`,
+                                },
+                                { name: 'combineWithAnd', value: 'false' },
+                            ],
+                        },
+                    ],
+                },
+            });
+            await awaitRunningJobs(adminClient, 5000);
+
+            const result = await adminClient.query(getCollectionProductVariantsDocument, {
+                id: createCollection.id,
+            });
+            collectionResultGuard.assertSuccess(result.collection);
+
+            const expectedNames = [
+                ...nameMatchVariants.map(v => v.name),
+                ...orMatchVariants.map(v => v.name),
+            ].sort();
+            // De-duplicated union of both filter branches, each variant appearing exactly once.
+            expect(result.collection.productVariants.items.map(i => i.name).sort()).toEqual(expectedNames);
+        });
+    });
+
     describe('cross-channel update protection', () => {
         const CHANNEL_A_TOKEN = 'coll-cross-channel-a';
         const CHANNEL_B_TOKEN = 'coll-cross-channel-b';
@@ -2339,6 +2486,278 @@ describe('Collection resolver', () => {
         });
     });
 
+    // https://github.com/vendurehq/vendure/issues/5415
+    it('AND-ed variantName filters can match different translations of a variant', async () => {
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        const hardDriveVariantIds = ['T_11', 'T_12', 'T_13', 'T_14', 'T_15'];
+        await adminClient.query(updateProductVariantsDocument, {
+            input: hardDriveVariantIds.map(id => ({
+                id,
+                translations: [{ languageCode: LanguageCode.de, name: `Festplatte ${id}` }],
+            })),
+        });
+
+        const { createCollection } = await adminClient.query(createCollectionDocument, {
+            input: {
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'drive and festplatte',
+                        description: '',
+                        slug: 'drive-and-festplatte',
+                    },
+                ],
+                filters: [
+                    {
+                        code: variantNameCollectionFilter.code,
+                        arguments: [
+                            { name: 'operator', value: 'contains' },
+                            { name: 'term', value: 'drive' },
+                        ],
+                    },
+                    {
+                        code: variantNameCollectionFilter.code,
+                        arguments: [
+                            { name: 'operator', value: 'contains' },
+                            { name: 'term', value: 'festplatte' },
+                        ],
+                    },
+                ],
+            },
+        });
+        await awaitRunningJobs(adminClient, 5000);
+
+        const result = await adminClient.query(getCollectionProductVariantsDocument, {
+            id: createCollection.id,
+        });
+        collectionResultGuard.assertSuccess(result.collection);
+        expect(result.collection.productVariants.items.map(i => i.id).sort()).toEqual(hardDriveVariantIds);
+    });
+
+    describe('productVariantCount of nested children in collection list', () => {
+        let parentId: string;
+        let childId: string;
+        // Expected counts come from `productVariants.totalItems`, which is resolved independently
+        // of `productVariantCount`. Earlier tests delete some of the fixture variants.
+        let expectedParentCount: number;
+        let expectedChildCount: number;
+
+        beforeAll(async () => {
+            const createFilteredCollection = async (slug: string, facetCode: string, parent?: string) => {
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
+                    input: {
+                        parentId: parent,
+                        translations: [{ languageCode: LanguageCode.en, name: slug, description: '', slug }],
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    { name: 'facetValueIds', value: `["${getFacetValueId(facetCode)}"]` },
+                                    { name: 'containsAny', value: 'false' },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                return createCollection.id;
+            };
+            parentId = await createFilteredCollection('variant-count-parent', 'electronics');
+            childId = await createFilteredCollection('variant-count-child', 'computers', parentId);
+            await awaitRunningJobs(adminClient, 5000);
+
+            const { collection: parent } = await adminClient.query(getCollectionVariantCountDocument, {
+                id: parentId,
+            });
+            const { collection: child } = await adminClient.query(getCollectionVariantCountDocument, {
+                id: childId,
+            });
+            expectedParentCount = parent!.productVariants.totalItems;
+            expectedChildCount = child!.productVariants.totalItems;
+        });
+
+        it('counts are correct when queried directly', async () => {
+            const { collection: parent } = await adminClient.query(getCollectionVariantCountDocument, {
+                id: parentId,
+            });
+            const { collection: child } = await adminClient.query(getCollectionVariantCountDocument, {
+                id: childId,
+            });
+            expect(expectedChildCount).toBeGreaterThan(0);
+            expect(expectedParentCount).toBeGreaterThan(expectedChildCount);
+            expect(parent?.productVariantCount).toBe(expectedParentCount);
+            expect(child?.productVariantCount).toBe(expectedChildCount);
+        });
+
+        for (const apiName of ['admin', 'shop'] as const) {
+            const client = () => (apiName === 'admin' ? adminClient : shopClient);
+
+            it(`${apiName} API: children not included in items (topLevelOnly)`, async () => {
+                const { collections } = await client().query(getCollectionListVariantCountsDocument, {
+                    options: { topLevelOnly: true, filter: { id: { eq: parentId } } },
+                });
+                expect(collections.items.map(i => i.id)).toEqual([parentId]);
+                expect(collections.items[0].children).toEqual([
+                    { id: childId, productVariantCount: expectedChildCount },
+                ]);
+            });
+
+            it(`${apiName} API: children also included in items`, async () => {
+                const { collections } = await client().query(getCollectionListVariantCountsDocument, {
+                    options: { filter: { id: { in: [parentId, childId] } } },
+                });
+                const parent = collections.items.find(i => i.id === parentId);
+                expect(parent?.children).toEqual([{ id: childId, productVariantCount: expectedChildCount }]);
+                expect(collections.items.find(i => i.id === childId)?.productVariantCount).toBe(
+                    expectedChildCount,
+                );
+            });
+
+            it(`${apiName} API: productVariantCount only requested on children`, async () => {
+                const { collections } = await client().query(getCollectionListChildVariantCountsDocument, {
+                    options: { topLevelOnly: true, filter: { id: { eq: parentId } } },
+                });
+                expect(collections.items[0].children).toEqual([
+                    { id: childId, productVariantCount: expectedChildCount },
+                ]);
+            });
+
+            it(`${apiName} API: parent not included in cached counts`, async () => {
+                const { collections } = await client().query(getCollectionListParentVariantCountsDocument, {
+                    options: { filter: { id: { eq: childId } } },
+                });
+                expect(collections.items).toEqual([
+                    {
+                        id: childId,
+                        productVariantCount: expectedChildCount,
+                        parent: { id: parentId, productVariantCount: expectedParentCount },
+                    },
+                ]);
+            });
+        }
+    });
+
+    // https://github.com/vendurehq/vendure/issues/5584
+    describe('single root Collection across Channels', () => {
+        afterAll(() => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        });
+
+        it('does not create a second root when a non-default Channel resolves the root first', async () => {
+            const collectionRepo = server.app
+                .get(TransactionalConnection)
+                .rawConnection.getRepository(Collection);
+            const rootsBefore = await collectionRepo.find({ where: { isRoot: true } });
+            expect(rootsBefore.length).toBe(1);
+
+            // Simulate a process restart: the root Collection is cached in memory per process.
+            // Bracket access because the field is private; dot access fails type-checking.
+            // eslint-disable-next-line @typescript-eslint/dot-notation
+            server.app.get(CollectionService)['rootCollection'] = undefined;
+
+            const createParentless = async (name: string) => {
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
+                    input: {
+                        translations: [{ languageCode: LanguageCode.en, name, description: '', slug: name }],
+                        filters: [],
+                    },
+                });
+                return createCollection;
+            };
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const secondChannelCollection = await createParentless('root-5584-second-channel');
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const defaultChannelCollection = await createParentless('root-5584-default-channel');
+
+            const rootsAfter = await collectionRepo.find({ where: { isRoot: true } });
+            expect(rootsAfter.map(r => r.id)).toEqual(rootsBefore.map(r => r.id));
+
+            const toInternalId = (id: string) => parseInt(id.replace('T_', ''), 10);
+            const created = await collectionRepo.find({
+                where: [
+                    { id: toInternalId(secondChannelCollection.id) },
+                    { id: toInternalId(defaultChannelCollection.id) },
+                ],
+            });
+            expect(created.length).toBe(2);
+            expect(created.map(c => c.parentId)).toEqual([rootsBefore[0].id, rootsBefore[0].id]);
+
+            const { collection } = await adminClient.query(getCollectionBreadcrumbsDocument, {
+                id: defaultChannelCollection.id,
+            });
+            expect(collection?.breadcrumbs[0]).toEqual({
+                id: 'T_1',
+                name: ROOT_COLLECTION_NAME,
+                slug: ROOT_COLLECTION_NAME,
+            });
+        });
+
+        it('resolves the original root when a stray root is also assigned to the default Channel', async () => {
+            const rawConnection = server.app.get(TransactionalConnection).rawConnection;
+            const collectionRepo = rawConnection.getRepository(Collection);
+            const [realRoot] = await collectionRepo.find({ where: { isRoot: true } });
+            const defaultChannelId = 1;
+            const secondChannelId = Number(secondChannel.id.replace('T_', ''));
+
+            // A stray root left behind by the bug, later also assigned to the default Channel
+            const strayTranslation = await rawConnection.getRepository(CollectionTranslation).save(
+                new CollectionTranslation({
+                    languageCode: LanguageCode.en,
+                    name: ROOT_COLLECTION_NAME,
+                    description: '',
+                    slug: ROOT_COLLECTION_NAME,
+                }),
+            );
+            const strayRoot = await collectionRepo.save(
+                new Collection({
+                    isRoot: true,
+                    position: 0,
+                    filters: [],
+                    translations: [strayTranslation],
+                    channels: [{ id: secondChannelId }, { id: defaultChannelId }] as any,
+                }),
+            );
+            try {
+                // Without an ORDER BY, postgres returns the root lookup's rows in physical order, and
+                // re-writing the real root's rows places them after the stray root's. sqlite, mysql and
+                // mariadb return them in id order, so there this test passes with or without the fix.
+                const channelsRelation = collectionRepo
+                    .createQueryBuilder()
+                    .relation(Collection, 'channels')
+                    .of(realRoot.id);
+                await channelsRelation.remove(defaultChannelId);
+                await channelsRelation.add(defaultChannelId);
+                await collectionRepo.update({ id: realRoot.id }, { position: 0 });
+                // eslint-disable-next-line @typescript-eslint/dot-notation
+                server.app.get(CollectionService)['rootCollection'] = undefined;
+
+                const { createCollection } = await adminClient.query(createCollectionDocument, {
+                    input: {
+                        filters: [],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'root-5584-stray-root-on-default',
+                                description: '',
+                                slug: 'root-5584-stray-root-on-default',
+                            },
+                        ],
+                    },
+                });
+                expect(createCollection.parent?.id).toBe('T_1');
+                const { collection } = await adminClient.query(getCollectionBreadcrumbsDocument, {
+                    id: createCollection.id,
+                });
+                expect(collection?.breadcrumbs[0].id).toBe('T_1');
+            } finally {
+                await collectionRepo.update({ parentId: strayRoot.id }, { parentId: realRoot.id });
+                await collectionRepo.delete({ id: strayRoot.id });
+                // eslint-disable-next-line @typescript-eslint/dot-notation
+                server.app.get(CollectionService)['rootCollection'] = undefined;
+            }
+        });
+    });
+
     function getFacetValueId(code: string): string {
         const match = facetValues.find(fv => fv.code === code);
         if (!match) {
@@ -2512,6 +2931,62 @@ const getCollectionNestedParentsDocument = graphql(`
                             name
                         }
                     }
+                }
+            }
+        }
+    }
+`);
+
+const getCollectionVariantCountDocument = graphql(`
+    query GetCollectionVariantCount($id: ID!) {
+        collection(id: $id) {
+            id
+            productVariantCount
+            productVariants {
+                totalItems
+            }
+        }
+    }
+`);
+
+const getCollectionListVariantCountsDocument = graphql(`
+    query GetCollectionListVariantCounts($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                productVariantCount
+                children {
+                    id
+                    productVariantCount
+                }
+            }
+        }
+    }
+`);
+
+const getCollectionListChildVariantCountsDocument = graphql(`
+    query GetCollectionListChildVariantCounts($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                children {
+                    id
+                    productVariantCount
+                }
+            }
+        }
+    }
+`);
+
+const getCollectionListParentVariantCountsDocument = graphql(`
+    query GetCollectionListParentVariantCounts($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                productVariantCount
+                parent {
+                    id
+                    productVariantCount
                 }
             }
         }

@@ -264,7 +264,7 @@ export class DatabaseCollector {
      * Counts a list of entities in bounded chunks to avoid saturating the
      * connection pool during the daily heartbeat sweep.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     private async countInChunks(entities: Function[]): Promise<Array<number | undefined>> {
         const counts: Array<number | undefined> = [];
         for (let i = 0; i < entities.length; i += ENTITY_COUNT_CHUNK_SIZE) {
@@ -274,7 +274,7 @@ export class DatabaseCollector {
         return counts;
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     private async safeCount(entity: Function): Promise<number | undefined> {
         try {
             const rawConnection = this.connection.rawConnection;
@@ -287,7 +287,7 @@ export class DatabaseCollector {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     private getCustomEntities(): Function[] {
         const entities = this.configService.dbConnectionOptions.entities;
         if (!Array.isArray(entities)) {
@@ -295,7 +295,7 @@ export class DatabaseCollector {
         }
 
         const coreEntityNames = new Set(Object.keys(coreEntitiesMap));
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         const customEntities: Function[] = [];
 
         for (const entity of entities) {

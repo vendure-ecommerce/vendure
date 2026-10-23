@@ -28,21 +28,6 @@ interface ApiOptions {
     trustProxy?: TrustProxyOptions;
     apolloServerPlugins?: ApolloServerPlugin[];
     introspection?: boolean;
-    inputValidation?: {
-        /**
-         * @description
-         * When enabled, blank (empty or whitespace-only) string values are rejected for
-         * business-required fields on top-level mutation inputs (e.g. product name, facet code,
-         * channel token). Returns a `UserInputError` with the `field-cannot-be-blank` i18n code.
-         *
-         * Disable this if your integration cannot change its clients overnight and
-         * still sends empty strings for required fields.
-         *
-         * @default true
-         * @since 3.8.0
-         */
-        requiredFieldValidation?: boolean;
-    };
 }
 ```
 
@@ -87,13 +72,13 @@ object form is read as a boolean and otherwise ignored.
 <MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 Has no effect. This option used to set the `debug` option of Apollo Server, which was
-removed in Apollo Server 4.
+removed in Apollo Server 4. Stack traces are never included in API error responses.
 ### shopApiDebug
 
 <MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 Has no effect. This option used to set the `debug` option of Apollo Server, which was
-removed in Apollo Server 4.
+removed in Apollo Server 4. Stack traces are never included in API error responses.
 ### shopListQueryLimit
 
 <MemberInfo kind="property" type={`number`} default={`100`}   />
@@ -237,11 +222,6 @@ will not work.
   introspection: process.env.NODE_ENV !== 'production'
 }
 ```
-### inputValidation
-
-<MemberInfo kind="property" type={`{         /**          * @description          * When enabled, blank (empty or whitespace-only) string values are rejected for          * business-required fields on top-level mutation inputs (e.g. product name, facet code,          * channel token). Returns a \`<a href='/reference/typescript-api/errors/error-types#userinputerror'>UserInputError</a>\` with the \`field-cannot-be-blank\` i18n code.          *          * Disable this if your integration cannot change its clients overnight and          * still sends empty strings for required fields.          *          * @default true          * @since 3.8.0          */         requiredFieldValidation?: boolean;     }`}  since="3.8.0"  />
-
-Controls input validation behaviour for mutation arguments.
 
 
 </div>

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { CustomFieldType, Type } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import {
@@ -37,9 +37,10 @@ const MAX_STRING_LENGTH = 65535;
 
 /**
  * The relation property by which a translatable entity points at its translation entity. This is
- * the single signal used to detect translation entities — both to exclude them from custom-field
- * auto-init ({@link getTranslationEntityNames}) and to locate the translation type when registering
- * localized custom fields ({@link registerCustomEntityFields}).
+ * the single signal used to detect translation entities: to exclude them from custom-field
+ * auto-init ({@link getTranslationEntityNames}), to locate the translation type when registering
+ * localized custom fields ({@link registerCustomEntityFields}), and to decide which entities get the
+ * `(languageCode, base)` unique constraint (`registerTranslationEntityUniqueConstraints`).
  */
 const TRANSLATIONS_RELATION_PROPERTY = 'translations';
 
@@ -78,16 +79,17 @@ export function getEntityNamesWithCustomFields(entities: Array<Type<any>>): stri
 }
 
 /**
- * The relation-based definition of "is this a translation entity?", used internally by
- * {@link getEntityNamesWithCustomFields} to build its exclusion set. A translation entity is the
- * target of a `translations` relation; it carries its own `customFields` embedded (for localized
- * field values) but is never a valid `config.customFields` key.
+ * The relation-based definition of "is this a translation entity?", used by
+ * {@link getEntityNamesWithCustomFields} to build its exclusion set and by
+ * `registerTranslationEntityUniqueConstraints` to pick the entities to constrain. A translation
+ * entity is the target of a `translations` relation; it carries its own `customFields` embedded
+ * (for localized field values) but is never a valid `config.customFields` key.
  *
  * Built from the process-global metadata storage, so it may contain names of entities not
  * registered with this server. Callers filter their candidates to registered entities first, so a
  * stray name here can only ever exclude, never include.
  */
-function getTranslationEntityNames(): Set<string> {
+export function getTranslationEntityNames(): Set<string> {
     return new Set(
         getMetadataArgsStorage()
             .relations.filter(relation => relation.propertyName === TRANSLATIONS_RELATION_PROPERTY)
@@ -210,7 +212,9 @@ export function registerCustomFieldsForEntity(
                         // to the same database column as the relation's join column.
                         EntityId({ nullable: true })(instance, `${name}Id`);
                         if (indexed) {
-                            registerIndex(instance, name);
+                            // TypeORM matches an index to a relation by its bare property name, which
+                            // never matches a relation inside the customFields embedded.
+                            registerIndex(instance, `${name}Id`);
                         }
                     }
                 } else {

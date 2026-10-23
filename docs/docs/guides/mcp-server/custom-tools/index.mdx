@@ -6,7 +6,7 @@ order: 5
 ---
 
 Any Vendure plugin can add custom MCP tools. Define an injectable service, decorate it with
-[`@McpTool`](/reference/core-plugins/mcp-plugin/mcp-tool/), and register it as a provider. The MCP plugin
+[`@McpTool`](/reference/mcp-sdk/mcp-tool/), and register it as a provider. The MCP plugin
 discovers the tool at bootstrap and exposes it alongside Vendure's built-in tools.
 
 ## Before you start
@@ -38,7 +38,7 @@ Optionally add destructive confirmation, discovery keywords, or caller informati
 ## Write the tool class
 
 A tool is an `@Injectable()` class with the `@McpTool` decorator and an `execute(ctx, input)` method. Implement
-[`McpToolHandler`](/reference/core-plugins/mcp-plugin/mcp-tool-handler/) from `@vendure/mcp-sdk` for type-safety:
+[`McpToolHandler`](/reference/mcp-sdk/mcp-tool-handler/) from `@vendure/mcp-sdk` for type-safety:
 
 ```ts title="src/tools/low-stock.tool.ts"
 import { Injectable } from '@nestjs/common';
@@ -76,10 +76,16 @@ export class FindLowStockVariantsTool implements McpToolHandler<LowStockInput> {
 }
 ```
 
-To refuse a call, throw a `UserInputError` from `@vendure/core`. The agent receives `isError: true` with your message.
-Returning a Vendure error result, an object with `errorCode`, `message` and `__typename` such as the
-`CouponCodeInvalidError` that `OrderService.applyCouponCode` can return, is reported the same way, with the object
-as the structured content.
+To refuse a call, throw an error that extends `I18nError` from `@vendure/core`. It can be a core class such as
+`UserInputError`, or a class your plugin defines.
+
+What the agent receives depends on how the tool ends:
+
+| The tool | The agent receives |
+|---|---|
+| Throws an `I18nError`, apart from the cases in the last row | `isError: true` and the translated message |
+| Returns a Vendure error result, an object with `errorCode`, `message` and `__typename`, such as the `CouponCodeInvalidError` from `OrderService.applyCouponCode` | `isError: true`, the translated message, and the error object as the structured content |
+| Throws `InternalServerError`, an `I18nError` whose `logLevel` is `LogLevel.Error`, or an error that does not extend `I18nError` | `isError: true` and a fixed message saying the tool failed unexpectedly. The server logs the real error and its stack trace |
 
 Tool names share a flat namespace within each toolset, including built-in tools. Use a plugin-specific prefix
 such as `wishlist_add_item` rather than a generic name such as `add_item`, to avoid colliding with a future
@@ -99,14 +105,14 @@ export class MyPlugin {}
 
 The MCP registry discovers every `@McpTool` provider across the running app at bootstrap. To confirm the tool is
 being served, list the tools with the MCP Inspector: see
-[Test & debug with the MCP Inspector](/guides/mcp-server/quick-start/#test--debug-with-the-mcp-inspector).
+[Test & debug with the MCP Inspector](/mcp-server/quick-start/#test--debug-with-the-mcp-inspector).
 
 ## Define input and output schemas
 
 `inputSchema` accepts either a plain JSON Schema object
-([`McpJsonSchema`](/reference/core-plugins/mcp-plugin/mcp-json-schema/)) or a
+([`McpJsonSchema`](/reference/mcp-sdk/mcp-json-schema/)) or a
 [Standard Schema](https://standardschema.dev/) object
-([`McpStandardSchema`](/reference/core-plugins/mcp-plugin/mcp-standard-schema/)) from a library such as Zod 4,
+([`McpStandardSchema`](/reference/mcp-sdk/mcp-standard-schema/)) from a library such as Zod 4,
 ArkType, or Valibot. Zod users need Zod 4.2 or later: Zod 3 cannot produce the JSON Schema that MCP requires.
 
 With a Standard Schema, the schema library validates and parses the input before `execute()` is called. The
@@ -174,9 +180,24 @@ behaves the same on the admin endpoint but reads as "anonymous allowed".
 `Permission.Owner` is refused at startup. It is not a granted permission, so no MCP caller could ever pass it. Use
 `[Permission.Authenticated]` and check ownership inside the tool.
 
+If your config sets an [`EntityAccessControlStrategy`](/reference/typescript-api/auth/entity-access-control-strategy/),
+tool calls go through it:
+
+- `canAccess()` can refuse a tool that `permissions` allows, and tool listings leave a refused tool out. Unlike GraphQL,
+  it cannot allow a tool that `permissions` refuses.
+- `canAccess()` runs once per distinct permission list on each MCP request. Tools with the same list share the result.
+  A throw refuses those tools and is logged.
+- `canAccess()` receives the tool's `permissions`, or `[Permission.Public]` for a Shop tool that declares none.
+- `prepareAccessControl()` runs on the context passed to the tool handler, so `applyAccessControl()` filters the
+  queries made with that context. A tool or Vendure Framework service can copy the context, for example to open its own
+  transaction. Data your strategy stores per context object is not found on the copy, so key it on something a copy
+  keeps, such as `ctx.session`.
+
 ## Optional: Use the shopper's active order
 
 Set `usesActiveOrder: true` on a Shop tool that uses the shopper's active Order (cart). This lets anonymous callers continue the same cart across tool calls using a `sessionToken`.
+
+When the shopper already has a cart, `ctx.currencyCode` is the cart's currency instead of the channel's default, so changes to the cart keep its currency and prices.
 
 Session creation depends on the tool's `behavior`:
 
@@ -200,6 +221,17 @@ Leave `usesActiveOrder` unset for tools that do not need the shopper's cart.
 :::warning
 Do not add or handle `sessionToken` yourself. The MCP plugin manages it automatically and provides `execute` with the resolved `RequestContext`.
 :::
+
+To add to the cart, get the cart with [`findOrCreateActiveOrder`](/reference/mcp-sdk/find-or-create-active-order/)
+instead of `ActiveOrderService.getActiveOrder(ctx, undefined, true)`. It locks the session row first, so two calls that
+run at the same time on one session add to one cart and do not create two. It returns the cart and a `RequestContext`
+in the cart's currency. Pass that context to the core calls that change the cart. You can call it from a service that
+your tool calls, with the `ctx` the tool received.
+
+```ts
+const cart = await findOrCreateActiveOrder(ctx, new Injector(this.moduleRef));
+await this.orderService.addItemToOrder(cart.ctx, cart.order.id, input.variantId, 1);
+```
 
 ## Optional: Require confirmation on a destructive tool
 
@@ -242,7 +274,7 @@ export class ArchiveProductTool implements McpToolHandler<{ id: string }> {
 }
 ```
 
-See [How tool safety is derived](/guides/mcp-server/built-in-tools/#how-tool-safety-is-derived) for what each
+See [How tool safety is derived](/mcp-server/built-in-tools/#how-tool-safety-is-derived) for what each
 `behavior` value means.
 
 ## Optional: Add discovery keywords
@@ -258,12 +290,12 @@ keywords: ['money back', 'reimburse', 'return payment'],
 
 Keywords are never serialized into a tool listing or sent to the agent. They only tune search. They have no
 effect in the default `direct` exposure mode. See
-[Tool exposure](/guides/mcp-server/built-in-tools/#tool-exposure-direct-vs-discovery) for how discovery works.
+[Tool exposure](/mcp-server/built-in-tools/#tool-exposure-direct-vs-discovery) for how discovery works.
 
 ## Metadata quick reference
 
 The full field list, types, and defaults are on
-[`McpToolMetadata`](/reference/core-plugins/mcp-plugin/mcp-tool-metadata/). In brief:
+[`McpToolMetadata`](/reference/mcp-sdk/mcp-tool-metadata/). In brief:
 
 | Field | Purpose |
 |---|---|
@@ -273,14 +305,14 @@ The full field list, types, and defaults are on
 | `toolset` | `'shop'` or `'admin'` — which endpoint serves it |
 | `permissions` | `Permission[]`, OR semantics. Omitted/empty on `shop` defaults to Public; required on `admin` — boot fails without it |
 | `behavior` | Safety classification: `'readonly'`, `'mutating'` (default), or `'destructive'` |
-| `usesActiveOrder` | Set on Shop tools that need the active cart; enables registry-managed anonymous `sessionToken` handling |
+| `usesActiveOrder` | Set on Shop tools that need the active cart; enables registry-managed anonymous `sessionToken` handling, and `ctx.currencyCode` is the cart's currency |
 | `inputSchema` / `outputSchema` | JSON Schema or Standard Schema (e.g. Zod v4); input validated pre-call, output drift-checked post-call |
 | `keywords` | Search-only synonyms for discovery mode |
 
 ## Optional: Read caller identity
 
 `execute(ctx, input)` is enough for almost every tool. To learn who is calling, `execute` takes an optional third
-argument, [`McpCallerInfo`](/reference/core-plugins/mcp-plugin/mcp-caller-info/), from `@vendure/mcp-sdk`. It
+argument, [`McpCallerInfo`](/reference/mcp-sdk/mcp-caller-info/), from `@vendure/mcp-sdk`. It
 carries the OAuth grant behind the call and the client IP:
 
 ```ts
@@ -318,6 +350,6 @@ A tool never needs to depend on `@vendure/mcp-plugin`. Everything a tool impleme
 
 ## See also
 
-- [`McpToolMetadata`](/reference/core-plugins/mcp-plugin/mcp-tool-metadata/) — the full field list, types, and defaults.
-- [Built-in Tool Reference](/guides/mcp-server/built-in-tools/) — the tools Vendure ships, behavior values, and exposure modes.
-- [Test & debug with the MCP Inspector](/guides/mcp-server/quick-start/#test--debug-with-the-mcp-inspector) — list and call your tool interactively.
+- [`McpToolMetadata`](/reference/mcp-sdk/mcp-tool-metadata/) — the full field list, types, and defaults.
+- [Built-in Tool Reference](/mcp-server/built-in-tools/) — the tools Vendure ships, behavior values, and exposure modes.
+- [Test & debug with the MCP Inspector](/mcp-server/quick-start/#test--debug-with-the-mcp-inspector) — list and call your tool interactively.

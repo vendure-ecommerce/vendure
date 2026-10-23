@@ -4,11 +4,13 @@ import {
     CreateApiKeyResult,
     DeletionResponse,
     DeletionResult,
+    Permission,
     RotateApiKeyResult,
     UpdateApiKeyInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { In, IsNull, UpdateResult } from 'typeorm';
+import { unique } from '@vendure/common/lib/unique';
+import { In, IsNull, SelectQueryBuilder, UpdateResult } from 'typeorm';
 
 import { ApiType, RelationPaths, RequestContext } from '../../api';
 import {
@@ -32,7 +34,6 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
-import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
@@ -79,33 +80,51 @@ export class ApiKeyService {
 
     /**
      * @description
-     * Checks that the active user is allowed to grant the specified Roles for an API-Key
-     *
-     * // TODO this is taken & slightly modified from adminservice, could merge to not repeat logic
+     * Checks that the active user holds every Permission of the specified Roles, using the shared
+     * {@link RoleService.activeUserHasPermissionsOfRoles} rule so this and {@link AdministratorService}
+     * enforce it in one place. The Roles are either those being granted to an API-Key's User or those
+     * its User currently holds. Returns the loaded Roles (with their Channels) for callers that assign
+     * them to the API-Key's User.
      *
      * @throws {UserInputError} If the active User has insufficient permissions
      * @returns Role-Entities with relations to Channels
      */
-    private async assertActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]): Promise<Role[]> {
-        if (roleIds.length === 0) return [];
-
-        const roles = await this.connection.getRepository(ctx, Role).find({
+    private async assertActiveUserHasPermissionsOfRoles(ctx: RequestContext, roleIds: ID[]): Promise<Role[]> {
+        if (!(await this.roleService.activeUserHasPermissionsOfRoles(ctx, roleIds))) {
+            throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
+        }
+        if (roleIds.length === 0) {
+            return [];
+        }
+        return this.connection.getRepository(ctx, Role).find({
             where: { id: In(roleIds) },
             relations: { channels: true },
         });
-        const permissionsRequired = getChannelPermissions(roles);
-        for (const channelPermissions of permissionsRequired) {
-            const isAllowed = await this.roleService.userHasAllPermissionsOnChannel(
-                ctx,
-                channelPermissions.id,
-                channelPermissions.permissions,
-            );
+    }
 
-            if (!isAllowed)
-                throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
+    /**
+     * @description
+     * Loads an API-Key in the active Channel, with its User's Roles and their Channels, if the active
+     * User may manage it: they must hold every Permission of the key's User. A key they may not manage
+     * throws the same error as a key which does not exist, since {@link ApiKeyService.findOne} hides it
+     * and a different error would disclose that it exists. (GHSA-37xp-mjp8-6f9x)
+     *
+     * @throws {EntityNotFoundError} If the API-Key does not exist or the active User may not manage it
+     */
+    private async getManageableApiKeyOrThrow(ctx: RequestContext, id: ID): Promise<ApiKey> {
+        const entity = await this.connection.getEntityOrThrow(ctx, ApiKey, id, {
+            channelId: ctx.channelId,
+            includeSoftDeleted: false,
+            relations: { user: { roles: { channels: true } } },
+        });
+        const canManage = await this.roleService.activeUserHasPermissionsOfRoles(
+            ctx,
+            entity.user.roles.map(role => role.id),
+        );
+        if (!canManage) {
+            throw new EntityNotFoundError('ApiKey', id);
         }
-
-        return roles;
+        return entity;
     }
 
     /**
@@ -145,7 +164,7 @@ export class ApiKeyService {
          */
         userIdApiKeyUser?: ID,
     ): Promise<CreateApiKeyResult> {
-        const roles = await this.assertActiveUserCanGrantRoles(ctx, input.roleIds);
+        const roles = await this.assertActiveUserHasPermissionsOfRoles(ctx, input.roleIds);
 
         const ownerUser = await this.connection.getEntityOrThrow(ctx, User, userIdOwner);
         const apiType = this.getApiTypeForNewApiKey(ctx);
@@ -161,6 +180,17 @@ export class ApiKeyService {
                   roles,
                   this.generateApiKeyUserIdentifier(lookupId),
               );
+
+        if (userIdApiKeyUser) {
+            // The session binds to this existing User, whose Roles may exceed the caller's, so the
+            // returned secret would be a credential more powerful than the caller. Guard the
+            // impersonation path the same way rotate/update/softDelete do. The other branch builds a
+            // User from `roles`, already checked above. (GHSA-37xp-mjp8-6f9x)
+            await this.assertActiveUserHasPermissionsOfRoles(
+                ctx,
+                apiKeyUser.roles.map(role => role.id),
+            );
+        }
 
         const secret = await strategy.generateSecret(ctx);
         const apiKey = strategy.constructApiKey(lookupId, secret);
@@ -214,13 +244,14 @@ export class ApiKeyService {
         input: UpdateApiKeyInput,
         relations?: RelationPaths<ApiKey>,
     ): Promise<Translated<ApiKey>> {
-        const entity = await this.connection.getEntityOrThrow(ctx, ApiKey, input.id, {
-            channelId: ctx.channelId,
-            relations: ['user'],
-        });
+        // The caller must already hold every Permission the key's user holds before they may modify
+        // the key. Without this an Administrator holding only UpdateApiKey could rename a
+        // higher-privileged key or strip its roles. The incoming-roleIds check below additionally
+        // stops them raising a key's power.
+        const entity = await this.getManageableApiKeyOrThrow(ctx, input.id);
 
         if (input.roleIds) {
-            entity.user.roles = await this.assertActiveUserCanGrantRoles(ctx, input.roleIds);
+            entity.user.roles = await this.assertActiveUserHasPermissionsOfRoles(ctx, input.roleIds);
         }
 
         const apiKey = await this.translatableSaver.update({
@@ -248,12 +279,12 @@ export class ApiKeyService {
      * @description
      * Soft-Deletes an API-Key and removes its session. Is Channel-Aware.
      *
-     * @throws {EntityNotFoundError} If API-Key cannot be found
+     * @throws {EntityNotFoundError} If API-Key cannot be found, or the active User does not hold every
+     * Permission granted by the key's User
      */
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const apiKey = await this.connection.getEntityOrThrow(ctx, ApiKey, id, {
-            channelId: ctx.channelId,
-        });
+        // Without this an Administrator holding only DeleteApiKey could delete a higher-privileged key.
+        const apiKey = await this.getManageableApiKeyOrThrow(ctx, id);
 
         const hasAuthMethod = await this.connection.getRepository(ctx, AuthenticationMethod).existsBy({
             user: { id: apiKey.userId },
@@ -287,15 +318,16 @@ export class ApiKeyService {
      * This is a convenience method to invalidate an API-Key without
      * deleting the underlying roles and permissions.
      *
-     * @throws {EntityNotFoundError} If API-Key cannot be found
+     * @throws {EntityNotFoundError} If API-Key cannot be found, or the active User does not hold every
+     * Permission granted by the key's User
      */
     async rotate(ctx: RequestContext, id: ID): Promise<RotateApiKeyResult> {
-        const entity = await this.connection.getEntityOrThrow(ctx, ApiKey, id, {
-            channelId: ctx.channelId,
-            includeSoftDeleted: false,
-            // Need roles and channels for session
-            relations: { user: { roles: { channels: true } } },
-        });
+        // The rotated secret authenticates as the key's underlying User, whose Roles may exceed the
+        // caller's. Without this check an Administrator holding only UpdateApiKey could rotate a
+        // higher-privileged key and receive a working credential for it. Runs before any mutation,
+        // so a rejected rotate leaves the existing secret intact. The Roles and their Channels are
+        // also needed for the new session.
+        const entity = await this.getManageableApiKeyOrThrow(ctx, id);
 
         // The API comes from the key, not from the caller who rotates it. Core exposes rotateApiKey on
         // the Admin API only, so taking it from the context would turn every rotated Shop API key into
@@ -335,10 +367,19 @@ export class ApiKeyService {
         relations?: RelationPaths<ApiKey>,
     ): Promise<Translated<ApiKey> | null> {
         const entity = await this.connection.findOneInChannel(ctx, ApiKey, id, ctx.channelId, {
-            relations,
+            // The User's Roles are always loaded, since the visibility check is based on them.
+            relations: unique([...(relations ?? []), 'user', 'user.roles']),
             where: { deletedAt: IsNull() },
         });
         if (!entity) return null;
+        // Hide a key the caller could not manage, so its metadata is not disclosed by id lookup to an
+        // Administrator who does not hold the key's permissions. Same rule as the mutations, so the read
+        // and write policies cannot drift apart. (GHSA-37xp-mjp8-6f9x)
+        const visible = await this.roleService.activeUserHasPermissionsOfRoles(
+            ctx,
+            entity.user.roles.map(role => role.id),
+        );
+        if (!visible) return null;
         return this.translator.translate(entity, ctx);
     }
 
@@ -351,18 +392,51 @@ export class ApiKeyService {
         options?: ListQueryOptions<ApiKey>,
         relations?: RelationPaths<ApiKey>,
     ): Promise<PaginatedList<Translated<ApiKey>>> {
-        return this.listQueryBuilder
-            .build(ApiKey, options, {
-                ctx,
-                relations,
-                channelId: ctx.channelId,
-                where: { deletedAt: IsNull() },
-            })
-            .getManyAndCount()
-            .then(([notifications, totalItems]) => {
-                const items = notifications.map(n => this.translator.translate(n, ctx));
-                return { items, totalItems };
-            });
+        const qb = this.listQueryBuilder.build(ApiKey, options, {
+            ctx,
+            relations,
+            channelId: ctx.channelId,
+            where: { deletedAt: IsNull() },
+        });
+        // Restrict to keys the caller may manage, applied to the query so pagination and totalItems
+        // stay correct. (GHSA-37xp-mjp8-6f9x)
+        await this.restrictToVisibleApiKeys(ctx, qb);
+        const [keys, totalItems] = await qb.getManyAndCount();
+        const items = keys.map(key => this.translator.translate(key, ctx));
+        return { items, totalItems };
+    }
+
+    /**
+     * Restricts a list query to the API-Keys visible to the active user, by the same
+     * {@link RoleService.activeUserHasPermissionsOfRoles} rule that gates the mutations. Applied to the
+     * query rather than its result, so totalItems, sorting, filtering and pagination all operate over
+     * the visible keys only. Mirrors {@link AdministratorService}'s administrator visibility.
+     */
+    private async restrictToVisibleApiKeys(ctx: RequestContext, qb: SelectQueryBuilder<ApiKey>) {
+        // A SuperAdmin sees every key; getVisibleRoleIds() returns every Role id for them, so the
+        // sub-query would exclude nobody. This early return only saves the query.
+        if (ctx.userHasPermissions([Permission.SuperAdmin])) {
+            return;
+        }
+        const visibleRoleIds = await this.roleService.getVisibleRoleIds(ctx);
+        // A key is excluded as soon as its User holds a single Role the active user cannot read. A
+        // sub-query is used rather than a join, so the key rows are not duplicated by the relations.
+        qb.andWhere(outerQb => {
+            const hiddenApiKeysQuery = outerQb
+                .subQuery()
+                .select('visibility_api_key.id')
+                .from(ApiKey, 'visibility_api_key')
+                .innerJoin('visibility_api_key.user', 'visibility_user')
+                .innerJoin('visibility_user.roles', 'visibility_role');
+            // With no visible Roles, every Role is hidden, so no condition is needed on the Role.
+            if (visibleRoleIds.length) {
+                hiddenApiKeysQuery.where('visibility_role.id NOT IN (:...visibleRoleIds)', {
+                    visibleRoleIds,
+                });
+            }
+            const apiKeyId = `${outerQb.escape(outerQb.alias)}.${outerQb.escape('id')}`;
+            return `${apiKeyId} NOT IN ${hiddenApiKeysQuery.getQuery()}`;
+        });
     }
 
     /**

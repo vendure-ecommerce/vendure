@@ -14,7 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { Edit, Lock, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { get, useFormContext, useWatch } from 'react-hook-form';
 
 const slugForEntityDocument = graphql(`
     query SlugForEntity($input: SlugForEntityInput!) {
@@ -152,9 +152,15 @@ export interface SlugInputProps extends DashboardFormComponentProps {
  * @description
  * A component for generating and displaying slugs based on a watched field.
  * The component watches a source field for changes, debounces the input,
- * and generates a unique slug via the Admin API. The slug is only auto-generated
- * when it's empty. For existing slugs, a regenerate button allows manual regeneration.
+ * and generates a unique slug via the Admin API. The slug is auto-generated while the
+ * field's form default value is empty, which covers creating an entity and adding a new
+ * language to an existing one. A field whose default value is already set keeps it when
+ * the watched field changes; a regenerate button allows manual regeneration.
  * The input is readonly by default but can be made editable with a toggle button.
+ *
+ * The form must therefore hold the loaded entity in its default values, for example via
+ * `useForm({ values })` or `reset()`. If the entity is loaded with `setValue()`, or the form
+ * has no default values, an existing slug is overwritten when the watched field changes.
  *
  * @example
  * ```tsx
@@ -225,7 +231,10 @@ export function SlugInput({
 
     const watchFieldState = form.getFieldState(actualWatchFieldName);
     const debouncedWatchedValue = useDebounce(watchedValue, 500);
-    const shouldAutoGenerate = isReadonly && !entityId && watchFieldState.isDirty;
+    // Generate while the field has no saved value: on create, or for a language added to an
+    // existing entity. A field that already has one keeps it when the watched field changes.
+    const hasSavedSlug = !!get(form.formState.defaultValues, name);
+    const shouldAutoGenerate = isReadonly && !hasSavedSlug && watchFieldState.isDirty;
     const queryKey = ['slugForEntity', entityName, fieldName, debouncedWatchedValue, entityId];
     const enabled = !!debouncedWatchedValue && shouldAutoGenerate;
     const {

@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { isGraphQlErrorResult, OrderService, Permission, RequestContext } from '@vendure/core';
-import { McpTool, McpToolHandler } from '@vendure/mcp-sdk';
+import { McpTool, McpToolHandler, shortText } from '@vendure/mcp-sdk';
 import { z } from 'zod';
 
 import { McpActiveOrderService } from '../active-order.service';
 import { McpToolSerializerService } from '../serializer.service';
-import { shortText } from '../string-schemas';
 
 const applyCouponCodeInput = z.strictObject({
     code: shortText.describe('Coupon code.'),
@@ -46,7 +45,7 @@ export class ApplyCouponCodeTool implements McpToolHandler<ApplyCouponCodeInput>
             return this.serializer.orderOrError(order);
         }
         return this.serializer.orderOrError(
-            await this.orderService.applyCouponCode(order.ctx, order.id, input.code),
+            await this.orderService.applyCouponCode(ctx, order.id, input.code),
         );
     }
 }

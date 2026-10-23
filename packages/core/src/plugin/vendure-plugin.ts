@@ -54,7 +54,7 @@ export interface VendurePluginMetadata extends ModuleMetadata {
     /**
      * @description
      * The plugin should define a valid [semver version string](https://www.npmjs.com/package/semver) to indicate which versions of
-     * Vendure core it is compatible with. Attempting to use a plugin with an incompatible
+     * the Vendure Framework it is compatible with. Attempting to use a plugin with an incompatible
      * version of Vendure will result in an error and the server will be unable to bootstrap.
      *
      * If a plugin does not define this property, a message will be logged on bootstrap that the plugin is not
@@ -169,7 +169,7 @@ export type DashboardExtension =
  * @docsCategory plugin
  */
 export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecorator {
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     return (target: Function) => {
         for (const metadataProperty of Object.values(PLUGIN_METADATA)) {
             const property = metadataProperty as keyof VendurePluginMetadata;

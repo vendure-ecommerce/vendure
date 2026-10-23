@@ -12,14 +12,12 @@ import {
     TransactionalConnection,
     UserInputError,
 } from '@vendure/core';
-import { McpTool, McpToolHandler } from '@vendure/mcp-sdk';
+import { emailAddressSchema, McpTool, McpToolHandler, shortText } from '@vendure/mcp-sdk';
 import { z } from 'zod';
 
 import { McpActiveOrderService } from '../active-order.service';
 import { McpCustomFieldInputService } from '../custom-field-input.service';
-import { emailAddressSchema } from '../email-schema';
 import { McpToolSerializerService } from '../serializer.service';
-import { shortText } from '../string-schemas';
 
 import { addressInputSchema } from './address-schema';
 
@@ -109,7 +107,7 @@ export class SetCheckoutDetailsTool implements McpToolHandler<SetCheckoutDetails
         if (isGraphQlErrorResult(cart)) {
             return this.serializer.orderOrError(cart);
         }
-        return this.connection.withTransaction(cart.ctx, async txCtx => {
+        return this.connection.withTransaction(ctx, async txCtx => {
             // The customer relation is loaded so that the answer can show who the cart belongs to.
             const before = await this.orderService.findOne(txCtx, cart.id, ['shippingLines', 'customer']);
             if (!before) {

@@ -634,7 +634,7 @@ export class CollectionService implements OnModuleInit {
     ): Promise<{ parentIdById: Map<ID, ID>; isRootById: Map<ID, boolean> }> {
         const idsToLoad = unique([...frontier.values()]);
         const rows = await this.connection.getRepository(ctx, Collection).find({
-            select: ['id', 'parentId'],
+            select: { id: true, parentId: true },
             where: { id: In(idsToLoad) },
         });
         const parentIdById = new Map(rows.map(r => [r.id, r.parentId] as const));
@@ -642,7 +642,7 @@ export class CollectionService implements OnModuleInit {
         const candidateParentIds = unique([...parentIdById.values()].filter((id): id is ID => id != null));
         const parentRows = candidateParentIds.length
             ? await this.connection.getRepository(ctx, Collection).find({
-                  select: ['id', 'isRoot'],
+                  select: { id: true, isRoot: true },
                   where: { id: In(candidateParentIds) },
               })
             : [];
@@ -801,16 +801,17 @@ export class CollectionService implements OnModuleInit {
         const deletedCollection = new Collection(collection);
         const descendants = await this.getDescendants(ctx, collection.id);
         for (const coll of [...descendants.reverse(), collection]) {
-            const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
+            const affectedVariantIds = await this.getCollectionProductVariantIds(coll, ctx);
             const deletedColl = new Collection(coll);
             // To avoid performance issues on huge collections, we first delete the links
             // between the product variants and the collection by chunks
             const chunkedDeleteIds = this.chunkArray(affectedVariantIds, 500);
             for (const chunkedDeleteId of chunkedDeleteIds) {
-                await this.connection.rawConnection
+                await this.connection
+                    .getRepository(ctx, Collection)
                     .createQueryBuilder()
                     .relation(Collection, 'productVariants')
-                    .of(collection)
+                    .of(coll)
                     .remove(chunkedDeleteId);
             }
             await this.connection.getRepository(ctx, Collection).remove(coll);
@@ -998,6 +999,8 @@ export class CollectionService implements OnModuleInit {
             .getRepository(ProductVariant)
             .createQueryBuilder('productVariant')
             .select('productVariant.id', 'id')
+            // Guards against duplicate ids from any filter that joins a to-many relation.
+            .distinct(true)
             .setFindOptions({ loadEagerRelations: false });
 
         // If there are no filters, we need to ensure that the query returns no results
@@ -1243,13 +1246,19 @@ export class CollectionService implements OnModuleInit {
             return cachedRoot;
         }
 
+        // A single root Collection is shared by all Channels and belongs to the default Channel,
+        // so it must not be looked up (or created) in the Channel of the current request.
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         const existingRoot = await this.connection
             .getRepository(ctx, Collection)
             .createQueryBuilder('collection')
             .leftJoin('collection.channels', 'channel')
             .leftJoinAndSelect('collection.translations', 'translation')
             .where('collection.isRoot = :isRoot', { isRoot: true })
-            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('channel.id = :channelId', { channelId: defaultChannel.id })
+            // Stray roots created before #5584 may also be assigned to the default Channel.
+            // The original root is the oldest, and without an order the database may return either.
+            .orderBy('collection.id', 'ASC')
             .getOne();
 
         if (existingRoot) {
@@ -1274,7 +1283,7 @@ export class CollectionService implements OnModuleInit {
                 isRoot: true,
                 position: 0,
                 translations: [rootTranslation],
-                channels: [ctx.channel],
+                channels: [defaultChannel],
                 filters: [],
             }),
         );

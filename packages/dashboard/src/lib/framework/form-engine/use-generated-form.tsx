@@ -14,6 +14,7 @@ import {
 import {
     convertEmptyStringsToNull,
     getChangedTopLevelFields,
+    mergeStartingValues,
     removeEmptyIdFields,
     stripNullNullableFields,
     stripUntouchedTranslations,
@@ -111,6 +112,17 @@ export interface GeneratedFormOptions<
     ) => WithLooseCustomFields<
         VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>
     >;
+    /**
+     * @description
+     * The starting values to apply on top of the default values when there is no entity. They count as
+     * unsaved changes. The form resets whenever they change, so values such as `new Date()` should not
+     * be recreated on every render.
+     *
+     * @since 3.8.0
+     */
+    startingValues?: WithLooseCustomFields<
+        Partial<VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>>
+    >;
     onSubmit?: (
         values: VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>,
         meta?: GeneratedFormSubmitMeta,
@@ -153,7 +165,16 @@ export function useGeneratedForm<
     VarName extends keyof VariablesOf<T> | undefined,
     E extends Record<string, any> = Record<string, any>,
 >(options: GeneratedFormOptions<T, VarName, E>) {
-    const { document, entity, setValues, onSubmit, varName, customFieldConfig, extendSchema } = options;
+    const {
+        document,
+        entity,
+        setValues,
+        startingValues: startingValuesOption,
+        onSubmit,
+        varName,
+        customFieldConfig,
+        extendSchema,
+    } = options;
     const { activeChannel } = useChannel();
     const serverConfig = useServerConfig();
 
@@ -178,6 +199,8 @@ export function useGeneratedForm<
     const extendSchemaRef = useRef(extendSchema);
     extendSchemaRef.current = extendSchema;
 
+    const startingValues = entity ? undefined : startingValuesOption;
+
     // Recomputing this on every render produces a new array identity which
     // ripples into the schema and default-values memos below, defeating any
     // stable form state. Memoise on the document + varName.
@@ -191,14 +214,20 @@ export function useGeneratedForm<
     // config hasn't changed.
     const availableLanguages = serverConfig?.availableLanguages ?? EMPTY_LANGUAGES;
 
+    // A create form has no entity. `useDetailPage` reads the entity through a suspended query, so
+    // `isCreateForm` stays constant there and the resolver is not swapped. A caller that passes the
+    // entity after the first render gets the update schema once it arrives. See
+    // `applyCustomFieldModifiers` (#5241).
+    const isCreateForm = !entity;
+
     // Without memoisation these objects/arrays are rebuilt on every render of
     // the parent route. When the schema changes identity, react-hook-form's
     // resolver is replaced and the form re-validates everything; when
     // defaultValues changes identity it can also reset uncontrolled inputs.
     const schema = useMemo(() => {
-        const generated = createFormSchemaFromFields(updateFields, customFieldConfig);
+        const generated = createFormSchemaFromFields(updateFields, customFieldConfig, false, isCreateForm);
         return extendSchemaRef.current?.(generated) ?? generated;
-    }, [updateFields, customFieldConfig]);
+    }, [updateFields, customFieldConfig, isCreateForm]);
     const defaultValues = useMemo(
         () => getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode, customFieldConfig),
         [updateFields, activeChannel?.defaultLanguageCode, customFieldConfig],
@@ -246,6 +275,16 @@ export function useGeneratedForm<
             void form.trigger();
         }
     }, [valuesKey]);
+
+    // Put the starting values on top of the defaults. The defaults stay the baseline, so the starting
+    // values count as unsaved changes. Keep this below `useForm`: it must run after react-hook-form
+    // resets the form to `values`, which also happens whenever `values` changes.
+    const startingValuesKey = JSON.stringify(startingValues);
+    useEffect(() => {
+        if (startingValues) {
+            form.reset(mergeStartingValues(values, startingValues), { keepDefaultValues: true });
+        }
+    }, [valuesKey, startingValuesKey]);
 
     let submitHandler = (event: FormEvent): any => {
         event.preventDefault();

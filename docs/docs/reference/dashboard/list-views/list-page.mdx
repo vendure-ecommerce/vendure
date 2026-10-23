@@ -4,7 +4,7 @@ generated: true
 ---
 ## ListPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="531" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="538" packageName="@vendure/dashboard" since="3.3.0" />
 
 Auto-generates a list page with columns generated based on the provided query document fields.
 
@@ -138,6 +138,7 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
     onReorder?: (oldIndex: number, newIndex: number, item: any) => void | Promise<void>;
     disableDragAndDrop?: boolean;
     emptyStateAction?: React.ReactNode;
+    emptyStateIllustration?: React.ReactNode;
 }
 ```
 
@@ -540,6 +541,13 @@ Defaults to false. Only relevant when `onReorder` is provided.
 An optional action rendered inside the first-run empty state (when the list
 has no items and no active filters), typically a "create your first X" CTA.
 Gate it with a [PermissionGuard](/reference/dashboard/components/permission-guard#permissionguard) to mirror the create button's permissions.
+### emptyStateIllustration
+
+<MemberInfo kind="property" type={`React.ReactNode`}   />
+
+An optional illustration rendered in the first-run empty state (no data and no
+active filters). Defaults to the generic empty-collection illustration. Pass a
+scenario illustration such as `NoProductsIllustration` when one matches.
 
 
 </div>

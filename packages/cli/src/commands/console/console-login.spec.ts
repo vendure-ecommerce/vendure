@@ -1,41 +1,57 @@
 import fs from 'fs-extra';
-import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { ConsoleSession, startLoopbackCallback } from './cli-auth';
-import { CALLBACK_GRACE_MS, ConsoleCommandDependencies, ConsoleReporter, consoleCommand } from './console';
-import { ConsoleLinkContext } from './console-link-hook';
+import { readStoredAuth } from '../../auth/auth-store';
+
+import { ConsoleSession } from './cli-auth';
+import { ConsoleCommandDependencies, ConsoleCommandOptions, consoleCommand } from './console';
+import { RegisteredConsoleLinkHook } from './console-link-hook';
+import { ConsoleReporter } from './console-reporter';
 import {
-    ACCESS_TOKEN,
-    LINK_ID,
+    ACCOUNT_ID,
+    FakeConsoleOptions,
     NOW,
-    REFRESH_TOKEN,
-    createConsoleFetch,
+    ORGANIZATION_ID,
+    OTHER_ACCOUNT_ID,
+    OTHER_ORGANIZATION_ID,
+    PROJECT_ID,
+    STORED_ACCESS_TOKEN,
+    STORED_REFRESH_TOKEN,
+    USER,
+    WORKOS_AUTHENTICATE_URL,
+    WORKOS_DEVICE_AUTHORIZE_URL,
+    accessToken,
+    createCliConfigDir,
     createVendureProject,
+    fakeConsole,
+    jsonResponse,
     manifest,
+    storeLogin,
 } from './console.fixtures';
 import { ProjectLinkManifest, getProjectLinkManifestPath } from './project-link-manifest';
 
 /**
- * The official production pair, so the origin gate opens. Nothing reaches the
- * network: every request goes through the injected `fetch`, and the only real
- * socket is the loopback listener the client binds on this machine.
+ * The official production pair. Nothing reaches the network: every request
+ * goes through the injected `fetch`, which answers as Console and WorkOS.
  */
+const API_URL = 'https://api.vendure.io';
 const OFFICIAL_ENV = {
     VENDURE_CLI_NON_INTERACTIVE: 'true',
     VENDURE_CONSOLE_APP_URL: 'https://console.vendure.io',
-    VENDURE_CONSOLE_API_URL: 'https://api.vendure.io',
+    VENDURE_CONSOLE_API_URL: API_URL,
 };
 
 const productionManifest: ProjectLinkManifest = {
     ...manifest,
     schemaVersion: 1,
-    console: {
-        appOrigin: 'https://console.vendure.io',
-        apiOrigin: 'https://api.vendure.io',
-    },
+    console: { appOrigin: 'https://console.vendure.io', apiOrigin: API_URL },
 };
+
+const twoAccounts = [
+    { organizationId: ORGANIZATION_ID, customerAccountId: ACCOUNT_ID, name: 'Acme' },
+    { organizationId: OTHER_ORGANIZATION_ID, customerAccountId: OTHER_ACCOUNT_ID, name: 'Other' },
+];
 
 const temporaryDirectories: string[] = [];
 
@@ -47,447 +63,547 @@ afterEach(() => {
 });
 
 describe('console link command line login', () => {
-    it('settles the link and the session from one browser approval', async () => {
-        const run = await runLink();
+    it('signs in with the device flow when no login is stored, then links with that login', async () => {
+        const run = await runLink({ login: false });
 
         expect(run.exitCode).toBe(0);
         expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
-        // One approval. The browser was opened once and never sent to the
-        // standalone sign-in page.
-        expect(run.openedUrls).toHaveLength(1);
-        expect(new URL(run.openedUrls[0]).pathname).not.toBe('/cli-auth');
-
-        // All five parameters, on the verification URL Console already returned.
-        const opened = new URL(run.openedUrls[0]);
-        expect(opened.searchParams.get('client')).toBe('cli');
-        expect(opened.searchParams.get('code_challenge_method')).toBe('S256');
-        // The state on the URL is the one the listener accepted: the browser
-        // stub only reaches the code path by echoing it back.
-        expect(opened.searchParams.get('state')).toBe(run.callbackState);
-        const redirectUri = opened.searchParams.get('redirect_uri') ?? '';
-        expect(new URL(redirectUri).hostname).toBe('127.0.0.1');
-        expect(new URL(redirectUri).pathname).toBe('/auth/callback');
-
-        // The exchange proved possession of the verifier behind the challenge.
-        expect(createHash('sha256').update(run.grant.code_verifier).digest('base64url')).toBe(
-            opened.searchParams.get('code_challenge'),
+        expect(run.messages.join('\n')).toContain('Confirm this code in your browser: ABCD-EFGH');
+        expect(run.openedUrls).toEqual(['https://auth.example.com/device?code=ABCD-EFGH']);
+        // The login is the one `vendure auth login` stores, so `vendure auth logout` ends it.
+        const stored = readStoredAuth({ env: run.env });
+        expect(stored?.organization).toEqual({
+            workosOrganizationId: ORGANIZATION_ID,
+            customerAccountId: ACCOUNT_ID,
+            name: 'Acme',
+        });
+        expect(run.urls()).toEqual([
+            `${API_URL}/v1`,
+            WORKOS_DEVICE_AUTHORIZE_URL,
+            WORKOS_AUTHENTICATE_URL,
+            `${API_URL}/v1/me`,
+            `${API_URL}/v1/me`,
+            `${API_URL}/v1/projects`,
+            `${API_URL}/v1/projects/${PROJECT_ID}/link`,
+        ]);
+        expect(run.authorizationFor(`${API_URL}/v1/projects/${PROJECT_ID}/link`)).toBe(
+            `Bearer ${stored?.accessToken}`,
         );
-        expect(run.grant.grant_type).toBe('authorization_code');
-        expect(run.grant.redirect_uri).toBe(redirectUri);
+    });
 
-        expect(run.sessions).toEqual([
-            { accessToken: ACCESS_TOKEN, refreshToken: REFRESH_TOKEN, expiresAt: NOW + 3_600_000 },
+    it('never creates a Console CLI Session or a browser-approved Project Link', async () => {
+        const run = await runLink({ login: false });
+
+        expect(run.exitCode).toBe(0);
+        expect(run.urls().some(url => url.includes('/v1/auth/cli/'))).toBe(false);
+        expect(run.urls().some(url => url.includes('/v1/project-links'))).toBe(false);
+    });
+
+    it('uses the stored login without opening a browser', async () => {
+        const run = await runLink();
+
+        expect(run.exitCode).toBe(0);
+        expect(run.openedUrls).toEqual([]);
+        expect(run.urls()).toEqual([
+            `${API_URL}/v1/me`,
+            `${API_URL}/v1/projects`,
+            `${API_URL}/v1/projects/${PROJECT_ID}/link`,
         ]);
     });
 
-    it('waits briefly for a callback the poll beat, rather than closing on it', async () => {
-        let releaseCallback: (() => void) | undefined;
-        const arrived = new Promise<void>(resolve => {
-            releaseCallback = resolve;
-        });
+    it('signs in again when WorkOS has ended the stored login', async () => {
         const run = await runLink({
-            // The browser has not answered by the time the poll returns, which
-            // is the ordinary case: the poll runs on its own clock.
-            openUrl: async url => {
-                const search = new URL(url).searchParams;
-                const redirectUri = search.get('redirect_uri') ?? '';
-                const state = search.get('state') ?? '';
-                void (async () => {
-                    await fetch(`${redirectUri}?code=the-code&state=${encodeURIComponent(state)}`);
-                    releaseCallback?.();
-                })();
-            },
-            // The grace period is where the callback lands.
-            sleep: async milliseconds => {
-                if (milliseconds === CALLBACK_GRACE_MS) {
-                    await arrived;
-                }
-            },
+            storedAccessToken: accessToken('expired', ORGANIZATION_ID, -60),
+            console: { refresh: () => jsonResponse({ error: 'invalid_grant' }, 400) },
         });
 
-        expect(run.delays).toEqual([CALLBACK_GRACE_MS]);
-        expect(run.sessions[0]?.accessToken).toBe(ACCESS_TOKEN);
+        expect(run.exitCode).toBe(0);
+        expect(run.urls()).toContain(WORKOS_DEVICE_AUTHORIZE_URL);
+        expect(readStoredAuth({ env: run.env })?.refreshToken).not.toBe(STORED_REFRESH_TOKEN);
     });
 
-    it('gives up on the callback once the grace period is spent', async () => {
-        const run = await runLink({ openUrl: () => Promise.resolve() });
+    it('uses the stored login when --organization names its organization', async () => {
+        const byName = await runLink({ options: { organization: ' acme ' } });
+        const byId = await runLink({ options: { organization: ACCOUNT_ID.toUpperCase() } });
 
-        expect(run.delays).toEqual([CALLBACK_GRACE_MS]);
-        expect(run.sessions).toEqual([undefined]);
+        for (const run of [byName, byId]) {
+            expect(run.exitCode).toBe(0);
+            expect(run.urls()).not.toContain(WORKOS_DEVICE_AUTHORIZE_URL);
+        }
     });
 
-    it('cancels the losing grace delay when the callback wins', async () => {
-        let graceSignal: AbortSignal | undefined;
+    it('signs in to the organization --organization names when the stored login is for another', async () => {
         const run = await runLink({
-            sleep: (milliseconds, signal) => {
-                expect(milliseconds).toBe(CALLBACK_GRACE_MS);
-                graceSignal = signal;
-                return new Promise((_resolve, reject) => {
-                    signal.addEventListener('abort', () => reject(new Error('grace cancelled')), {
-                        once: true,
-                    });
-                });
+            options: { organization: 'Other' },
+            console: {
+                memberships: [
+                    { organizationId: ORGANIZATION_ID, customerAccountId: ACCOUNT_ID, name: 'Acme' },
+                    {
+                        organizationId: OTHER_ORGANIZATION_ID,
+                        customerAccountId: OTHER_ACCOUNT_ID,
+                        name: 'Other',
+                    },
+                ],
             },
         });
 
         expect(run.exitCode).toBe(0);
-        expect(run.delays).toEqual([CALLBACK_GRACE_MS]);
-        expect(graceSignal?.aborted).toBe(true);
+        expect(run.urls()).toContain(WORKOS_DEVICE_AUTHORIZE_URL);
+        expect(readStoredAuth({ env: run.env })?.organization?.customerAccountId).toBe(OTHER_ACCOUNT_ID);
+        expect(run.authorizationFor(`${API_URL}/v1/projects`)).toBe(
+            `Bearer ${readStoredAuth({ env: run.env })?.accessToken}`,
+        );
     });
 
-    it('obtains no session when no plugin asked for one', async () => {
-        const run = await runLink({ hooks: [] });
+    // PDEV-552: a new customer's first device login has no organization.
+    it("scopes a first device login without an organization to the user's only Customer Account", async () => {
+        const select = vi.fn();
+        const run = await runLink({ login: false, select, console: { deviceOrganizationId: null } });
 
         expect(run.exitCode).toBe(0);
-        // A token nobody consumes is still a live token, so none is minted and
-        // no callback address is advertised.
-        expect(new URL(run.openedUrls[0]).searchParams.get('redirect_uri')).toBeNull();
-        expect(run.grants).toEqual([]);
+        expect(select).not.toHaveBeenCalled();
+        expect(run.refreshGrants()).toEqual([expect.objectContaining({ organization_id: ORGANIZATION_ID })]);
+        const stored = readStoredAuth({ env: run.env });
+        expect(stored?.organization).toEqual({
+            workosOrganizationId: ORGANIZATION_ID,
+            customerAccountId: ACCOUNT_ID,
+            name: 'Acme',
+        });
+        expect(run.authorizationFor(`${API_URL}/v1/projects/${PROJECT_ID}/link`)).toBe(
+            `Bearer ${stored?.accessToken}`,
+        );
+        expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
     });
 
-    it('does not obtain or expose a session for a hook that did not request one', async () => {
-        const sessions: Array<ConsoleSession | undefined> = [];
+    it('scopes a stored login without an organization without opening a browser', async () => {
         const run = await runLink({
-            hooks: [
-                {
-                    pluginId: '@example/config-only',
-                    hook: async context => {
-                        sessions.push(context.session);
-                    },
-                },
-            ],
+            storedOrganization: null,
+            storedAccessToken: accessToken('stored', null),
         });
 
         expect(run.exitCode).toBe(0);
-        expect(new URL(run.openedUrls[0]).searchParams.get('redirect_uri')).toBeNull();
-        expect(run.grants).toEqual([]);
-        expect(sessions).toEqual([undefined]);
+        expect(run.openedUrls).toEqual([]);
+        expect(run.urls()).toEqual([
+            `${API_URL}/v1/me`,
+            WORKOS_AUTHENTICATE_URL,
+            `${API_URL}/v1/projects`,
+            `${API_URL}/v1/projects/${PROJECT_ID}/link`,
+        ]);
+        expect(run.refreshGrants()).toEqual([
+            expect.objectContaining({
+                refresh_token: STORED_REFRESH_TOKEN,
+                organization_id: ORGANIZATION_ID,
+            }),
+        ]);
+        // The refresh token is single-use, so the rotated one replaces it.
+        const stored = readStoredAuth({ env: run.env });
+        expect(stored?.refreshToken).not.toBe(STORED_REFRESH_TOKEN);
+        expect(stored?.organization?.customerAccountId).toBe(ACCOUNT_ID);
     });
 
-    it('gives each requesting hook its own session copy', async () => {
-        const sessions: Array<ConsoleSession | undefined> = [];
+    // PDEV-559: a user with several Customer Accounts gets no choice in the browser.
+    it('asks which Customer Account to use when the user has several', async () => {
+        const select = vi.fn(async () => OTHER_ACCOUNT_ID);
         const run = await runLink({
-            hooks: [
-                {
-                    pluginId: '@example/first',
-                    requiresSession: true,
-                    hook: async context => {
-                        sessions.push(context.session);
-                        if (context.session) {
-                            context.session.accessToken = 'changed-by-first';
-                        }
-                    },
-                },
-                {
-                    pluginId: '@example/second',
-                    requiresSession: true,
-                    hook: async context => {
-                        sessions.push(context.session);
-                    },
-                },
-            ],
+            interactive: true,
+            login: false,
+            select,
+            console: { deviceOrganizationId: null, memberships: twoAccounts },
         });
 
         expect(run.exitCode).toBe(0);
-        expect(sessions).toHaveLength(2);
-        expect(sessions[0]).not.toBe(sessions[1]);
-        expect(sessions[1]?.accessToken).toBe(ACCESS_TOKEN);
+        expect(select).toHaveBeenCalledWith('Which Vendure Console account do you want to use?', [
+            { value: ACCOUNT_ID, label: `Acme (${ACCOUNT_ID})` },
+            { value: OTHER_ACCOUNT_ID, label: `Other (${OTHER_ACCOUNT_ID})` },
+        ]);
+        expect(run.refreshGrants()).toEqual([
+            expect.objectContaining({ organization_id: OTHER_ORGANIZATION_ID }),
+        ]);
+        const stored = readStoredAuth({ env: run.env });
+        expect(stored?.organization?.customerAccountId).toBe(OTHER_ACCOUNT_ID);
+        expect(run.authorizationFor(`${API_URL}/v1/projects`)).toBe(`Bearer ${stored?.accessToken}`);
     });
 
-    it('does not advertise a callback address over an SSH session', async () => {
-        const run = await runLink({ env: { ...OFFICIAL_ENV, SSH_CONNECTION: '10.0.0.1 22 10.0.0.2 22' } });
+    // PDEV-559: AuthKit can return a login that is already scoped to one of several accounts.
+    it('asks which Customer Account to use when the stored login is scoped and the user has several', async () => {
+        const select = vi.fn(async () => OTHER_ACCOUNT_ID);
+        const run = await runLink({ interactive: true, select, console: { memberships: twoAccounts } });
 
         expect(run.exitCode).toBe(0);
-        // The browser is somewhere else, so the callback could only reach a
-        // process that happens to hold that port on the other machine.
-        expect(new URL(run.openedUrls[0]).searchParams.get('redirect_uri')).toBeNull();
-        expect(run.sessions).toEqual([undefined]);
+        expect(select).toHaveBeenCalledWith('Which Vendure Console account do you want to use?', [
+            { value: ACCOUNT_ID, label: `Acme (${ACCOUNT_ID})` },
+            { value: OTHER_ACCOUNT_ID, label: `Other (${OTHER_ACCOUNT_ID})` },
+        ]);
+        expect(run.refreshGrants()).toEqual([
+            expect.objectContaining({ organization_id: OTHER_ORGANIZATION_ID }),
+        ]);
+        const stored = readStoredAuth({ env: run.env });
+        expect(stored?.organization?.customerAccountId).toBe(OTHER_ACCOUNT_ID);
+        expect(run.authorizationFor(`${API_URL}/v1/projects`)).toBe(`Bearer ${stored?.accessToken}`);
+    });
+
+    it('lists the scoped Customer Account first and keeps the login when it is chosen', async () => {
+        const select = vi.fn(async (_message: string, choices: Array<{ value: string }>) => choices[0].value);
+        const run = await runLink({
+            interactive: true,
+            select,
+            storedOrganization: {
+                workosOrganizationId: OTHER_ORGANIZATION_ID,
+                customerAccountId: OTHER_ACCOUNT_ID,
+                name: 'Other',
+            },
+            console: { memberships: twoAccounts },
+        });
+
+        expect(run.exitCode).toBe(0);
+        expect(select.mock.calls[0][1].map(choice => choice.value)).toEqual([OTHER_ACCOUNT_ID, ACCOUNT_ID]);
+        expect(run.refreshGrants()).toEqual([]);
+    });
+
+    it('does not ask when a scoped login has only one Customer Account', async () => {
+        const select = vi.fn(async () => undefined);
+        const run = await runLink({ interactive: true, select });
+
+        expect(run.exitCode).toBe(0);
+        expect(select).not.toHaveBeenCalled();
+        expect(run.refreshGrants()).toEqual([]);
+    });
+
+    it('does not ask when --organization names the account of a scoped login', async () => {
+        const select = vi.fn(async () => undefined);
+        const run = await runLink({
+            interactive: true,
+            select,
+            options: { organization: ACCOUNT_ID },
+            console: { memberships: twoAccounts },
+        });
+
+        expect(run.exitCode).toBe(0);
+        expect(select).not.toHaveBeenCalled();
+        expect(run.refreshGrants()).toEqual([]);
+    });
+
+    it('keeps the scoped Customer Account without a terminal and names it with the --organization hint', async () => {
+        const run = await runLink({ console: { memberships: twoAccounts } });
+
+        expect(run.exitCode).toBe(0);
+        expect(run.refreshGrants()).toEqual([]);
         const output = run.messages.join('\n');
-        expect(output).toContain('remote shell');
-        // Re-running hits the same gate, so it must not be offered as a cure.
-        expect(output).not.toContain('vendure console link again');
+        expect(output).toContain('Using Acme.');
+        expect(output).toContain('vendure console link --organization <Account identifier>');
+        expect(output).toContain('Linked Storefront to Acme.');
     });
 
-    it('keeps the link when the token response is malformed', async () => {
-        const run = await runLink({ tokenBody: { access_token: 'vcli_a', token_type: 'Bearer' } });
+    it('lists the Customer Accounts and --organization when no one can choose between them', async () => {
+        const run = await runLink({ storedOrganization: null, console: { memberships: twoAccounts } });
 
-        expect(run.exitCode).toBe(0);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
-        expect(run.sessions).toEqual([undefined]);
-        expect(run.messages.join('\n')).toContain('could not be obtained');
-    });
-
-    it('links without a session when the Console does not settle a login, and says so', async () => {
-        const run = await runLink({ supports: [] });
-
-        expect(run.exitCode).toBe(0);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
-        // No login was requested, so the verification URL is the plain one.
-        expect(new URL(run.openedUrls[0]).searchParams.get('client')).toBeNull();
-        expect(run.sessions).toEqual([undefined]);
-        expect(run.messages.join('\n')).toContain('does not settle a command line login');
-    });
-
-    it('asks for the link alone when no browser can be opened here', async () => {
-        const run = await runLink({ openUrl: () => Promise.reject(new Error('no browser')) });
-
-        expect(run.exitCode).toBe(0);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
-        // The URL offered for another machine carries no callback address,
-        // because that address is only reachable from this one.
-        const printed = run.messages.find(message => message.startsWith('https://'));
-        expect(printed).toBeDefined();
-        expect(new URL(printed ?? '').searchParams.get('redirect_uri')).toBeNull();
-        expect(run.sessions).toEqual([undefined]);
-        // Said before the person approves, not after.
-        expect(run.messages.join('\n')).toContain('will not obtain a Console session');
-    });
-
-    it('keeps the link when the browser approved somewhere the callback cannot reach', async () => {
-        // The approval happens, so the poll completes, but nothing ever calls
-        // the listener on this machine.
-        const run = await runLink({ openUrl: () => Promise.resolve() });
-
-        expect(run.exitCode).toBe(0);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
-        expect(run.sessions).toEqual([undefined]);
+        expect(run.exitCode).toBe(1);
         const output = run.messages.join('\n');
-        expect(output).toContain('The link is in place.');
-        // Re-running runs the plugin setup again, which is where a plugin that
-        // needs a session signs in. The command itself cannot mint one.
-        expect(output).toContain('vendure console link again');
+        expect(output).toContain(`Acme (${ACCOUNT_ID})`);
+        expect(output).toContain(`Other (${OTHER_ACCOUNT_ID})`);
+        expect(output).toContain('vendure console link --organization <Account identifier>');
+        expectUnchangedUnscopedLogin(run);
     });
 
-    it('keeps the link when the token exchange is refused', async () => {
-        const run = await runLink({ tokenStatus: 400 });
-
-        expect(run.exitCode).toBe(0);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
-        expect(run.sessions).toEqual([undefined]);
-        expect(run.messages.join('\n')).toContain('could not be obtained');
-    });
-
-    it('has the manifest on disk before the login can be interrupted', async () => {
-        const abort = new AbortController();
+    it('changes nothing when the Customer Account choice is cancelled', async () => {
         const run = await runLink({
-            // Approved in the browser, then Ctrl-C while the code is being
-            // exchanged, which is the window the reorder is about.
-            onTokenRequest: () => abort.abort(),
-            signal: abort.signal,
+            interactive: true,
+            storedOrganization: null,
+            select: () => Promise.resolve(undefined),
+            console: { memberships: twoAccounts },
         });
 
         expect(run.exitCode).toBe(130);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
-        const output = run.messages.join('\n');
-        expect(output).toContain('The link succeeded');
-        expect(output).not.toContain('No Project Link Manifest was changed');
+        expectUnchangedUnscopedLogin(run);
     });
 
-    it('links without a session when the callback port cannot be bound', async () => {
+    it('sends a user without a Customer Account to create one in the selected Console', async () => {
+        const run = await runLink({ storedOrganization: null, console: { memberships: [] } });
+
+        expect(run.exitCode).toBe(1);
+        expect(run.messages.join('\n')).toContain(
+            'Your Vendure Console login has no Customer Account yet. Create one at ' +
+                'https://console.vendure.io/onboarding, then run vendure console link again.',
+        );
+        expectUnchangedUnscopedLogin(run);
+    });
+
+    it('removes the stored login when WorkOS refuses its refresh token while scoping it', async () => {
         const run = await runLink({
-            startLoopbackCallback: vi.fn().mockRejectedValue(new Error('listen EACCES 127.0.0.1')),
+            storedOrganization: null,
+            console: { refresh: () => jsonResponse({ error: 'invalid_grant' }, 400) },
+        });
+
+        expect(run.exitCode).toBe(1);
+        expect(run.refreshGrants()).toHaveLength(1);
+        expect(run.messages.join('\n')).toContain('vendure auth login');
+        expect(fs.existsSync(getProjectLinkManifestPath(run.root))).toBe(false);
+        // The same as any refused refresh: the next command signs in again.
+        expect(readStoredAuth({ env: run.env })).toBeUndefined();
+    });
+
+    it('stores the rotated login with its own organization when WorkOS scopes it to another organization', async () => {
+        const run = await runLink({
+            storedOrganization: null,
+            console: {
+                memberships: twoAccounts,
+                refresh: () =>
+                    jsonResponse({
+                        access_token: accessToken('wrong', OTHER_ORGANIZATION_ID),
+                        refresh_token: 'rotated-refresh-token',
+                        organization_id: OTHER_ORGANIZATION_ID,
+                        user: USER,
+                    }),
+            },
+            interactive: true,
+            select: () => Promise.resolve(ACCOUNT_ID),
+        });
+
+        expect(run.exitCode).toBe(1);
+        expect(run.messages.join('\n')).toContain(
+            'WorkOS did not scope the login to Acme. The stored login is now scoped to Other.',
+        );
+        expect(fs.existsSync(getProjectLinkManifestPath(run.root))).toBe(false);
+        // The old refresh token is spent. Keeping the new pair keeps the login usable.
+        expect(readStoredAuth({ env: run.env })).toMatchObject({
+            accessToken: accessToken('wrong', OTHER_ORGANIZATION_ID),
+            refreshToken: 'rotated-refresh-token',
+            organization: {
+                workosOrganizationId: OTHER_ORGANIZATION_ID,
+                customerAccountId: OTHER_ACCOUNT_ID,
+                name: 'Other',
+            },
+        });
+    });
+
+    it('signs in to the organization --organization names without asking, when the stored login has none', async () => {
+        const select = vi.fn();
+        const run = await runLink({
+            interactive: true,
+            storedOrganization: null,
+            select,
+            options: { organization: 'Other' },
+            console: { memberships: twoAccounts },
         });
 
         expect(run.exitCode).toBe(0);
-        expect(fs.readJsonSync(getProjectLinkManifestPath(run.root))).toEqual(productionManifest);
-        expect(run.sessions).toEqual([undefined]);
-        expect(run.messages.join('\n')).toContain('EACCES');
+        expect(select).not.toHaveBeenCalled();
+        expect(run.urls()).toContain(WORKOS_DEVICE_AUTHORIZE_URL);
+        expect(readStoredAuth({ env: run.env })?.organization?.customerAccountId).toBe(OTHER_ACCOUNT_ID);
     });
 
-    it('releases the loopback port after link returns', async () => {
-        const run = await runLink();
-        const redirectUri = new URL(run.openedUrls[0]).searchParams.get('redirect_uri');
+    it('reports the sign-in URL and keeps waiting when no browser can be opened', async () => {
+        const run = await runLink({
+            login: false,
+            openUrl: () => Promise.reject(new Error('no browser')),
+        });
 
-        expect(redirectUri).not.toBeNull();
-        await expect(fetch(redirectUri ?? '')).rejects.toThrow();
-    });
-
-    it('does not overwrite reserved authentication query parameters', async () => {
-        const run = await runLink({ verificationPath: `/?link=${LINK_ID}&state=console-state` });
-
-        const opened = new URL(run.openedUrls[0]);
-        expect(opened.searchParams.get('state')).toBe('console-state');
-        expect(opened.searchParams.get('redirect_uri')).toBeNull();
-        expect(run.grants).toEqual([]);
-        expect(run.sessions).toEqual([undefined]);
-        expect(run.messages.join('\n')).toContain('reserved authentication parameter "state"');
-    });
-
-    it('never carries a session into a repair, which asks Console nothing', async () => {
-        const root = vendureProject();
-        fs.ensureDirSync(path.dirname(getProjectLinkManifestPath(root)));
-        fs.writeJsonSync(getProjectLinkManifestPath(root), manifest);
-        const contexts: ConsoleLinkContext[] = [];
-        const fetchMock = vi.fn() as unknown as typeof fetch;
-
-        const exitCode = await consoleCommand(
-            'link',
-            {},
-            {
-                ...baseDependencies(root),
-                env: OFFICIAL_ENV,
-                fetch: fetchMock,
-                hooks: [
-                    {
-                        pluginId: '@example/p',
-                        requiresSession: true,
-                        hook: async context => {
-                            contexts.push(context);
-                        },
-                    },
-                ],
-            },
+        expect(run.exitCode).toBe(0);
+        expect(run.messages.join('\n')).toContain(
+            'If the browser does not open, visit https://auth.example.com/device?code=ABCD-EFGH',
         );
-
-        expect(exitCode).toBe(0);
-        expect(fetchMock).not.toHaveBeenCalled();
-        expect(contexts[0].outcome).toBe('repaired');
-        expect(contexts[0].session).toBeUndefined();
     });
 
-    it('does not offer a login to a Console that is not an official one', async () => {
-        const root = vendureProject();
-        const contexts: ConsoleLinkContext[] = [];
-        const openedUrls: string[] = [];
-        const messages: string[] = [];
-
-        const exitCode = await consoleCommand(
-            'link',
-            {},
-            {
-                ...baseDependencies(root, messages),
-                env: {
-                    VENDURE_CLI_NON_INTERACTIVE: 'true',
-                    VENDURE_CONSOLE_APP_URL: 'http://localhost:3000',
-                    VENDURE_CONSOLE_API_URL: 'http://localhost:3001',
-                },
-                fetch: vi.fn(createConsoleFetch()) as unknown as typeof fetch,
-                hooks: [
-                    {
-                        pluginId: '@example/p',
-                        requiresSession: true,
-                        hook: async context => {
-                            contexts.push(context);
-                        },
-                    },
-                ],
-                openUrl: async url => {
-                    openedUrls.push(url);
-                },
+    it('returns an interrupt exit code when the sign-in is interrupted', async () => {
+        const abort = new AbortController();
+        const run = await runLink({
+            login: false,
+            signal: abort.signal,
+            openUrl: () => {
+                abort.abort();
+                return Promise.resolve();
             },
-        );
+        });
 
-        expect(exitCode).toBe(0);
-        expect(contexts[0].endpoints.official).toBeUndefined();
-        expect(contexts[0].session).toBeUndefined();
-        // No callback address was ever advertised to a Console we do not know.
-        expect(new URL(openedUrls[0]).searchParams.get('redirect_uri')).toBeNull();
-        const output = messages.join('\n');
-        expect(output).toContain('not an official Vendure Console');
-        expect(output).not.toContain('does not settle a command line login');
+        expect(run.exitCode).toBe(130);
+        expect(fs.existsSync(getProjectLinkManifestPath(run.root))).toBe(false);
+        expect(run.messages.join('\n')).toContain('No Project Link Manifest was changed');
+    });
+
+    it.each([
+        ['an interactive', true],
+        ['a non-interactive', false],
+    ])(
+        'returns an interrupt exit code when %s repair is interrupted while the login is renewed',
+        async (_, interactive) => {
+            const abort = new AbortController();
+            const hook = vi.fn(async () => undefined);
+            const run = await runLink({
+                linked: true,
+                interactive,
+                options: { yes: true },
+                storedAccessToken: accessToken('expired', ORGANIZATION_ID, -60),
+                signal: abort.signal,
+                fetch: () => {
+                    abort.abort();
+                    return Promise.reject(new DOMException('The operation was aborted.', 'AbortError'));
+                },
+                hooks: [{ pluginId: '@example/with-session', requiresSession: true, hook }],
+            });
+
+            expect(run.exitCode).toBe(130);
+            expect(hook).not.toHaveBeenCalled();
+            expect(run.messages.join('\n')).not.toContain('Could not sign in');
+        },
+    );
+
+    it('returns an interrupt exit code when a link is interrupted while the login is renewed', async () => {
+        const abort = new AbortController();
+        const run = await runLink({
+            storedAccessToken: accessToken('expired', ORGANIZATION_ID, -60),
+            signal: abort.signal,
+            fetch: () => {
+                abort.abort();
+                return Promise.reject(new DOMException('The operation was aborted.', 'AbortError'));
+            },
+        });
+
+        expect(run.exitCode).toBe(130);
+        expect(fs.existsSync(getProjectLinkManifestPath(run.root))).toBe(false);
+    });
+
+    it('obtains no session when no plugin asked for one', async () => {
+        const sessions: Array<ConsoleSession | undefined> = [];
+        const run = await runLink({ hooks: [recordingHook(sessions, false)] });
+
+        expect(run.exitCode).toBe(0);
+        expect(sessions).toEqual([undefined]);
+    });
+
+    it('gives a hook that requested a session the login access token, without its refresh token', async () => {
+        const sessions: Array<ConsoleSession | undefined> = [];
+        const run = await runLink({ hooks: [recordingHook(sessions, true)] });
+
+        expect(run.exitCode).toBe(0);
+        expect(sessions).toEqual([{ accessToken: STORED_ACCESS_TOKEN, expiresAt: NOW + 3600 * 1000 }]);
+    });
+
+    it('does not expose a session to a hook that did not request one', async () => {
+        const requested: Array<ConsoleSession | undefined> = [];
+        const other: Array<ConsoleSession | undefined> = [];
+        const run = await runLink({ hooks: [recordingHook(requested, true), recordingHook(other, false)] });
+
+        expect(run.exitCode).toBe(0);
+        expect(requested[0]?.accessToken).toBe(STORED_ACCESS_TOKEN);
+        expect(other).toEqual([undefined]);
+    });
+
+    it('gives each requesting hook its own session copy', async () => {
+        const seen: ConsoleSession[] = [];
+        const mutating: RegisteredConsoleLinkHook = {
+            pluginId: '@example/first',
+            requiresSession: true,
+            hook: async context => {
+                if (context.session) {
+                    seen.push({ ...context.session });
+                    context.session.accessToken = 'changed';
+                }
+            },
+        };
+        const reading: RegisteredConsoleLinkHook = {
+            pluginId: '@example/second',
+            requiresSession: true,
+            hook: async context => {
+                if (context.session) seen.push(context.session);
+            },
+        };
+        const run = await runLink({ hooks: [mutating, reading] });
+
+        expect(run.exitCode).toBe(0);
+        expect(seen.map(session => session.accessToken)).toEqual([STORED_ACCESS_TOKEN, STORED_ACCESS_TOKEN]);
+    });
+
+    it('carries the stored login into a repair that a hook needs a session for, asking Console nothing', async () => {
+        const sessions: Array<ConsoleSession | undefined> = [];
+        const run = await runLink({ linked: true, hooks: [recordingHook(sessions, true)] });
+
+        expect(run.exitCode).toBe(0);
+        expect(sessions).toEqual([{ accessToken: STORED_ACCESS_TOKEN, expiresAt: NOW + 3600 * 1000 }]);
+        expect(run.urls()).toEqual([]);
+    });
+
+    it('runs a non-interactive repair without a session when no login is stored, and says so', async () => {
+        const sessions: Array<ConsoleSession | undefined> = [];
+        const run = await runLink({ linked: true, login: false, hooks: [recordingHook(sessions, true)] });
+
+        expect(run.exitCode).toBe(0);
+        expect(sessions).toEqual([undefined]);
+        expect(run.urls()).toEqual([]);
+        expect(run.messages.join('\n')).toContain('No CLI login for Acme is stored on this machine');
+    });
+
+    it("signs in to the manifest's account for an interactive repair without a matching login", async () => {
+        const sessions: Array<ConsoleSession | undefined> = [];
+        const run = await runLink({
+            linked: true,
+            interactive: true,
+            options: { yes: true },
+            storedOrganization: {
+                workosOrganizationId: OTHER_ORGANIZATION_ID,
+                customerAccountId: OTHER_ACCOUNT_ID,
+                name: 'Other',
+            },
+            hooks: [recordingHook(sessions, true)],
+        });
+
+        expect(run.exitCode).toBe(0);
+        expect(run.urls()).toContain(WORKOS_DEVICE_AUTHORIZE_URL);
+        const stored = readStoredAuth({ env: run.env });
+        expect(stored?.organization?.customerAccountId).toBe(ACCOUNT_ID);
+        expect(sessions[0]?.accessToken).toBe(stored?.accessToken);
+    });
+
+    it('keeps a repair going without a session when the sign-in fails', async () => {
+        const sessions: Array<ConsoleSession | undefined> = [];
+        const run = await runLink({
+            linked: true,
+            interactive: true,
+            login: false,
+            options: { yes: true },
+            fetch: () => Promise.resolve(new Response('{}', { status: 503 })),
+            hooks: [recordingHook(sessions, true)],
+        });
+
+        expect(run.exitCode).toBe(0);
+        expect(sessions).toEqual([undefined]);
+        expect(run.messages.join('\n')).toContain('Could not sign in to Vendure Console');
     });
 });
 
 interface RunOptions {
-    supports?: string[];
-    tokenStatus?: number;
-    tokenBody?: unknown;
-    hooks?: ConsoleCommandDependencies['hooks'];
-    env?: NodeJS.ProcessEnv;
+    /** Store a login before the run. Defaults to `true`. */
+    login?: boolean;
+    storedAccessToken?: string;
+    storedOrganization?: { workosOrganizationId: string; customerAccountId: string; name: string } | null;
+    /** Start from a project that is already linked, so the run is a repair. */
+    linked?: boolean;
+    interactive?: boolean;
+    options?: ConsoleCommandOptions;
+    console?: FakeConsoleOptions;
+    fetch?: typeof globalThis.fetch;
+    hooks?: RegisteredConsoleLinkHook[];
     openUrl?: (url: string) => Promise<void>;
+    select?: ConsoleCommandDependencies['select'];
     signal?: AbortSignal;
-    onTokenRequest?: () => void;
-    startLoopbackCallback?: typeof startLoopbackCallback;
-    verificationPath?: string;
-    /** Called with each requested delay, so the grace period is observable. */
-    sleep?: (milliseconds: number, signal: AbortSignal) => Promise<void>;
 }
 
-/**
- * Drives `vendure console link` against an in-memory Console.
- *
- * The default `openUrl` is the browser: it follows the approval by calling the
- * loopback address the client advertised, which is what Console's `redirectTo`
- * makes the real browser do.
- */
+/** Drives `vendure console link` against an in-memory Console and WorkOS. */
 async function runLink(options: RunOptions = {}) {
-    const root = vendureProject();
-    const openedUrls: string[] = [];
+    const root = createVendureProject(temporaryDirectories, 'vendure-console-login-');
+    if (options.linked) {
+        fs.ensureDirSync(path.dirname(getProjectLinkManifestPath(root)));
+        fs.writeJsonSync(getProjectLinkManifestPath(root), productionManifest);
+    }
+    const env = { ...OFFICIAL_ENV, VENDURE_CLI_CONFIG_DIR: createCliConfigDir(temporaryDirectories) };
+    if (options.login !== false) {
+        storeLogin(env, API_URL, {
+            ...(options.storedAccessToken ? { accessToken: options.storedAccessToken } : {}),
+            ...(options.storedOrganization !== undefined ? { organization: options.storedOrganization } : {}),
+        });
+    }
+    const api = fakeConsole(options.console);
     const messages: string[] = [];
-    const sessions: Array<ConsoleSession | undefined> = [];
-    const grants: Array<Record<string, string>> = [];
-    const callbackStates: string[] = [];
-
-    const fetchMock = vi.fn(
-        createConsoleFetch({
-            supports: options.supports ?? ['cli-auth'],
-            tokenStatus: options.tokenStatus ?? 200,
-            tokenBody: options.tokenBody,
-            onTokenRequest: options.onTokenRequest,
-            grants,
-            verificationPath: options.verificationPath,
-        }),
-    );
-
-    const delays: number[] = [];
-    const exitCode = await consoleCommand(
-        'link',
-        {},
-        {
-            ...baseDependencies(root, messages),
-            env: options.env ?? OFFICIAL_ENV,
-            fetch: fetchMock as unknown as typeof fetch,
-            signal: options.signal,
-            now: () => NOW,
-            sleep: async (milliseconds, signal) => {
-                delays.push(milliseconds);
-                await (options.sleep?.(milliseconds, signal) ?? Promise.resolve());
-            },
-            ...(options.startLoopbackCallback
-                ? { startLoopbackCallback: options.startLoopbackCallback }
-                : {}),
-            hooks: options.hooks ?? [
-                {
-                    pluginId: '@example/p',
-                    requiresSession: true,
-                    hook: async context => {
-                        sessions.push(context.session);
-                    },
-                },
-            ],
-            openUrl: async url => {
-                openedUrls.push(url);
-                if (options.openUrl) {
-                    await options.openUrl(url);
-                    return;
-                }
-                // The browser: follow the approval to the address the client
-                // advertised, which is what Console's `redirectTo` makes it do.
-                const search = new URL(url).searchParams;
-                const redirectUri = search.get('redirect_uri');
-                const state = search.get('state');
-                if (redirectUri && state) {
-                    callbackStates.push(state);
-                    await fetch(`${redirectUri}?code=the-code&state=${encodeURIComponent(state)}`);
-                }
-            },
-        },
-    );
-
-    return {
-        exitCode,
-        root,
-        openedUrls,
-        messages,
-        sessions,
-        delays,
-        callbackState: callbackStates[0],
-        grant: grants[0] ?? {},
-        grants,
-    };
-}
-
-function baseDependencies(root: string, messages: string[] = []): Partial<ConsoleCommandDependencies> {
+    const openedUrls: string[] = [];
     const reporter: ConsoleReporter = {
         error: message => messages.push(message),
         info: message => messages.push(message),
@@ -495,18 +611,59 @@ function baseDependencies(root: string, messages: string[] = []): Partial<Consol
         warn: message => messages.push(message),
         url: value => messages.push(value),
     };
-    return {
+    const dependencies: Partial<ConsoleCommandDependencies> = {
         cwd: root,
-        hooks: [],
-        isNonInteractive: () => true,
+        env,
+        fetch: options.fetch ?? api.fetch,
+        hooks: options.hooks ?? [],
+        isNonInteractive: () => !options.interactive,
         now: () => NOW,
-        openUrl: () => Promise.resolve(),
+        openUrl: async url => {
+            openedUrls.push(url);
+            await options.openUrl?.(url);
+        },
         prompt: () => Promise.resolve(true),
+        select: options.select ?? (() => Promise.resolve(undefined)),
         reporter,
-        sleep: () => Promise.resolve(),
+        signal: options.signal,
+    };
+    const exitCode = await consoleCommand('link', options.options ?? {}, dependencies);
+    return {
+        exitCode,
+        root,
+        env,
+        messages,
+        openedUrls,
+        urls: () => api.requests.map(request => request.url),
+        authorizationFor: (url: string) => api.requests.find(request => request.url === url)?.authorization,
+        refreshGrants: () =>
+            api.requests
+                .filter(request => request.url === WORKOS_AUTHENTICATE_URL)
+                .map(request => request.body)
+                .filter(body => body.grant_type === 'refresh_token'),
     };
 }
 
-function vendureProject(): string {
-    return createVendureProject(temporaryDirectories, 'vendure-console-login-');
+/** The run linked nothing and left the stored login without an organization as it was. */
+function expectUnchangedUnscopedLogin(run: Awaited<ReturnType<typeof runLink>>): void {
+    expect(run.refreshGrants()).toEqual([]);
+    expect(fs.existsSync(getProjectLinkManifestPath(run.root))).toBe(false);
+    expect(readStoredAuth({ env: run.env })).toMatchObject({
+        accessToken: STORED_ACCESS_TOKEN,
+        refreshToken: STORED_REFRESH_TOKEN,
+        organization: null,
+    });
+}
+
+function recordingHook(
+    sessions: Array<ConsoleSession | undefined>,
+    requiresSession: boolean,
+): RegisteredConsoleLinkHook {
+    return {
+        pluginId: requiresSession ? '@example/with-session' : '@example/without-session',
+        requiresSession,
+        hook: async context => {
+            sessions.push(context.session);
+        },
+    };
 }

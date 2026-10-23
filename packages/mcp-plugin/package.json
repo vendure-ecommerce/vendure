@@ -1,6 +1,6 @@
 {
     "name": "@vendure/mcp-plugin",
-    "version": "3.7.3",
+    "version": "3.8.1",
     "license": "GPL-3.0-or-later",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -11,7 +11,8 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/vendurehq/vendure"
+        "url": "git+https://github.com/vendurehq/vendure.git",
+        "directory": "packages/mcp-plugin"
     },
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
@@ -30,13 +31,13 @@
     "dependencies": {
         "@modelcontextprotocol/node": "2.0.0",
         "@modelcontextprotocol/server": "2.0.0",
-        "@vendure/mcp-sdk": "3.7.3",
+        "@vendure/mcp-sdk": "3.8.1",
         "zod": "^4.2.0"
     },
     "devDependencies": {
         "@modelcontextprotocol/client": "2.0.0",
         "@types/express": "^5.0.1",
-        "@vendure/common": "3.7.3",
-        "@vendure/core": "3.7.3"
+        "@vendure/common": "3.8.1",
+        "@vendure/core": "3.8.1"
     }
 }

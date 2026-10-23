@@ -309,7 +309,9 @@ export class CustomerService {
 
         if (hasEmailAddress(input)) {
             input.emailAddress = normalizeEmailAddress(input.emailAddress);
-            if (input.emailAddress !== customer.emailAddress) {
+            // A Customer may have been saved with capital letters, so the stored email address is
+            // normalized too. A difference only in case is not a new email address. See #5559
+            if (input.emailAddress !== normalizeEmailAddress(customer.emailAddress)) {
                 const existingCustomerInChannel = await this.connection
                     .getRepository(ctx, Customer)
                     .createQueryBuilder('customer')
@@ -340,6 +342,28 @@ export class CustomerService {
                         return new EmailAddressConflictAdminError();
                     }
 
+                    await this.userService.changeUserAndNativeIdentifier(
+                        ctx,
+                        customer.user.id,
+                        input.emailAddress,
+                    );
+                }
+            } else if (input.emailAddress !== customer.emailAddress) {
+                // Only the case differs. Another Customer may already use the lowercase form, as
+                // external logins before #5559 could create a second Customer for it. In that case
+                // the stored email address is kept, so that no two Customers have the same email
+                // address.
+                const otherCustomerWithEmailAddress = await this.connection
+                    .getRepository(ctx, Customer)
+                    .createQueryBuilder('customer')
+                    .where('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+                    .andWhere('customer.id != :customerId', { customerId: input.id })
+                    .andWhere('customer.deletedAt is null')
+                    .getOne();
+
+                if (otherCustomerWithEmailAddress) {
+                    input.emailAddress = customer.emailAddress;
+                } else if (customer.user) {
                     await this.userService.changeUserAndNativeIdentifier(
                         ctx,
                         customer.user.id,
@@ -611,18 +635,22 @@ export class CustomerService {
     async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
         const user = await this.userService.setPasswordResetToken(ctx, emailAddress);
         if (user) {
-            await this.eventBus.publish(new PasswordResetEvent(ctx, user));
             const customer = await this.findOneByUserId(ctx, user.id);
             if (!customer) {
                 throw new InternalServerError('error.cannot-locate-customer-for-user');
             }
-            await this.historyService.createHistoryEntryForCustomer({
-                customerId: customer.id,
-                ctx,
-                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
-                data: {},
-            });
+            await this.publishPasswordResetRequested(ctx, user, customer.id);
         }
+    }
+
+    private async publishPasswordResetRequested(ctx: RequestContext, user: User, customerId: ID) {
+        await this.eventBus.publish(new PasswordResetEvent(ctx, user));
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+            data: {},
+        });
     }
 
     /**
@@ -653,6 +681,36 @@ export class CustomerService {
         });
         await this.eventBus.publish(new PasswordResetVerifiedEvent(ctx, result));
         return result;
+    }
+
+    /**
+     * @description
+     * Requests a password reset email for the Customer on behalf of an administrator, the same as
+     * {@link CustomerService.requestPasswordReset}: sets a reset token and publishes a
+     * {@link PasswordResetEvent}. The event carries the administrator's RequestContext, so an email
+     * sent from it uses the administrator's language.
+     *
+     * When `authOptions.requireVerification` is on, a Customer who has not verified their account is
+     * marked as verified when they complete the reset. No {@link AccountVerifiedEvent} is published.
+     *
+     * A Customer with no User (a guest checkout), or whose User has no native authentication method,
+     * has no native credential to reset, and is rejected.
+     *
+     * @since 3.9.0
+     */
+    async requestCustomerPasswordReset(ctx: RequestContext, customerId: ID): Promise<void> {
+        const customer = await this.connection.getEntityOrThrow(ctx, Customer, customerId, {
+            channelId: ctx.channelId,
+            relations: ['user', 'user.authenticationMethods'],
+        });
+        if (!customer.user) {
+            throw new UserInputError('error.customer-has-no-user-account');
+        }
+        const user = await this.userService.setPasswordResetTokenForUser(ctx, customer.user);
+        if (!user) {
+            throw new UserInputError('error.cannot-set-password-without-native-credential');
+        }
+        await this.publishPasswordResetRequested(ctx, user, customer.id);
     }
 
     /**

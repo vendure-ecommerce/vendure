@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     ActiveOrderService,
@@ -7,20 +9,26 @@ import {
     CustomerService,
     defaultShippingEligibilityChecker,
     ID,
+    Injector,
+    isGraphQlErrorResult,
     mergeConfig,
     Order,
     OrderByCodeAccessStrategy,
     OrderService,
     PaymentMethodHandler,
+    Permission,
+    PluginCommonModule,
     RequestContext,
     RequestContextService,
     Session,
     SessionService,
     ShippingEligibilityChecker,
     TransactionalConnection,
+    TtlOrderRecalculationStrategy,
     User,
+    VendurePlugin,
 } from '@vendure/core';
-import { McpTool, McpToolMetadata } from '@vendure/mcp-sdk';
+import { findOrCreateActiveOrder, McpTool, McpToolHandler, McpToolMetadata } from '@vendure/mcp-sdk';
 import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -106,6 +114,83 @@ const NO_SHIPPING_CUSTOMER_PASSWORD = 'test';
 // names it, which is what makes the order a guest order.
 const GUEST_CHECKOUT_EMAIL = 'mcp-guest-checkout@e2e.example.com';
 
+// Adds to the cart the way a plugin's own service does: through core's ActiveOrderService, with the
+// context the tool was given and no cart handling of its own.
+@Injectable()
+@McpTool({
+    name: 'plugin_add_to_cart',
+    description: 'Adds one of a variant to the active cart through core services.',
+    toolset: 'shop',
+    behavior: 'mutating',
+    usesActiveOrder: true,
+    permissions: [Permission.Public],
+    inputSchema: {
+        type: 'object',
+        properties: { variantId: { type: 'string' } },
+        required: ['variantId'],
+        additionalProperties: false,
+    },
+})
+class PluginAddToCartTool implements McpToolHandler<{ variantId: string }> {
+    constructor(
+        private readonly activeOrderService: ActiveOrderService,
+        private readonly orderService: OrderService,
+    ) {}
+
+    async execute(ctx: RequestContext, input: { variantId: string }) {
+        const order = await this.activeOrderService.getOrderFromContext(ctx, true);
+        const result = await this.orderService.addItemToOrder(ctx, order.id, input.variantId, 1);
+        return isGraphQlErrorResult(result) ? result : { currencyCode: result.currencyCode };
+    }
+}
+
+// Adds to the cart the way a plugin's own service does with the SDK helper: it finds or creates the
+// cart under the session lock, and writes to it in the context the helper returns.
+@Injectable()
+class PluginCartService {
+    constructor(
+        private readonly moduleRef: ModuleRef,
+        private readonly orderService: OrderService,
+    ) {}
+
+    async addOne(ctx: RequestContext, variantId: string) {
+        const cart = await findOrCreateActiveOrder(ctx, new Injector(this.moduleRef));
+        return this.orderService.addItemToOrder(cart.ctx, cart.order.id, variantId, 1);
+    }
+}
+
+@Injectable()
+@McpTool({
+    name: 'plugin_helper_add_to_cart',
+    description: 'Adds one of a variant to the active cart through findOrCreateActiveOrder.',
+    toolset: 'shop',
+    behavior: 'mutating',
+    usesActiveOrder: true,
+    permissions: [Permission.Public],
+    inputSchema: {
+        type: 'object',
+        properties: { variantId: { type: 'string' } },
+        required: ['variantId'],
+        additionalProperties: false,
+    },
+})
+class PluginHelperAddToCartTool implements McpToolHandler<{ variantId: string }> {
+    constructor(private readonly cartService: PluginCartService) {}
+
+    async execute(ctx: RequestContext, input: { variantId: string }) {
+        const result = await this.cartService.addOne(ctx, input.variantId);
+        return isGraphQlErrorResult(result)
+            ? result
+            : { currencyCode: result.currencyCode, orderCode: result.code };
+    }
+}
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    providers: [PluginAddToCartTool, PluginCartService, PluginHelperAddToCartTool],
+})
+class PluginCartToolPlugin {}
+
 class TestOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
     allow = true;
 
@@ -172,6 +257,7 @@ describe('MCP built-in shop tools', () => {
                     perTool: { place_order: { rpm: 0 } },
                 },
             }),
+            PluginCartToolPlugin,
         ],
     });
     const { server, adminClient, shopClient } = createTestEnvironment(config);
@@ -492,8 +578,86 @@ describe('MCP built-in shop tools', () => {
     async function orderByCode(code: string): Promise<Order> {
         return connection.getRepository(adminCtx, Order).findOneOrFail({
             where: { code },
-            relations: ['channels'],
+            relations: { channels: true },
         });
+    }
+
+    /**
+     * Lets the default channel sell in a second currency and prices the fixture variant at 2000 in
+     * it. Returns that currency. Calling it again sets the same values.
+     */
+    async function allowSecondCurrency(): Promise<CurrencyCode> {
+        const second = defaultCurrencyCode === CurrencyCode.EUR ? CurrencyCode.USD : CurrencyCode.EUR;
+        const channelUpdate = await adminClient.query(
+            gql`
+                mutation AllowSecondCurrency($input: UpdateChannelInput!) {
+                    updateChannel(input: $input) {
+                        ... on Channel {
+                            id
+                            availableCurrencyCodes
+                        }
+                        ... on ErrorResult {
+                            errorCode
+                            message
+                        }
+                    }
+                }
+            `,
+            {
+                input: {
+                    id: defaultChannelAdminId,
+                    availableCurrencyCodes: [defaultCurrencyCode, second],
+                },
+            },
+        );
+        expect(channelUpdate.updateChannel.availableCurrencyCodes).toContain(second);
+
+        const variantUpdate = await adminClient.query(
+            gql`
+                mutation SetSecondCurrencyPrice($input: [UpdateProductVariantInput!]!) {
+                    updateProductVariants(input: $input) {
+                        id
+                        prices {
+                            currencyCode
+                            price
+                        }
+                    }
+                }
+            `,
+            {
+                input: [{ id: variantAdminId, prices: [{ currencyCode: second, price: 2000 }] }],
+            },
+        );
+        expect(variantUpdate.updateProductVariants[0].prices).toContainEqual({
+            currencyCode: second,
+            price: 2000,
+        });
+        return second;
+    }
+
+    /**
+     * Builds the cart a storefront request would build for a shopper browsing in `currencyCode`:
+     * the request carries that currency, so the order is stored in it. It holds one of the fixture
+     * variant.
+     */
+    async function storefrontCartIn(
+        currencyCode: CurrencyCode,
+    ): Promise<{ sessionToken: string; orderId: ID }> {
+        const session = await server.app.get(SessionService).createAnonymousSession();
+        const channel = await server.app.get(ChannelService).getDefaultChannel();
+        const storefrontCtx = new RequestContext({
+            apiType: 'shop',
+            channel,
+            session,
+            currencyCode,
+            isAuthorized: false,
+            authorizedAsOwnerOnly: true,
+        });
+        const created = await server.app
+            .get(ActiveOrderService)
+            .getActiveOrder(storefrontCtx, undefined, true);
+        await server.app.get(OrderService).addItemToOrder(storefrontCtx, created.id, variantId, 1);
+        return { sessionToken: session.token, orderId: created.id };
     }
 
     async function shopFlow() {
@@ -527,7 +691,7 @@ describe('MCP built-in shop tools', () => {
         return flow.access_token;
     }
 
-    it('lists exactly the built-in shop tools for an authenticated customer', async () => {
+    it('lists exactly the built-in shop tools and the test plugin tools for an authenticated customer', async () => {
         const flow = await shopFlow();
         const response = await postMcp(baseUrl(), 'shop', rpc('tools/list', {}, 1), {
             token: flow.access_token,
@@ -535,7 +699,7 @@ describe('MCP built-in shop tools', () => {
 
         expect(response.status).toBe(200);
         expect(response.body.result.tools.map((tool: { name: string }) => tool.name).sort()).toEqual(
-            shopToolNames,
+            [...shopToolNames, 'plugin_add_to_cart', 'plugin_helper_add_to_cart'].sort(),
         );
     });
 
@@ -589,7 +753,44 @@ describe('MCP built-in shop tools', () => {
 
         const order = await connection.getRepository(adminCtx, Order).findOneOrFail({
             where: { code: first.body.result.structuredContent.order.code },
-            relations: ['lines'],
+            relations: { lines: true },
+        });
+        expect(order.lines).toHaveLength(2);
+        expect(String((await anonymousSession(session.token)).activeOrderId)).toBe(String(order.id));
+    });
+
+    // OSS-854: a plugin tool that finds or creates the cart with findOrCreateActiveOrder gets the
+    // same session lock as add_to_cart. As above, the race only shows under `DB=postgres`.
+    it('adds both lines to one cart when two plugin tools that use findOrCreateActiveOrder share a session and run at once', async () => {
+        const session = await server.app.get(SessionService).createAnonymousSession();
+        const ordersBefore = await connection.getRepository(adminCtx, Order).count();
+
+        const [first, second] = await Promise.all(
+            [variantId, secondVariantId].map((id, index) =>
+                postMcp(
+                    baseUrl(),
+                    'shop',
+                    callTool(
+                        'plugin_helper_add_to_cart',
+                        { variantId: String(id), sessionToken: session.token },
+                        index + 1,
+                    ),
+                ),
+            ),
+        );
+
+        for (const response of [first, second]) {
+            expect(response.status).toBe(200);
+            expect(response.body.result.isError).toBeUndefined();
+        }
+        expect(first.body.result.structuredContent.orderCode).toBe(
+            second.body.result.structuredContent.orderCode,
+        );
+        expect(await connection.getRepository(adminCtx, Order).count()).toBe(ordersBefore + 1);
+
+        const order = await connection.getRepository(adminCtx, Order).findOneOrFail({
+            where: { code: first.body.result.structuredContent.orderCode },
+            relations: { lines: true },
         });
         expect(order.lines).toHaveLength(2);
         expect(String((await anonymousSession(session.token)).activeOrderId)).toBe(String(order.id));
@@ -600,77 +801,17 @@ describe('MCP built-in shop tools', () => {
     // request, so every tool call used to run in the channel's default currency and flipped a cart
     // the storefront had built in another one. Cart tools now run in the cart's own currency.
     it("keeps the cart's own currency when a tool writes to a cart the storefront built", async () => {
-        const second = defaultCurrencyCode === CurrencyCode.EUR ? CurrencyCode.USD : CurrencyCode.EUR;
-        const channelUpdate = await adminClient.query(
-            gql`
-                mutation AllowSecondCurrency($input: UpdateChannelInput!) {
-                    updateChannel(input: $input) {
-                        ... on Channel {
-                            id
-                            availableCurrencyCodes
-                        }
-                        ... on ErrorResult {
-                            errorCode
-                            message
-                        }
-                    }
-                }
-            `,
-            {
-                input: {
-                    id: defaultChannelAdminId,
-                    availableCurrencyCodes: [defaultCurrencyCode, second],
-                },
-            },
-        );
-        expect(channelUpdate.updateChannel.availableCurrencyCodes).toContain(second);
-
-        const variantUpdate = await adminClient.query(
-            gql`
-                mutation SetSecondCurrencyPrice($input: [UpdateProductVariantInput!]!) {
-                    updateProductVariants(input: $input) {
-                        id
-                        prices {
-                            currencyCode
-                            price
-                        }
-                    }
-                }
-            `,
-            {
-                input: [{ id: variantAdminId, prices: [{ currencyCode: second, price: 2000 }] }],
-            },
-        );
-        expect(variantUpdate.updateProductVariants[0].prices).toContainEqual({
-            currencyCode: second,
-            price: 2000,
-        });
-
-        // The cart a storefront request would build: the shopper is browsing in the second
-        // currency, so their request carries it and the order is stored in it.
-        const session = await server.app.get(SessionService).createAnonymousSession();
-        const channel = await server.app.get(ChannelService).getDefaultChannel();
-        const storefrontCtx = new RequestContext({
-            apiType: 'shop',
-            channel,
-            session,
-            currencyCode: second,
-            isAuthorized: false,
-            authorizedAsOwnerOnly: true,
-        });
-        const created = await server.app
-            .get(ActiveOrderService)
-            .getActiveOrder(storefrontCtx, undefined, true);
-        await server.app.get(OrderService).addItemToOrder(storefrontCtx, created.id, variantId, 1);
+        const second = await allowSecondCurrency();
+        const { sessionToken, orderId } = await storefrontCartIn(second);
         const beforeMcp = await connection
             .getRepository(adminCtx, Order)
-            .findOneOrFail({ where: { id: created.id } });
+            .findOneOrFail({ where: { id: orderId } });
         expect(beforeMcp.currencyCode).toBe(second);
 
         const added = await postMcp(
             baseUrl(),
             'shop',
-            callTool('add_to_cart', { variantId, quantity: 1, sessionToken: session.token }, 1),
+            callTool('add_to_cart', { variantId, quantity: 1, sessionToken }, 1),
         );
         expect(added.body.result.isError).toBeUndefined();
         expect(added.body.result.structuredContent.order.currencyCode).toBe(second);
@@ -679,19 +820,93 @@ describe('MCP built-in shop tools', () => {
         const updated = await postMcp(
             baseUrl(),
             'shop',
-            callTool('update_cart_line', { orderLineId, quantity: 3, sessionToken: session.token }, 2),
+            callTool('update_cart_line', { orderLineId, quantity: 3, sessionToken }, 2),
         );
         expect(updated.body.result.isError).toBeUndefined();
         expect(updated.body.result.structuredContent.order.currencyCode).toBe(second);
 
         const stored = await connection
             .getRepository(adminCtx, Order)
-            .findOneOrFail({ where: { id: created.id }, relations: ['lines'] });
+            .findOneOrFail({ where: { id: orderId }, relations: { lines: true } });
         expect(stored.currencyCode).toBe(second);
         expect(stored.lines).toHaveLength(1);
         expect(stored.lines[0].quantity).toBe(3);
         // The price the line was charged at. Re-pricing into another currency would replace it
         // with that currency's price for the same variant.
+        expect(stored.lines[0].listPrice).toBe(2000);
+    });
+
+    it("keeps the cart's own currency when a plugin tool writes to it through core services", async () => {
+        const second = await allowSecondCurrency();
+        const { sessionToken, orderId } = await storefrontCartIn(second);
+
+        const added = await postMcp(
+            baseUrl(),
+            'shop',
+            callTool('plugin_add_to_cart', { variantId: String(variantId), sessionToken }, 1),
+        );
+        expect(added.body.result.isError).toBeUndefined();
+        expect(added.body.result.structuredContent.currencyCode).toBe(second);
+
+        const stored = await connection
+            .getRepository(adminCtx, Order)
+            .findOneOrFail({ where: { id: orderId }, relations: { lines: true } });
+        expect(stored.currencyCode).toBe(second);
+        expect(stored.lines).toHaveLength(1);
+        expect(stored.lines[0].quantity).toBe(2);
+        expect(stored.lines[0].listPrice).toBe(2000);
+    });
+
+    // OSS-854: a service that is not called through a tool with `usesActiveOrder: true` gets a context
+    // in the channel's default currency. The context that findOrCreateActiveOrder returns keeps the
+    // cart in its own currency.
+    it("returns a context in the cart's currency from findOrCreateActiveOrder", async () => {
+        const second = await allowSecondCurrency();
+        const { sessionToken, orderId } = await storefrontCartIn(second);
+        const session = await server.app.get(SessionService).getSessionFromToken(sessionToken);
+        const ctx = new RequestContext({
+            apiType: 'shop',
+            channel: await server.app.get(ChannelService).getDefaultChannel(),
+            session,
+            isAuthorized: false,
+            authorizedAsOwnerOnly: true,
+        });
+        expect(ctx.currencyCode).toBe(defaultCurrencyCode);
+
+        const cart = await findOrCreateActiveOrder(ctx, new Injector(server.app.get(ModuleRef)));
+        expect(String(cart.order.id)).toBe(String(orderId));
+        expect(cart.ctx.currencyCode).toBe(second);
+        await server.app.get(OrderService).addItemToOrder(cart.ctx, cart.order.id, variantId, 1);
+
+        const stored = await connection
+            .getRepository(adminCtx, Order)
+            .findOneOrFail({ where: { id: orderId }, relations: { lines: true } });
+        expect(stored.currencyCode).toBe(second);
+        expect(stored.lines[0].quantity).toBe(2);
+        expect(stored.lines[0].listPrice).toBe(2000);
+    });
+
+    // Core reprices a stale cart whenever it looks the cart up, in the currency of the request that
+    // looked it up. The cart must already be read in its own currency when that happens.
+    it("keeps the cart's own currency when core reprices a stale cart on read", async () => {
+        const second = await allowSecondCurrency();
+        const { sessionToken, orderId } = await storefrontCartIn(second);
+        const { orderOptions } = server.app.get(ConfigService);
+        const previousStrategy = orderOptions.orderRecalculationStrategy;
+        // A TTL of 0 makes every cart stale on every read.
+        orderOptions.orderRecalculationStrategy = new TtlOrderRecalculationStrategy({ ttlMs: 0 });
+        try {
+            const cart = await postMcp(baseUrl(), 'shop', callTool('get_cart', { sessionToken }, 1));
+            expect(cart.body.result.isError).toBeUndefined();
+            expect(cart.body.result.structuredContent.order.currencyCode).toBe(second);
+        } finally {
+            orderOptions.orderRecalculationStrategy = previousStrategy;
+        }
+
+        const stored = await connection
+            .getRepository(adminCtx, Order)
+            .findOneOrFail({ where: { id: orderId }, relations: { lines: true } });
+        expect(stored.currencyCode).toBe(second);
         expect(stored.lines[0].listPrice).toBe(2000);
     });
 
@@ -774,7 +989,7 @@ describe('MCP built-in shop tools', () => {
             const flow = await shopFlow();
             const grantEntity = await connection.getRepository(adminCtx, McpOauthGrant).findOneOrFail({
                 where: { accessTokenHash: lookupHash(flow.access_token) },
-                relations: ['oauthClient'],
+                relations: { oauthClient: true },
             });
 
             const result = await shopClient.query(ACTIVE_GRANTS_QUERY);
@@ -814,7 +1029,7 @@ describe('MCP built-in shop tools', () => {
             const flow = await shopFlow();
             const grantEntity = await connection.getRepository(adminCtx, McpOauthGrant).findOneOrFail({
                 where: { accessTokenHash: lookupHash(flow.access_token) },
-                relations: ['oauthClient'],
+                relations: { oauthClient: true },
             });
 
             const before = await shopClient.query(ACTIVE_GRANTS_QUERY);
@@ -976,7 +1191,7 @@ describe('MCP built-in shop tools', () => {
         // the row it creates, rather than intercepting an outgoing email.
         const doomedUser = await connection.getRepository(adminCtx, User).findOneOrFail({
             where: { identifier: doomedEmail },
-            relations: ['authenticationMethods'],
+            relations: { authenticationMethods: true },
         });
         const verificationToken = doomedUser.getNativeAuthenticationMethod().verificationToken;
         if (!verificationToken) {
@@ -1033,19 +1248,58 @@ describe('MCP built-in shop tools', () => {
     // The suite's only test of the answer to an unknown channel token: a looser duplicate in
     // mcp-transport.e2e-spec.ts accepted any status at or above 400.
     it('rejects an invalid vendure-token instead of falling back to the default channel', async () => {
-        const response = await postMcp(baseUrl(), 'shop', callTool('get_product', { id: productId }), {
-            headers: { [CHANNEL_TOKEN_HEADER]: 'not-a-real-channel-token' },
-        });
+        // With a single Channel every token resolves to the default Channel, so this needs a
+        // second one. Created here rather than shared: the second channel is deleted by an
+        // earlier test.
+        const created = await adminClient.query(
+            gql`
+                mutation CreateInvalidTokenChannel($input: CreateChannelInput!) {
+                    createChannel(input: $input) {
+                        ... on Channel {
+                            id
+                        }
+                        ... on ErrorResult {
+                            errorCode
+                            message
+                        }
+                    }
+                }
+            `,
+            {
+                input: {
+                    code: 'shop-tools-invalid-token-channel',
+                    token: 'shop-tools-invalid-token-channel-token',
+                    ...channelInputDefaults,
+                },
+            },
+        );
+        expect(created.createChannel.id).toBeDefined();
+        try {
+            const response = await postMcp(baseUrl(), 'shop', callTool('get_product', { id: productId }), {
+                headers: { [CHANNEL_TOKEN_HEADER]: 'not-a-real-channel-token' },
+            });
 
-        expect(response.status).toBe(400);
-        expect(response.body).toMatchObject({
-            statusCode: 400,
-            message: expect.stringContaining(CHANNEL_TOKEN_HEADER),
-            path: '/mcp/shop',
-        });
-        // An unusable channel token is a bad request, not a failed authentication, so the caller
-        // must not be challenged for credentials.
-        expect(response.headers.get('www-authenticate')).toBeNull();
+            expect(response.status).toBe(400);
+            expect(response.body).toMatchObject({
+                statusCode: 400,
+                message: expect.stringContaining(CHANNEL_TOKEN_HEADER),
+                path: '/mcp/shop',
+            });
+            // An unusable channel token is a bad request, not a failed authentication, so the caller
+            // must not be challenged for credentials.
+            expect(response.headers.get('www-authenticate')).toBeNull();
+        } finally {
+            await adminClient.query(
+                gql`
+                    mutation DeleteInvalidTokenChannel($id: ID!) {
+                        deleteChannel(id: $id) {
+                            result
+                        }
+                    }
+                `,
+                { id: created.createChannel.id },
+            );
+        }
     });
 
     it('lets an anonymous caller get an order only while orderByCodeAccessStrategy allows it', async () => {
@@ -1567,7 +1821,7 @@ describe('MCP built-in shop tools', () => {
         async function customerShopContext(): Promise<RequestContext> {
             const customer = await connection.getRepository(adminCtx, Customer).findOneOrFail({
                 where: { emailAddress: customerEmail },
-                relations: ['user'],
+                relations: { user: true },
             });
             return server.app.get(RequestContextService).create({ apiType: 'shop', user: customer.user });
         }
@@ -1819,7 +2073,7 @@ describe('MCP built-in shop tools', () => {
 
             const stored = await connection.getRepository(adminCtx, Order).findOneOrFail({
                 where: { code: placedOrder.code as string },
-                relations: ['customer', 'customer.user'],
+                relations: { customer: { user: true } },
             });
             expect(stored.orderPlacedAt).toBeTruthy();
             expect(stored.customer?.emailAddress).toBe(GUEST_CHECKOUT_EMAIL);
@@ -1830,7 +2084,7 @@ describe('MCP built-in shop tools', () => {
             // address book, so this one does too.
             const buyer = await connection.getRepository(adminCtx, Customer).findOneOrFail({
                 where: { id: stored.customer?.id },
-                relations: ['addresses'],
+                relations: { addresses: true },
             });
             expect(buyer.addresses).toHaveLength(1);
             expect(buyer.addresses[0]).toMatchObject({
@@ -2322,7 +2576,7 @@ describe('MCP built-in shop tools', () => {
             // has to be named before any address is written. Nothing was.
             const stored = await connection.getRepository(adminCtx, Order).findOneOrFail({
                 where: { code: cart.code as string },
-                relations: ['customer'],
+                relations: { customer: true },
             });
             expect(stored.shippingAddress?.streetLine1).toBeUndefined();
             expect(stored.customer).toBeNull();

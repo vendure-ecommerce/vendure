@@ -1,6 +1,7 @@
 import { ConsoleSession } from './cli-auth';
 import { ConsoleOriginEnvironment } from './console-origins';
 import { ConsoleReporter } from './console-reporter';
+import { ConsoleLinkResultContribution } from './console-result';
 import { ProjectLinkManifest } from './project-link-manifest';
 
 /** The Console origins resolved for this run. @since 3.8.0 */
@@ -30,14 +31,32 @@ export interface ConsoleLinkContext {
     endpoints: ConsoleLinkEndpoints;
     /** Whether this run created the link or reused the manifest on disk. */
     outcome: ConsoleLinkOutcome;
-    /** The Console CLI Session, when this hook requested one and the login succeeded. */
+    /**
+     * The `vendure auth` login's access token, when this hook requested a
+     * session and a login exists. It has no `refreshToken`: the login's refresh
+     * token is single-use and stays in the login.
+     *
+     * `getAccessToken()` from `@vendure/cli`, with `VENDURE_CONSOLE_API_URL`
+     * set to `endpoints.apiUrl`, returns the same token and renews it.
+     */
     session?: ConsoleSession;
     /** Aborts on SIGINT or SIGTERM. */
     signal: AbortSignal;
     reporter: ConsoleReporter;
+    /** Requested output format. @since 3.8.0 */
+    outputMode: 'human' | 'json';
+    /** Isolated, immutable parsed options, including plugin flags. Never report secret values. @since 3.8.0 */
+    options: Readonly<Record<string, unknown>>;
+    /**
+     * Adds safe setup data under this plugin's ID in Core's result. Incomplete
+     * or failed setup returns non-zero and keeps the manifest.
+     * Never include credentials, tokens or raw errors.
+     * @since 3.8.0
+     */
+    contributeResult(contribution: ConsoleLinkResultContribution): void;
     /** Asks a yes/no question. Use only when {@link isNonInteractive} is `false`. */
     confirm(message: string): Promise<boolean | undefined>;
-    /** Whether no terminal is available for {@link confirm}. */
+    /** Whether non-interactive mode was requested or no terminal is available for {@link confirm}. */
     isNonInteractive: boolean;
     /** Whether `--force` was given. */
     force: boolean;
@@ -51,7 +70,13 @@ export interface ConsoleLinkContext {
  */
 export type ConsoleLinkHook = (context: ConsoleLinkContext) => Promise<void>;
 
-/** A hook that explicitly requests a Console session. @since 3.8.0 */
+/**
+ * A hook that explicitly requests a Console session. `vendure console link`
+ * then makes sure a `vendure auth` login exists before the hook runs, and
+ * passes its access token as `session`.
+ *
+ * @since 3.8.0
+ */
 export interface ConsoleLinkHookWithSession {
     hook: ConsoleLinkHook;
     requiresSession: true;

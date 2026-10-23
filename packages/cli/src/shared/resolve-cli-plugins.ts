@@ -2,6 +2,12 @@ import fs from 'fs-extra';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
+import {
+    AmbiguousVendureProjectError,
+    findPackageJsonWithDependency,
+    resolveCoreProjectDirectory,
+} from '../utilities/monorepo-utils';
+
 import { ProjectCliPluginConfig } from './cli-command-definition';
 import { mergeEnvPluginNames, readGlobalCliConfig } from './cli-global-plugin-config';
 import { assertCliPlugin, CliPlugin } from './cli-plugin';
@@ -136,6 +142,8 @@ export interface ResolveCliPluginsOptions {
      * Directory to start searching for the project package.json (default: cwd).
      */
     cwd?: string;
+    /** Explicit Core project directory, resolved against cwd. */
+    project?: string;
     /**
      * Optional override for tests — skip filesystem discovery.
      */
@@ -177,11 +185,13 @@ export interface DiscoverCliPluginsOptions extends ResolveCliPluginsOptions {
 }
 
 /**
- * Finds the project root used for CLI plugin configuration by walking up from
- * `cwd` and preferring a package.json that configures `vendure.cli` or
- * depends on `@vendure/cli`.
+ * Uses the selected Core project, including workspace discovery. Otherwise walks up from
+ * `cwd` to a package that configures `vendure.cli` or depends on Core or the CLI.
  */
-export function resolveCliProjectRoot(cwd: string = process.cwd()): string {
+export function resolveCliProjectRoot(cwd: string = process.cwd(), project?: string): string {
+    if (project !== undefined || findPackageJsonWithDependency(cwd, '@vendure/core')) {
+        return resolveCoreProjectDirectory(cwd, project);
+    }
     let current = path.resolve(cwd);
     const roots: string[] = [];
 
@@ -191,7 +201,11 @@ export function resolveCliProjectRoot(cwd: string = process.cwd()): string {
             roots.push(current);
             try {
                 const pkg = fs.readJsonSync(packageJsonPath) as PackageJsonLike;
-                if (pkg.vendure?.cli || hasDirectDependency(pkg, '@vendure/cli')) {
+                if (
+                    pkg.vendure?.cli ||
+                    hasDirectDependency(pkg, '@vendure/cli') ||
+                    hasDirectDependency(pkg, '@vendure/core')
+                ) {
                     return current;
                 }
             } catch {
@@ -708,7 +722,25 @@ function getGlobalPluginScope(
  * The project scope, or `undefined` when there is no project package.json.
  */
 function getProjectPluginScope(options: ResolveCliPluginsOptions): PluginScope | undefined {
-    const context = getProjectPluginContext(options);
+    let context: ProjectPluginContext | null;
+    try {
+        context = getProjectPluginContext(options);
+    } catch (error) {
+        if (options.project !== undefined || !(error instanceof AmbiguousVendureProjectError)) {
+            throw error;
+        }
+        // Report the selection problem without loading any member's plugins.
+        // Commands can still show help or run their own project validation.
+        return {
+            kind: 'project',
+            origin: path.resolve(options.cwd ?? process.cwd()),
+            allowlist: [],
+            resolvePackage: () => null,
+            check: () => undefined,
+            listCandidates: () => [],
+            error: error.message,
+        };
+    }
     if (!context) {
         return undefined;
     }
@@ -751,7 +783,9 @@ function getPluginScopes(options: ResolveCliPluginsOptions): PluginScope[] {
 
 function getProjectPluginContext(options: ResolveCliPluginsOptions): ProjectPluginContext | null {
     const cwd = options.cwd ?? process.cwd();
-    const projectRoot = options.projectPackageJson ? path.resolve(cwd) : resolveCliProjectRoot(cwd);
+    const projectRoot = options.projectPackageJson
+        ? path.resolve(cwd)
+        : resolveCliProjectRoot(cwd, options.project);
     const projectPackageJson =
         options.projectPackageJson ?? readPackageJson(path.join(projectRoot, 'package.json'));
 
@@ -809,7 +843,11 @@ function checkEnabledPluginStatically(
 function collectDirectDependencyOrigins(cwd: string, projectRoot: string): Map<string, string> {
     const origins = new Map<string, string>();
     const resolvedRoot = path.resolve(projectRoot);
-    let current = path.resolve(cwd);
+    const relative = path.relative(resolvedRoot, path.resolve(cwd));
+    let current =
+        relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)
+            ? resolvedRoot
+            : path.resolve(cwd);
 
     while (true) {
         const pkg = readPackageJson(path.join(current, 'package.json'));

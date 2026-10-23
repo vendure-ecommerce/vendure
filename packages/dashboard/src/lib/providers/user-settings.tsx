@@ -1,4 +1,5 @@
-import { LS_KEY_USER_SETTINGS } from '@/vdb/constants.js';
+import { LS_KEY_USER_SETTINGS, SETTINGS_STORE_KEY_USER_SETTINGS } from '@/vdb/constants.js';
+import { isForbiddenError } from '@/vdb/utils/is-forbidden-error.js';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnFiltersState } from '@tanstack/react-table';
 import React, { createContext, useEffect, useRef, useState } from 'react';
@@ -136,8 +137,6 @@ export interface UserSettingsContextType {
 
 export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
 
-const SETTINGS_STORE_KEY = 'vendure.dashboard.userSettings';
-
 interface UserSettingsProviderProps {
     queryClient?: QueryClient;
     children: React.ReactNode;
@@ -171,8 +170,8 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         isError: serverSettingsErrored,
         error,
     } = useQuery({
-        queryKey: ['user-settings', SETTINGS_STORE_KEY],
-        queryFn: () => api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY }),
+        queryKey: ['user-settings', SETTINGS_STORE_KEY_USER_SETTINGS],
+        queryFn: () => api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY_USER_SETTINGS }),
         retry: false,
         staleTime: 0,
         enabled: settingsStoreIsAvailable,
@@ -181,7 +180,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     useEffect(() => {
         if (
             settingsStoreIsAvailable &&
-            error?.message.includes('Settings store field not registered: vendure.dashboard.userSettings')
+            error?.message.includes(
+                `Settings store field not registered: ${SETTINGS_STORE_KEY_USER_SETTINGS}`,
+            )
         ) {
             logSettingsStoreWarning();
             setSettingsStoreIsAvailable(false);
@@ -192,7 +193,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     const saveToServerMutation = useMutation({
         mutationFn: (settingsToSave: UserSettings) =>
             api.mutate(setSettingsStoreValueDocument, {
-                input: { key: SETTINGS_STORE_KEY, value: settingsToSave },
+                input: { key: SETTINGS_STORE_KEY_USER_SETTINGS, value: settingsToSave },
             }),
         onSuccess: (_, settingsSaved) => {
             // Only update serverSettings after successful save
@@ -205,9 +206,11 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         },
     });
 
-    // Initialize settings from server if available
+    // Initialize settings from the first successful read of the server value. Until then
+    // `serverSettings` stays null, which stops the save effect below from writing this
+    // browser's local copy over the stored value.
     useEffect(() => {
-        if (isReady) {
+        if (serverSettings) {
             return;
         }
         if (serverSettingsLoaded) {
@@ -230,13 +233,26 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
                 setServerSettings(settings);
                 setIsReady(true);
             }
-        } else if (serverSettingsErrored) {
-            // Fetch failed and won't retry (retry: false); fall back to local settings and mark
-            // ready so consumers gating on `settingsReady` don't hang forever.
-            setServerSettings(settings);
+            return;
+        }
+        // A FORBIDDEN read (no session yet) initializes nothing: login() re-reads the settings.
+        // A signed-in user whose channel token grants no permissions gets FORBIDDEN too, and the
+        // settings stay not ready until a later read succeeds, e.g. after a channel switch.
+        if (serverSettingsErrored && !isForbiddenError(error)) {
+            // The read won't retry (retry: false). Mark ready so consumers gating on
+            // `settingsReady` don't hang forever, but leave `serverSettings` unset: the local
+            // copy was never read from the server, so it must not be saved over the stored
+            // value. A later successful read still initializes the settings.
             setIsReady(true);
         }
-    }, [serverSettingsLoaded, serverSettingsErrored, serverSettingsResponse, settings, isReady]);
+    }, [
+        serverSettings,
+        serverSettingsLoaded,
+        serverSettingsErrored,
+        error,
+        serverSettingsResponse,
+        settings,
+    ]);
 
     // Save settings to localStorage whenever they change
     useEffect(() => {

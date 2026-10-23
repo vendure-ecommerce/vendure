@@ -133,7 +133,7 @@ export interface ApiOptions {
     /**
      * @description
      * Has no effect. This option used to set the `debug` option of Apollo Server, which was
-     * removed in Apollo Server 4.
+     * removed in Apollo Server 4. Stack traces are never included in API error responses.
      *
      * @deprecated Will be removed in a future major version.
      * @default false
@@ -142,7 +142,7 @@ export interface ApiOptions {
     /**
      * @description
      * Has no effect. This option used to set the `debug` option of Apollo Server, which was
-     * removed in Apollo Server 4.
+     * removed in Apollo Server 4. Stack traces are never included in API error responses.
      *
      * @deprecated Will be removed in a future major version.
      * @default false
@@ -313,27 +313,6 @@ export interface ApiOptions {
      * @since 1.5.0
      */
     introspection?: boolean;
-    /**
-     * @description
-     * Controls input validation behaviour for mutation arguments.
-     *
-     * @since 3.8.0
-     */
-    inputValidation?: {
-        /**
-         * @description
-         * When enabled, blank (empty or whitespace-only) string values are rejected for
-         * business-required fields on top-level mutation inputs (e.g. product name, facet code,
-         * channel token). Returns a `UserInputError` with the `field-cannot-be-blank` i18n code.
-         *
-         * Disable this if your integration cannot change its clients overnight and
-         * still sends empty strings for required fields.
-         *
-         * @default true
-         * @since 3.8.0
-         */
-        requiredFieldValidation?: boolean;
-    };
 }
 
 /**

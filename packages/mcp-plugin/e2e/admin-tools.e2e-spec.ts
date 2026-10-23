@@ -1,10 +1,11 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import {
     Asset,
     AssetService,
     ConfigService,
     Customer,
     DefaultAssetImportStrategy,
+    DefaultEntityAccessControlStrategy,
     ID,
     mergeConfig,
     Order,
@@ -17,6 +18,7 @@ import {
     StockAdjustment,
     StockLevel,
     TransactionalConnection,
+    VendureEntity,
 } from '@vendure/core';
 import { McpTool, McpToolMetadata } from '@vendure/mcp-sdk';
 import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
@@ -24,6 +26,7 @@ import gql from 'graphql-tag';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Readable } from 'stream';
+import { SelectQueryBuilder } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
@@ -1362,6 +1365,79 @@ describe('MCP built-in admin tools (direct mode)', () => {
         );
     });
 
+    // #5626 — an entity id may be sent as a string, as MCP clients and models often do
+    it('adjust_stock accepts the ids as strings', async () => {
+        const token = await adminAccessToken();
+        const stockLevel = () =>
+            connection
+                .getRepository(adminCtx, StockLevel)
+                .findOneOrFail({ where: { productVariantId: variantId, stockLocationId } });
+        const before = await stockLevel();
+
+        const response = await postMcp(
+            baseUrl(),
+            'admin',
+            callTool(
+                'adjust_stock',
+                {
+                    variantId: String(variantId),
+                    locationId: String(stockLocationId),
+                    delta: 2,
+                    confirm: true,
+                },
+                1,
+            ),
+            { token },
+        );
+        try {
+            expect(response.body.result.isError).toBeUndefined();
+            expect((await stockLevel()).stockOnHand).toBe(before.stockOnHand + 2);
+        } finally {
+            // Undo the adjustment, so the changed stock does not leak into later tests.
+            if (response.body.result && !response.body.result.isError) {
+                await postMcp(
+                    baseUrl(),
+                    'admin',
+                    callTool(
+                        'adjust_stock',
+                        { variantId, locationId: stockLocationId, delta: -2, confirm: true },
+                        2,
+                    ),
+                    { token },
+                );
+            }
+        }
+    });
+
+    // #5626 — an entity id may be sent as a string, as MCP clients and models often do
+    it('update_variant accepts the id as a string', async () => {
+        const token = await adminAccessToken();
+        try {
+            const response = await postMcp(
+                baseUrl(),
+                'admin',
+                callTool('update_variant', { id: String(variantId), input: { enabled: false } }, 1),
+                { token },
+            );
+
+            expect(response.body.result.isError).toBeUndefined();
+            const variant = await connection
+                .getRepository(adminCtx, ProductVariant)
+                .findOneOrFail({ where: { id: variantId } });
+            expect(variant.enabled).toBe(false);
+        } finally {
+            // Put the variant back, so the disabled state does not leak into later tests. The numeric id
+            // works even when the string id does not.
+            const restored = await postMcp(
+                baseUrl(),
+                'admin',
+                callTool('update_variant', { id: variantId, input: { enabled: true } }, 2),
+                { token },
+            );
+            expect(restored.body.result?.isError).toBeUndefined();
+        }
+    });
+
     it('adjust_stock refuses a stock location that does not exist', async () => {
         const token = await adminAccessToken();
         const stockLevel = () =>
@@ -1412,7 +1488,7 @@ describe('MCP built-in admin tools (direct mode)', () => {
         // A DB-level check that the payment was actually refunded, not just that the response echoed it.
         const paymentAfter = await connection
             .getRepository(adminCtx, Payment)
-            .findOneOrFail({ where: { id: paymentId }, relations: ['refunds'] });
+            .findOneOrFail({ where: { id: paymentId }, relations: { refunds: true } });
         expect(paymentAfter.refunds.reduce((sum, r) => sum + r.total, 0)).toBe(paymentBefore.amount);
     });
 
@@ -1449,7 +1525,7 @@ describe('MCP built-in admin tools (direct mode)', () => {
 
         const paymentAfter = await connection
             .getRepository(adminCtx, Payment)
-            .findOneOrFail({ where: { id: paymentId }, relations: ['refunds'] });
+            .findOneOrFail({ where: { id: paymentId }, relations: { refunds: true } });
         expect(paymentAfter.refunds.reduce((sum, r) => sum + r.total, 0)).toBe(paymentBefore.amount);
     });
 
@@ -2042,7 +2118,7 @@ describe('MCP built-in admin tools (direct mode)', () => {
 
             const stored = await connection
                 .getRepository(adminCtx, ProductVariant)
-                .findOneOrFail({ where: { sku }, relations: ['product'] });
+                .findOneOrFail({ where: { sku }, relations: { product: true } });
             expect(String(stored.product.id)).toBe(String(emptyProductId));
         });
 
@@ -2095,7 +2171,10 @@ describe('MCP built-in admin tools (direct mode)', () => {
             expect(updated.body.result.isError).toBeUndefined();
             const stored = await connection
                 .getRepository(adminCtx, Product)
-                .findOneOrFail({ where: { id: productId }, relations: ['assets', 'featuredAsset'] });
+                .findOneOrFail({
+                    where: { id: productId },
+                    relations: { assets: true, featuredAsset: true },
+                });
             expect(stored.assets.map(entry => String(entry.assetId)).sort()).toEqual(
                 assetIds.map(String).sort(),
             );
@@ -2537,5 +2616,162 @@ describe('MCP built-in admin tools (discovery mode)', () => {
         );
         expect(denied.body.result.isError).toBe(true);
         expect(denied.body.result.content[0].text).toMatch(/permission/i);
+    });
+});
+
+/**
+ * Hides one customer from every query and refuses any tool that needs ReadCustomerGroup.
+ *
+ * The hidden id is stored per request context in a WeakMap, as real strategies do. A query made
+ * with a context that `prepareAccessControl` never saw finds nothing there and is not filtered.
+ */
+class HideOneCustomerStrategy extends DefaultEntityAccessControlStrategy {
+    hiddenCustomerId: ID | undefined;
+    private hiddenIdByCtx = new WeakMap<RequestContext, ID>();
+
+    async canAccess(ctx: RequestContext, permissions: Permission[]): Promise<boolean> {
+        if (permissions.includes(Permission.ReadCustomerGroup)) {
+            return false;
+        }
+        return super.canAccess(ctx, permissions);
+    }
+
+    prepareAccessControl(ctx: RequestContext): Promise<void> {
+        if (this.hiddenCustomerId != null) {
+            this.hiddenIdByCtx.set(ctx, this.hiddenCustomerId);
+        }
+        return Promise.resolve();
+    }
+
+    applyAccessControl(
+        qb: SelectQueryBuilder<VendureEntity>,
+        entityType: new (...args: any[]) => VendureEntity,
+        ctx: RequestContext,
+    ): void {
+        const hiddenId = this.hiddenIdByCtx.get(ctx);
+        if (entityType === Customer && hiddenId != null) {
+            qb.andWhere(`${qb.alias}.id != :aclHiddenCustomerId`, { aclHiddenCustomerId: hiddenId });
+        }
+    }
+}
+
+describe('MCP built-in admin tools (entity access control strategy)', () => {
+    const strategy = new HideOneCustomerStrategy();
+    const options: McpPluginOptions = {
+        oauth: { tokenSecret: TOKEN_SECRET },
+        rateLimits: { oauthIp: false },
+    };
+    const config = mergeConfig(testConfig(), {
+        authOptions: { entityAccessControlStrategy: strategy },
+        plugins: [McpPlugin.init(options)],
+    });
+    const { server, adminClient } = createTestEnvironment(config);
+    const baseUrl = () => `http://localhost:${config.apiOptions.port}`;
+
+    let connection: TransactionalConnection;
+    let visibleCustomerId: ID;
+    let hiddenCustomerId: ID;
+    let token: string;
+
+    beforeAll(async () => {
+        McpPlugin.init(options);
+        await server.init(testServerInit);
+        await adminClient.asSuperAdmin();
+        connection = server.app.get(TransactionalConnection);
+        const idStrategy = getIdStrategy(server.app.get(ConfigService));
+
+        const createCustomer = async (lastName: string): Promise<ID> => {
+            const { createCustomer: created } = await adminClient.query(
+                gql`
+                    mutation CreateAccessControlCustomer($input: CreateCustomerInput!) {
+                        createCustomer(input: $input) {
+                            ... on Customer {
+                                id
+                            }
+                        }
+                    }
+                `,
+                {
+                    input: {
+                        firstName: 'Access',
+                        lastName,
+                        emailAddress: `${lastName.toLowerCase()}-${Math.random().toString(36).slice(2)}@example.test`,
+                    },
+                },
+            );
+            return idStrategy.decodeId(created.id);
+        };
+        visibleCustomerId = await createCustomer('Visible');
+        hiddenCustomerId = await createCustomer('Hidden');
+        strategy.hiddenCustomerId = hiddenCustomerId;
+
+        const flow = await runAuthorizationCodeFlow({
+            baseUrl: baseUrl(),
+            issuer: ISSUER,
+            superAdminToken: adminClient.getAuthToken(),
+        });
+        token = flow.access_token;
+    }, TEST_SETUP_TIMEOUT_MS);
+
+    afterAll(async () => {
+        await server.destroy();
+    });
+
+    async function storedLastName(customerId: ID): Promise<string> {
+        const customer = await connection.rawConnection
+            .getRepository(Customer)
+            .findOneByOrFail({ id: customerId });
+        return customer.lastName;
+    }
+
+    it('hides a tool that canAccess refuses from tools/list, so it cannot be called', async () => {
+        const listed = await postMcp(baseUrl(), 'admin', rpc('tools/list', {}, 1), { token });
+        const names = (listed.body.result.tools as Array<{ name: string }>).map(tool => tool.name);
+        expect(names).toContain('list_customers');
+        expect(names).not.toContain('list_customer_groups');
+
+        // The SDK only knows the listed tools, so it rejects this call as an unknown tool before
+        // the registry sees it. The registry's own refusal is covered by its unit spec.
+        const refused = await postMcp(baseUrl(), 'admin', callTool('list_customer_groups', {}, 2), {
+            token,
+        });
+        expect(refused.body.error).toBeDefined();
+        expect(refused.body.result).toBeUndefined();
+    });
+
+    it('filters the rows a readonly tool returns', async () => {
+        const response = await postMcp(
+            baseUrl(),
+            'admin',
+            callTool('list_customers', { filter: { firstName: { eq: 'Access' } } }, 1),
+            { token },
+        );
+        expect(response.body.result.isError).toBeUndefined();
+        const ids = (response.body.result.structuredContent.items as Array<{ id: ID }>).map(item =>
+            String(item.id),
+        );
+        expect(ids).toContain(String(visibleCustomerId));
+        expect(ids).not.toContain(String(hiddenCustomerId));
+    });
+
+    it('filters the rows a writing tool can load, so it cannot change a hidden customer', async () => {
+        const allowed = await postMcp(
+            baseUrl(),
+            'admin',
+            callTool('update_customer', { id: visibleCustomerId, input: { lastName: 'Renamed' } }, 1),
+            { token },
+        );
+        expect(allowed.body.result.isError).toBeUndefined();
+        expect(await storedLastName(visibleCustomerId)).toBe('Renamed');
+
+        const refused = await postMcp(
+            baseUrl(),
+            'admin',
+            callTool('update_customer', { id: hiddenCustomerId, input: { lastName: 'Renamed' } }, 2),
+            { token },
+        );
+        expect(refused.body.result.isError).toBe(true);
+        expect(refused.body.result.content[0].text).toMatch(/No Customer with the id/);
+        expect(await storedLastName(hiddenCustomerId)).toBe('Hidden');
     });
 });

@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { isGraphQlErrorResult, OrderService, Permission, RequestContext } from '@vendure/core';
-import { McpTool, McpToolHandler } from '@vendure/mcp-sdk';
+import { McpTool, McpToolHandler, shortText } from '@vendure/mcp-sdk';
 import { z } from 'zod';
 
 import { McpActiveOrderService } from '../active-order.service';
 import { McpToolSerializerService } from '../serializer.service';
-import { shortText } from '../string-schemas';
 
 const removeCouponCodeInput = z.strictObject({
     code: shortText.describe('Coupon code.'),
@@ -44,9 +43,7 @@ export class RemoveCouponCodeTool implements McpToolHandler<RemoveCouponCodeInpu
             return this.serializer.orderOrError(order);
         }
         return {
-            order: this.serializer.order(
-                await this.orderService.removeCouponCode(order.ctx, order.id, input.code),
-            ),
+            order: this.serializer.order(await this.orderService.removeCouponCode(ctx, order.id, input.code)),
         };
     }
 }

@@ -13,8 +13,9 @@ import {
     resolvePackageBin,
     signalToExitCode,
 } from '../../shared/cli-process-utils';
+import { showConsoleHintIfUnlinked } from '../../shared/console-hint';
 import { showStarPromptOnce } from '../../shared/star-prompt';
-import { findPackageJsonWithDependency } from '../../utilities/monorepo-utils';
+import { resolveCoreProjectDirectory } from '../../utilities/monorepo-utils';
 
 export type DevTarget = 'all' | 'server' | 'worker' | 'dashboard';
 
@@ -30,6 +31,7 @@ interface DevProcessDefinition {
 }
 
 export interface DevOptions {
+    project?: string;
     serverEntry?: string;
     workerEntry?: string;
     viteConfig?: string;
@@ -73,7 +75,7 @@ const reloadIgnoredFileNames = new Set([
 export async function devCommand(targetArg?: string, options: DevOptions = {}): Promise<number> {
     try {
         const target = normalizeDevTarget(targetArg);
-        const projectDir = resolveVendureProjectDirectory(process.cwd());
+        const projectDir = resolveVendureProjectDirectory(process.cwd(), options.project);
         const devProcessDefinitions = getDevProcessDefinitions(options, target);
         const processes =
             target === 'all'
@@ -85,6 +87,8 @@ export async function devCommand(targetArg?: string, options: DevOptions = {}): 
         );
 
         validateProjectFiles(projectDir, processes);
+        // Once per process start. File-watcher restarts happen inside startDevProcess.
+        showConsoleHintIfUnlinked(projectDir);
 
         const children = processes.map(processDefinition =>
             startDevProcess(projectDir, processDefinition, {
@@ -161,13 +165,8 @@ export function normalizeDevTarget(targetArg?: string): DevTarget {
     throw new Error(`Unknown dev target "${target}". Expected one of: ${validTargets.join(', ')}`);
 }
 
-export function resolveVendureProjectDirectory(cwd: string): string {
-    if (hasVendureCoreDependency(path.join(cwd, 'package.json'))) {
-        return cwd;
-    }
-
-    const packageJsonPath = findPackageJsonWithDependency(cwd, '@vendure/core');
-    return packageJsonPath ? path.dirname(packageJsonPath) : cwd;
+export function resolveVendureProjectDirectory(cwd: string, project?: string): string {
+    return resolveCoreProjectDirectory(cwd, project);
 }
 
 function startDevProcess(
@@ -753,22 +752,5 @@ function assertFileExists(projectDir: string, relativePath: string) {
         throw new Error(
             `Could not find ${relativePath}. Run this command from a Vendure server project root.`,
         );
-    }
-}
-
-function hasVendureCoreDependency(packageJsonPath: string): boolean {
-    if (!existsSync(packageJsonPath)) {
-        return false;
-    }
-    try {
-        const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8')) as {
-            dependencies?: Record<string, string>;
-            devDependencies?: Record<string, string>;
-        };
-        return !!(
-            packageJson.dependencies?.['@vendure/core'] ?? packageJson.devDependencies?.['@vendure/core']
-        );
-    } catch {
-        return false;
     }
 }
