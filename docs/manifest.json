@@ -1,7 +1,7 @@
 {
   "id": "core",
   "name": "Vendure Framework Documentation",
-  "version": "3.8.0",
+  "version": "3.8.1",
   "vendureVersion": "v3",
   "navigation": [
     {
