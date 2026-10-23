@@ -220,10 +220,8 @@ export class AssetService {
             orderableAssets = entityWithAssets?.assets ?? [];
         } else if (0 < orderableAssets.length) {
             // the Assets are already loaded, but we need to limit them by Channel
-            if (orderableAssets[0].asset?.channels) {
-                orderableAssets = orderableAssets.filter(
-                    a => !!a.asset.channels.map(c => c.id).find(id => idsAreEqual(id, ctx.channelId)),
-                );
+            if (orderableAssets.every(oa => oa.asset?.channels)) {
+                orderableAssets = orderableAssets.filter(oa => this.isOrderableAssetInChannel(ctx, oa));
             } else {
                 const assetsInChannel = await this.connection
                     .getRepository(ctx, Asset)
@@ -290,20 +288,19 @@ export class AssetService {
                 .map(id => assets.find(a => idsAreEqual(a.id, id)))
                 .filter(asset => asset?.usage === AssetUsage.LIBRARY)
                 .filter(notNullOrUndefined);
-            const orderableAssetsOfOtherChannels = await this.removeExistingOrderableAssets(ctx, entity);
+            const { removed, kept } = await this.removeExistingOrderableAssets(ctx, entity);
             if (sortedAssets.length > 0) {
-                // Place the new Assets after those of other Channels, so that no two share a position
-                const positions = orderableAssetsOfOtherChannels.map(oa => oa.position);
-                const firstPosition = Math.max(-1, ...positions) + 1;
+                const positions = this.getPositionsForChannelAssets(removed, kept, sortedAssets.length);
                 entity.assets = [
-                    ...orderableAssetsOfOtherChannels,
-                    ...(await this.createOrderableAssets(ctx, entity, sortedAssets, firstPosition)),
+                    ...kept,
+                    ...(await this.createOrderableAssets(ctx, entity, sortedAssets, positions)),
                 ];
             } else {
-                entity.assets = orderableAssetsOfOtherChannels;
+                entity.assets = kept;
             }
         } else if (assetIds && assetIds.length === 0) {
-            entity.assets = await this.removeExistingOrderableAssets(ctx, entity);
+            const { kept } = await this.removeExistingOrderableAssets(ctx, entity);
+            entity.assets = kept;
         }
         return entity;
     }
@@ -692,10 +689,10 @@ export class AssetService {
         ctx: RequestContext,
         entity: EntityWithAssets,
         assets: Asset[],
-        firstPosition = 0,
+        positions: number[],
     ): Promise<OrderableAsset[]> {
         const orderableAssets = assets.map((asset, i) =>
-            this.getOrderableAsset(ctx, entity, asset, firstPosition + i),
+            this.getOrderableAsset(ctx, entity, asset, positions[i]),
         );
         return this.connection.getRepository(ctx, orderableAssets[0].constructor).save(orderableAssets);
     }
@@ -716,14 +713,33 @@ export class AssetService {
     }
 
     /**
-     * Removes the OrderableAssets of the current Channel, and returns those of the other Channels.
-     * These are not visible in the current Channel, so they are not part of the input and are kept.
-     * See #5629
+     * Returns the positions for the Assets saved in the current Channel. Each saved Asset takes a
+     * position freed by a removed OrderableAsset of this Channel, in ascending order. This keeps the
+     * kept OrderableAssets of other Channels in their place relative to them. Positions which a kept
+     * OrderableAsset also uses are skipped, because rows saved before #5629 was fixed can share a
+     * position. Any remaining Assets go after the highest existing position.
+     */
+    private getPositionsForChannelAssets(
+        removed: OrderableAsset[],
+        kept: OrderableAsset[],
+        count: number,
+    ): number[] {
+        const keptPositions = new Set(kept.map(oa => oa.position));
+        const freedPositions = [...new Set(removed.map(oa => oa.position))]
+            .filter(position => !keptPositions.has(position))
+            .sort((a, b) => a - b);
+        let nextPosition = Math.max(-1, ...removed.map(oa => oa.position), ...keptPositions) + 1;
+        return Array.from({ length: count }, (_, i) => freedPositions[i] ?? nextPosition++);
+    }
+
+    /**
+     * Removes the OrderableAssets of the current Channel. Those of other Channels are not visible in
+     * the current Channel, so they are not part of the input and are kept. See #5629
      */
     private async removeExistingOrderableAssets(
         ctx: RequestContext,
         entity: EntityWithAssets,
-    ): Promise<OrderableAsset[]> {
+    ): Promise<{ removed: OrderableAsset[]; kept: OrderableAsset[] }> {
         const propertyName = this.getHostEntityIdProperty(entity);
         const orderableAssetType = this.getOrderableAssetType(ctx, entity);
         const orderableAssets = await this.connection
@@ -733,17 +749,30 @@ export class AssetService {
             .leftJoinAndSelect('asset.channels', 'asset_channel')
             .where(`orderable_asset.${propertyName} = :id`, { id: entity.id })
             .getMany();
-        const isInChannel = (orderableAsset: OrderableAsset) =>
-            orderableAsset.asset.channels.some(channel => idsAreEqual(channel.id, ctx.channelId));
-        const orderableAssetsInChannel = orderableAssets.filter(isInChannel);
-        if (orderableAssetsInChannel.length) {
+        const removed: OrderableAsset[] = [];
+        const kept: OrderableAsset[] = [];
+        for (const orderableAsset of orderableAssets) {
+            (this.isOrderableAssetInChannel(ctx, orderableAsset) ? removed : kept).push(orderableAsset);
+        }
+        if (removed.length) {
             await this.connection.getRepository(ctx, orderableAssetType).delete({
-                id: In(orderableAssetsInChannel.map(orderableAsset => orderableAsset.id)),
+                id: In(removed.map(orderableAsset => orderableAsset.id)),
             });
         }
-        return orderableAssets.filter(orderableAsset => !isInChannel(orderableAsset));
+        return { removed, kept };
     }
 
+    /**
+     * Requires `orderableAsset.asset.channels` to be loaded.
+     */
+    private isOrderableAssetInChannel(ctx: RequestContext, orderableAsset: OrderableAsset): boolean {
+        return orderableAsset.asset.channels.some(channel => idsAreEqual(channel.id, ctx.channelId));
+    }
+
+    /**
+     * Note: the featured Asset is a single column which is shared by all Channels, so it is not
+     * scoped to a Channel like the list of Assets.
+     */
     private async isFeaturedAssetOfOtherChannel(
         ctx: RequestContext,
         entity: EntityWithAssets,
