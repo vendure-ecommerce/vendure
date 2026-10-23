@@ -1365,6 +1365,59 @@ describe('MCP built-in admin tools (direct mode)', () => {
         );
     });
 
+    // #5626 — an entity id may be sent as a string, as MCP clients and models often do
+    it('adjust_stock accepts the ids as strings', async () => {
+        const token = await adminAccessToken();
+        const stockLevel = () =>
+            connection
+                .getRepository(adminCtx, StockLevel)
+                .findOneOrFail({ where: { productVariantId: variantId, stockLocationId } });
+        const before = await stockLevel();
+
+        const response = await postMcp(
+            baseUrl(),
+            'admin',
+            callTool(
+                'adjust_stock',
+                {
+                    variantId: String(variantId),
+                    locationId: String(stockLocationId),
+                    delta: 2,
+                    confirm: true,
+                },
+                1,
+            ),
+            { token },
+        );
+
+        expect(response.body.result.isError).toBeUndefined();
+        expect((await stockLevel()).stockOnHand).toBe(before.stockOnHand + 2);
+    });
+
+    // #5626 — an entity id may be sent as a string, as MCP clients and models often do
+    it('update_variant accepts the id as a string', async () => {
+        const token = await adminAccessToken();
+        const setEnabled = (enabled: boolean, requestId: number) =>
+            postMcp(
+                baseUrl(),
+                'admin',
+                callTool('update_variant', { id: String(variantId), input: { enabled } }, requestId),
+                { token },
+            );
+        try {
+            const response = await setEnabled(false, 1);
+
+            expect(response.body.result.isError).toBeUndefined();
+            const variant = await connection
+                .getRepository(adminCtx, ProductVariant)
+                .findOneOrFail({ where: { id: variantId } });
+            expect(variant.enabled).toBe(false);
+        } finally {
+            // Put the variant back, so the disabled state does not leak into later tests.
+            await setEnabled(true, 2);
+        }
+    });
+
     it('adjust_stock refuses a stock location that does not exist', async () => {
         const token = await adminAccessToken();
         const stockLevel = () =>

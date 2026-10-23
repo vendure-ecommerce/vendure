@@ -1,6 +1,7 @@
 import { StandardSchemaWithJSON } from '@modelcontextprotocol/server';
 import { Permission } from '@vendure/common/lib/generated-types';
 import {
+    AutoIncrementIdStrategy,
     DefaultEntityAccessControlStrategy,
     ForbiddenError,
     I18nError,
@@ -11,8 +12,9 @@ import {
     PermissionDefinition,
     UnauthorizedError,
     UserInputError,
+    UuidIdStrategy,
 } from '@vendure/core';
-import { McpStandardSchema, McpToolMetadata, McpToolset } from '@vendure/mcp-sdk';
+import { ENTITY_ID_SCHEMA_KEY, McpStandardSchema, McpToolMetadata, McpToolset } from '@vendure/mcp-sdk';
 import { describe, expect, it, vi } from 'vitest';
 
 import { McpRateLimitExceeded } from '../rate-limit/mcp-rate-limiter.service';
@@ -110,6 +112,9 @@ function build(
             entityAccessControlStrategy: new DefaultEntityAccessControlStrategy(),
         },
         orderOptions: { activeOrderStrategy },
+        entityOptions: { entityIdStrategy: new AutoIncrementIdStrategy() } as {
+            entityIdStrategy: AutoIncrementIdStrategy | UuidIdStrategy;
+        },
     };
     // Stands in for TransactionalConnection: mutating tools are handed a transactional context,
     // which here is just the context they were called with.
@@ -370,6 +375,61 @@ describe('McpToolRegistryService', () => {
             await service.callToolDirect({ ctx: makeCtx() }, 'shop', 'get_thing', { q: 'x' });
             expect(execute).toHaveBeenCalledOnce();
             expect(execute.mock.calls[0][1]).toEqual({ q: 'x', defaulted: true });
+        });
+
+        // #5626 — entity ids are converted to the type of the EntityIdStrategy
+        describe('entity ids', () => {
+            const ID_JSON = { anyOf: [{ type: 'string' }, { type: 'number' }], [ENTITY_ID_SCHEMA_KEY]: true };
+            const ENTITY_ID_JSON = {
+                type: 'object',
+                properties: {
+                    id: ID_JSON,
+                    input: {
+                        type: 'object',
+                        properties: {
+                            assetIds: { type: 'array', items: ID_JSON },
+                            name: { type: 'string' },
+                        },
+                    },
+                },
+                required: ['id'],
+                additionalProperties: false,
+            };
+
+            const callWithEntityIds = async (
+                input: Record<string, unknown>,
+                entityIdStrategy?: AutoIncrementIdStrategy | UuidIdStrategy,
+            ) => {
+                const schema = specStandardSchema(ENTITY_ID_JSON, value => ({ value }));
+                const execute = vi.fn((_ctx: unknown, _input: unknown) => ({ ok: true }));
+                const { service, configService } = build([
+                    wrapper(shopTool({ inputSchema: schema }), execute),
+                ]);
+                if (entityIdStrategy) {
+                    configService.entityOptions.entityIdStrategy = entityIdStrategy;
+                }
+                service.onApplicationBootstrap();
+                await service.callToolDirect({ ctx: makeCtx() }, 'shop', 'get_thing', input);
+                return execute.mock.calls[0][1];
+            };
+
+            it('converts numeric id strings to numbers with an auto-increment id strategy', async () => {
+                const input = await callWithEntityIds({ id: '9', input: { assetIds: ['1', 2], name: '42' } });
+
+                expect(input).toEqual({ id: 9, input: { assetIds: [1, 2], name: '42' } });
+            });
+
+            it('leaves an id which is not a number unchanged', async () => {
+                const input = await callWithEntityIds({ id: 'T_9' });
+
+                expect(input).toEqual({ id: 'T_9' });
+            });
+
+            it('does not convert ids with a uuid id strategy', async () => {
+                const input = await callWithEntityIds({ id: '9' }, new UuidIdStrategy());
+
+                expect(input).toEqual({ id: '9' });
+            });
         });
 
         it('injects confirm into the wire schema of a destructive Standard Schema tool but never shows it to the author schema', async () => {
