@@ -701,13 +701,13 @@ export class AssetService {
         ctx: RequestContext,
         entity: EntityWithAssets,
         asset: Asset,
-        index: number,
+        position: number,
     ): OrderableAsset {
         const entityIdProperty = this.getHostEntityIdProperty(entity);
         const orderableAssetType = this.getOrderableAssetType(ctx, entity);
         return new orderableAssetType({
             assetId: asset.id,
-            position: index,
+            position,
             [entityIdProperty]: entity.id,
         });
     }
@@ -715,20 +715,16 @@ export class AssetService {
     /**
      * Returns the positions for the Assets saved in the current Channel. Each saved Asset takes a
      * position freed by a removed OrderableAsset of this Channel, in ascending order. This keeps the
-     * kept OrderableAssets of other Channels in their place relative to them. Positions which a kept
-     * OrderableAsset also uses are skipped, because rows saved before #5629 was fixed can share a
-     * position. Any remaining Assets go after the highest existing position.
+     * kept OrderableAssets of other Channels in their place relative to them. Any remaining Assets
+     * go after the highest existing position.
      */
     private getPositionsForChannelAssets(
         removed: OrderableAsset[],
         kept: OrderableAsset[],
         count: number,
     ): number[] {
-        const keptPositions = new Set(kept.map(oa => oa.position));
-        const freedPositions = [...new Set(removed.map(oa => oa.position))]
-            .filter(position => !keptPositions.has(position))
-            .sort((a, b) => a - b);
-        let nextPosition = Math.max(-1, ...removed.map(oa => oa.position), ...keptPositions) + 1;
+        const freedPositions = removed.map(oa => oa.position).sort((a, b) => a - b);
+        let nextPosition = Math.max(-1, ...[...removed, ...kept].map(oa => oa.position)) + 1;
         return Array.from({ length: count }, (_, i) => freedPositions[i] ?? nextPosition++);
     }
 
@@ -770,8 +766,9 @@ export class AssetService {
     }
 
     /**
-     * Note: the featured Asset is a single column which is shared by all Channels, so it is not
-     * scoped to a Channel like the list of Assets.
+     * Returns true when the featured Asset is not in the current Channel. featuredAsset is one column
+     * shared by all Channels, so an empty Asset list in one Channel must not clear an Asset from
+     * another Channel.
      */
     private async isFeaturedAssetOfOtherChannel(
         ctx: RequestContext,
@@ -781,7 +778,16 @@ export class AssetService {
             return false;
         }
         const featuredAsset = await this.getFeaturedAsset(ctx, entity);
-        return !!featuredAsset && !(await this.findOne(ctx, featuredAsset.id));
+        if (!featuredAsset) {
+            return false;
+        }
+        const featuredAssetInChannel = await this.connection.findOneInChannel(
+            ctx,
+            Asset,
+            featuredAsset.id,
+            ctx.channelId,
+        );
+        return !featuredAssetInChannel;
     }
 
     private getOrderableAssetType(ctx: RequestContext, entity: EntityWithAssets): Type<OrderableAsset> {

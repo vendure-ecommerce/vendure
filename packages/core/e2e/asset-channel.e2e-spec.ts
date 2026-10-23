@@ -280,10 +280,12 @@ describe('Product related assets', () => {
             return assets.map((asset: { id: string }) => asset.id);
         }
 
-        // A new Product with a ProductVariant in both channels, whose assets are an Asset of the
-        // default channel, which is also its featured Asset. sharedAssetId is an Asset of both
-        // channels. New entities are used, because assigning a Product to a channel also assigns
-        // its Assets, which other tests rely on.
+        // Each test gets a new Product with one ProductVariant, in both channels.
+        // The Product has one Asset, defaultChannelAssetId, which is only in the default channel.
+        // That Asset is also its featured Asset.
+        // sharedAssetId is in both channels and is not yet an Asset of the Product.
+        // New entities are used because assigning a Product to a channel also assigns its Assets.
+        // Other tests in this file depend on which of the existing Assets are in channel2.
         beforeEach(async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             [defaultChannelAssetId, sharedAssetId] = await createAssets(2);
@@ -502,6 +504,33 @@ describe('Product related assets', () => {
             });
             expect(product!.assets.map(a => a.id)).toEqual([defaultChannelAssetId]);
             expect(product!.featuredAsset?.id).toBe(defaultChannelAssetId);
+        });
+
+        // #5629 — removing all assets in channel2 should clear a featured asset of channel2
+        it('clears the featured asset of channel2 when all assets are removed', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { updateProduct: withFeaturedAsset } = await adminClient.query(updateProductDocument, {
+                input: { id: productId, assetIds: [sharedAssetId], featuredAssetId: sharedAssetId },
+            });
+            expect(withFeaturedAsset.featuredAsset?.id).toBe(sharedAssetId);
+
+            const { updateProduct } = await adminClient.query(updateProductDocument, {
+                input: { id: productId, assetIds: [] },
+            });
+            expect(updateProduct.assets).toEqual([]);
+            expect(updateProduct.featuredAsset).toBeNull();
+
+            const { product: channel2Product } = await adminClient.query(getProductWithVariantsDocument, {
+                id: productId,
+            });
+            expect(channel2Product!.featuredAsset).toBeNull();
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { product } = await adminClient.query(getProductWithVariantsDocument, {
+                id: productId,
+            });
+            expect(product!.featuredAsset).toBeNull();
+            expect(product!.assets.map(a => a.id)).toEqual([defaultChannelAssetId]);
         });
     });
 });
