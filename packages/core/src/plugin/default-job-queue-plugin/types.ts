@@ -107,7 +107,10 @@ export interface DefaultJobQueueOptions {
      * queue then waits for a Postgres `NOTIFY` instead of polling the `job_record` table.
      *
      * Requires Postgres. On any other database this option logs a warning and the queue
-     * polls at `pollInterval`.
+     * polls at `pollInterval`, backing off up to `maxIdlePollInterval` if it is set.
+     *
+     * Each job added costs one extra database round trip, and Postgres commits
+     * transactions which sent a notification one at a time. See {@link PgNotifyJobQueueStrategy}.
      *
      * If `dbConnectionOptions` points at a connection pooler in transaction mode, such as
      * PgBouncer, pass an object with `listenerConnection` set to the direct database host.

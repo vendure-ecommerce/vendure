@@ -4,7 +4,7 @@ generated: true
 ---
 ## DefaultJobQueuePlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="179" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="182" packageName="@vendure/core" />
 
 A plugin which configures Vendure to use the SQL database to persist the JobQueue jobs using the [SqlJobQueueStrategy](/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy). If you add this
 plugin to an existing Vendure installation, you'll need to run a [database migration](/developer-guide/migrations), since this
@@ -77,8 +77,11 @@ export const config: VendureConfig = {
 ### useNotify
 On Postgres, set `useNotify: true` to use the [PgNotifyJobQueueStrategy](/reference/typescript-api/job-queue/pg-notify-job-queue-strategy#pgnotifyjobqueuestrategy). An idle queue
 then waits for a Postgres `NOTIFY`, sent when a job is added, instead of polling. This removes
-nearly all idle queries, which matters when the database is reached over a network. On any
-other database this option logs a warning and the queue polls at `pollInterval`.
+nearly all idle queries, which matters when the database is reached over a network. Each job
+added costs one extra round trip, and Postgres commits transactions which sent a notification
+one at a time. See [PgNotifyJobQueueStrategy](/reference/typescript-api/job-queue/pg-notify-job-queue-strategy#pgnotifyjobqueuestrategy). On any other database this option logs a
+warning and the queue polls at `pollInterval`, backing off up to `maxIdlePollInterval` if it is
+set.
 
 If `dbConnectionOptions` points at a connection pooler in transaction mode, such as PgBouncer,
 the pooler accepts `LISTEN` but never delivers notifications. In that case, point the listener
@@ -103,7 +106,7 @@ export const config: VendureConfig = {
 ```
 
 If the listener cannot receive notifications, the strategy logs a warning and the queue polls at
-`pollInterval`.
+`pollInterval`, backing off up to `maxIdlePollInterval` if it is set.
 
 ### concurrency
 The number of jobs to process concurrently per worker. Defaults to 1.
@@ -303,7 +306,10 @@ If set to `true`, the job queue uses the [PgNotifyJobQueueStrategy](/reference/t
 queue then waits for a Postgres `NOTIFY` instead of polling the `job_record` table.
 
 Requires Postgres. On any other database this option logs a warning and the queue
-polls at `pollInterval`.
+polls at `pollInterval`, backing off up to `maxIdlePollInterval` if it is set.
+
+Each job added costs one extra database round trip, and Postgres commits
+transactions which sent a notification one at a time. See [PgNotifyJobQueueStrategy](/reference/typescript-api/job-queue/pg-notify-job-queue-strategy#pgnotifyjobqueuestrategy).
 
 If `dbConnectionOptions` points at a connection pooler in transaction mode, such as
 PgBouncer, pass an object with `listenerConnection` set to the direct database host.

@@ -82,8 +82,11 @@ import { DefaultJobQueueOptions } from './types';
  * ### useNotify
  * On Postgres, set `useNotify: true` to use the {@link PgNotifyJobQueueStrategy}. An idle queue
  * then waits for a Postgres `NOTIFY`, sent when a job is added, instead of polling. This removes
- * nearly all idle queries, which matters when the database is reached over a network. On any
- * other database this option logs a warning and the queue polls at `pollInterval`.
+ * nearly all idle queries, which matters when the database is reached over a network. Each job
+ * added costs one extra round trip, and Postgres commits transactions which sent a notification
+ * one at a time. See {@link PgNotifyJobQueueStrategy}. On any other database this option logs a
+ * warning and the queue polls at `pollInterval`, backing off up to `maxIdlePollInterval` if it is
+ * set.
  *
  * If `dbConnectionOptions` points at a connection pooler in transaction mode, such as PgBouncer,
  * the pooler accepts `LISTEN` but never delivers notifications. In that case, point the listener
@@ -107,7 +110,7 @@ import { DefaultJobQueueOptions } from './types';
  * ```
  *
  * If the listener cannot receive notifications, the strategy logs a warning and the queue polls at
- * `pollInterval`.
+ * `pollInterval`, backing off up to `maxIdlePollInterval` if it is set.
  *
  * ### concurrency
  * The number of jobs to process concurrently per worker. Defaults to 1.

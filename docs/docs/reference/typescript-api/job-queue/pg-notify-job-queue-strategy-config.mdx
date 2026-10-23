@@ -2,7 +2,7 @@
 title: "PgNotifyJobQueueStrategyConfig"
 generated: true
 ---
-<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/pg-notify-job-queue-strategy.ts" sourceLine="74" packageName="@vendure/core" since="3.8.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/pg-notify-job-queue-strategy.ts" sourceLine="77" packageName="@vendure/core" since="3.8.0" />
 
 Configuration options for the [PgNotifyJobQueueStrategy](/reference/typescript-api/job-queue/pg-notify-job-queue-strategy#pgnotifyjobqueuestrategy).
 
@@ -34,8 +34,8 @@ Supabase. Such a pooler accepts `LISTEN` but never delivers notifications. Point
 listener at the direct database host, or at a pooler port in session mode.
 
 On connect, the listener sends itself a test notification. If it does not arrive
-within 3 seconds, the strategy logs a warning and the queues poll at `pollInterval`
-until the process restarts.
+within 3 seconds, the strategy logs a warning and the queues poll at `pollInterval`,
+backing off up to `maxIdlePollInterval` if it is set, until the process restarts.
 ### safetyIntervalMs
 
 <MemberInfo kind="property" type={`number`} default={`300_000`}   />

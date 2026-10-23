@@ -176,7 +176,9 @@ Since v3.8.0, the DefaultJobQueuePlugin has two options which reduce this. Both 
   it starts.
 - `useNotify` (Postgres only) makes an idle queue wait for a Postgres `NOTIFY`, which is sent when a job is
   added, instead of polling. An idle queue then makes almost no queries, and a job starts as soon as the
-  transaction which added it commits.
+  transaction which added it commits. Each job added costs one extra database round trip, and Postgres commits
+  transactions which sent a notification one at a time. Under a high rate of concurrent writes which add jobs,
+  such as orders being placed, this lowers throughput.
 
 ```ts title="src/vendure-config.ts"
 import { DefaultJobQueuePlugin, VendureConfig } from '@vendure/core';
@@ -213,7 +215,7 @@ DefaultJobQueuePlugin.init({
 ```
 
 If the listener cannot receive notifications, Vendure logs a warning which mentions `listenerConnection`, and the
-queues poll at `pollInterval`.
+queues poll at `pollInterval`, backing off up to `maxIdlePollInterval` if it is set.
 :::
 
 If this is still not enough, try the [BullMQJobQueuePlugin](/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin/),

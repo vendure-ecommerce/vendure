@@ -2,7 +2,7 @@
 title: "PgNotifyJobQueueStrategy"
 generated: true
 ---
-<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/pg-notify-job-queue-strategy.ts" sourceLine="151" packageName="@vendure/core" since="3.8.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/pg-notify-job-queue-strategy.ts" sourceLine="158" packageName="@vendure/core" since="3.8.0" />
 
 A [JobQueueStrategy](/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy) which waits for Postgres `LISTEN`/`NOTIFY` instead of
 polling the database for jobs. It extends [SqlJobQueueStrategy](/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy), so jobs are
@@ -20,7 +20,11 @@ When a queue has no job, `next()` waits until one of these happens:
 While the listener is not connected, queues poll at `pollInterval`, backing off up to
 `maxIdlePollInterval` if it is set.
 
-Each `add()` makes one extra database round trip to send the notification.
+Each `add()` makes one extra database round trip to send the notification. Postgres
+also commits transactions which sent a notification one at a time, across the whole
+database. A transaction which adds a job, such as placing an order, therefore waits
+for any other such transaction to finish committing. Under a high rate of concurrent
+writes which add jobs, this lowers throughput.
 
 *Example*
 
