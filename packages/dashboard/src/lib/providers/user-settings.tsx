@@ -1,4 +1,5 @@
-import { LS_KEY_USER_SETTINGS } from '@/vdb/constants.js';
+import { LS_KEY_USER_SETTINGS, SETTINGS_STORE_KEY_USER_SETTINGS } from '@/vdb/constants.js';
+import { isForbiddenError } from '@/vdb/utils/is-forbidden-error.js';
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { ColumnFiltersState } from '@tanstack/react-table';
 import React, { createContext, useEffect, useRef, useState } from 'react';
@@ -136,8 +137,6 @@ export interface UserSettingsContextType {
 
 export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
 
-const SETTINGS_STORE_KEY = 'vendure.dashboard.userSettings';
-
 interface UserSettingsProviderProps {
     queryClient?: QueryClient;
     children: React.ReactNode;
@@ -163,6 +162,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     const [isReady, setIsReady] = useState(false);
     const previousContentLanguage = useRef(settings.contentLanguage);
     const saveInProgressRef = useRef(false);
+    // The settings when a read failed, so that a later successful read can tell which
+    // settings were changed in the meantime
+    const settingsAtFailureRef = useRef<UserSettings | null>(null);
 
     // Load settings from server on mount
     const {
@@ -171,8 +173,8 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         isError: serverSettingsErrored,
         error,
     } = useQuery({
-        queryKey: ['user-settings', SETTINGS_STORE_KEY],
-        queryFn: () => api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY }),
+        queryKey: ['user-settings', SETTINGS_STORE_KEY_USER_SETTINGS],
+        queryFn: () => api.query(getSettingsStoreValueDocument, { key: SETTINGS_STORE_KEY_USER_SETTINGS }),
         retry: false,
         staleTime: 0,
         enabled: settingsStoreIsAvailable,
@@ -181,7 +183,9 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     useEffect(() => {
         if (
             settingsStoreIsAvailable &&
-            error?.message.includes('Settings store field not registered: vendure.dashboard.userSettings')
+            error?.message.includes(
+                `Settings store field not registered: ${SETTINGS_STORE_KEY_USER_SETTINGS}`,
+            )
         ) {
             logSettingsStoreWarning();
             setSettingsStoreIsAvailable(false);
@@ -192,7 +196,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     const saveToServerMutation = useMutation({
         mutationFn: (settingsToSave: UserSettings) =>
             api.mutate(setSettingsStoreValueDocument, {
-                input: { key: SETTINGS_STORE_KEY, value: settingsToSave },
+                input: { key: SETTINGS_STORE_KEY_USER_SETTINGS, value: settingsToSave },
             }),
         onSuccess: (_, settingsSaved) => {
             // Only update serverSettings after successful save
@@ -210,40 +214,51 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     // browser's local copy over the stored value.
     useEffect(() => {
         if (serverSettings) {
+            // See the re-initialization after a failed read below
+            if (!isReady) {
+                setIsReady(true);
+            }
             return;
         }
         if (serverSettingsLoaded) {
+            const settingsAtFailure = settingsAtFailureRef.current;
+            settingsAtFailureRef.current = null;
+            let storedSettings: UserSettings;
             try {
                 const serverSettingsData =
                     serverSettingsResponse?.getSettingsStoreValue as UserSettings | null;
-                if (serverSettingsData) {
-                    // Server has settings, use them
-                    const mergedSettings = { ...defaultSettings, ...serverSettingsData };
-                    setSettings(mergedSettings);
-                    setServerSettings(mergedSettings);
-                    setIsReady(true);
-                } else {
-                    // Server has no settings, use local settings
-                    setServerSettings(settings);
-                    setIsReady(true);
-                }
+                // Server has no settings: use the local settings as they were before any
+                // changes made since a failed read, so that those changes get saved.
+                storedSettings = serverSettingsData
+                    ? { ...defaultSettings, ...serverSettingsData }
+                    : (settingsAtFailure ?? settings);
             } catch (e) {
                 console.error('Failed to parse server settings:', e);
-                setServerSettings(settings);
+                storedSettings = settingsAtFailure ?? settings;
+            }
+            setServerSettings(storedSettings);
+            if (settingsAtFailure) {
+                // A read failed earlier, and the settings were marked ready with the local copy.
+                // Keep the changes made since then on top of the stored value. Resetting
+                // `isReady` until the next render makes `settingsReady` consumers such as the
+                // Insights page re-initialize from the stored value.
+                setSettings(applyChangedSettings(storedSettings, settingsAtFailure, settings));
+                setIsReady(false);
+            } else {
+                setSettings(storedSettings);
                 setIsReady(true);
             }
-        } else if (serverSettingsErrored && !isAuthError(error)) {
-            // Fetch failed and won't retry (retry: false). Mark ready so consumers gating on
+        } else if (serverSettingsErrored && !isForbiddenError(error)) {
+            // A FORBIDDEN read (no session yet) initializes nothing: login() re-reads the settings.
+            // Any other failed read won't retry (retry: false). Mark ready so consumers gating on
             // `settingsReady` don't hang forever, but leave `serverSettings` unset: the local
             // copy was never read from the server, so it must not be saved over the stored
-            // value. A later successful read still initializes the settings.
+            // value. A later successful read initializes the settings.
+            if (!settingsAtFailureRef.current) {
+                settingsAtFailureRef.current = settings;
+            }
             setIsReady(true);
         }
-        // A FORBIDDEN read initializes nothing. It happens when the page loads without a valid
-        // session, i.e. on the login page or with an expired session token. login() invalidates
-        // all queries, and its authenticated re-read initializes the settings. It also happens
-        // for a signed-in user whose channel token grants no permissions. The settings then stay
-        // not ready until a read succeeds, e.g. the re-read after a channel switch.
     }, [
         serverSettings,
         serverSettingsLoaded,
@@ -251,6 +266,7 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         error,
         serverSettingsResponse,
         settings,
+        isReady,
     ]);
 
     // Save settings to localStorage whenever they change
@@ -354,12 +370,30 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
 };
 
 /**
- * Whether the settings could not be read because there is no authenticated session.
- * The thrown GraphQL error carries the Vendure error code in `extensions.code`.
+ * Applies the settings which changed from `before` to `after` on top of `stored`.
+ * Table settings are compared per table, so that a change to one table keeps the
+ * stored settings of the other tables.
  */
-function isAuthError(error: unknown): boolean {
-    const code = (error as { extensions?: { code?: unknown } } | null)?.extensions?.code;
-    return code === 'FORBIDDEN' || code === 'UNAUTHORIZED';
+function applyChangedSettings(stored: UserSettings, before: UserSettings, after: UserSettings): UserSettings {
+    const isEqual = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+    const result: UserSettings = { ...stored };
+    for (const key of Object.keys(after) as Array<keyof UserSettings>) {
+        if (isEqual(before[key], after[key])) {
+            continue;
+        }
+        if (key === 'tableSettings') {
+            const tableSettings = { ...stored.tableSettings };
+            for (const [tableId, value] of Object.entries(after.tableSettings ?? {})) {
+                if (!isEqual(before.tableSettings?.[tableId], value)) {
+                    tableSettings[tableId] = value;
+                }
+            }
+            result.tableSettings = tableSettings;
+        } else {
+            (result as unknown as Record<string, unknown>)[key] = after[key];
+        }
+    }
+    return result;
 }
 
 function logSettingsStoreWarning() {

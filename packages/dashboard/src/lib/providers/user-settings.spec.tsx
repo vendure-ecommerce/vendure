@@ -23,9 +23,11 @@ describe('UserSettingsProvider', () => {
     let root: Root;
     let queryClient: QueryClient;
     let context: UserSettingsContextType;
+    const readyHistory: boolean[] = [];
 
     function Probe() {
         context = useContext(UserSettingsContext)!;
+        readyHistory.push(context.settingsReady);
         return null;
     }
 
@@ -140,6 +142,55 @@ describe('UserSettingsProvider', () => {
         await act(async () => context.setTheme('dark'));
         await flush();
         expect(savedValues()).toEqual([expect.objectContaining({ displayLanguage: 'de', theme: 'dark' })]);
+    });
+
+    it('keeps changes made after a failed read when a later read succeeds', async () => {
+        apiMock.query.mockRejectedValue(graphQLError('Network request failed'));
+        await render();
+        expect(context.settingsReady).toBe(true);
+
+        await act(async () => context.setTheme('dark'));
+        await act(async () => context.setTableSettings('products', 'pageSize', 37));
+        await flush();
+        expect(apiMock.mutate).not.toHaveBeenCalled();
+
+        apiMock.query.mockResolvedValue({
+            getSettingsStoreValue: {
+                displayLanguage: 'de',
+                theme: 'light',
+                tableSettings: { orders: { pageSize: 50 } },
+            },
+        });
+        readyHistory.length = 0;
+        await act(async () => queryClient.invalidateQueries());
+        await flush();
+
+        expect(context.settings.theme).toBe('dark');
+        expect(context.settings.displayLanguage).toBe('de');
+        expect(context.settings.tableSettings).toEqual({
+            orders: { pageSize: 50 },
+            products: { pageSize: 37 },
+        });
+        // settingsReady drops for one render, so that consumers re-initialize from the stored value
+        expect(readyHistory).toContain(false);
+        expect(context.settingsReady).toBe(true);
+        expect(savedValues()).toEqual([
+            expect.objectContaining({
+                displayLanguage: 'de',
+                theme: 'dark',
+                tableSettings: { orders: { pageSize: 50 }, products: { pageSize: 37 } },
+            }),
+        ]);
+    });
+
+    it('does not initialize on an UNAUTHORIZED read', async () => {
+        apiMock.query.mockRejectedValue(graphQLError('Unauthorized', 'UNAUTHORIZED'));
+        await render();
+
+        expect(context.settingsReady).toBe(false);
+        await act(async () => context.setTheme('dark'));
+        await flush();
+        expect(apiMock.mutate).not.toHaveBeenCalled();
     });
 
     it('becomes ready when the settings store field is not registered', async () => {

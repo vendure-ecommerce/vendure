@@ -1,6 +1,10 @@
 import { expect, type Page, test } from '@playwright/test';
 
-import { LS_KEY_SESSION_TOKEN, LS_KEY_USER_SETTINGS } from '../../../src/lib/storage-keys.js';
+import {
+    LS_KEY_SESSION_TOKEN,
+    LS_KEY_USER_SETTINGS,
+    SETTINGS_STORE_KEY_USER_SETTINGS,
+} from '../../../src/lib/storage-keys.js';
 import { LoginPage } from '../../page-objects/login-page.js';
 import { VendureAdminClient } from '../../utils/vendure-admin-client.js';
 
@@ -162,7 +166,6 @@ test.describe('Switching user', () => {
 
 // #5595 — signing in from a signed-out page must not overwrite the stored user settings
 test.describe('Stored user settings on login', () => {
-    const USER_SETTINGS_KEY = 'vendure.dashboard.userSettings';
     const MARKER_TABLE_ID = 'e2e-5595';
     const markerTableSettings = { pageSize: 37 };
 
@@ -183,10 +186,11 @@ test.describe('Stored user settings on login', () => {
             const request = route.request().postDataJSON();
             const query: string = request?.query ?? '';
             const isRead =
-                query.includes('GetSettingsStoreValue') && request.variables?.key === USER_SETTINGS_KEY;
+                query.includes('GetSettingsStoreValue') &&
+                request.variables?.key === SETTINGS_STORE_KEY_USER_SETTINGS;
             const isWrite =
                 query.includes('SetSettingsStoreValue') &&
-                request.variables?.input?.key === USER_SETTINGS_KEY;
+                request.variables?.input?.key === SETTINGS_STORE_KEY_USER_SETTINGS;
             if (!isRead && !isWrite) {
                 await route.fallback();
                 return;
@@ -207,7 +211,11 @@ test.describe('Stored user settings on login', () => {
                     ? { data: { getSettingsStoreValue: storedSettings } }
                     : {
                           data: {
-                              setSettingsStoreValue: { key: USER_SETTINGS_KEY, result: true, error: null },
+                              setSettingsStoreValue: {
+                                  key: SETTINGS_STORE_KEY_USER_SETTINGS,
+                                  result: true,
+                                  error: null,
+                              },
                           },
                       },
             });
