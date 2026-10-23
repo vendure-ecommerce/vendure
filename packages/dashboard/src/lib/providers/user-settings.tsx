@@ -162,9 +162,6 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     const [isReady, setIsReady] = useState(false);
     const previousContentLanguage = useRef(settings.contentLanguage);
     const saveInProgressRef = useRef(false);
-    // The settings when a read failed, so that a later successful read can tell which
-    // settings were changed in the meantime
-    const settingsAtFailureRef = useRef<UserSettings | null>(null);
 
     // Load settings from server on mount
     const {
@@ -214,49 +211,38 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
     // browser's local copy over the stored value.
     useEffect(() => {
         if (serverSettings) {
-            // See the re-initialization after a failed read below
-            if (!isReady) {
+            return;
+        }
+        if (serverSettingsLoaded) {
+            try {
+                const serverSettingsData =
+                    serverSettingsResponse?.getSettingsStoreValue as UserSettings | null;
+                if (serverSettingsData) {
+                    // Server has settings, use them
+                    const mergedSettings = { ...defaultSettings, ...serverSettingsData };
+                    setSettings(mergedSettings);
+                    setServerSettings(mergedSettings);
+                    setIsReady(true);
+                } else {
+                    // Server has no settings, use local settings
+                    setServerSettings(settings);
+                    setIsReady(true);
+                }
+            } catch (e) {
+                console.error('Failed to parse server settings:', e);
+                setServerSettings(settings);
                 setIsReady(true);
             }
             return;
         }
-        if (serverSettingsLoaded) {
-            const settingsAtFailure = settingsAtFailureRef.current;
-            settingsAtFailureRef.current = null;
-            let storedSettings: UserSettings;
-            try {
-                const serverSettingsData =
-                    serverSettingsResponse?.getSettingsStoreValue as UserSettings | null;
-                // Server has no settings: use the local settings as they were before any
-                // changes made since a failed read, so that those changes get saved.
-                storedSettings = serverSettingsData
-                    ? { ...defaultSettings, ...serverSettingsData }
-                    : (settingsAtFailure ?? settings);
-            } catch (e) {
-                console.error('Failed to parse server settings:', e);
-                storedSettings = settingsAtFailure ?? settings;
-            }
-            setServerSettings(storedSettings);
-            if (settingsAtFailure) {
-                // A read failed earlier, and the settings were marked ready with the local copy.
-                // Keep the changes made since then on top of the stored value. Resetting
-                // `isReady` until the next render makes `settingsReady` consumers such as the
-                // Insights page re-initialize from the stored value.
-                setSettings(applyChangedSettings(storedSettings, settingsAtFailure, settings));
-                setIsReady(false);
-            } else {
-                setSettings(storedSettings);
-                setIsReady(true);
-            }
-        } else if (serverSettingsErrored && !isForbiddenError(error)) {
-            // A FORBIDDEN read (no session yet) initializes nothing: login() re-reads the settings.
-            // Any other failed read won't retry (retry: false). Mark ready so consumers gating on
+        // A FORBIDDEN read (no session yet) initializes nothing: login() re-reads the settings.
+        // A signed-in user whose channel token grants no permissions gets FORBIDDEN too, and the
+        // settings stay not ready until a later read succeeds, e.g. after a channel switch.
+        if (serverSettingsErrored && !isForbiddenError(error)) {
+            // The read won't retry (retry: false). Mark ready so consumers gating on
             // `settingsReady` don't hang forever, but leave `serverSettings` unset: the local
             // copy was never read from the server, so it must not be saved over the stored
-            // value. A later successful read initializes the settings.
-            if (!settingsAtFailureRef.current) {
-                settingsAtFailureRef.current = settings;
-            }
+            // value. A later successful read still initializes the settings.
             setIsReady(true);
         }
     }, [
@@ -266,7 +252,6 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         error,
         serverSettingsResponse,
         settings,
-        isReady,
     ]);
 
     // Save settings to localStorage whenever they change
@@ -368,33 +353,6 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
 
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;
 };
-
-/**
- * Applies the settings which changed from `before` to `after` on top of `stored`.
- * Table settings are compared per table, so that a change to one table keeps the
- * stored settings of the other tables.
- */
-function applyChangedSettings(stored: UserSettings, before: UserSettings, after: UserSettings): UserSettings {
-    const isEqual = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
-    const result: UserSettings = { ...stored };
-    for (const key of Object.keys(after) as Array<keyof UserSettings>) {
-        if (isEqual(before[key], after[key])) {
-            continue;
-        }
-        if (key === 'tableSettings') {
-            const tableSettings = { ...stored.tableSettings };
-            for (const [tableId, value] of Object.entries(after.tableSettings ?? {})) {
-                if (!isEqual(before.tableSettings?.[tableId], value)) {
-                    tableSettings[tableId] = value;
-                }
-            }
-            result.tableSettings = tableSettings;
-        } else {
-            (result as unknown as Record<string, unknown>)[key] = after[key];
-        }
-    }
-    return result;
-}
 
 function logSettingsStoreWarning() {
     // eslint-disable-next-line no-console
