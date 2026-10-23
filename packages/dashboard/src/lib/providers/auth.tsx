@@ -28,8 +28,9 @@ export interface AuthContext {
     authenticationError?: string;
     /**
      * @description
-     * Whether the user is authenticated. An Administrator without access to any Channel
-     * is not authenticated, as they cannot use the Dashboard.
+     * Whether the user can use the Dashboard: they have an active session with access to
+     * at least one Channel. An Administrator without access to any Channel is not
+     * authenticated, as every Channel-scoped query is forbidden for them.
      */
     isAuthenticated: boolean;
     /**
@@ -198,19 +199,26 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
         staleTime: Infinity,
     });
 
+    // A session without access to any channel cannot be used, so end it. This also
+    // removes the cached user, so that `user` is not set while `isAuthenticated` is false.
+    const endSessionWithoutChannelAccess = React.useCallback(async () => {
+        setIsLoginLogoutInProgress(true);
+        try {
+            await api.mutate(LogOutMutation)({});
+        } catch {
+            // The session has no access anyway, so the local state is cleared regardless
+        }
+        queryClient.removeQueries({ queryKey: ['currentUser'] });
+        setAuthenticationError(noChannelAccessError);
+        setStatus('unauthenticated');
+        setIsLoginLogoutInProgress(false);
+    }, [queryClient, noChannelAccessError]);
+
     // Auth actions
     const login = React.useCallback(
         (username: string, password: string, onLoginSuccess?: () => void) => {
             setIsLoginLogoutInProgress(true);
             setStatus('verifying');
-            // The session cannot be used, so end it
-            const endSessionWithoutChannelAccess = async () => {
-                await api.mutate(LogOutMutation)({});
-                queryClient.removeQueries({ queryKey: ['currentUser'] });
-                setAuthenticationError(noChannelAccessError);
-                setStatus('unauthenticated');
-                setIsLoginLogoutInProgress(false);
-            };
             api.mutate(LoginMutation)({ username, password })
                 .then(async data => {
                     if (data.login.__typename === 'CurrentUser') {
@@ -279,7 +287,13 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
                     setIsLoginLogoutInProgress(false);
                 });
         },
-        [refetchCurrentUser, queryClient, settings.activeChannelId, setActiveChannelId, noChannelAccessError],
+        [
+            refetchCurrentUser,
+            queryClient,
+            settings.activeChannelId,
+            setActiveChannelId,
+            endSessionWithoutChannelAccess,
+        ],
     );
 
     const logout = React.useCallback(
@@ -355,11 +369,10 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
 
         // If query has completed (not loading) and we're in verifying state, determine final status
         if (!isLoading && status === 'verifying') {
-            if (currentUserError || !isAuthenticated) {
-                if (!currentUserError && currentUserData?.me?.id) {
-                    // Signed in, but without access to any channel, e.g. after it was removed
-                    setAuthenticationError(noChannelAccessError);
-                }
+            if (!currentUserError && currentUserData?.me?.id && !isAuthenticated) {
+                // Signed in, but without access to any channel, e.g. after it was removed
+                void endSessionWithoutChannelAccess();
+            } else if (currentUserError || !isAuthenticated) {
                 setStatus('unauthenticated');
             } else {
                 setStatus('authenticated');
@@ -372,7 +385,7 @@ export function AuthProvider({ children }: Readonly<{ children: React.ReactNode 
         isAuthenticated,
         status,
         isLoginLogoutInProgress,
-        noChannelAccessError,
+        endSessionWithoutChannelAccess,
     ]);
 
     const refreshCurrentUser = () => {

@@ -151,6 +151,7 @@ test.describe('Administrator without access to any channel', () => {
             await loginPage.login(administrator.emailAddress, password);
             await expect(adminPage).not.toHaveURL(/\/login/, { timeout: 15_000 });
 
+            const { activeChannel } = await client.gql(`query { activeChannel { id } }`);
             await client.gql(`mutation ($input: UpdateRoleInput!) { updateRole(input: $input) { id } }`, {
                 input: { id: administrator.roleId, channelIds: [] },
             });
@@ -162,6 +163,14 @@ test.describe('Administrator without access to any channel', () => {
                     .filter({ hasText: 'You do not have access to any channel' }),
             ).toBeVisible({ timeout: 10_000 });
             await loginPage.expectVisible();
+
+            // The session was ended, so it stays signed out even once the access is given back
+            await client.gql(`mutation ($input: UpdateRoleInput!) { updateRole(input: $input) { id } }`, {
+                input: { id: administrator.roleId, channelIds: [activeChannel.id] },
+            });
+            await adminPage.reload();
+            await loginPage.expectVisible();
+            await expect(adminPage).toHaveURL(/\/login/);
         } finally {
             await context.close();
             await cleanupAdministrator(client, administrator);
