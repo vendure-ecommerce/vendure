@@ -23,16 +23,10 @@ export function dashboardMetadataPlugin(): Plugin {
             configLoaderApi = getConfigLoaderApi(plugins);
         },
         configureServer(server) {
-            // Extensions are loaded via dynamic `import()`, which Vite's cold-start
-            // crawl does not follow. Any dependency that only an extension imports
-            // is therefore discovered after the app has booted, forcing a
-            // re-optimization and full page reload. During that window modules
-            // from both optimizer runs can be live at once (duplicate React
-            // contexts). Warming the extension entries at startup moves that
-            // discovery to before the first page load.
-            // This must wait until the server is listening: the config is loaded
-            // during `buildStart`, which runs *before* the deps optimizer is
-            // initialized, and requests made earlier corrupt its first run.
+            // Extensions load via dynamic `import()`, which Vite's cold-start crawl
+            // skips, so their deps would otherwise be found after the app boots.
+            // Wait for `listening`: the config loads in `buildStart`, before the deps
+            // optimizer is initialized. Not applied in middleware mode (no httpServer).
             server.httpServer?.once('listening', () => {
                 void configLoaderApi.getVendureConfig().then(result => {
                     if (!result) {

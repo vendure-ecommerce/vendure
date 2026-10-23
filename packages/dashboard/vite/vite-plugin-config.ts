@@ -135,20 +135,11 @@ export function viteConfigPlugin({
 }
 
 /**
- * Returns the path to the bundle's library entry, with a `?v=` query derived from
- * the bundle contents.
- *
- * When the dashboard lives in `node_modules`, the Vite dev server appends its own
- * `?v=<browserHash>` to `lib.js` and serves it as `immutable`. That hash is derived
- * from the lockfile and Vite config, not from the bundle, so it survives a rebuilt
- * or reinstalled bundle. The browser then keeps the stale cached `lib.js` while the
- * `no-cache` `main.js` is fresh, so the two load *different* copies of the shared
- * chunks. Extension code then binds to a separate set of React contexts from the
- * ones the app's providers populate ("useChannel must be used within a
- * ChannelProvider" and similar). Supplying a content-derived `v` stops Vite adding
- * its own and makes the URL change whenever the bundle does. The chunks themselves
- * have content-hashed file names, and `lib.js` references them by name, so hashing
- * `lib.js` is sufficient.
+ * Returns the bundle's library entry with a `?v=` derived from its contents.
+ * Vite's own `?v=` (added for files in node_modules, served as immutable) does not
+ * change with the bundle, so a rebuilt bundle would be shadowed by a stale cached
+ * `lib.js`. Vite does not add its own `v` when one is present. The chunks have
+ * content-hashed names referenced by `lib.js`, so hashing `lib.js` covers them.
  */
 function getBundleLibEntry(packageRoot: string): string {
     const libEntry = path.resolve(packageRoot, './dist/bundle/lib.js');

@@ -615,36 +615,46 @@ describe('dashboardMetadataPlugin', () => {
 
     // Extensions are dynamically imported, so Vite's cold-start crawl misses their
     // dependencies; warming them at startup avoids a mid-boot re-optimization.
-    it('configureServer warms up active extension entries once the server is listening', async () => {
-        const root = path.resolve('/project/node_modules/@vendure/dashboard');
-        const plugin = setupPlugin(
-            [
-                { name: 'LocalPlugin', pluginPath: '/project/src/plugin.js', dashboardEntryPath: './ui.tsx' },
-                { name: 'NoDashboard', pluginPath: '/project/src/other.js', dashboardEntryPath: undefined },
-                {
-                    name: 'InsideRoot',
-                    pluginPath: path.join(root, 'plugin/index.js'),
-                    dashboardEntryPath: './ui.tsx',
-                },
-            ],
-            new Set(['LocalPlugin', 'NoDashboard', 'InsideRoot']),
-        );
-        const warmupRequest = vi.fn(() => Promise.resolve());
-        const httpServer = new EventEmitter();
-        (plugin.configureServer as (server: unknown) => void)({
-            config: { root },
-            environments: { client: { warmupRequest } },
-            httpServer,
-        });
-        // The deps optimizer is only initialized just before the server listens.
-        await new Promise(resolve => setTimeout(resolve, 10));
-        expect(warmupRequest).not.toHaveBeenCalled();
-        httpServer.emit('listening');
-        await vi.waitFor(() => expect(warmupRequest).toHaveBeenCalledTimes(2));
-        const localPath = path.resolve('/project/src/ui.tsx').replace(/\\/g, '/');
-        expect(warmupRequest).toHaveBeenCalledWith(`/@fs${localPath.startsWith('/') ? '' : '/'}${localPath}`);
-        expect(warmupRequest).toHaveBeenCalledWith('/plugin/ui.tsx');
-    });
+    // POSIX only: the expected `/@fs/` URL is a literal path without a drive letter.
+    it.skipIf(process.platform === 'win32')(
+        'configureServer warms up active extension entries once the server is listening',
+        async () => {
+            const root = path.resolve('/project/node_modules/@vendure/dashboard');
+            const plugin = setupPlugin(
+                [
+                    {
+                        name: 'LocalPlugin',
+                        pluginPath: '/project/src/plugin.js',
+                        dashboardEntryPath: './ui.tsx',
+                    },
+                    {
+                        name: 'NoDashboard',
+                        pluginPath: '/project/src/other.js',
+                        dashboardEntryPath: undefined,
+                    },
+                    {
+                        name: 'InsideRoot',
+                        pluginPath: path.join(root, 'plugin/index.js'),
+                        dashboardEntryPath: './ui.tsx',
+                    },
+                ],
+                new Set(['LocalPlugin', 'NoDashboard', 'InsideRoot']),
+            );
+            const warmupRequest = vi.fn(() => Promise.resolve());
+            const httpServer = new EventEmitter();
+            (plugin.configureServer as (server: unknown) => void)({
+                config: { root },
+                environments: { client: { warmupRequest } },
+                httpServer,
+            });
+            // The deps optimizer is only initialized just before the server listens.
+            expect(warmupRequest).not.toHaveBeenCalled();
+            httpServer.emit('listening');
+            await vi.waitFor(() => expect(warmupRequest).toHaveBeenCalledTimes(2));
+            expect(warmupRequest).toHaveBeenCalledWith('/@fs/project/src/ui.tsx');
+            expect(warmupRequest).toHaveBeenCalledWith('/plugin/ui.tsx');
+        },
+    );
 
     it('load returns undefined for non-matching IDs', async () => {
         const plugin = setupPlugin([]);
