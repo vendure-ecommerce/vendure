@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import fs from 'node:fs';
 import path from 'path';
 import { ConfigEnv, Plugin, UserConfig } from 'vite';
 
@@ -72,7 +74,7 @@ export function viteConfigPlugin({
                     // module resolution at runtime.
                     ...(useExperimentalBundle
                         ? {
-                              '@vendure/dashboard': path.resolve(packageRoot, './dist/bundle/lib.js'),
+                              '@vendure/dashboard': getBundleLibEntry(packageRoot),
                           }
                         : {}),
                 },
@@ -110,6 +112,14 @@ export function viteConfigPlugin({
                     'use-sync-external-store/shim',
                     'use-sync-external-store/shim/with-selector',
                     '@messageformat/parser',
+                    // The Lingui runtime is only imported by macro-transformed code
+                    // (and, in bundle mode, from within node_modules), so the
+                    // scanner never finds it: it would be discovered late, forcing
+                    // a reload. In bundle mode an un-optimized `@lingui/core` is
+                    // also served raw to the bundle while extension code gets an
+                    // optimized copy, i.e. two `i18n` singletons.
+                    '@lingui/core',
+                    '@lingui/react',
                     // In bundle mode these context/singleton libraries are kept
                     // external from the pre-built bundle (see lib-externals.ts),
                     // so pre-bundle them here to guarantee that main.js, lib.js
@@ -122,4 +132,30 @@ export function viteConfigPlugin({
             return config;
         },
     };
+}
+
+/**
+ * Returns the path to the bundle's library entry, with a `?v=` query derived from
+ * the bundle contents.
+ *
+ * When the dashboard lives in `node_modules`, the Vite dev server appends its own
+ * `?v=<browserHash>` to `lib.js` and serves it as `immutable`. That hash is derived
+ * from the lockfile and Vite config, not from the bundle, so it survives a rebuilt
+ * or reinstalled bundle. The browser then keeps the stale cached `lib.js` while the
+ * `no-cache` `main.js` is fresh, so the two load *different* copies of the shared
+ * chunks. Extension code then binds to a separate set of React contexts from the
+ * ones the app's providers populate ("useChannel must be used within a
+ * ChannelProvider" and similar). Supplying a content-derived `v` stops Vite adding
+ * its own and makes the URL change whenever the bundle does. The chunks themselves
+ * have content-hashed file names, and `lib.js` references them by name, so hashing
+ * `lib.js` is sufficient.
+ */
+function getBundleLibEntry(packageRoot: string): string {
+    const libEntry = path.resolve(packageRoot, './dist/bundle/lib.js');
+    try {
+        const version = createHash('sha256').update(fs.readFileSync(libEntry)).digest('hex').slice(0, 8);
+        return `${libEntry}?v=${version}`;
+    } catch {
+        return libEntry;
+    }
 }
