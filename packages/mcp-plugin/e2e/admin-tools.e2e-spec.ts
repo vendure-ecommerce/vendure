@@ -1389,9 +1389,24 @@ describe('MCP built-in admin tools (direct mode)', () => {
             ),
             { token },
         );
-
-        expect(response.body.result.isError).toBeUndefined();
-        expect((await stockLevel()).stockOnHand).toBe(before.stockOnHand + 2);
+        try {
+            expect(response.body.result.isError).toBeUndefined();
+            expect((await stockLevel()).stockOnHand).toBe(before.stockOnHand + 2);
+        } finally {
+            // Undo the adjustment, so the changed stock does not leak into later tests.
+            if (!response.body.result.isError) {
+                await postMcp(
+                    baseUrl(),
+                    'admin',
+                    callTool(
+                        'adjust_stock',
+                        { variantId, locationId: stockLocationId, delta: -2, confirm: true },
+                        2,
+                    ),
+                    { token },
+                );
+            }
+        }
     });
 
     // #5626 — an entity id may be sent as a string, as MCP clients and models often do
