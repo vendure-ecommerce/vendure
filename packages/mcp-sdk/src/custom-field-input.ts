@@ -48,7 +48,6 @@ import {
  *
  * @docsCategory mcp-sdk
  * @since 3.8.0
- * @since 3.8.2 - Added the `options` parameter
  */
 export async function assertCustomFieldsWritable(
     ctx: RequestContext,

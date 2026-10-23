@@ -2071,7 +2071,9 @@ describe('MCP built-in admin tools (direct mode)', () => {
             );
 
             expect(response.body.result.isError).toBe(true);
-            expect(response.body.result.content[0].text).toContain('subtitle');
+            expect(response.body.result.content[0].text).toContain(
+                'These custom fields are localized, so they must be set on a translation: subtitle.',
+            );
         });
 
         // #5654 — a translation takes the localized custom fields, and only those
@@ -2100,7 +2102,9 @@ describe('MCP built-in admin tools (direct mode)', () => {
 
                 const notLocalized = await update({ lockedCode: 'locked' }, 2);
                 expect(notLocalized.body.result.isError).toBe(true);
-                expect(notLocalized.body.result.content[0].text).toContain('lockedCode');
+                expect(notLocalized.body.result.content[0].text).toContain(
+                    'These custom fields are not localized, so they cannot be set on a translation: lockedCode.',
+                );
             } finally {
                 await update({ subtitle: null }, 3);
             }
