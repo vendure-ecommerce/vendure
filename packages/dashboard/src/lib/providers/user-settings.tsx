@@ -205,9 +205,11 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
         },
     });
 
-    // Initialize settings from server if available
+    // Initialize settings from the first successful read of the server value. Until then
+    // `serverSettings` stays null, which stops the save effect below from writing this
+    // browser's local copy over the stored value.
     useEffect(() => {
-        if (isReady) {
+        if (serverSettings) {
             return;
         }
         if (serverSettingsLoaded) {
@@ -230,13 +232,26 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
                 setServerSettings(settings);
                 setIsReady(true);
             }
-        } else if (serverSettingsErrored) {
-            // Fetch failed and won't retry (retry: false); fall back to local settings and mark
-            // ready so consumers gating on `settingsReady` don't hang forever.
-            setServerSettings(settings);
+        } else if (serverSettingsErrored && !isAuthError(error)) {
+            // Fetch failed and won't retry (retry: false). Mark ready so consumers gating on
+            // `settingsReady` don't hang forever, but leave `serverSettings` unset: the local
+            // copy was never read from the server, so it must not be saved over the stored
+            // value. A later successful read still initializes the settings.
             setIsReady(true);
         }
-    }, [serverSettingsLoaded, serverSettingsErrored, serverSettingsResponse, settings, isReady]);
+        // A FORBIDDEN read initializes nothing. It happens when the page loads without a valid
+        // session, i.e. on the login page or with an expired session token. login() invalidates
+        // all queries, and its authenticated re-read initializes the settings. It also happens
+        // for a signed-in user whose channel token grants no permissions. The settings then stay
+        // not ready until a read succeeds, e.g. the re-read after a channel switch.
+    }, [
+        serverSettings,
+        serverSettingsLoaded,
+        serverSettingsErrored,
+        error,
+        serverSettingsResponse,
+        settings,
+    ]);
 
     // Save settings to localStorage whenever they change
     useEffect(() => {
@@ -337,6 +352,15 @@ export const UserSettingsProvider: React.FC<UserSettingsProviderProps> = ({ quer
 
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;
 };
+
+/**
+ * Whether the settings could not be read because there is no authenticated session.
+ * The thrown GraphQL error carries the Vendure error code in `extensions.code`.
+ */
+function isAuthError(error: unknown): boolean {
+    const code = (error as { extensions?: { code?: unknown } } | null)?.extensions?.code;
+    return code === 'FORBIDDEN' || code === 'UNAUTHORIZED';
+}
 
 function logSettingsStoreWarning() {
     // eslint-disable-next-line no-console
