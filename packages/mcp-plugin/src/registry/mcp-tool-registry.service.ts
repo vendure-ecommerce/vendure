@@ -269,9 +269,6 @@ export class McpToolRegistryService implements OnApplicationBootstrap {
                 confirm: resolvedBehavior === 'destructive',
                 sessionToken: acceptsSessionToken,
             },
-            primaryKeyType: (
-                this.configService.entityOptions.entityIdStrategy ?? this.configService.entityIdStrategy
-            )?.primaryKeyType,
         });
         return {
             ...metadata,

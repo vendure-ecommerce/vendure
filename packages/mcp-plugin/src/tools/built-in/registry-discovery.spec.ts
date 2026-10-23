@@ -3,7 +3,6 @@ import { Test } from '@nestjs/testing';
 import {
     ActiveOrderService,
     AssetService,
-    AutoIncrementIdStrategy,
     ChannelService,
     CollectionService,
     ConfigService,
@@ -62,13 +61,7 @@ describe('built-in registry discovery', () => {
                 { provide: AssetService, useValue: {} },
                 { provide: ChannelService, useValue: {} },
                 { provide: CollectionService, useValue: {} },
-                {
-                    provide: ConfigService,
-                    useValue: {
-                        authOptions: { customPermissions: [] },
-                        entityOptions: { entityIdStrategy: new AutoIncrementIdStrategy() },
-                    },
-                },
+                { provide: ConfigService, useValue: { authOptions: { customPermissions: [] } } },
                 { provide: CustomerGroupService, useValue: {} },
                 { provide: CustomerService, useValue: {} },
                 { provide: FulfillmentService, useValue: {} },

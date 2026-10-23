@@ -5,7 +5,7 @@ import {
     StandardSchemaWithJSON,
 } from '@modelcontextprotocol/server';
 import { Injectable } from '@nestjs/common';
-import { ENTITY_ID_SCHEMA_KEY, McpJsonSchema, McpStandardSchema, McpToolSchema } from '@vendure/mcp-sdk';
+import { McpJsonSchema, McpStandardSchema, McpToolSchema } from '@vendure/mcp-sdk';
 
 const NO_ARGS_SCHEMA: McpJsonSchema = { type: 'object', properties: {}, additionalProperties: false };
 
@@ -29,8 +29,6 @@ export class McpToolSchemaService {
         inputSchema?: McpToolSchema;
         outputSchema?: McpToolSchema;
         injectedFields: McpToolInjectedFields;
-        /** The `primaryKeyType` of the configured EntityIdStrategy. */
-        primaryKeyType?: string;
     }): PreparedMcpToolSchemas {
         const { toolName, pluginSource, injectedFields } = options;
         const toolLabel = `MCP tool "${toolName}" (${pluginSource})`;
@@ -68,13 +66,9 @@ export class McpToolSchemaService {
         }
 
         const wireJsonSchema = this.addInjectedFields(jsonInputSchema, injectedFields);
-        const compiledInputSchema = this.withEntityIdConversion(
-            resolvedInput?.standard
-                ? this.toRegisteredStandardSchema(resolvedInput.standard, wireJsonSchema, injectedFields)
-                : this.compileJsonSchema(wireJsonSchema, inputLabel),
-            wireJsonSchema,
-            options.primaryKeyType,
-        );
+        const compiledInputSchema = resolvedInput?.standard
+            ? this.toRegisteredStandardSchema(resolvedInput.standard, wireJsonSchema, injectedFields)
+            : this.compileJsonSchema(wireJsonSchema, inputLabel);
         const compiledOutputSchema = resolvedOutput
             ? this.compileJsonSchema(resolvedOutput.json, outputLabel)
             : undefined;
@@ -216,67 +210,6 @@ export class McpToolSchemaService {
                 },
             },
         } as StandardSchemaWithJSON;
-    }
-
-    /**
-     * Converts the entity IDs of a validated input, marked with `ENTITY_ID_SCHEMA_KEY`, to the type of
-     * the EntityIdStrategy. With auto-increment IDs, core services expect a number and would save an ID
-     * string as a new entity. See #5626
-     */
-    private withEntityIdConversion(
-        compiled: StandardSchemaWithJSON,
-        jsonInputSchema: McpJsonSchema,
-        primaryKeyType: string | undefined,
-    ): StandardSchemaWithJSON {
-        if (primaryKeyType !== 'increment') {
-            return compiled;
-        }
-        const std = compiled['~standard'];
-        return {
-            '~standard': {
-                ...std,
-                validate: async (value: unknown) => {
-                    const result = await std.validate(value);
-                    if (result.issues) {
-                        return result;
-                    }
-                    return { value: this.convertEntityIds(jsonInputSchema, result.value) };
-                },
-            },
-        };
-    }
-
-    private convertEntityIds(schema: unknown, value: unknown): unknown {
-        if (typeof schema !== 'object' || schema === null) {
-            return value;
-        }
-        const node = schema as Record<string, unknown>;
-        if (node[ENTITY_ID_SCHEMA_KEY] === true) {
-            const id = typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : undefined;
-            return id !== undefined && Number.isSafeInteger(id) ? id : value;
-        }
-        let converted = value;
-        for (const subSchemas of [node.anyOf, node.oneOf, node.allOf]) {
-            if (Array.isArray(subSchemas)) {
-                converted = subSchemas.reduce(
-                    (acc, subSchema) => this.convertEntityIds(subSchema, acc),
-                    converted,
-                );
-            }
-        }
-        if (Array.isArray(converted)) {
-            return node.items ? converted.map(item => this.convertEntityIds(node.items, item)) : converted;
-        }
-        const properties = node.properties as Record<string, unknown> | undefined;
-        if (typeof converted === 'object' && converted !== null && properties) {
-            return Object.fromEntries(
-                Object.entries(converted).map(([key, propertyValue]) => [
-                    key,
-                    key in properties ? this.convertEntityIds(properties[key], propertyValue) : propertyValue,
-                ]),
-            );
-        }
-        return converted;
     }
 
     /** Validates author input separately from the fields the registry adds. */

@@ -1,21 +1,11 @@
+import { getConfig } from '@vendure/core';
 import { z } from 'zod';
 
 /**
  * @description
- * The JSON Schema keyword which marks a property as a Vendure entity ID. {@link idSchema} sets it.
- * The McpPlugin uses it to convert the IDs of a tool input to the type of the configured
- * EntityIdStrategy before the tool runs.
- *
- * @docsCategory mcp-sdk
- * @since 3.8.1
- */
-export const ENTITY_ID_SCHEMA_KEY = 'x-vendure-entity-id';
-
-/**
- * @description
  * A Zod schema for a Vendure entity ID. It accepts a string or a number, because the
- * project's ID strategy decides which one an ID is. With an auto-increment ID strategy, the
- * McpPlugin converts an ID string such as `"9"` to the number `9` before the tool runs.
+ * project's ID strategy decides which one an ID is. With an auto-increment ID strategy, a string
+ * of digits such as `"9"` becomes the number `9`, because core services expect a number.
  *
  * @example
  * ```ts
@@ -35,7 +25,16 @@ export const idSchema = z
     .union([z.string(), z.number()], {
         error: 'must be a Vendure entity id (a string or a number)',
     })
-    .meta({ [ENTITY_ID_SCHEMA_KEY]: true });
+    .overwrite(id => {
+        if (typeof id !== 'string' || !/^\d+$/.test(id) || !Number.isSafeInteger(+id)) {
+            return id;
+        }
+        // A Zod schema cannot inject ConfigService, so it reads the active config. getConfig() returns
+        // undefined in a test runtime that cannot load the default config.
+        const config = getConfig();
+        const strategy = config?.entityOptions?.entityIdStrategy ?? config?.entityIdStrategy;
+        return strategy?.primaryKeyType === 'increment' ? +id : id;
+    });
 
 /**
  * @description
