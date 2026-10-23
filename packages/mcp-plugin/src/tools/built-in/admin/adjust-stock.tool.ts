@@ -65,7 +65,7 @@ export class AdjustStockTool implements McpToolHandler<AdjustStockInput> {
             );
         }
         // The write sets an absolute stockOnHand, so the read must hold the row lock until the tool's
-        // transaction commits. Otherwise a concurrent adjustment would be overwritten.
+        // transaction commits. Otherwise a concurrent adjustment would be overwritten. See #5652
         const levels = await this.stockLevelService.getLockedStockLevelsForVariant(ctx, input.variantId);
         const current = levels.find(level => idsAreEqual(level.stockLocationId, input.locationId));
         const stockOnHand = (current?.stockOnHand ?? 0) + input.delta;

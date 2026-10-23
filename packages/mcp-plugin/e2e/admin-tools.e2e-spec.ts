@@ -1343,8 +1343,8 @@ describe('MCP built-in admin tools (direct mode)', () => {
         });
     });
 
-    // On a database with row locks, concurrent adjustments must each apply their delta rather than
-    // overwrite one another with a stock figure read before the other committed.
+    // #5652 — on a database with row locks, concurrent adjustments must each apply their delta rather
+    // than overwrite one another with a stock figure read before the other committed.
     it('adjust_stock applies every delta of concurrent calls', async () => {
         const token = await adminAccessToken();
         const stockOnHand = async () =>
