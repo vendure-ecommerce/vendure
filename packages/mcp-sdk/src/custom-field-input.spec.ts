@@ -76,4 +76,41 @@ describe('assertCustomFieldsWritable', () => {
             assertCustomFieldsWritable(ctxFor('admin'), relationInjector, 'Address', { pickupPoint: 1 }),
         ).rejects.toThrow(/pickupPoint/);
     });
+
+    // #5654 — as in the GraphQL API, a localized custom field is set on a translation, all others outside of it
+    it('takes localized custom fields only on a translation', async () => {
+        const localizedInjector = injectorFor([
+            { name: 'note', type: 'string' },
+            { name: 'subtitle', type: 'localeString' },
+            { name: 'details', type: 'localeText' },
+        ]);
+        const assertLocalized = (input: Record<string, unknown>, options?: { translation?: boolean }) =>
+            assertCustomFieldsWritable(ctxFor('admin'), localizedInjector, 'Address', input, options);
+
+        await expect(assertLocalized({ note: 'x' })).resolves.toBeUndefined();
+        await expect(assertLocalized({ subtitle: 'x', details: 'y' })).rejects.toThrow(
+            'These custom fields are localized, so they must be set on a translation: subtitle, details.',
+        );
+        await expect(
+            assertLocalized({ subtitle: 'x', details: 'y' }, { translation: true }),
+        ).resolves.toBeUndefined();
+        await expect(assertLocalized({ note: 'x' }, { translation: true })).rejects.toThrow(
+            'These custom fields are not localized, so they cannot be set on a translation: note.',
+        );
+    });
+
+    it('refuses an internal localized field on a translation too', async () => {
+        const localizedInjector = injectorFor([
+            { name: 'secretTitle', type: 'localeString', internal: true },
+        ]);
+        await expect(
+            assertCustomFieldsWritable(
+                ctxFor('admin'),
+                localizedInjector,
+                'Address',
+                { secretTitle: 'x' },
+                { translation: true },
+            ),
+        ).rejects.toThrow('These custom fields cannot be set on Address: secretTitle.');
+    });
 });
