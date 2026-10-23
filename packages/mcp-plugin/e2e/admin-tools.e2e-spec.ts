@@ -1365,6 +1365,79 @@ describe('MCP built-in admin tools (direct mode)', () => {
         );
     });
 
+    // #5626 — an entity id may be sent as a string, as MCP clients and models often do
+    it('adjust_stock accepts the ids as strings', async () => {
+        const token = await adminAccessToken();
+        const stockLevel = () =>
+            connection
+                .getRepository(adminCtx, StockLevel)
+                .findOneOrFail({ where: { productVariantId: variantId, stockLocationId } });
+        const before = await stockLevel();
+
+        const response = await postMcp(
+            baseUrl(),
+            'admin',
+            callTool(
+                'adjust_stock',
+                {
+                    variantId: String(variantId),
+                    locationId: String(stockLocationId),
+                    delta: 2,
+                    confirm: true,
+                },
+                1,
+            ),
+            { token },
+        );
+        try {
+            expect(response.body.result.isError).toBeUndefined();
+            expect((await stockLevel()).stockOnHand).toBe(before.stockOnHand + 2);
+        } finally {
+            // Undo the adjustment, so the changed stock does not leak into later tests.
+            if (response.body.result && !response.body.result.isError) {
+                await postMcp(
+                    baseUrl(),
+                    'admin',
+                    callTool(
+                        'adjust_stock',
+                        { variantId, locationId: stockLocationId, delta: -2, confirm: true },
+                        2,
+                    ),
+                    { token },
+                );
+            }
+        }
+    });
+
+    // #5626 — an entity id may be sent as a string, as MCP clients and models often do
+    it('update_variant accepts the id as a string', async () => {
+        const token = await adminAccessToken();
+        try {
+            const response = await postMcp(
+                baseUrl(),
+                'admin',
+                callTool('update_variant', { id: String(variantId), input: { enabled: false } }, 1),
+                { token },
+            );
+
+            expect(response.body.result.isError).toBeUndefined();
+            const variant = await connection
+                .getRepository(adminCtx, ProductVariant)
+                .findOneOrFail({ where: { id: variantId } });
+            expect(variant.enabled).toBe(false);
+        } finally {
+            // Put the variant back, so the disabled state does not leak into later tests. The numeric id
+            // works even when the string id does not.
+            const restored = await postMcp(
+                baseUrl(),
+                'admin',
+                callTool('update_variant', { id: variantId, input: { enabled: true } }, 2),
+                { token },
+            );
+            expect(restored.body.result?.isError).toBeUndefined();
+        }
+    });
+
     it('adjust_stock refuses a stock location that does not exist', async () => {
         const token = await adminAccessToken();
         const stockLevel = () =>
