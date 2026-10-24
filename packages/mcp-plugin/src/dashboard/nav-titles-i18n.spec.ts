@@ -20,10 +20,25 @@ describe('dashboard nav titles', () => {
     const sourceLocale = 'en';
     const sourceFiles = readdirSync(dashboardDir).filter(name => name.endsWith('.tsx'));
 
+    /** The index of the quote closing the literal that opens at `from - 1`, honouring escapes. */
+    function endOfStringLiteral(source: string, from: number, quote: string): number {
+        for (let i = from; i < source.length; i++) {
+            if (source[i] === '\\') {
+                i++;
+            } else if (source[i] === quote) {
+                return i;
+            }
+        }
+        return source.length;
+    }
+
     /**
      * The source of each `navSections: [...]` / `navMenuItem: {...}` declaration, so that an
      * unrelated `title:` in a page component is not mistaken for a nav title. Scanning to the
      * matching bracket keeps every section of a multi-section `navSections` array in scope.
+     *
+     * Brackets inside string literals and comments are skipped, so a title such as `'Tools [beta]'`
+     * neither cuts its block short nor extends it past its real end into unrelated declarations.
      */
     function navBlocks(source: string): string[] {
         return [...source.matchAll(/\bnav(?:Sections|MenuItem)\s*:\s*[[{]/g)].flatMap(match => {
@@ -32,9 +47,19 @@ describe('dashboard nav titles', () => {
             const close = open === '[' ? ']' : '}';
             let depth = 0;
             for (let i = start; i < source.length; i++) {
-                if (source[i] === open) {
+                const char = source[i];
+                if (char === "'" || char === '"' || char === '`') {
+                    i = endOfStringLiteral(source, i + 1, char);
+                } else if (char === '/' && (source[i + 1] === '/' || source[i + 1] === '*')) {
+                    const lineComment = source[i + 1] === '/';
+                    const end = source.indexOf(lineComment ? '\n' : '*/', i + 2);
+                    if (end === -1) {
+                        break;
+                    }
+                    i = lineComment ? end : end + 1;
+                } else if (char === open) {
                     depth++;
-                } else if (source[i] === close && --depth === 0) {
+                } else if (char === close && --depth === 0) {
                     return [source.slice(start, i + 1)];
                 }
             }
@@ -62,7 +87,13 @@ describe('dashboard nav titles', () => {
         return { found, keys };
     }
 
-    /** The texts the plugin's own `<Trans>` breadcrumbs and headings contribute to the catalogs. */
+    /**
+     * The texts the plugin's own `<Trans>` breadcrumbs and headings contribute to the catalogs.
+     *
+     * Only plain `<Trans>text</Trans>` is recognised: a title rendered through `t`/`i18n._` or an
+     * interpolating `<Trans>` is not seen here, so the hashed-entry cross-check below would skip
+     * it rather than fail. That only ever loosens the assertions, never the fix.
+     */
     function transTexts(): Set<string> {
         return new Set(
             sourceFiles.flatMap(file =>
