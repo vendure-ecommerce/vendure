@@ -1,11 +1,13 @@
 import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import {
     Asset,
+    AssetEvent,
     AssetService,
     ConfigService,
     Customer,
     DefaultAssetImportStrategy,
     DefaultEntityAccessControlStrategy,
+    EventBus,
     ID,
     mergeConfig,
     Order,
@@ -25,6 +27,7 @@ import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import * as http from 'http';
 import { AddressInfo } from 'net';
+import { firstValueFrom, timeout } from 'rxjs';
 import { Readable } from 'stream';
 import { SelectQueryBuilder } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -2382,6 +2385,23 @@ describe('MCP built-in admin tools (direct mode)', () => {
                 expect(await assetRepo().count()).toBe(countBefore + 1);
                 const [newest] = await assetRepo().find({ order: { id: 'DESC' }, take: 1 });
                 expect(newest.source).toBe(asset.source);
+            });
+
+            // #5661 — as for an Asset created with the createAssets mutation, subscribers learn of the new Asset
+            it('publishes an AssetEvent for the created asset, and none for a refused upload', async () => {
+                const event = firstValueFrom(server.app.get(EventBus).ofType(AssetEvent).pipe(timeout(5000)));
+
+                // Refused before the asset is stored, so the first event must belong to the next upload.
+                const refused = await callUploadAsset({ url: `${fileServer.baseUrl}/notes.txt` });
+                const response = await callUploadAsset({ url: `${fileServer.baseUrl}/pixel.png?event=1` });
+
+                expect(refused.body.result.isError).toBe(true);
+                expect(response.body.result.isError).toBeUndefined();
+                const published = await event;
+                expect(published.type).toBe('created');
+                expect(String(published.entity.id)).toBe(
+                    String(response.body.result.structuredContent.asset.id),
+                );
             });
 
             it('names the asset from the URL path and drops the query string', async () => {
