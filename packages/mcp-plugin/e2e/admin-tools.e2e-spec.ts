@@ -2388,11 +2388,14 @@ describe('MCP built-in admin tools (direct mode)', () => {
             });
 
             // #5661 — as for an Asset created with the createAssets mutation, subscribers learn of the new Asset
-            it('publishes an AssetEvent for the created asset', async () => {
+            it('publishes an AssetEvent for the created asset, and none for a refused upload', async () => {
                 const event = firstValueFrom(server.app.get(EventBus).ofType(AssetEvent).pipe(timeout(5000)));
 
+                // Refused before the asset is stored, so the first event must belong to the next upload.
+                const refused = await callUploadAsset({ url: `${fileServer.baseUrl}/notes.txt` });
                 const response = await callUploadAsset({ url: `${fileServer.baseUrl}/pixel.png?event=1` });
 
+                expect(refused.body.result.isError).toBe(true);
                 expect(response.body.result.isError).toBeUndefined();
                 const published = await event;
                 expect(published.type).toBe('created');
