@@ -1,4 +1,4 @@
-import { findNextAvailablePosition } from '@/vdb/components/ui/grid-layout.js';
+import { DEFAULT_COLS, findNextAvailablePosition, layoutsOverlap } from '@/vdb/components/ui/grid-layout.js';
 import type {
     DashboardWidgetDefinition,
     DashboardWidgetInstance,
@@ -93,6 +93,12 @@ export function buildInitialWidgetState(
     const legacyLayouts = settings.widgetLayout ?? {};
     const hiddenIds = new Set(settings.hiddenWidgets ?? []);
 
+    // Honor defaultSize.x/y hints only on a truly fresh layout — no saved instances and no
+    // legacy layout entries. Once any widget has been explicitly positioned, new widgets fall
+    // back to the auto-packer so they land in the first free slot rather than a stale hint.
+    const hasNoSavedLayout =
+        settings.widgetInstances === undefined && settings.widgetLayout === undefined;
+
     const visible: DashboardWidgetInstance[] = [];
     const hidden: DashboardWidgetInstance[] = [];
 
@@ -128,12 +134,23 @@ export function buildInitialWidgetState(
 
         const instance = buildWidgetInstance(widget, id, legacyLayout);
         if (!legacyLayout) {
-            const pos = findNextAvailablePosition(
-                { ...instance.layout, i: instance.id, y: 0 },
-                visible.map(v => ({ ...v.layout, i: v.id })),
+            const occupiedLayouts = visible.map(v => ({ ...v.layout, i: v.id }));
+            const candidateLayout = { ...instance.layout, i: instance.id };
+            const isOutOfBounds =
+                candidateLayout.x < 0 ||
+                candidateLayout.y < 0 ||
+                candidateLayout.x + candidateLayout.w > DEFAULT_COLS;
+            const hasOverlap = occupiedLayouts.some(occupied =>
+                layoutsOverlap(candidateLayout, occupied),
             );
-            instance.layout.x = pos.x;
-            instance.layout.y = pos.y;
+            if (!hasNoSavedLayout || isOutOfBounds || hasOverlap) {
+                const pos = findNextAvailablePosition(
+                    { ...candidateLayout, y: 0 },
+                    occupiedLayouts,
+                );
+                instance.layout.x = pos.x;
+                instance.layout.y = pos.y;
+            }
         }
         visible.push(instance);
     });
