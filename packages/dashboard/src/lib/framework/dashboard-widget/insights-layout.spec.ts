@@ -16,8 +16,6 @@ const def = (id: string, overrides: Partial<DashboardWidgetDefinition> = {}): Da
 const settings = (
     overrides: Partial<Pick<UserSettings, 'widgetInstances' | 'widgetLayout' | 'hiddenWidgets'>> = {},
 ): Pick<UserSettings, 'widgetInstances' | 'widgetLayout' | 'hiddenWidgets'> => ({
-    widgetInstances: [],
-    widgetLayout: {},
     hiddenWidgets: [],
     ...overrides,
 });
@@ -198,6 +196,26 @@ describe('buildInitialWidgetState', () => {
 
         expect(tp.layout.y).toBe(ls.layout.y);
         expect(ls.layout.y).toBe(lc.layout.y);
+    });
+
+    it('uses the fallback for a new widget when the layout already has saved entries', () => {
+        // hasNoSavedLayout is false (widgetInstances is non-empty), so the hint is ignored
+        // and the auto-packer places 'b' at the first free slot after 'a', not at the hint y: 13.
+        const a = def('a', { defaultSize: { w: 12, h: 6, x: 0, y: 0 } });
+        const b = def('b', { defaultSize: { w: 6, h: 3, x: 0, y: 13 } });
+        const state = buildInitialWidgetState(
+            settings({
+                widgetInstances: [instance('a', 'a', { x: 0, y: 0, w: 12, h: 6 })],
+            }),
+            [
+                ['a', a],
+                ['b', b],
+            ],
+        );
+        expect(state.visible).toHaveLength(2);
+        expect(state.visible[0].layout).toMatchObject({ x: 0, y: 0, w: 12, h: 6 });
+        // Fallback fires: first free slot is (0, 6), not the hint (0, 13).
+        expect(state.visible[1].layout).toMatchObject({ x: 0, y: 6 });
     });
 
     it('ignores persisted instances for widgets that are not registered', () => {
