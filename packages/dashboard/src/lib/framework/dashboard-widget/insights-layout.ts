@@ -1,4 +1,4 @@
-import { findNextAvailablePosition, layoutsOverlap } from '@/vdb/components/ui/grid-layout.js';
+import { DEFAULT_COLS, findNextAvailablePosition, layoutsOverlap } from '@/vdb/components/ui/grid-layout.js';
 import type {
     DashboardWidgetDefinition,
     DashboardWidgetInstance,
@@ -130,9 +130,13 @@ export function buildInitialWidgetState(
         if (!legacyLayout) {
             const occupiedLayouts = visible.map(v => ({ ...v.layout, i: v.id }));
             const candidateLayout = { ...instance.layout, i: instance.id };
-            const hasConflict = occupiedLayouts.some(occupied =>
-                layoutsOverlap(candidateLayout, occupied),
-            );
+            const isOutOfBounds =
+                candidateLayout.x < 0 ||
+                candidateLayout.y < 0 ||
+                candidateLayout.x + candidateLayout.w > DEFAULT_COLS;
+            const hasConflict =
+                isOutOfBounds ||
+                occupiedLayouts.some(occupied => layoutsOverlap(candidateLayout, occupied));
             if (hasConflict) {
                 const pos = findNextAvailablePosition(
                     { ...candidateLayout, y: 0 },

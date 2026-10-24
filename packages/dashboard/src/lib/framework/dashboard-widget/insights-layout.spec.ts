@@ -155,6 +155,20 @@ describe('buildInitialWidgetState', () => {
         expect(state.visible[1].layout).toMatchObject({ x: 6, y: 0 });
     });
 
+    it('falls back when defaultSize.x equals the column count (widget would start outside grid)', () => {
+        // x: 12 on a 12-col grid is out of bounds — no column 12 exists (0-indexed).
+        const widget = def('w', { defaultSize: { w: 4, h: 3, x: 12, y: 0 } });
+        const state = buildInitialWidgetState(settings(), [['w', widget]]);
+        expect(state.visible[0].layout.x + state.visible[0].layout.w).toBeLessThanOrEqual(12);
+    });
+
+    it('falls back when defaultSize x + w exceeds the column count', () => {
+        // x: 10, w: 4 → occupies columns 10–13, which overflows a 12-col grid.
+        const widget = def('w', { defaultSize: { w: 4, h: 3, x: 10, y: 0 } });
+        const state = buildInitialWidgetState(settings(), [['w', widget]]);
+        expect(state.visible[0].layout.x + state.visible[0].layout.w).toBeLessThanOrEqual(12);
+    });
+
     it('tiles all six built-in widgets at their designed positions on a fresh install', () => {
         const metricsW        = def('metrics-widget',          { defaultSize: { w: 12, h: 6, x: 0, y: 0  } });
         const latestOrders    = def('latest-orders-widget',    { defaultSize: { w: 6,  h: 7, x: 0, y: 6  } });
